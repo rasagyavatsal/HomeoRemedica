@@ -1,0 +1,41 @@
+[corpus]
+processed_directory = "dataset/processed"
+output_directory = "output/releases"
+artifact_schema_version = 1
+manifest_schema_version = 1
+sqlite_version = "3.53.4"
+sqlite_vec_version = "0.1.9"
+
+[chunking]
+minimum_tokens = 300
+target_tokens = 500
+
+[embedding]
+model = "gemini-embedding-001"
+dimensions = 1536
+evaluation_dimensions = [768, 1536, 3072]
+document_task_type = "RETRIEVAL_DOCUMENT"
+query_task_type = "RETRIEVAL_QUERY"
+normalization = "l2"
+distance_function = "cosine"
+model_input_limit = 2048
+
+[evaluation]
+dataset = "evaluation/v2/queries.json"
+result = "evaluation/v2/result.json"
+
+[books."allen-nosodes"]
+title = "Allen's Materia Medica of the Nosodes"
+author = "Henry Clay Allen"
+
+[books."boericke-MM"]
+title = "Boericke Materia Medica"
+author = "William Boericke"
+
+[books."clarke-MM"]
+title = "Clarke Materia Medica"
+author = "John Henry Clarke"
+
+[books."kent-lectures"]
+title = "Kent's Lectures on Homoeopathic Materia Medica"
+author = "James Tyler Kent"
