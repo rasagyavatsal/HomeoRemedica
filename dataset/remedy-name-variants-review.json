@@ -206,20 +206,6 @@
   ],
   "uncertain_groups": [
     {
-      "id": "U1",
-      "suggested_target_name": null,
-      "note": "CONFIRMED DISTINCT (web): Hydrastinum muriaticum (hydrastine muriate) and Hydrastininum muriaticum (hydrastinine muriate) are salts of two different goldenseal alkaloids with different clinical pictures (Clarke). Do NOT merge.",
-      "variants": {
-        "allen-nosodes": [],
-        "boericke-MM": [],
-        "clarke-MM": [
-          "Hydrastinum Muriaticum",
-          "Hydrastininum Muriaticum"
-        ],
-        "kent-lectures": []
-      }
-    },
-    {
       "id": "U2",
       "suggested_target_name": "BENZOLUM",
       "note": "CONFIRMED SAME (web): both are benzene (C6H6). Boericke 'BENZOLUM', Clarke 'Benzinum'. Clarke's Benzinum Nitricum / Benzinum Dinitricum are different substances and stay separate.",
@@ -261,24 +247,6 @@
         "clarke-MM": [],
         "kent-lectures": [
           "MANGANUM"
-        ]
-      }
-    },
-    {
-      "id": "U5",
-      "suggested_target_name": null,
-      "note": "CONFIRMED DISTINCT (web): Ferrum phosphoricum hydricum is ferrous hydrophosphate (FeHPO4), a separate, rarely used preparation proved by Dr. J. C. Morgan - distinct from Ferrum phosphoricum (ferric phosphate / Schuessler salt #4). Do NOT merge.",
-      "variants": {
-        "allen-nosodes": [],
-        "boericke-MM": [
-          "FERRUM PHOSPHORICUM"
-        ],
-        "clarke-MM": [
-          "Ferrum Phosphoricum",
-          "Ferrum Phosphoricum Hydricum"
-        ],
-        "kent-lectures": [
-          "FERRUM PHOSPHORICUM"
         ]
       }
     }
