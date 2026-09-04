@@ -64,7 +64,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--project", help="Google Cloud project (default: homeoremedica)")
     parser.add_argument("--location", help="Vertex AI region (default: us-central1)")
-    parser.add_argument("--bucket", help="private corpus bucket")
+    parser.add_argument("--bucket", help="corpus artifact bucket")
     parser.add_argument("--cache-dir", type=Path, help="local verified corpus cache")
     parser.add_argument(
         "--cached",

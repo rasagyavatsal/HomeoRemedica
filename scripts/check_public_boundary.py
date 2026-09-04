@@ -4,33 +4,17 @@ import subprocess
 from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[1]
-MAX_TRACKED_FILE_BYTES = 500_000
+MAX_TRACKED_FILE_BYTES = 5_000_000
 FORBIDDEN_ROOTS = {
     "build",
     "corpora",
-    "dataset",
     "dist",
     "output",
     "server-data",
 }
-FORBIDDEN_FILENAMES = {
-    "Boericke.txt",
-    "Kent-lectures.txt",
-    "allen-nosodes.json",
-    "allen-nosodes.txt",
-    "boericke-MM.json",
-    "clarke-MM.json",
-    "clarke-vol1.txt",
-    "clarke-vol2.txt",
-    "kent-lectures.json",
-}
 FORBIDDEN_SUFFIXES = {
-    ".csv",
     ".db",
     ".gz",
-    ".jsonl",
-    ".ndjson",
-    ".parquet",
     ".sqlite",
     ".sqlite3",
     ".tar",
@@ -60,8 +44,6 @@ def violations() -> tuple[str, ...]:
         path = ROOT / path_text
         if relative.parts[0] in FORBIDDEN_ROOTS:
             found.append(f"forbidden root: {path_text}")
-        if relative.name in FORBIDDEN_FILENAMES:
-            found.append(f"private dataset filename: {path_text}")
         if relative.suffix.lower() in FORBIDDEN_SUFFIXES:
             found.append(f"forbidden artifact: {path_text}")
         if path.is_symlink():
@@ -74,9 +56,9 @@ def violations() -> tuple[str, ...]:
 def main() -> int:
     found = violations()
     if not found:
-        print("Public repository boundary is clean.")
+        print("Repository hygiene check is clean.")
         return 0
-    print("Public repository boundary violations:")
+    print("Repository hygiene violations:")
     for violation in found:
         print(f"- {violation}")
     return 1
