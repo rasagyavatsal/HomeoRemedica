@@ -1,21 +1,22 @@
 # HomeoRemedica
 
-HomeoRemedica is a public Python codebase containing a terminal client and the complete source
+HomeoRemedica is an open-source Python project containing a terminal client and the complete source
 pipeline for a grounded reference assistant covering four classical homoeopathic materia medica
 books: Clarke, Boericke, Kent, and Allen. Answers are generated from retrieved corpus excerpts and
 include stable source IDs. The output is a study reference, not medical advice.
 
-The code, configuration, evaluation tooling, and synthetic tests are public. The raw and processed
-corpus under `dataset/`, generated corpus databases, and published release objects are private and
-are not distributed from this repository. Cloning the codebase grants no Google Cloud access.
+The software is available under the MIT License. The raw and processed corpus under `dataset/` is
+included in the repository and its original compilation and processing are available under the
+Creative Commons Attribution 4.0 International License (CC BY 4.0). Hosted Google Cloud resources
+remain separate from the repository and require their own credentials where applicable.
 
 ## Repository layout
 
 - `src/homeoremedica_chat/` — terminal `ask`, `chat`, and corpus-cache client.
 - `src/homeoremedica_corpus/` — source validation, chunking, evaluation, release building, and
   Cloud Storage publication pipeline.
-- `dataset/raw-text/` — private source text for the four books; not present in public clones.
-- `dataset/processed/` — private validated JSON used by the pipeline; not present in public clones.
+- `dataset/raw-text/` — source text for the four books.
+- `dataset/processed/` — validated sectioned JSON used by the pipeline.
 - `evaluation/` — versioned retrieval queries and immutable evaluation results.
 - `corpus.toml` — corpus, embedding, compatibility, and release configuration.
 
@@ -49,8 +50,9 @@ Requirements:
 
 - Python 3.14.
 - [uv](https://docs.astral.sh/uv/) 0.11.x.
-- Google Cloud Application Default Credentials with permission to read the configured corpus
-  bucket and call Vertex AI in `homeoremedica`.
+- Google Cloud Application Default Credentials with permission to call Vertex AI in your selected
+  project.
+- Permission to read the configured corpus bucket when using `sync` against a hosted release.
 
 Install dependencies and authenticate:
 
@@ -81,6 +83,10 @@ The sync command checks for a newer release and reuses unchanged artifacts. Use 
 the subcommand to skip Cloud Storage and use the last verified local release. This is useful for
 subsequent questions without another corpus download after a successful sync; Vertex AI still needs
 network access for embeddings and generation.
+
+The repository includes the source dataset, but the chat client reads built SQLite release
+artifacts rather than the source JSON directly. You can use an accessible hosted release or run the
+evaluation, build, and publication pipeline against Google Cloud resources you control.
 
 The `homeoremedica` command is the canonical installed entry point.
 
@@ -166,11 +172,10 @@ advice. For urgent or severe symptoms, consult qualified medical help.
 
 ## Corpus pipeline
 
-The pipeline source is public. Authorized maintainers keep its private `dataset/` input in a local,
-Git-ignored directory. Validation, evaluation, and build commands require that local dataset;
-publication also requires access to the configured Google Cloud project. The `sync`, `ask`, and
-`chat` commands do not read the source dataset, but they do require an authorized private release
-or an existing verified local cache.
+The complete pipeline and its `dataset/` input are included in every clone. Source validation is
+fully local. Evaluation and build require Vertex AI access for embeddings, and publication requires
+write access to the destination Storage bucket. The `sync`, `ask`, and `chat` commands do not read
+the source dataset directly; they use an accessible hosted release or an existing verified cache.
 
 The corpus pipeline reads only direct `dataset/processed/*.json` files using the sectioned
 `remedy -> section -> passages` schema. It validates the complete corpus, conserves every passage,
@@ -288,14 +293,22 @@ source validation, corpus conservation, chunking, hybrid retrieval, evaluation, 
 verification, publication fencing, and cache activation. Tests use fakes and synthetic SQLite
 artifacts; they do not require cloud credentials or a production corpus release.
 
-## Data boundary
+## Data and artifact distribution
 
-All application and corpus-pipeline source code, compatibility configuration, evaluation fixtures,
-and synthetic tests are maintained in this public repository. Raw and processed corpus source data
-are kept outside public Git history and can be placed in the ignored local `dataset/` directory by
-authorized maintainers. Generated SQLite release artifacts are ignored by Git and published to the
-private configured Storage bucket. The chat CLI downloads only verified artifacts permitted by
-Google Cloud IAM.
+The raw text and processed source corpus are included in this repository. Generated SQLite release
+artifacts remain ignored because they are reproducible build outputs and are published separately
+to a configured Storage bucket. A bucket's access policy is independent of the open licenses in
+this repository. Do not commit credentials, service-account keys, signed object URLs, local caches,
+or generated release artifacts.
 
-Do not commit `dataset/`, generated corpus artifacts, credentials, service-account keys, or signed
-object URLs. See `DATA_NOTICE.md` before distributing any source or derived corpus asset.
+## Licensing
+
+The software and associated documentation are copyright © 2026 Rasagya Vatsal and licensed under
+the [MIT License](LICENSE).
+
+The original selection, arrangement, structure, and processing of the corpus under `dataset/` are
+copyright © 2026 Rasagya Vatsal and licensed under
+[CC BY 4.0](dataset/LICENSE.md), which requires attribution when applicable. The historical source
+works were written by their identified authors and are not claimed as original works by Rasagya
+Vatsal. Public-domain material remains public domain, and third-party notices and rights are not
+superseded by the dataset license.

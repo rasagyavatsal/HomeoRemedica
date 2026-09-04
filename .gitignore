@@ -29,9 +29,6 @@ output/
 *.egg-info/
 *.tsbuildinfo
 
-# Private corpus source data
-/dataset/
-
 # Local corpus cache and database artifacts
 .cache/
 server-data/

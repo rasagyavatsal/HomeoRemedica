@@ -28,19 +28,20 @@ Interactive turns are held in memory only. `/clear` resets that context, and exi
 removes it. No conversation data is written. The CLI automatically writes only verified corpus artifacts to
 the local cache.
 
-## Dataset boundary
+## Open dataset distribution
 
-On 2026-09-04 the project adopted a public-code, private-data boundary. This repository contains
-the complete client and corpus-pipeline codebase, configuration, evaluation fixtures, release
-tooling, and synthetic tests:
+On 2026-09-04 the project adopted open distribution for both its software and source dataset. This
+repository contains the complete client and corpus-pipeline codebase, configuration, source corpus,
+evaluation fixtures, release tooling, and synthetic tests:
 
 - `src/homeoremedica_corpus/` contains source validation, chunking, evaluation, artifact building,
   publication, and Cloud Storage adapters.
+- `dataset/` contains the raw text and processed, sectioned JSON source data.
 - `evaluation/` contains versioned retrieval queries and immutable results.
 - `corpus.toml` defines the corpus, embedding, compatibility, and release contract.
 
-Authorized maintainers place raw and processed corpus sources in the local, Git-ignored `dataset/`
-directory when running the corpus pipeline. Dataset contents and derived corpus artifacts are
-excluded from public Git history. Generated SQLite releases remain ignored by Git and are uploaded
-to the configured private Storage bucket. Corpus revisions distributed before this boundary was
-adopted remain previously disclosed and cannot retroactively be made confidential.
+The software is licensed under MIT. The protectable compilation and processing contributions in
+`dataset/` are licensed under CC BY 4.0 with attribution to Rasagya Vatsal; public-domain source
+material remains public domain and third-party rights are unaffected. Generated SQLite releases
+remain ignored as reproducible build artifacts and may be uploaded to a configured Storage bucket.
+Access to hosted Google Cloud resources is managed separately from repository licensing.
