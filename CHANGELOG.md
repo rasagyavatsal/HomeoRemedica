@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v2.0.0...HomeoRemedica-v2.1.0) (2026-09-04)
+
+
+### Features
+
+* publish complete codebase without corpus data ([#1](https://github.com/rasagyavatsal/HomeoRemedica/issues/1)) ([7a3afe6](https://github.com/rasagyavatsal/HomeoRemedica/commit/7a3afe68c1f1c36600272628bbd1862f9e4ff6e9))
+
 ## [2.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/homeoremedica-web-v6.1.2...HomeoRemedica-v2.0.0) (2026-08-31)
 
 
