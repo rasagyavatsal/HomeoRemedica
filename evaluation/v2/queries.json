@@ -1,0 +1,572 @@
+{
+  "version": "v2",
+  "k": 10,
+  "qualityMetric": "recallAtK",
+  "minimumQuality": 0.8,
+  "queries": [
+    {
+      "id": "allen-cholesterinum-gallstone-attacks",
+      "query": "Which remedy is associated with repeated gallstone attacks involving the liver and stomach region?",
+      "relevant": [
+        {
+          "bookId": "allen-nosodes",
+          "remedyName": "CHOLESTERINUM",
+          "sectionTitle": "GENERAL",
+          "passageIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "allen-bacillinum-cough-during-sleep",
+      "query": "Which remedy describes a forceful cough during sleep that shakes the patient without waking them?",
+      "relevant": [
+        {
+          "bookId": "allen-nosodes",
+          "remedyName": "BACILLINUM",
+          "sectionTitle": "RESPIRATORY ORGANS",
+          "passageIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "allen-diphtherinum-dark-spots",
+      "query": "Which remedy has a dark red spot at the tip of the tongue together with dark red or purple spots in the centers of the cheeks?",
+      "relevant": [
+        {
+          "bookId": "allen-nosodes",
+          "remedyName": "DIPHTHERINUM",
+          "sectionTitle": "GENERALITIES",
+          "passageIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "allen-lac-caninum-forgotten-purchases",
+      "query": "Which remedy describes absent-mindedly buying something and then leaving without taking the purchase?",
+      "relevant": [
+        {
+          "bookId": "allen-nosodes",
+          "remedyName": "LAC CANINUM",
+          "sectionTitle": "MIND",
+          "passageIndex": 3
+        }
+      ]
+    },
+    {
+      "id": "allen-lyssin-running-water",
+      "query": "Which remedy has complaints aggravated by seeing or hearing running or poured water?",
+      "relevant": [
+        {
+          "bookId": "allen-nosodes",
+          "remedyName": "LYSSIN",
+          "sectionTitle": "CHARACTERISTICS",
+          "passageIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "allen-medorrhinum-renal-colic-ice",
+      "query": "Which remedy links severe renal colic and ureter pain with an intense craving for ice during the attack?",
+      "relevant": [
+        {
+          "bookId": "allen-nosodes",
+          "remedyName": "MEDORRHINUM",
+          "sectionTitle": "URINARY ORGANS",
+          "passageIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "allen-psorinum-old-injuries-before-storms",
+      "query": "Which remedy describes pain returning in previously injured or broken body parts before major weather changes or thunderstorms?",
+      "relevant": [
+        {
+          "bookId": "allen-nosodes",
+          "remedyName": "PSORINUM",
+          "sectionTitle": "TEMPERATURE AND WEATHER",
+          "passageIndex": 17
+        }
+      ]
+    },
+    {
+      "id": "allen-pyrogen-nosebleed-dream",
+      "query": "Which remedy records dreaming about a nosebleed and waking to find that the nose had bled on the pillow?",
+      "relevant": [
+        {
+          "bookId": "allen-nosodes",
+          "remedyName": "PYROGEN",
+          "sectionTitle": "SLEEP",
+          "passageIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "allen-tuberculinum-boiling-bean-urine",
+      "query": "Which remedy describes urine with an odor resembling boiling beans?",
+      "relevant": [
+        {
+          "bookId": "allen-nosodes",
+          "remedyName": "TUBERCULINUM",
+          "sectionTitle": "URINARY ORGANS",
+          "passageIndex": 11
+        }
+      ]
+    },
+    {
+      "id": "allen-lac-defloratum-rising-ball",
+      "query": "Which remedy describes the sensation of a large ball rising from the stomach to the throat and causing suffocation?",
+      "relevant": [
+        {
+          "bookId": "allen-nosodes",
+          "remedyName": "LAC DEFLORATUM",
+          "sectionTitle": "CHARACTERISTICS",
+          "passageIndex": 4
+        }
+      ]
+    },
+    {
+      "id": "boericke-abies-nigra-egg-sensation",
+      "query": "Which remedy describes a painful feeling as though a hard-boiled egg were lodged at the upper end of the stomach?",
+      "relevant": [
+        {
+          "bookId": "boericke-MM",
+          "remedyName": "ABIES NIGRA",
+          "sectionTitle": "Stomach",
+          "passageIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "boericke-aconitum-water-drop-ear",
+      "query": "Which remedy includes the sensation of a drop of water being present in the left ear?",
+      "relevant": [
+        {
+          "bookId": "boericke-MM",
+          "remedyName": "ACONITUM NAPELLUS",
+          "sectionTitle": "Ears",
+          "passageIndex": 3
+        }
+      ]
+    },
+    {
+      "id": "boericke-apis-recurring-styes",
+      "query": "Which remedy is noted for styes and for preventing them from recurring?",
+      "relevant": [
+        {
+          "bookId": "boericke-MM",
+          "remedyName": "APIS MELLIFICA",
+          "sectionTitle": "Eyes",
+          "passageIndex": 10
+        }
+      ]
+    },
+    {
+      "id": "boericke-arsenicum-wounded-abdomen-cough",
+      "query": "Which remedy has abdominal pain that feels like a wound when coughing?",
+      "relevant": [
+        {
+          "bookId": "boericke-MM",
+          "remedyName": "ARSENICUM ALBUM",
+          "sectionTitle": "Abdomen",
+          "passageIndex": 4
+        }
+      ]
+    },
+    {
+      "id": "boericke-belladonna-monster-hallucinations",
+      "query": "Which remedy has hallucinations of monsters and hideous faces?",
+      "relevant": [
+        {
+          "bookId": "boericke-MM",
+          "remedyName": "BELLADONNA",
+          "sectionTitle": "Mind",
+          "passageIndex": 3
+        }
+      ]
+    },
+    {
+      "id": "boericke-bryonia-stool-hot-weather",
+      "query": "Which remedy describes thick brown or bloody stools aggravated by movement, hot weather, becoming overheated, and cold drinks?",
+      "relevant": [
+        {
+          "bookId": "boericke-MM",
+          "remedyName": "BRYONIA ALBA",
+          "sectionTitle": "Stool",
+          "passageIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "boericke-nux-vomica-busy-dreams",
+      "query": "Which remedy describes dreams filled with bustle and hurry?",
+      "relevant": [
+        {
+          "bookId": "boericke-MM",
+          "remedyName": "NUX VOMICA",
+          "sectionTitle": "Sleep",
+          "passageIndex": 2
+        }
+      ]
+    },
+    {
+      "id": "boericke-pulsatilla-tightness-after-meal",
+      "query": "Which remedy describes severe stomach tightness after a meal that makes the patient loosen their clothing?",
+      "relevant": [
+        {
+          "bookId": "boericke-MM",
+          "remedyName": "PULSATILLA PRATENSIS",
+          "sectionTitle": "Stomach",
+          "passageIndex": 7
+        }
+      ]
+    },
+    {
+      "id": "boericke-rhus-tox-warm-dry-motion",
+      "query": "Which remedy improves with warm dry weather, movement, walking, changing position, rubbing, and warm applications?",
+      "relevant": [
+        {
+          "bookId": "boericke-MM",
+          "remedyName": "RHUS TOXICODENDRON",
+          "sectionTitle": "Modalities",
+          "passageIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "boericke-sulphur-scratching-burns-scalp",
+      "query": "Which remedy describes scalp itching where scratching causes burning?",
+      "relevant": [
+        {
+          "bookId": "boericke-MM",
+          "remedyName": "SULPHUR",
+          "sectionTitle": "Head",
+          "passageIndex": 6
+        }
+      ]
+    },
+    {
+      "id": "clarke-arnica-denies-illness",
+      "query": "Which remedy describes someone insisting that nothing is wrong with them during typhoid fever or after an injury?",
+      "relevant": [
+        {
+          "bookId": "clarke-MM",
+          "remedyName": "Arnica",
+          "sectionTitle": "Mind",
+          "passageIndex": 16
+        }
+      ]
+    },
+    {
+      "id": "clarke-abies-nigra-daytime-sleepiness",
+      "query": "Which remedy is associated with daytime sleepiness but wakefulness and restlessness at night?",
+      "relevant": [
+        {
+          "bookId": "clarke-MM",
+          "remedyName": "Abies Nigra",
+          "sectionTitle": "Sleep",
+          "passageIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "clarke-aconitum-loose-brain-sensation",
+      "query": "Which remedy describes the brain as rolling loosely inside the skull, aggravated by motion, speaking, or drinking?",
+      "relevant": [
+        {
+          "bookId": "clarke-MM",
+          "remedyName": "Aconitum Napellus",
+          "sectionTitle": "Head",
+          "passageIndex": 4
+        }
+      ]
+    },
+    {
+      "id": "clarke-apis-erysipelas-direction",
+      "query": "Which remedy describes facial erysipelas spreading from right to left?",
+      "relevant": [
+        {
+          "bookId": "clarke-MM",
+          "remedyName": "Apis",
+          "sectionTitle": "Face",
+          "passageIndex": 5
+        }
+      ]
+    },
+    {
+      "id": "clarke-arsenicum-tooth-pain-heat",
+      "query": "Which remedy has tooth pain relieved by hot applications?",
+      "relevant": [
+        {
+          "bookId": "clarke-MM",
+          "remedyName": "Arsenicum Album",
+          "sectionTitle": "Teeth",
+          "passageIndex": 3
+        }
+      ]
+    },
+    {
+      "id": "clarke-belladonna-hot-menstrual-flow",
+      "query": "Which remedy describes bright red menstrual discharge that feels as hot as sealing wax?",
+      "relevant": [
+        {
+          "bookId": "clarke-MM",
+          "remedyName": "Belladonna",
+          "sectionTitle": "Female Sexual Organs",
+          "passageIndex": 10
+        }
+      ]
+    },
+    {
+      "id": "clarke-bryonia-evening-abdominal-gurgling",
+      "query": "Which remedy describes abdominal gurgling with passing gas, especially in the evening while in bed?",
+      "relevant": [
+        {
+          "bookId": "clarke-MM",
+          "remedyName": "Bryonia",
+          "sectionTitle": "Abdomen",
+          "passageIndex": 11
+        }
+      ]
+    },
+    {
+      "id": "clarke-pulsatilla-frothy-mucus",
+      "query": "Which remedy describes constant spitting of frothy mucus resembling cotton?",
+      "relevant": [
+        {
+          "bookId": "clarke-MM",
+          "remedyName": "Pulsatilla",
+          "sectionTitle": "Mouth",
+          "passageIndex": 13
+        }
+      ]
+    },
+    {
+      "id": "clarke-rhus-tox-drenching-rain",
+      "query": "Which remedy is associated with acute or chronic complaints that began after becoming thoroughly soaked by rain?",
+      "relevant": [
+        {
+          "bookId": "clarke-MM",
+          "remedyName": "Rhus Radicans and Rhus Toxicodendron",
+          "sectionTitle": "Generalities",
+          "passageIndex": 3
+        }
+      ]
+    },
+    {
+      "id": "clarke-sulphur-chamber-pot-dream",
+      "query": "Which remedy describes dreaming of using a chamber pot and consequently wetting the bed?",
+      "relevant": [
+        {
+          "bookId": "clarke-MM",
+          "remedyName": "Sulphur",
+          "sectionTitle": "Sleep",
+          "passageIndex": 24
+        }
+      ]
+    },
+    {
+      "id": "kent-arnica-infantile-fever",
+      "query": "Which remedy describes a child threatening convulsions during severe fever with a hot head and cold body?",
+      "relevant": [
+        {
+          "bookId": "kent-lectures",
+          "remedyName": "ARNICA MONTANA",
+          "sectionTitle": "Children",
+          "passageIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "kent-aconitum-dry-cold-wind",
+      "query": "Which remedy has sudden attacks following exposure to a dry cold wind?",
+      "relevant": [
+        {
+          "bookId": "kent-lectures",
+          "remedyName": "ACONITUM NAPELLUS",
+          "sectionTitle": "Generals",
+          "passageIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "kent-apis-throat-cold-relief",
+      "query": "Which remedy has burning and stinging throat pain relieved by cold and aggravated by heat?",
+      "relevant": [
+        {
+          "bookId": "kent-lectures",
+          "remedyName": "APIS MELLIFICA",
+          "sectionTitle": "Throat",
+          "passageIndex": 2
+        }
+      ]
+    },
+    {
+      "id": "kent-arsenicum-putrid-discharges",
+      "query": "Which remedy describes menstrual, uterine, urinary, fecal, and respiratory discharges as putrid?",
+      "relevant": [
+        {
+          "bookId": "kent-lectures",
+          "remedyName": "ARSENICUM ALBUM",
+          "sectionTitle": "Striking features",
+          "passageIndex": 30
+        }
+      ]
+    },
+    {
+      "id": "kent-belladonna-sleep-shriek",
+      "query": "Which remedy describes talking faster and louder during sleep, with a hot head, cold feet, and a final shriek?",
+      "relevant": [
+        {
+          "bookId": "kent-lectures",
+          "remedyName": "BELLADONNA",
+          "sectionTitle": "Sleep",
+          "passageIndex": 8
+        }
+      ]
+    },
+    {
+      "id": "kent-bryonia-thirst-large-intervals",
+      "query": "Which remedy describes a dry, parched sore throat with stitching pain and thirst for large amounts of water at long intervals?",
+      "relevant": [
+        {
+          "bookId": "kent-lectures",
+          "remedyName": "BRYONIA ALBA",
+          "sectionTitle": "Throat",
+          "passageIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "kent-nux-vomica-business-insomnia",
+      "query": "Which remedy describes waking around 3 a.m. with business concerns crowding the mind and preventing sleep?",
+      "relevant": [
+        {
+          "bookId": "kent-lectures",
+          "remedyName": "NUX VOMICA",
+          "sectionTitle": "Mind",
+          "passageIndex": 10
+        }
+      ]
+    },
+    {
+      "id": "kent-pulsatilla-pastry-craving",
+      "query": "Which remedy craves pastries even though they are not digested and make the patient feel worse?",
+      "relevant": [
+        {
+          "bookId": "kent-lectures",
+          "remedyName": "PULSATILLA",
+          "sectionTitle": "Stomach",
+          "passageIndex": 14
+        }
+      ]
+    },
+    {
+      "id": "kent-rhus-tox-urinary-motion-relief",
+      "query": "Which remedy describes urinary urgency with bladder tenesmus and prostate pain that is relieved by moving around?",
+      "relevant": [
+        {
+          "bookId": "kent-lectures",
+          "remedyName": "RHUS TOXICODENDRON",
+          "sectionTitle": "Urinary",
+          "passageIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "kent-sulphur-diarrhea-out-of-bed",
+      "query": "Which remedy describes early-morning diarrhea that drives the patient out of bed?",
+      "relevant": [
+        {
+          "bookId": "kent-lectures",
+          "remedyName": "SULPHUR",
+          "sectionTitle": "Diarrhea",
+          "passageIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "cross-book-abies-nigra-after-eating",
+      "query": "Which source passages connect Abies Nigra with stomach pain that begins after eating?",
+      "relevant": [
+        {
+          "bookId": "boericke-MM",
+          "remedyName": "ABIES NIGRA",
+          "sectionTitle": "Stomach",
+          "passageIndex": 0
+        },
+        {
+          "bookId": "clarke-MM",
+          "remedyName": "Abies Nigra",
+          "sectionTitle": "Stomach",
+          "passageIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "cross-book-rhus-tox-motion-relief",
+      "query": "Which source passages describe Rhus toxicodendron complaints improving through movement or changing position?",
+      "relevant": [
+        {
+          "bookId": "boericke-MM",
+          "remedyName": "RHUS TOXICODENDRON",
+          "sectionTitle": "Modalities",
+          "passageIndex": 1
+        },
+        {
+          "bookId": "clarke-MM",
+          "remedyName": "Rhus Radicans and Rhus Toxicodendron",
+          "sectionTitle": "Generalities",
+          "passageIndex": 0
+        },
+        {
+          "bookId": "kent-lectures",
+          "remedyName": "RHUS TOXICODENDRON",
+          "sectionTitle": "Modalities",
+          "passageIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "cross-book-pulsatilla-butter-intolerance",
+      "query": "Which source passages associate Pulsatilla with disliking or being unable to digest butter?",
+      "relevant": [
+        {
+          "bookId": "boericke-MM",
+          "remedyName": "PULSATILLA PRATENSIS",
+          "sectionTitle": "Stomach",
+          "passageIndex": 5
+        },
+        {
+          "bookId": "kent-lectures",
+          "remedyName": "PULSATILLA",
+          "sectionTitle": "Stomach",
+          "passageIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "cross-book-aconitum-dry-cold-winds",
+      "query": "What do the source books say about Aconitum complaints following exposure to dry cold winds?",
+      "relevant": [
+        {
+          "bookId": "boericke-MM",
+          "remedyName": "ACONITUM NAPELLUS",
+          "sectionTitle": "Modalities",
+          "passageIndex": 0
+        },
+        {
+          "bookId": "clarke-MM",
+          "remedyName": "Aconitum Napellus",
+          "sectionTitle": "Respiratory Organs",
+          "passageIndex": 16
+        },
+        {
+          "bookId": "kent-lectures",
+          "remedyName": "ACONITUM NAPELLUS",
+          "sectionTitle": "Generals",
+          "passageIndex": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "8c079c0c195808e2d10f438a2a534f2e26ab62c6",
+  "packages": {
+    ".": {
+      "release-type": "python",
+      "package-name": "HomeoRemedica",
+      "extra-files": [
+        "uv.lock"
+      ],
+      "pull-request-title-pattern": "chore${scope}: release${component} v${version}"
+    }
+  }
+}

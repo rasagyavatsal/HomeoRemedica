@@ -29,11 +29,8 @@ output/
 *.egg-info/
 *.tsbuildinfo
 
-# Private corpus source and evaluation data
+# Private corpus source data
 /dataset/
-/evaluation/
-/corpus.toml
-/src/homeoremedica_corpus/
 
 # Local corpus cache and database artifacts
 .cache/

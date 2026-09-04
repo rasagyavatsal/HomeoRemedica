@@ -36,9 +36,9 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    project: str = "configure-rag-project"
+    project: str = "homeoremedica"
     location: str = "us-central1"
-    bucket: str = "configure-private-corpus-bucket"
+    bucket: str = "homeoremedica-private-remedies"
     corpus_prefix: str = "corpora"
     cache_dir: Path = Field(default_factory=_default_cache_dir)
     model: str = "gemini-2.5-flash-lite"
