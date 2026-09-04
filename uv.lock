@@ -404,7 +404,7 @@ wheels = [
 
 [[package]]
 name = "homeoremedica"
-version = "2.1.1" # x-release-please-version
+version = "2.2.0" # x-release-please-version
 source = { editable = "." }
 dependencies = [
     { name = "google-auth", extra = ["requests"] },
