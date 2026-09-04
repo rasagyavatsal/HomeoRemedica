@@ -46,5 +46,8 @@ corpora/
 Thumbs.db
 node_modules/
 
+# Local agent instructions
+AGENTS.md
+
 # Logs
 *.log
