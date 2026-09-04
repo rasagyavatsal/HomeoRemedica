@@ -1,7 +1,7 @@
 {
-  "description": "Synonym and uncertain remedy-name groups for review. NOT applied to the book files yet. 'suggested_target_name' is the name to use if the group is approved (Boericke-MM name, updated where web research showed a different official/standard name). null = do not merge / undecided.",
+  "description": "Synonym and uncertain remedy-name groups. These names HAVE BEEN APPLIED to the book files in dataset/processed/ on 2026-09-04. Kept as a record of the mapping.",
   "generated_on": "2026-09-04",
-  "status": "web-verified, for-review",
+  "status": "applied",
   "synonym_groups": [
     {
       "id": 1,
@@ -251,5 +251,6 @@
       }
     }
   ],
-  "last_verified": "2026-09-04"
+  "last_verified": "2026-09-04",
+  "applied_on": "2026-09-04"
 }
