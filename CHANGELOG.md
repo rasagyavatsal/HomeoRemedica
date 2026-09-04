@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v2.1.0...HomeoRemedica-v2.1.1) (2026-09-04)
+
+
+### Documentation
+
+* remove retired repository references ([#3](https://github.com/rasagyavatsal/HomeoRemedica/issues/3)) ([749aa19](https://github.com/rasagyavatsal/HomeoRemedica/commit/749aa19c2a2318e04b5542ff4ce9fcd318e8a21f))
+
 ## [2.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v2.0.0...HomeoRemedica-v2.1.0) (2026-09-04)
 
 
