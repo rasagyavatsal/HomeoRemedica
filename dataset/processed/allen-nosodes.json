@@ -1,5 +1,5 @@
 {
-  "ADRENALIN": {
+  "ADRENALINUM": {
     "MIND": [
       "Despondent and nervous; lack of interest in anything: no ambition; disinclination for mental work; absence of \"grit.\"",
       "Aversion to mental work, cannot concentrate thoughts."
@@ -842,7 +842,7 @@
       "Large cutaneous eschars."
     ]
   },
-  "BACILLINUM": {
+  "BACILLINUM BURNETT": {
     "MIND": [
       "Taciturn, sulky, snappish, fretty, irritable, morose, depressed and melancholic even to insanity.",
       "Fretful ailing, whines and complains; mind given to be frightened, particularly by dogs."
@@ -1931,7 +1931,7 @@
       "Sore aching, with throbbing in the outer side, and along sole of right foot, excruciating pains coming and going by spells; unable to stand on foot during the pain."
     ]
   },
-  "LAC DEFLORATUM": {
+  "LAC VACCINUM DEFLORATUM": {
     "CHARACTERISTICS": [
       "Diseases with faulty and defective nutrition with reflex affections of nervous centres.",
       "Despondent; does not care to live; has no fear of death but is sure he is going to die.",
@@ -1954,9 +1954,7 @@
     ],
     "AMELIORATION": [
       "Pressure (pain in eye); bandaging head lightly."
-    ]
-  },
-  "LAC VACCINUM DEFLORATUM": {
+    ],
     "MIND": [
       "Loss of memory; listlessness, disinclination for bodily or mental exertion.",
       "Depression of spirits; don't care to live; question as to quietest and most certain way of hastening one's death.",
@@ -2893,7 +2891,7 @@
       "In two hours all symptoms subsided gradually, but still there was a general trembling or quivering of whole body as well as the fingers."
     ]
   },
-  "LYSSIN": {
+  "LYSSINUM": {
     "CHARACTERISTICS": [
       "The sight or sound of running water or pouring water aggravates all complaints.",
       "Lyssophobia; fear of becoming mad; exceedingly apprehensive.",
@@ -8075,7 +8073,7 @@
       "A woman had attacks of terrible itching of skin without eruption through three periods of gestation. In the last she complained of the same itching, when Dr. Lippe advised Psorinum. In two days erysipelas appeared. Her face was very much swollen."
     ]
   },
-  "PYROGEN": {
+  "PYROGENIUM": {
     "AGGRAVATION": [
       "Motion, moving the eye; in a warm room; rising from lying or sitting up (cough relieved by sitting up; < by lying down, Clarke).",
       "Restlessness > when first commencing to move (Rhus < when first commencing to move)."
@@ -9675,7 +9673,7 @@
       "Rheumatic swelling of left wrist and left great toe which is bluish-red, with pains like sawing off his bones with a dull saw; better from heat of stove, worse from sundown, to sunrise; no appetite."
     ]
   },
-  "THYROIDIN": {
+  "THYROIDINUM": {
     "MIND": [
       "Acute stupor alternating with restless melancholia; at times could not be got to speak, but would lie on floor with limbs rigid; at other times would weep and undress herself",
       "Dangerous and homicidal; puts her arms around the necks of others so tightly as almost to strangle them.",
@@ -10477,7 +10475,7 @@
       "Soon his stomach rebelled against food and the bowels became constipated, his hoarseness increased and distressing, suffocative spells set in every forenoon, lasting an hour or so; he would then be able to breathe well the rest of the day."
     ]
   },
-  "USTILAGO": {
+  "USTILAGO MAYDIS": {
     "MIND": [
       "Depression of spirits in afternoon.",
       "Very sad, cries frequently; exceedingly prostrated from sexual abuse and loss of semen; sleep restless.",
