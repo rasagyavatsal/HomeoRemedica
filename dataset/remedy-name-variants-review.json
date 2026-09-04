@@ -6,12 +6,12 @@
     {
       "id": 1,
       "canonical_name": "Actaea racemosa = Cimicifuga racemosa",
-      "suggested_target_name": "CIMICIFUGA RACEMOSA",
-      "note": "Same plant (black cohosh). HPUS official homeopathic name is 'Cimicifuga racemosa'; 'Actaea racemosa' is the current botanical name. Boericke uses Cimicifuga; Clarke/Kent use Actaea.",
+      "suggested_target_name": "ACTAEA RACEMOSA",
+      "note": "User decision: use 'Actaea racemosa' (current botanical name). 'Cimicifuga racemosa' is the older HPUS synonym. Applied as ACTAEA RACEMOSA to all books.",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
-          "CIMICIFUGA RACEMOSA"
+          "ACTAEA RACEMOSA"
         ],
         "clarke-MM": [
           "Actæa Racemosa"
