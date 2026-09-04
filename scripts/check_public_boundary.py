@@ -4,25 +4,40 @@ import subprocess
 from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[1]
-MAX_TRACKED_FILE_BYTES = 1_000_000
+MAX_TRACKED_FILE_BYTES = 500_000
 FORBIDDEN_ROOTS = {
     "build",
     "corpora",
     "dataset",
     "dist",
-    "evaluation",
     "output",
     "server-data",
 }
-FORBIDDEN_PATHS = {
-    "corpus.toml",
-    "src/homeoremedica_corpus",
+FORBIDDEN_FILENAMES = {
+    "Boericke.txt",
+    "Kent-lectures.txt",
+    "allen-nosodes.json",
+    "allen-nosodes.txt",
+    "boericke-MM.json",
+    "clarke-MM.json",
+    "clarke-vol1.txt",
+    "clarke-vol2.txt",
+    "kent-lectures.json",
 }
 FORBIDDEN_SUFFIXES = {
+    ".csv",
     ".db",
+    ".gz",
+    ".jsonl",
+    ".ndjson",
+    ".parquet",
     ".sqlite",
     ".sqlite3",
+    ".tar",
+    ".tgz",
     ".whl",
+    ".zip",
+    ".zst",
 }
 
 
@@ -45,8 +60,8 @@ def violations() -> tuple[str, ...]:
         path = ROOT / path_text
         if relative.parts[0] in FORBIDDEN_ROOTS:
             found.append(f"forbidden root: {path_text}")
-        if any(path_text == item or path_text.startswith(f"{item}/") for item in FORBIDDEN_PATHS):
-            found.append(f"private path: {path_text}")
+        if relative.name in FORBIDDEN_FILENAMES:
+            found.append(f"private dataset filename: {path_text}")
         if relative.suffix.lower() in FORBIDDEN_SUFFIXES:
             found.append(f"forbidden artifact: {path_text}")
         if path.is_symlink():
