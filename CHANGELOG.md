@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v2.1.1...HomeoRemedica-v2.2.0) (2026-09-04)
+
+
+### Features
+
+* publish source dataset under CC BY 4.0 ([#5](https://github.com/rasagyavatsal/HomeoRemedica/issues/5)) ([aa14cc3](https://github.com/rasagyavatsal/HomeoRemedica/commit/aa14cc34bbb15d53e3f4e2e17c1e66110059bc2f))
+
 ## [2.1.1](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v2.1.0...HomeoRemedica-v2.1.1) (2026-09-04)
 
 
