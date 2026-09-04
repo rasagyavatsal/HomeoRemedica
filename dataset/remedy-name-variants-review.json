@@ -1,0 +1,287 @@
+{
+  "description": "Synonym and uncertain remedy-name groups for review. NOT applied to the book files yet. For each group, 'suggested_target_name' is the Boericke-MM name that would be used if the group is approved (null when uncertain).",
+  "generated_on": "2026-09-04",
+  "status": "for-review",
+  "synonym_groups": [
+    {
+      "id": 1,
+      "canonical_name": "Actaea racemosa = Cimicifuga racemosa",
+      "suggested_target_name": "CIMICIFUGA RACEMOSA",
+      "note": "Same plant (black cohosh). Boericke uses 'Cimicifuga racemosa'; Clarke/Kent use 'Actaea racemosa'.",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [
+          "CIMICIFUGA RACEMOSA"
+        ],
+        "clarke-MM": [
+          "Actæa Racemosa"
+        ],
+        "kent-lectures": [
+          "ACTAEA RACEMOSA"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "canonical_name": "Acetanilide = Antifebrinum",
+      "suggested_target_name": "ACETANILIDUM",
+      "note": "Acetanilidum is the chemical name; Antifebrinum was a brand name for acetanilide.",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [
+          "ACETANILIDUM"
+        ],
+        "clarke-MM": [
+          "Antifebrinum"
+        ],
+        "kent-lectures": []
+      }
+    },
+    {
+      "id": 3,
+      "canonical_name": "Arctium lappa = Lappa arctium",
+      "suggested_target_name": "LAPPA ARCTIUM",
+      "note": "Same plant (burdock); the two-word name is reversed.",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [
+          "LAPPA ARCTIUM"
+        ],
+        "clarke-MM": [
+          "Arctium Lappa"
+        ],
+        "kent-lectures": []
+      }
+    },
+    {
+      "id": 4,
+      "canonical_name": "Asclepias cornuti = Asclepias syriaca",
+      "suggested_target_name": "ASCLEPIAS CORNUTI",
+      "note": "Synonyms for the same milkweed species.",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [
+          "ASCLEPIAS CORNUTI"
+        ],
+        "clarke-MM": [
+          "Asclepias Syriaca"
+        ],
+        "kent-lectures": []
+      }
+    },
+    {
+      "id": 5,
+      "canonical_name": "Eriodictyon californicum = glutinosum",
+      "suggested_target_name": "ERIODYCTION CALIFORNICUM",
+      "note": "Species synonyms; same plant (yerba santa).",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [
+          "ERIODYCTION CALIFORNICUM"
+        ],
+        "clarke-MM": [
+          "Eriodictyon Glutinosum"
+        ],
+        "kent-lectures": []
+      }
+    },
+    {
+      "id": 6,
+      "canonical_name": "Lyssin = Hydrophobinum",
+      "suggested_target_name": "LYSSINUM",
+      "note": "Rabies nosode. Allen 'LYSSIN', Boericke 'LYSSINUM', Clarke 'Hydrophobinum'.",
+      "variants": {
+        "allen-nosodes": [
+          "LYSSIN"
+        ],
+        "boericke-MM": [
+          "LYSSINUM"
+        ],
+        "clarke-MM": [
+          "Hydrophobinum"
+        ],
+        "kent-lectures": []
+      }
+    },
+    {
+      "id": 7,
+      "canonical_name": "Spigelia (anthelmia/anthelmintica/marilandica)",
+      "suggested_target_name": "SPIGELIA ANTHELMIA",
+      "note": "Same remedy (pinkroot). Boericke 'SPIGELIA ANTHELMIA', Kent 'SPIGELIA ANTHELMINTICA', Clarke 'Spigelia'/'Spigelia Marilandica'.",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [
+          "SPIGELIA ANTHELMIA"
+        ],
+        "clarke-MM": [
+          "Spigelia",
+          "Spigelia Marilandica"
+        ],
+        "kent-lectures": [
+          "SPIGELIA ANTHELMINTICA"
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "canonical_name": "Sumbul = Sumbulus moschatus",
+      "suggested_target_name": "SUMBULUS MOSCHATUS",
+      "note": "'Sumbul' is the short form of 'Sumbulus moschatus' (musk root).",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [
+          "SUMBULUS MOSCHATUS"
+        ],
+        "clarke-MM": [
+          "Sumbul"
+        ],
+        "kent-lectures": []
+      }
+    },
+    {
+      "id": 9,
+      "canonical_name": "Tannin = Tannic acid",
+      "suggested_target_name": "TANNICUM ACIDUM",
+      "note": "'Tanninum' / 'Tannicum acidum' is tannic acid.",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [
+          "TANNICUM ACIDUM"
+        ],
+        "clarke-MM": [
+          "Tannin"
+        ],
+        "kent-lectures": []
+      }
+    },
+    {
+      "id": 10,
+      "canonical_name": "Triticum repens = Agropyron repens",
+      "suggested_target_name": "TRITICUM REPENS-AGROPYRON REPENS",
+      "note": "Couch grass; Agropyron repens is a synonym of Triticum repens.",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [
+          "TRITICUM REPENS-AGROPYRON REPENS"
+        ],
+        "clarke-MM": [
+          "Triticum Repens"
+        ],
+        "kent-lectures": []
+      }
+    },
+    {
+      "id": 11,
+      "canonical_name": "Chromic acid (combined chapter)",
+      "suggested_target_name": "CHROMICUM ACIDUM",
+      "note": "Clarke's chapter combines Chromicum Acidum and Chromium Oxidatum.",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [
+          "CHROMICUM ACIDUM"
+        ],
+        "clarke-MM": [
+          "Chromicum Acidum. & Chromium Oxidatum"
+        ],
+        "kent-lectures": []
+      }
+    },
+    {
+      "id": 12,
+      "canonical_name": "Rhus toxicodendron (part of combined chapter)",
+      "suggested_target_name": "RHUS TOXICODENDRON",
+      "note": "Clarke's combined chapter covers both Rhus radicans and Rhus toxicodendron.",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [
+          "RHUS TOXICODENDRON"
+        ],
+        "clarke-MM": [
+          "Rhus Radicans and Rhus Toxicodendron"
+        ],
+        "kent-lectures": [
+          "RHUS TOXICODENDRON"
+        ]
+      }
+    }
+  ],
+  "uncertain_groups": [
+    {
+      "id": "U1",
+      "suggested_target_name": null,
+      "note": "Both only in Clarke. Hydrastinum vs Hydrastininum muriate - hydrastine vs hydrastinine, possibly distinct alkaloid salts but the names may be a typo/duplicate.",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [],
+        "clarke-MM": [
+          "Hydrastinum Muriaticum",
+          "Hydrastininum Muriaticum"
+        ],
+        "kent-lectures": []
+      }
+    },
+    {
+      "id": "U2",
+      "suggested_target_name": null,
+      "note": "Clarke 'Benzinum' vs Boericke 'BENZOLUM' - both may be benzene, but not confirmed.",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [
+          "BENZOLUM"
+        ],
+        "clarke-MM": [
+          "Benzinum"
+        ],
+        "kent-lectures": []
+      }
+    },
+    {
+      "id": "U3",
+      "suggested_target_name": null,
+      "note": "Clarke 'Coqueluchinum' vs Boericke 'PERTUSSINUM' - both are whooping-cough nosodes; possibly the same nosode under different names.",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [
+          "PERTUSSINUM"
+        ],
+        "clarke-MM": [
+          "Coqueluchinum"
+        ],
+        "kent-lectures": []
+      }
+    },
+    {
+      "id": "U4",
+      "suggested_target_name": null,
+      "note": "Kent 'MANGANUM' (probably the metal) vs Boericke 'MANGANUM ACETICUM' (acetate salt) - probably different preparations.",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [
+          "MANGANUM ACETICUM"
+        ],
+        "clarke-MM": [],
+        "kent-lectures": [
+          "MANGANUM"
+        ]
+      }
+    },
+    {
+      "id": "U5",
+      "suggested_target_name": null,
+      "note": "Clarke 'Ferrum Phosphoricum Hydricum' vs plain 'Ferrum Phosphoricum' - hydrated form vs plain phosphate; may be the same remedy.",
+      "variants": {
+        "allen-nosodes": [],
+        "boericke-MM": [
+          "FERRUM PHOSPHORICUM"
+        ],
+        "clarke-MM": [
+          "Ferrum Phosphoricum",
+          "Ferrum Phosphoricum Hydricum"
+        ],
+        "kent-lectures": [
+          "FERRUM PHOSPHORICUM"
+        ]
+      }
+    }
+  ]
+}
