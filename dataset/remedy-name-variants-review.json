@@ -1,13 +1,13 @@
 {
-  "description": "Synonym and uncertain remedy-name groups for review. NOT applied to the book files yet. For each group, 'suggested_target_name' is the Boericke-MM name that would be used if the group is approved (null when uncertain).",
+  "description": "Synonym and uncertain remedy-name groups for review. NOT applied to the book files yet. 'suggested_target_name' is the name to use if the group is approved (Boericke-MM name, updated where web research showed a different official/standard name). null = do not merge / undecided.",
   "generated_on": "2026-09-04",
-  "status": "for-review",
+  "status": "web-verified, for-review",
   "synonym_groups": [
     {
       "id": 1,
       "canonical_name": "Actaea racemosa = Cimicifuga racemosa",
       "suggested_target_name": "CIMICIFUGA RACEMOSA",
-      "note": "Same plant (black cohosh). Boericke uses 'Cimicifuga racemosa'; Clarke/Kent use 'Actaea racemosa'.",
+      "note": "Same plant (black cohosh). HPUS official homeopathic name is 'Cimicifuga racemosa'; 'Actaea racemosa' is the current botanical name. Boericke uses Cimicifuga; Clarke/Kent use Actaea.",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
@@ -25,7 +25,7 @@
       "id": 2,
       "canonical_name": "Acetanilide = Antifebrinum",
       "suggested_target_name": "ACETANILIDUM",
-      "note": "Acetanilidum is the chemical name; Antifebrinum was a brand name for acetanilide.",
+      "note": "Confirmed same remedy. 'Acetanilidum' is the official homeopathic name (HPUS); 'Antifebrinum' is the historical trade name for acetanilide.",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
@@ -41,7 +41,7 @@
       "id": 3,
       "canonical_name": "Arctium lappa = Lappa arctium",
       "suggested_target_name": "LAPPA ARCTIUM",
-      "note": "Same plant (burdock); the two-word name is reversed.",
+      "note": "Same plant (burdock). Botanical name is 'Arctium lappa'; Boericke's heading 'Lappa arctium' is the traditional homeopathic remedy name.",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
@@ -56,8 +56,8 @@
     {
       "id": 4,
       "canonical_name": "Asclepias cornuti = Asclepias syriaca",
-      "suggested_target_name": "ASCLEPIAS CORNUTI",
-      "note": "Synonyms for the same milkweed species.",
+      "suggested_target_name": "ASCLEPIAS SYRIACA",
+      "note": "Web check: 'Asclepias syriaca' is the accepted botanical and HPUS name; 'Asclepias cornuti' is an obsolete synonym. Boericke uses the outdated 'ASCLEPIAS CORNUTI', so applying this group would also rename the Boericke key.",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
@@ -73,7 +73,7 @@
       "id": 5,
       "canonical_name": "Eriodictyon californicum = glutinosum",
       "suggested_target_name": "ERIODYCTION CALIFORNICUM",
-      "note": "Species synonyms; same plant (yerba santa).",
+      "note": "Same plant (yerba santa). 'Eriodictyon californicum' is the accepted botanical name; 'glutinosum' is a synonym.",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
@@ -89,7 +89,7 @@
       "id": 6,
       "canonical_name": "Lyssin = Hydrophobinum",
       "suggested_target_name": "LYSSINUM",
-      "note": "Rabies nosode. Allen 'LYSSIN', Boericke 'LYSSINUM', Clarke 'Hydrophobinum'.",
+      "note": "Confirmed same nosode (rabies). Preferred/official name is 'Lyssinum'; 'Hydrophobinum' is the older synonym and 'Lyssin' the English variant.",
       "variants": {
         "allen-nosodes": [
           "LYSSIN"
@@ -107,15 +107,14 @@
       "id": 7,
       "canonical_name": "Spigelia (anthelmia/anthelmintica/marilandica)",
       "suggested_target_name": "SPIGELIA ANTHELMIA",
-      "note": "Same remedy (pinkroot). Boericke 'SPIGELIA ANTHELMIA', Kent 'SPIGELIA ANTHELMINTICA', Clarke 'Spigelia'/'Spigelia Marilandica'.",
+      "note": "'Spigelia anthelmia' is the HPUS official species (Hahnemann's proving). Kent's 'anthelmintica' is an old epithet of the same species. NOTE: Clarke's 'Spigelia Marilandica' is a DIFFERENT species (Carolina/Indian pinkroot) and must stay separate - removed from this group.",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
           "SPIGELIA ANTHELMIA"
         ],
         "clarke-MM": [
-          "Spigelia",
-          "Spigelia Marilandica"
+          "Spigelia"
         ],
         "kent-lectures": [
           "SPIGELIA ANTHELMINTICA"
@@ -126,7 +125,7 @@
       "id": 8,
       "canonical_name": "Sumbul = Sumbulus moschatus",
       "suggested_target_name": "SUMBULUS MOSCHATUS",
-      "note": "'Sumbul' is the short form of 'Sumbulus moschatus' (musk root).",
+      "note": "Same remedy (musk root). 'Sumbulus moschatus' is the botanical name; 'Sumbul' is the short form.",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
@@ -142,7 +141,7 @@
       "id": 9,
       "canonical_name": "Tannin = Tannic acid",
       "suggested_target_name": "TANNICUM ACIDUM",
-      "note": "'Tanninum' / 'Tannicum acidum' is tannic acid.",
+      "note": "Same substance (tannic acid). Boericke 'Tannicum acidum'; Clarke 'Tannin'.",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
@@ -158,7 +157,7 @@
       "id": 10,
       "canonical_name": "Triticum repens = Agropyron repens",
       "suggested_target_name": "TRITICUM REPENS-AGROPYRON REPENS",
-      "note": "Couch grass; Agropyron repens is a synonym of Triticum repens.",
+      "note": "Same remedy (couch grass). 'Agropyron repens' is a synonym of 'Triticum repens' (modern botanical name Elymus repens).",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
@@ -174,7 +173,7 @@
       "id": 11,
       "canonical_name": "Chromic acid (combined chapter)",
       "suggested_target_name": "CHROMICUM ACIDUM",
-      "note": "Clarke's chapter combines Chromicum Acidum and Chromium Oxidatum.",
+      "note": "Clarke's chapter combines TWO remedies: Chromicum Acidum AND Chromium Oxidatum. Suggested target covers only the chromic-acid part; decide whether to split the Clarke chapter.",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
@@ -190,7 +189,7 @@
       "id": 12,
       "canonical_name": "Rhus toxicodendron (part of combined chapter)",
       "suggested_target_name": "RHUS TOXICODENDRON",
-      "note": "Clarke's combined chapter covers both Rhus radicans and Rhus toxicodendron.",
+      "note": "Clarke's chapter combines TWO remedies: Rhus radicans AND Rhus toxicodendron. Suggested target covers only the toxicodendron part; decide whether to split the Clarke chapter.",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
@@ -209,7 +208,7 @@
     {
       "id": "U1",
       "suggested_target_name": null,
-      "note": "Both only in Clarke. Hydrastinum vs Hydrastininum muriate - hydrastine vs hydrastinine, possibly distinct alkaloid salts but the names may be a typo/duplicate.",
+      "note": "CONFIRMED DISTINCT (web): Hydrastinum muriaticum (hydrastine muriate) and Hydrastininum muriaticum (hydrastinine muriate) are salts of two different goldenseal alkaloids with different clinical pictures (Clarke). Do NOT merge.",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [],
@@ -222,8 +221,8 @@
     },
     {
       "id": "U2",
-      "suggested_target_name": null,
-      "note": "Clarke 'Benzinum' vs Boericke 'BENZOLUM' - both may be benzene, but not confirmed.",
+      "suggested_target_name": "BENZOLUM",
+      "note": "CONFIRMED SAME (web): both are benzene (C6H6). Boericke 'BENZOLUM', Clarke 'Benzinum'. Clarke's Benzinum Nitricum / Benzinum Dinitricum are different substances and stay separate.",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
@@ -237,8 +236,8 @@
     },
     {
       "id": "U3",
-      "suggested_target_name": null,
-      "note": "Clarke 'Coqueluchinum' vs Boericke 'PERTUSSINUM' - both are whooping-cough nosodes; possibly the same nosode under different names.",
+      "suggested_target_name": "PERTUSSINUM",
+      "note": "CONFIRMED SAME (web): whooping-cough nosode. 'Pertussinum' is the preferred/standard name; 'Coqueluchinum' is Clarke's later synonym (after a trademark dispute over 'Pertussin').",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
@@ -252,8 +251,8 @@
     },
     {
       "id": "U4",
-      "suggested_target_name": null,
-      "note": "Kent 'MANGANUM' (probably the metal) vs Boericke 'MANGANUM ACETICUM' (acetate salt) - probably different preparations.",
+      "suggested_target_name": "MANGANUM ACETICUM",
+      "note": "CONFIRMED SAME (web): Kent's 'Manganum' is Manganum aceticum (the Hahnemannian proving). Boericke's full name is 'MANGANUM ACETICUM'.",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
@@ -268,7 +267,7 @@
     {
       "id": "U5",
       "suggested_target_name": null,
-      "note": "Clarke 'Ferrum Phosphoricum Hydricum' vs plain 'Ferrum Phosphoricum' - hydrated form vs plain phosphate; may be the same remedy.",
+      "note": "CONFIRMED DISTINCT (web): Ferrum phosphoricum hydricum is ferrous hydrophosphate (FeHPO4), a separate, rarely used preparation proved by Dr. J. C. Morgan - distinct from Ferrum phosphoricum (ferric phosphate / Schuessler salt #4). Do NOT merge.",
       "variants": {
         "allen-nosodes": [],
         "boericke-MM": [
@@ -283,5 +282,6 @@
         ]
       }
     }
-  ]
+  ],
+  "last_verified": "2026-09-04"
 }
