@@ -28,27 +28,19 @@ Interactive turns are held in memory only. `/clear` resets that context, and exi
 removes it. No conversation data is written. The CLI automatically writes only verified corpus artifacts to
 the local cache.
 
-## Corpus repository consolidation
+## Dataset boundary
 
-The former `homeoremedica-remedies` repository is now part of this private internal repository. Its
-corpus pipeline, source datasets, evaluation fixtures, and release tooling live alongside the chat
-client:
+On 2026-09-04 the project adopted a public-code, private-data boundary. This repository contains
+the complete client and corpus-pipeline codebase, configuration, evaluation fixtures, release
+tooling, and synthetic tests:
 
 - `src/homeoremedica_corpus/` contains source validation, chunking, evaluation, artifact building,
   publication, and Cloud Storage adapters.
-- `dataset/` contains the raw text and processed, sectioned JSON source data.
 - `evaluation/` contains versioned retrieval queries and immutable results.
 - `corpus.toml` defines the corpus, embedding, compatibility, and release contract.
 
-Generated SQLite releases remain ignored by Git and are uploaded to the configured Storage bucket.
-The former remedies repository can be archived or deleted after this consolidation is merged.
-
-On 2026-09-04 the repository containing the corpus was made private and renamed
-`HomeoRemedica-internal`. A new public `HomeoRemedica` repository was created from a fresh history.
-It contains the complete client and corpus-pipeline codebase, configuration, evaluation fixtures,
-and synthetic tests, but excludes `dataset/`, derived corpus artifacts, and all previous tag and
-release history.
-
-The original corpus extraction came from private monorepo commit
-`08bfbc0e429ff51557f9463dc22460a373b3c4c3` on 2026-07-12. The original private monorepo remains
-the history archive.
+Authorized maintainers place raw and processed corpus sources in the local, Git-ignored `dataset/`
+directory when running the corpus pipeline. Dataset contents and derived corpus artifacts are
+excluded from public Git history. Generated SQLite releases remain ignored by Git and are uploaded
+to the configured private Storage bucket. Corpus revisions distributed before this boundary was
+adopted remain previously disclosed and cannot retroactively be made confidential.

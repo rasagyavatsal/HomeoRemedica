@@ -166,9 +166,11 @@ advice. For urgent or severe symptoms, consult qualified medical help.
 
 ## Corpus pipeline
 
-The pipeline source is public, but its `dataset/` input is available only in the private internal
-checkout. The validation, evaluation, build, and publication commands therefore require authorized
-access to that checkout and, where applicable, the configured Google Cloud project.
+The pipeline source is public. Authorized maintainers keep its private `dataset/` input in a local,
+Git-ignored directory. Validation, evaluation, and build commands require that local dataset;
+publication also requires access to the configured Google Cloud project. The `sync`, `ask`, and
+`chat` commands do not read the source dataset, but they do require an authorized private release
+or an existing verified local cache.
 
 The corpus pipeline reads only direct `dataset/processed/*.json` files using the sectioned
 `remedy -> section -> passages` schema. It validates the complete corpus, conserves every passage,
@@ -290,9 +292,10 @@ artifacts; they do not require cloud credentials or a production corpus release.
 
 All application and corpus-pipeline source code, compatibility configuration, evaluation fixtures,
 and synthetic tests are maintained in this public repository. Raw and processed corpus source data
-remain in the private internal repository. Generated SQLite release artifacts are ignored by Git
-and published to the private configured Storage bucket. The internal chat CLI downloads only
-verified artifacts permitted by Google Cloud IAM.
+are kept outside public Git history and can be placed in the ignored local `dataset/` directory by
+authorized maintainers. Generated SQLite release artifacts are ignored by Git and published to the
+private configured Storage bucket. The chat CLI downloads only verified artifacts permitted by
+Google Cloud IAM.
 
 Do not commit `dataset/`, generated corpus artifacts, credentials, service-account keys, or signed
 object URLs. See `DATA_NOTICE.md` before distributing any source or derived corpus asset.
