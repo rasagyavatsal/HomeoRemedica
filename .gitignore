@@ -1,0 +1,56 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyright/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+.secrets/
+*.pem
+*.key
+*service-account*.json
+*gcp-key*.json
+credentials/
+keys/
+
+# Test and build output
+.coverage
+coverage.xml
+htmlcov/
+dist/
+build/
+output/
+*.egg-info/
+*.tsbuildinfo
+
+# Private corpus source and evaluation data
+/dataset/
+/evaluation/
+/corpus.toml
+/src/homeoremedica_corpus/
+
+# Local corpus cache and database artifacts
+.cache/
+server-data/
+corpora/
+*.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
+
+# Editor and OS files
+.DS_Store
+.vscode/
+.idea/
+Thumbs.db
+node_modules/
+
+# Logs
+*.log
