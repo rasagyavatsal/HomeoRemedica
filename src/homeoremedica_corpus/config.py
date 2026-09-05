@@ -9,7 +9,11 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from homeoremedica_corpus.artifacts import ArtifactSpec
 from homeoremedica_corpus.chunking import ChunkingPolicy
-from homeoremedica_corpus.embeddings import EmbeddingSpec
+from homeoremedica_corpus.embeddings import (
+    QWEN3_EMBEDDING_MODEL,
+    QWEN3_NATIVE_DIMENSIONS,
+    EmbeddingSpec,
+)
 from homeoremedica_corpus.sources import BookDefinition
 
 
@@ -41,7 +45,8 @@ class _ChunkingSettings(_Settings):
 
 class _EmbeddingSettings(_Settings):
     model: str
-    dimensions: int = Field(gt=0, le=3072)
+    native_dimensions: int = Field(gt=0, le=4096)
+    dimensions: int = Field(gt=0, le=4096)
     evaluation_dimensions: tuple[int, ...]
     document_task_type: str
     query_task_type: str
@@ -51,8 +56,14 @@ class _EmbeddingSettings(_Settings):
 
     @model_validator(mode="after")
     def validate_embedding_contract(self) -> _EmbeddingSettings:
-        if self.model != "gemini-embedding-001":
-            raise ValueError("embedding model must be gemini-embedding-001")
+        if self.model != QWEN3_EMBEDDING_MODEL:
+            raise ValueError(f"embedding model must be {QWEN3_EMBEDDING_MODEL}")
+        if self.native_dimensions != QWEN3_NATIVE_DIMENSIONS:
+            raise ValueError(
+                f"{QWEN3_EMBEDDING_MODEL} returns {QWEN3_NATIVE_DIMENSIONS} native dimensions"
+            )
+        if self.dimensions > self.native_dimensions:
+            raise ValueError("pinned dimensions cannot exceed the model's native dimensions")
         if self.evaluation_dimensions[0] != 768 or not any(
             dimension > 768 for dimension in self.evaluation_dimensions
         ):
@@ -62,9 +73,15 @@ class _EmbeddingSettings(_Settings):
         if (
             len(set(self.evaluation_dimensions)) != len(self.evaluation_dimensions)
             or tuple(sorted(self.evaluation_dimensions)) != self.evaluation_dimensions
-            or any(not 1 <= dimension <= 3072 for dimension in self.evaluation_dimensions)
+            or any(
+                not 1 <= dimension <= self.native_dimensions
+                for dimension in self.evaluation_dimensions
+            )
         ):
-            raise ValueError("evaluation_dimensions must be unique, ascending, and at most 3072")
+            raise ValueError(
+                "evaluation_dimensions must be unique, ascending, and at most "
+                f"{self.native_dimensions}"
+            )
         if self.dimensions not in self.evaluation_dimensions:
             raise ValueError("pinned dimensions must be included in evaluation_dimensions")
         return self
@@ -127,6 +144,7 @@ def load_pipeline_config(path: Path = Path("corpus.toml")) -> PipelineConfig:
     embedding = EmbeddingSpec(
         model=settings.embedding.model,
         dimensions=settings.embedding.dimensions,
+        native_dimensions=settings.embedding.native_dimensions,
         document_task_type=settings.embedding.document_task_type,
         query_task_type=settings.embedding.query_task_type,
         normalization=settings.embedding.normalization,

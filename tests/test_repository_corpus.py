@@ -35,6 +35,11 @@ def test_repository_processed_corpus_matches_config_and_conserves_every_passage(
 
 def test_repository_evaluation_passes_and_pins_the_smallest_approved_dimension() -> None:
     config = load_pipeline_config(ROOT / "corpus.toml")
+    if not config.evaluation_result.exists():
+        pytest.skip(
+            "pending evaluation for the configured dataset; run "
+            "`homeoremedica-corpus evaluate` once the OpenRouter key is configured"
+        )
     books = load_books(config.processed_directory, config.books)
     chunks = tuple(chunk for book in books for chunk in chunk_book(book, config.chunking))
     _, dataset_digest = load_evaluation_dataset(config.evaluation_dataset)

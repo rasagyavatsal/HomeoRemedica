@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import math
 import os
-from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +11,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from homeoremedica_chat.chat import ChatService
 from homeoremedica_chat.corpus import CorpusCache, CorpusRelease, GoogleCloudCorpusSource
+from homeoremedica_corpus.embeddings import (
+    QWEN3_EMBEDDING_MODEL,
+    EmbeddingSpec,
+    OpenRouterEmbeddingProvider,
+)
 
 
 def _default_cache_dir() -> Path:
@@ -26,8 +29,9 @@ class Settings(BaseSettings):
     """Configuration for the local terminal client.
 
     Values can be passed as ``RAG_*`` environment variables or placed in a
-    ``.env``/``.env.local`` file. Google authentication is intentionally left
-    to Application Default Credentials instead of being stored by the CLI.
+    ``.env``/``.env.local`` file. Generation authentication is intentionally
+    left to Application Default Credentials instead of being stored by the CLI;
+    query embeddings authenticate with ``OPENROUTER_API_KEY``.
     """
 
     model_config = SettingsConfigDict(
@@ -43,6 +47,7 @@ class Settings(BaseSettings):
     cache_dir: Path = Field(default_factory=_default_cache_dir)
     model: str = "gemini-2.5-flash-lite"
     max_output_tokens: int = Field(default=700, gt=0, le=4_096)
+    openrouter_api_key: str | None = Field(default=None, validation_alias="OPENROUTER_API_KEY")
 
     @field_validator("cache_dir", mode="before")
     @classmethod
@@ -53,8 +58,8 @@ class Settings(BaseSettings):
 VERTEX_REQUEST_TIMEOUT_MS = 30_000
 
 
-class VertexChatModel:
-    """Hide Vertex AI embedding and generation calls behind the chat protocol."""
+class HybridChatModel:
+    """Hide Vertex AI generation and OpenRouter query embeddings behind the chat protocol."""
 
     def __init__(
         self,
@@ -63,7 +68,11 @@ class VertexChatModel:
         location: str,
         model: str,
         max_output_tokens: int,
+        embedding_model: str,
+        embedding_dimensions: int,
+        openrouter_api_key: str | None = None,
         client: Any | None = None,
+        embedding_session: Any | None = None,
     ) -> None:
         self.model = model
         self._max_output_tokens = max_output_tokens
@@ -76,24 +85,24 @@ class VertexChatModel:
                 retry_options=types.HttpRetryOptions(attempts=1),
             ),
         )
+        self._embeddings = OpenRouterEmbeddingProvider(
+            EmbeddingSpec(
+                model=embedding_model,
+                dimensions=embedding_dimensions,
+            ),
+            api_key=openrouter_api_key,
+            session=embedding_session,
+        )
 
     def embed_query(self, text: str, *, dimensions: int, task_type: str) -> tuple[float, ...]:
-        response = self._client.models.embed_content(
-            model="gemini-embedding-001",
-            contents=text,
-            config=types.EmbedContentConfig(
-                task_type=task_type,
-                output_dimensionality=dimensions,
-                auto_truncate=False,
-            ),
-        )
-        embeddings = response.embeddings or []
-        if len(embeddings) != 1:
-            raise RuntimeError(f"Vertex AI returned {len(embeddings)} query embeddings")
-        result = embeddings[0]
-        if result.statistics is not None and result.statistics.truncated:
-            raise RuntimeError("Vertex AI truncated the retrieval query")
-        return _normalize(result.values or (), dimensions)
+        if dimensions != self._embeddings.dimensions:
+            raise RuntimeError(
+                f"corpus requests {dimensions} query embedding dimensions; "
+                f"this client embeds with {self._embeddings.dimensions}"
+            )
+        # OpenRouter's embeddings API has no task conditioning; the corpus task
+        # type is compatibility metadata recorded in the release manifest.
+        return self._embeddings.embed_query(text)
 
     def generate(self, prompt: str, *, system_instruction: str) -> str:
         response = self._client.models.generate_content(
@@ -114,11 +123,20 @@ class VertexChatModel:
 def build_service(settings: Settings, *, sync: bool = True) -> ChatService:
     cache = CorpusCache(settings.cache_dir, prefix=settings.corpus_prefix)
     corpus = sync_corpus(settings) if sync else cache.open_cached()
-    model = VertexChatModel(
+    embedding_model = corpus.embedding_model
+    if embedding_model != QWEN3_EMBEDDING_MODEL:
+        raise ValueError(
+            f"corpus was built with {embedding_model}; this client embeds queries with "
+            f"{QWEN3_EMBEDDING_MODEL}. Sync a corpus release built with the supported model."
+        )
+    model = HybridChatModel(
         project=settings.project,
         location=settings.location,
         model=settings.model,
         max_output_tokens=settings.max_output_tokens,
+        embedding_model=embedding_model,
+        embedding_dimensions=corpus.embedding_dimensions,
+        openrouter_api_key=settings.openrouter_api_key,
     )
     return ChatService(
         corpus=corpus,
@@ -132,14 +150,3 @@ def sync_corpus(settings: Settings) -> CorpusRelease:
     return CorpusCache(settings.cache_dir, prefix=settings.corpus_prefix).sync(
         GoogleCloudCorpusSource(settings.bucket, project=settings.project)
     )
-
-
-def _normalize(values: Sequence[float], dimensions: int) -> tuple[float, ...]:
-    if len(values) != dimensions:
-        raise RuntimeError(
-            f"Vertex AI returned {len(values)} embedding dimensions; expected {dimensions}"
-        )
-    norm = math.sqrt(math.fsum(float(value) ** 2 for value in values))
-    if norm == 0 or not math.isfinite(norm):
-        raise RuntimeError("Vertex AI returned a zero or non-finite query embedding")
-    return tuple(float(value) / norm for value in values)

@@ -3,15 +3,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from time import sleep
-from types import SimpleNamespace
 
 import pytest
+import requests
 
+from homeoremedica_corpus import embeddings as embeddings_module
 from homeoremedica_corpus.chunking import ChunkingPolicy, chunk_book
 from homeoremedica_corpus.embeddings import (
     EmbeddingSpec,
-    VertexEmbeddingProvider,
-    _VertexTokenCounter,
+    OpenRouterEmbeddingProvider,
     embed_chunks,
     preflight_embedding_inputs,
 )
@@ -105,115 +105,226 @@ def test_parallel_embedding_preserves_chunk_order() -> None:
     assert [item.chunk for item in embedded] == list(chunks)
 
 
-class ModelsClient:
-    def __init__(self) -> None:
-        self.embed_calls: list[dict[str, object]] = []
+class FakeResponse:
+    def __init__(
+        self,
+        *,
+        status_code: int = 200,
+        payload: object = None,
+        text: str = "",
+        headers: dict[str, str] | None = None,
+    ) -> None:
+        self.status_code = status_code
+        self._payload = payload
+        self.text = text
+        self.headers = headers or {}
 
-    def embed_content(self, **kwargs: object) -> SimpleNamespace:
-        self.embed_calls.append(kwargs)
-        embedding = SimpleNamespace(
-            values=[3.0, 4.0],
-            statistics=SimpleNamespace(truncated=False, token_count=7),
-        )
-        return SimpleNamespace(embeddings=[embedding])
+    def json(self) -> object:
+        if self._payload == "invalid":
+            raise ValueError("not JSON")
+        return self._payload
 
 
-class RecordingSession:
-    def __init__(self) -> None:
+class FakeSession:
+    def __init__(self, responses: list[FakeResponse | Exception]) -> None:
+        self.responses = list(responses)
         self.calls: list[dict[str, object]] = []
 
-    def post(self, url: str, **kwargs: object) -> SimpleNamespace:
+    def post(self, url: str, **kwargs: object) -> FakeResponse:
         self.calls.append({"url": url, **kwargs})
-        return SimpleNamespace(
-            raise_for_status=lambda: None,
-            json=lambda: {"totalTokens": 7},
-        )
+        outcome = self.responses.pop(0)
+        if isinstance(outcome, Exception):
+            raise outcome
+        return outcome
 
 
-def test_vertex_token_counter_uses_embedding_instances_contract() -> None:
-    session = RecordingSession()
-    counter = _VertexTokenCounter(
-        project="project-id",
-        location="us-central1",
-        model="gemini-embedding-001",
+def embedding_payload(values: list[float], prompt_tokens: int = 7) -> dict[str, object]:
+    return {
+        "data": [{"embedding": values, "index": 0}],
+        "usage": {"prompt_tokens": prompt_tokens, "total_tokens": prompt_tokens},
+    }
+
+
+def provider(session: FakeSession) -> OpenRouterEmbeddingProvider:
+    spec = EmbeddingSpec(dimensions=2, native_dimensions=4)
+    return OpenRouterEmbeddingProvider(spec, api_key="test-key", session=session)
+
+
+def resolving_provider(session: FakeSession) -> OpenRouterEmbeddingProvider:
+    spec = EmbeddingSpec(dimensions=2, native_dimensions=4)
+    return OpenRouterEmbeddingProvider(spec, session=session)
+
+
+def test_provider_requires_an_api_key(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.chdir(tmp_path)
+
+    with pytest.raises(ValueError, match="OPENROUTER_API_KEY"):
+        resolving_provider(FakeSession([]))
+
+
+def test_provider_falls_back_to_a_dotenv_file_in_the_working_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / ".env").write_text("OPENROUTER_API_KEY=dotenv-key\n")
+    session = FakeSession([FakeResponse(payload=embedding_payload([3.0, 4.0, 5.0, 6.0]))])
+
+    resolving_provider(session).embed_query("query")
+
+    assert session.calls[0]["headers"] == {"Authorization": "Bearer dotenv-key"}
+
+
+def test_provider_prefers_env_local_over_dotenv_and_the_environment_over_both(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / ".env").write_text("OPENROUTER_API_KEY=base-key\n")
+    (tmp_path / ".env.local").write_text("OPENROUTER_API_KEY=local-key\n")
+    session = FakeSession([FakeResponse(payload=embedding_payload([3.0, 4.0, 5.0, 6.0]))])
+
+    resolving_provider(session).embed_query("query")
+    assert session.calls[0]["headers"] == {"Authorization": "Bearer local-key"}
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "env-key")
+    session = FakeSession([FakeResponse(payload=embedding_payload([3.0, 4.0, 5.0, 6.0]))])
+    resolving_provider(session).embed_query("query")
+    assert session.calls[0]["headers"] == {"Authorization": "Bearer env-key"}
+
+
+def test_provider_prefers_the_explicit_api_key_over_the_environment(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("OPENROUTER_API_KEY", "env-key")
+    session = FakeSession([FakeResponse(payload=embedding_payload([3.0, 4.0, 5.0, 6.0]))])
+    embeddings = OpenRouterEmbeddingProvider(
+        EmbeddingSpec(dimensions=2, native_dimensions=4),
+        api_key="explicit-key",
         session=session,
     )
 
-    assert counter("count me") == 7
-    assert session.calls == [
-        {
-            "url": (
-                "https://us-central1-aiplatform.googleapis.com/v1/projects/project-id/"
-                "locations/us-central1/publishers/google/models/"
-                "gemini-embedding-001:countTokens"
-            ),
-            "json": {"instances": [{"content": "count me"}]},
-            "timeout": 60,
-        }
-    ]
+    embeddings.embed_query("query")
+
+    assert session.calls[0]["headers"] == {"Authorization": "Bearer explicit-key"}
 
 
-def test_vertex_token_counter_requires_a_regional_endpoint() -> None:
-    with pytest.raises(ValueError, match=r"regional.*us-central1"):
-        _VertexTokenCounter(
-            project="project-id",
-            location="global",
-            model="gemini-embedding-001",
-            session=RecordingSession(),
-        )
+def test_provider_sends_the_openai_compatible_contract_and_truncates_mrl_prefixes() -> None:
+    session = FakeSession([FakeResponse(payload=embedding_payload([3.0, 4.0, 5.0, 6.0]))])
 
-
-def test_vertex_provider_disables_truncation_and_l2_normalizes() -> None:
-    models = ModelsClient()
-    counted: list[str] = []
-
-    def count_tokens(text: str) -> int:
-        counted.append(text)
-        return 7
-
-    provider = VertexEmbeddingProvider(
-        EmbeddingSpec(dimensions=2),
-        client=SimpleNamespace(models=models),
-        token_counter=count_tokens,
-    )
-
-    assert provider.count_tokens("count me") == 7
-    vector = provider.embed_document("labelled document")
+    vector = provider(session).embed_document("labelled document")
 
     assert vector == pytest.approx((0.6, 0.8))
-    assert counted == ["count me"]
-    call = models.embed_calls[0]
-    assert call["model"] == "gemini-embedding-001"
-    assert call["contents"] == "labelled document"
-    config = call["config"]
-    assert config.task_type == "RETRIEVAL_DOCUMENT"
-    assert config.output_dimensionality == 2
-    assert config.auto_truncate is False
+    assert len(session.calls) == 1
+    call = session.calls[0]
+    assert call["url"] == "https://openrouter.ai/api/v1/embeddings"
+    assert call["headers"] == {"Authorization": "Bearer test-key"}
+    assert call["json"] == {
+        "model": "qwen/qwen3-embedding-8b",
+        "input": "labelled document",
+        "encoding_format": "float",
+    }
+    assert call["timeout"] == 60.0
 
 
-def test_vertex_provider_rejects_truncation_wrong_dimensions_and_zero_vectors() -> None:
-    class InvalidModels(ModelsClient):
-        def __init__(self, values: list[float], truncated: bool = False) -> None:
-            super().__init__()
-            self.values = values
-            self.truncated = truncated
+def test_provider_counts_tokens_with_the_conservative_character_bound() -> None:
+    counted = provider(FakeSession([]))
 
-        def embed_content(self, **kwargs: object) -> SimpleNamespace:
-            embedding = SimpleNamespace(
-                values=self.values,
-                statistics=SimpleNamespace(truncated=self.truncated, token_count=20),
-            )
-            return SimpleNamespace(embeddings=[embedding])
+    assert counted.count_tokens("") == 0
+    assert counted.count_tokens("x" * 9) == 3
 
-    for models, message in [
-        (InvalidModels([1.0], truncated=True), "truncated"),
-        (InvalidModels([1.0]), "dimensions"),
-        (InvalidModels([0.0, 0.0]), "zero-length"),
-    ]:
-        provider = VertexEmbeddingProvider(
-            EmbeddingSpec(dimensions=2),
-            client=SimpleNamespace(models=models),
-            token_counter=lambda _text: 1,
-        )
+
+def test_provider_rejects_invalid_responses() -> None:
+    cases = [
+        (
+            FakeSession([FakeResponse(payload={"data": []})]),
+            "exactly one embedding",
+        ),
+        (
+            FakeSession([
+                FakeResponse(
+                    payload={"data": [{"embedding": [3.0, 4.0]}, {"embedding": [5.0, 6.0]}]}
+                )
+            ]),
+            "exactly one embedding",
+        ),
+        (
+            FakeSession([FakeResponse(payload={"data": [{"embedding": [3.0, 4.0]}]})]),
+            "wrong embedding dimensions",
+        ),
+        (
+            FakeSession([FakeResponse(payload={"data": [{"embedding": "base64"}]})]),
+            "non-list embedding vector",
+        ),
+        (
+            FakeSession([FakeResponse(payload=embedding_payload([0.0, 0.0, 0.0, 0.0]))]),
+            "zero-length",
+        ),
+    ]
+    for session, message in cases:
         with pytest.raises(RuntimeError, match=message):
-            provider.embed_document("text")
+            provider(session).embed_document("text")
+
+
+def test_provider_rejects_an_input_above_the_model_token_limit() -> None:
+    session = FakeSession([FakeResponse(payload=embedding_payload([3.0, 4.0, 5.0, 6.0]))])
+    spec = EmbeddingSpec(dimensions=2, native_dimensions=4, model_input_limit=6)
+
+    with pytest.raises(RuntimeError, match="7 tokens, above the 6 token"):
+        OpenRouterEmbeddingProvider(spec, api_key="test-key", session=session).embed_document(
+            "text"
+        )
+
+
+def test_provider_ignores_a_missing_or_malformed_usage_report() -> None:
+    session = FakeSession([FakeResponse(payload={"data": [{"embedding": [3.0, 4.0, 5.0, 6.0]}]})])
+
+    vector = provider(session).embed_document("text")
+
+    assert vector == pytest.approx((0.6, 0.8))
+
+
+def test_provider_wraps_transport_and_permanent_http_failures() -> None:
+    transport = FakeSession([requests.ConnectionError("dns failure")] * 3)
+    with pytest.raises(RuntimeError, match="OpenRouter embeddings request failed"):
+        provider(transport).embed_document("text")
+
+    forbidden = FakeSession([FakeResponse(status_code=401, text="missing credentials")])
+    with pytest.raises(RuntimeError, match=r"status 401.*missing credentials"):
+        provider(forbidden).embed_document("text")
+
+    invalid = FakeSession([FakeResponse(payload="invalid")])
+    with pytest.raises(RuntimeError, match="invalid JSON embedding response"):
+        provider(invalid).embed_document("text")
+
+
+def test_provider_retries_retryable_statuses_and_respects_retry_after(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    delays: list[float] = []
+    monkeypatch.setattr(embeddings_module.time, "sleep", delays.append)
+    session = FakeSession([
+        FakeResponse(status_code=429, text="rate limited", headers={"Retry-After": "2"}),
+        FakeResponse(payload=embedding_payload([3.0, 4.0, 5.0, 6.0])),
+    ])
+
+    vector = provider(session).embed_document("text")
+
+    assert vector == pytest.approx((0.6, 0.8))
+    assert delays == [2.0]
+    assert len(session.calls) == 2
+
+
+def test_provider_gives_up_after_the_retry_budget(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(embeddings_module.time, "sleep", lambda _delay: None)
+    session = FakeSession(
+        [FakeResponse(status_code=503, text="upstream overloaded")] * 3,
+    )
+
+    with pytest.raises(RuntimeError, match=r"failed after 3 attempts.*503"):
+        provider(session).embed_document("text")
+
+    assert len(session.calls) == 3

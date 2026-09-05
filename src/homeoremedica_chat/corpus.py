@@ -60,7 +60,7 @@ def _require_safe_object_name(value: str, label: str) -> None:
 
 class Compatibility(Contract):
     embedding_model: str = Field(min_length=1, max_length=128)
-    embedding_dimensions: int = Field(gt=0, le=3072)
+    embedding_dimensions: int = Field(gt=0, le=4096)
     document_task_type: str
     query_task_type: str
     embedding_normalization: str
@@ -78,7 +78,7 @@ class EvaluationGate(Contract):
     metric: str
     threshold: float = Field(ge=0)
     value: float = Field(ge=0)
-    chosen_dimensions: int = Field(gt=0, le=3072)
+    chosen_dimensions: int = Field(gt=0, le=4096)
 
 
 class PublishedBook(Contract):
@@ -335,6 +335,10 @@ class CorpusRelease:
     @property
     def model_input_limit(self) -> int:
         return self._manifest.compatibility.model_input_limit
+
+    @property
+    def embedding_model(self) -> str:
+        return self._manifest.compatibility.embedding_model
 
     @property
     def embedding_dimensions(self) -> int:

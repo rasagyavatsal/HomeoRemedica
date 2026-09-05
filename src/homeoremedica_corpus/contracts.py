@@ -25,7 +25,7 @@ class Contract(BaseModel):
 
 class Compatibility(Contract):
     embedding_model: str
-    embedding_dimensions: int = Field(gt=0, le=3072)
+    embedding_dimensions: int = Field(gt=0, le=4096)
     document_task_type: str
     query_task_type: str
     embedding_normalization: str
@@ -43,7 +43,7 @@ class EvaluationGate(Contract):
     metric: str
     threshold: float = Field(ge=0)
     value: float = Field(ge=0)
-    chosen_dimensions: int = Field(gt=0, le=3072)
+    chosen_dimensions: int = Field(gt=0, le=4096)
 
     @model_validator(mode="after")
     def validate_gate(self) -> EvaluationGate:

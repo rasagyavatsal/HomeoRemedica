@@ -74,7 +74,7 @@ def test_creates_searchable_validated_per_book_artifact(tmp_path: Path) -> None:
     metadata = dict(connection.execute("SELECT key, value FROM metadata"))
     assert metadata["corpus_version"] == "2026-08-14.test"
     assert metadata["book_id"] == "test-book"
-    assert metadata["embedding_model"] == "gemini-embedding-001"
+    assert metadata["embedding_model"] == "qwen/qwen3-embedding-8b"
     assert metadata["embedding_dimensions"] == "2"
     assert metadata["embedding_normalization"] == "l2"
     assert metadata["distance_function"] == "cosine"
