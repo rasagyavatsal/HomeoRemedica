@@ -9,9 +9,13 @@ This directory contains the source corpus used by the HomeoRemedica retrieval pi
 | `clarke-MM` | John Henry Clarke, *A Dictionary of Practical Materia Medica* | `raw-text/clarke-vol1.txt`, `raw-text/clarke-vol2.txt` | `processed/clarke-MM.json` |
 | `kent-lectures` | James Tyler Kent, *Lectures on Homoeopathic Materia Medica* | `raw-text/Kent-lectures.txt` | `processed/kent-lectures.json` |
 
-Processed files use the `remedy -> section -> passages` JSON structure consumed by the pipeline.
-Run `uv run --locked homeoremedica-corpus validate` from the repository root to validate the
-complete corpus and reproduce its counts and digest.
+Processed files use the `remedy -> section -> passages` JSON structure. The four per-book files are
+merged losslessly into `combined.json`, a remedy-merged
+`remedy -> book -> section -> passages` structure with 1,250 unique remedies over 1,645
+remedy-book pairs, 18,183 sections, and 118,259 passages. The retrieval pipeline reads
+`combined.json` as its corpus source; run
+`uv run --locked homeoremedica-corpus validate` from the repository root to validate it and
+reproduce its counts and digest.
 
 ## License and attribution
 

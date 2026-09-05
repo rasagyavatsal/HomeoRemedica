@@ -19,7 +19,7 @@ from homeoremedica_corpus.evaluation import (
     run_dimension_evaluation,
 )
 from homeoremedica_corpus.publication import CorpusPublisher
-from homeoremedica_corpus.sources import load_books
+from homeoremedica_corpus.sources import load_combined_books
 from homeoremedica_corpus.storage import GoogleCloudObjectStore
 
 
@@ -42,7 +42,9 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--config", type=Path, default=Path("corpus.toml"))
     commands = parser.add_subparsers(required=True)
 
-    validate = commands.add_parser("validate", help="validate processed sources and chunking")
+    validate = commands.add_parser(
+        "validate", help="validate the combined corpus source and chunking"
+    )
     validate.set_defaults(command=_validate)
 
     evaluate = commands.add_parser("evaluate", help="compare configured embedding dimensions")
@@ -118,7 +120,7 @@ def _evaluate(config: PipelineConfig, arguments: argparse.Namespace) -> int:
 
 
 def _build(config: PipelineConfig, arguments: argparse.Namespace) -> int:
-    books = load_books(config.processed_directory, config.books)
+    books = load_combined_books(config.combined_dataset, config.books)
     gate = load_evaluation_gate(config.evaluation_result)
     _, dataset_digest = load_evaluation_dataset(config.evaluation_dataset)
     if gate.dataset_sha256 != dataset_digest:
@@ -182,7 +184,7 @@ def _publisher(config: PipelineConfig, bucket: str) -> CorpusPublisher:
 
 
 def _load_chunks(config: PipelineConfig):
-    books = load_books(config.processed_directory, config.books)
+    books = load_combined_books(config.combined_dataset, config.books)
     chunks = tuple(chunk for book in books for chunk in chunk_book(book, config.chunking))
     return books, chunks
 
