@@ -40,9 +40,9 @@ gates.
 ## HomeoRemedica client
 
 The HomeoRemedica client uses verified corpus releases from Google Cloud Storage, local SQLite FTS5 and
-`sqlite-vec` hybrid retrieval, and Vertex AI for query embeddings and grounded answer generation.
-There is no browser application, account system, payment flow, persistent chat store, or HTTP
-endpoint. Interactive context is discarded when the command exits.
+`sqlite-vec` hybrid retrieval, OpenRouter for query embeddings, and Vertex AI for grounded answer
+generation. There is no browser application, account system, payment flow, persistent chat store, or
+HTTP endpoint. Interactive context is discarded when the command exits.
 
 ### Quick start
 
@@ -50,6 +50,7 @@ Requirements:
 
 - Python 3.14.
 - [uv](https://docs.astral.sh/uv/) 0.11.x.
+- An [OpenRouter](https://openrouter.ai/) API key for query embeddings.
 - Google Cloud Application Default Credentials with permission to call Vertex AI in your selected
   project.
 - Permission to read the configured corpus bucket when using `sync` against a hosted release.
@@ -81,8 +82,8 @@ uv run homeoremedica --cached chat
 
 The sync command checks for a newer release and reuses unchanged artifacts. Use `--cached` before
 the subcommand to skip Cloud Storage and use the last verified local release. This is useful for
-subsequent questions without another corpus download after a successful sync; Vertex AI still needs
-network access for embeddings and generation.
+subsequent questions without another corpus download after a successful sync; OpenRouter and Vertex
+AI still need network access for embeddings and generation.
 
 The repository includes the source dataset, but the chat client reads built SQLite release
 artifacts rather than the source JSON directly. You can use an accessible hosted release or run the
@@ -130,6 +131,7 @@ cp .env.example .env
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
+| `OPENROUTER_API_KEY` | — | OpenRouter key used for Qwen3 query and corpus embeddings. |
 | `RAG_PROJECT` | `homeoremedica` | Google Cloud project used for corpus storage and Vertex AI. |
 | `RAG_LOCATION` | `us-central1` | Vertex AI location. |
 | `RAG_BUCKET` | `homeoremedica-private-remedies` | Corpus artifact bucket. |
@@ -138,8 +140,8 @@ cp .env.example .env
 | `RAG_MODEL` | `gemini-2.5-flash-lite` | Answer generation model. |
 | `RAG_MAX_OUTPUT_TOKENS` | `700` | Maximum generated answer size. |
 
-The CLI uses Google Application Default Credentials. Do not put service-account private keys in
-`.env` or commit credential files.
+The CLI uses Google Application Default Credentials for generation and corpus storage. Do not put
+service-account private keys in `.env` or commit credential files.
 
 ### Retrieval and answer flow
 
@@ -148,15 +150,16 @@ terminal
   -> homeoremedica_chat.cli
       -> CorpusCache (verified local release)
           -> SQLite FTS5 + sqlite-vec hybrid search
-      -> VertexChatModel
-          -> Gemini query embedding + grounded answer
+      -> HybridChatModel
+          -> OpenRouter Qwen3 query embedding + Vertex AI grounded answer
       -> answer and stable source IDs
 ```
 
 For every question:
 
 1. The current message and recent in-process turns form a bounded retrieval query.
-2. `gemini-embedding-001` embeds that query using the dimensions declared by the corpus release.
+2. `qwen/qwen3-embedding-8b` embeds that query through OpenRouter using the dimensions declared by
+   the corpus release. The client refuses to serve a corpus built with any other embedding model.
 3. FTS5 and vector search run across the selected books, then merge results with reciprocal-rank
    fusion.
 4. The eight highest-ranked excerpts are passed to `gemini-2.5-flash-lite`.
@@ -173,15 +176,16 @@ advice. For urgent or severe symptoms, consult qualified medical help.
 ## Corpus pipeline
 
 The complete pipeline and its `dataset/` input are included in every clone. Source validation is
-fully local. Evaluation and build require Vertex AI access for embeddings, and publication requires
-write access to the destination Storage bucket. The `sync`, `ask`, and `chat` commands do not read
-the source dataset directly; they use an accessible hosted release or an existing verified cache.
+fully local. Evaluation and build require an OpenRouter API key for embeddings, and publication
+requires write access to the destination Storage bucket. The `sync`, `ask`, and `chat` commands do
+not read the source dataset directly; they use an accessible hosted release or an existing verified
+cache.
 
 The corpus pipeline reads only direct `dataset/processed/*.json` files using the sectioned
 `remedy -> section -> passages` schema. It validates the complete corpus, conserves every passage,
-creates stable boundary-safe chunks, generates Vertex AI embeddings, and writes one independently
-searchable SQLite artifact per book. A release becomes visible to consumers only after every
-artifact and its immutable manifest have been uploaded and verified.
+creates stable boundary-safe chunks, generates OpenRouter Qwen3 embeddings, and writes one
+independently searchable SQLite artifact per book. A release becomes visible to consumers only
+after every artifact and its immutable manifest have been uploaded and verified.
 
 ### Validate sources locally
 
@@ -195,41 +199,40 @@ uv run --locked homeoremedica-corpus validate
 
 ### Retrieval evaluation
 
-The evaluator reads `evaluation/v2/queries.json` and writes the immutable
-`evaluation/v2/result.json` release input:
+The evaluator reads `evaluation/v3/queries.json` and writes the immutable
+`evaluation/v3/result.json` release input:
 
 ```sh
-uv run --locked homeoremedica-corpus evaluate \
-  --project YOUR_PROJECT_ID \
-  --location us-central1
+export OPENROUTER_API_KEY=... # or put it in .env
+uv run --locked homeoremedica-corpus evaluate
 ```
 
-The evaluator compares 768, 1536, and 3072 dimensions against the same corpus, uses
+The evaluator compares 768, 1536, 3072, and 4096 dimensions against the same corpus, uses
 `RETRIEVAL_DOCUMENT` for labelled chunks and `RETRIEVAL_QUERY` for queries, and combines semantic
-and Porter-stemmed FTS5 candidates with reciprocal-rank fusion. Because `gemini-embedding-001`
-supports Matryoshka prefixes, one 3072-dimensional request per input supplies all three normalized
-dimensions. The result records lexical, semantic, and fused recall and MRR and is never overwritten.
-The builder rejects a stale evaluation, a changed dataset digest, or a configured dimension that
-differs from the recorded choice.
-
-The v2 evaluation records fused recall@10 of `0.8333` at 1536 dimensions, the smallest evaluated
-dimension meeting the `0.8` release threshold. `corpus.toml` pins that approved dimension.
+and Porter-stemmed FTS5 candidates with reciprocal-rank fusion. Because `qwen/qwen3-embedding-8b`
+supports Matryoshka prefixes, one 4096-dimensional request per input supplies every normalized
+dimension: the provider truncates the native vector locally, so results do not depend on whether an
+OpenRouter upstream provider honors a `dimensions` request parameter. The result records lexical,
+semantic, and fused recall and MRR and is never overwritten. The builder rejects a stale
+evaluation, a changed dataset digest, or a configured dimension that differs from the recorded
+choice.
 
 ### Build a complete release
 
 Choose a unique corpus version, then run:
 
 ```sh
-uv run --locked homeoremedica-corpus build 2026-08-14.v1 \
-  --project YOUR_PROJECT_ID \
-  --location us-central1
+export OPENROUTER_API_KEY=... # or put it in .env
+uv run --locked homeoremedica-corpus build 2026-08-14.v1
 ```
 
-Before the first embedding call, the builder validates every source and asks the regional Vertex
-AI endpoint for the exact token count of every labelled chunk. Embedding requests set
-`auto_truncate=false`. An oversized input therefore fails the complete build before embedding or
-artifact creation. Token counts and embeddings use 32 bounded workers by default; use `--workers`
-to lower concurrency for a more restrictive Vertex AI quota.
+Before the first embedding call, the builder validates every source and estimates every labelled
+chunk's token count with a conservative four-characters-per-token bound, because OpenRouter exposes
+no token-counting endpoint. The embedding response's reported token usage is checked again against
+the configured 32768-token input limit, and an oversized input fails the complete build before
+artifact creation. Token counting and embeddings use 32 bounded workers by default; use
+`--workers` to lower concurrency for a more restrictive OpenRouter quota. Requests retry
+transient failures with exponential backoff.
 
 The complete local release appears atomically under `output/releases/2026-08-14.v1/` and contains:
 

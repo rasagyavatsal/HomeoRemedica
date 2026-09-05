@@ -11,7 +11,7 @@ from homeoremedica_corpus.builder import build_release
 from homeoremedica_corpus.chunking import chunk_book, corpus_hash
 from homeoremedica_corpus.config import PipelineConfig, load_pipeline_config
 from homeoremedica_corpus.contracts import compatibility_from_artifact_spec
-from homeoremedica_corpus.embeddings import VertexEmbeddingProvider
+from homeoremedica_corpus.embeddings import OpenRouterEmbeddingProvider
 from homeoremedica_corpus.evaluation import (
     load_evaluation_dataset,
     load_evaluation_gate,
@@ -46,18 +46,16 @@ def _parser() -> argparse.ArgumentParser:
     validate.set_defaults(command=_validate)
 
     evaluate = commands.add_parser("evaluate", help="compare configured embedding dimensions")
-    _vertex_arguments(evaluate)
     evaluate.add_argument(
         "--workers",
         type=_positive_int,
         default=32,
-        help="maximum concurrent Vertex embedding requests (default: 32)",
+        help="maximum concurrent embedding requests (default: 32)",
     )
     evaluate.set_defaults(command=_evaluate)
 
     build = commands.add_parser("build", help="build all per-book SQLite artifacts")
     build.add_argument("corpus_version")
-    _vertex_arguments(build)
     _worker_argument(build)
     build.set_defaults(command=_build)
 
@@ -73,19 +71,12 @@ def _parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _vertex_arguments(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--project", help="Google Cloud project (defaults to ADC environment)")
-    parser.add_argument(
-        "--location", help="regional Vertex AI location (defaults to ADC environment)"
-    )
-
-
 def _worker_argument(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--workers",
         type=_positive_int,
         default=32,
-        help="maximum concurrent Vertex requests (default: 32)",
+        help="maximum concurrent embedding requests (default: 32)",
     )
 
 
@@ -106,12 +97,8 @@ def _evaluate(config: PipelineConfig, arguments: argparse.Namespace) -> int:
     _, chunks = _load_chunks(config)
     dataset, dataset_digest = load_evaluation_dataset(config.evaluation_dataset)
 
-    def provider_for(dimensions: int) -> VertexEmbeddingProvider:
-        return VertexEmbeddingProvider(
-            replace(config.embedding, dimensions=dimensions),
-            project=arguments.project,
-            location=arguments.location,
-        )
+    def provider_for(dimensions: int) -> OpenRouterEmbeddingProvider:
+        return OpenRouterEmbeddingProvider(replace(config.embedding, dimensions=dimensions))
 
     result = run_dimension_evaluation(
         dataset,
@@ -140,11 +127,7 @@ def _build(config: PipelineConfig, arguments: argparse.Namespace) -> int:
         raise ValueError(
             "configured embedding dimensions do not match the smallest passing evaluation result"
         )
-    provider = VertexEmbeddingProvider(
-        config.embedding,
-        project=arguments.project,
-        location=arguments.location,
-    )
+    provider = OpenRouterEmbeddingProvider(config.embedding)
     release = build_release(
         books,
         provider,
