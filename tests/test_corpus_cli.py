@@ -11,10 +11,21 @@ from .test_config import CONFIG
 def test_validate_command_reports_source_and_chunk_counts(tmp_path: Path, capsys) -> None:
     config_path = tmp_path / "corpus.toml"
     config_path.write_text(CONFIG)
-    processed = tmp_path / "dataset" / "processed"
-    processed.mkdir(parents=True)
-    (processed / "sample.json").write_text(
-        json.dumps({"A": {"Mind": ["First passage.", "Second passage."]}})
+    combined = tmp_path / "dataset" / "combined.json"
+    combined.parent.mkdir(parents=True)
+    combined.write_text(
+        json.dumps(
+            {
+                "metadata": {
+                    "schema_version": 1,
+                    "generated_at": "2026-09-05T06:39:00Z",
+                    "books": {
+                        "sample": {"title": "Sample Book", "author": "Sample Author"}
+                    },
+                },
+                "remedies": {"A": {"sample": {"Mind": ["First passage.", "Second passage."]}}},
+            }
+        )
     )
 
     assert main(["--config", str(config_path), "validate"]) == 0

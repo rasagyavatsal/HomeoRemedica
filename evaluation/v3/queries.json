@@ -1,6 +1,6 @@
 {
   "version": "v3",
-  "k": 10,
+  "k": 8,
   "qualityMetric": "recallAtK",
   "minimumQuality": 0.8,
   "queries": [
@@ -10,9 +10,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "KALIUM IODATUM",
-          "sectionTitle": "General",
-          "passageIndex": 0
+          "remedyName": "KALIUM IODATUM"
         }
       ]
     },
@@ -22,9 +20,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NITRICUM ACIDUM",
-          "sectionTitle": "Larynx",
-          "passageIndex": 5
+          "remedyName": "NITRICUM ACIDUM"
         }
       ]
     },
@@ -34,9 +30,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 0
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -46,9 +40,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Stramonium",
-          "sectionTitle": "Fever",
-          "passageIndex": 2
+          "remedyName": "Stramonium"
         }
       ]
     },
@@ -58,9 +50,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Toxicophis",
-          "sectionTitle": "Lower Limbs",
-          "passageIndex": 1
+          "remedyName": "Toxicophis"
         }
       ]
     },
@@ -70,9 +60,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Aurum Sulphuratum",
-          "sectionTitle": "Sleep",
-          "passageIndex": 0
+          "remedyName": "Aurum Sulphuratum"
         }
       ]
     },
@@ -82,9 +70,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SCROPHULARIA NODOSA",
-          "sectionTitle": "Abdomen",
-          "passageIndex": 2
+          "remedyName": "SCROPHULARIA NODOSA"
         }
       ]
     },
@@ -94,9 +80,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "LAC FELINUM",
-          "sectionTitle": "CHEST",
-          "passageIndex": 0
+          "remedyName": "LAC FELINUM"
         }
       ]
     },
@@ -106,9 +90,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 0
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -118,9 +100,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "IGNATIA AMARA",
-          "sectionTitle": "Diarrhea",
-          "passageIndex": 0
+          "remedyName": "IGNATIA AMARA"
         }
       ]
     },
@@ -130,9 +110,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SPIGELIA ANTHELMIA",
-          "sectionTitle": "Head",
-          "passageIndex": 14
+          "remedyName": "SPIGELIA ANTHELMIA"
         }
       ]
     },
@@ -142,9 +120,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "MAGNESIUM MURIATICUM",
-          "sectionTitle": "General",
-          "passageIndex": 44
+          "remedyName": "MAGNESIUM MURIATICUM"
         }
       ]
     },
@@ -154,9 +130,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "MANCINELLA",
-          "sectionTitle": "Stomach",
-          "passageIndex": 2
+          "remedyName": "MANCINELLA"
         }
       ]
     },
@@ -166,9 +140,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Modalities",
-          "passageIndex": 0
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -178,9 +150,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Head",
-          "passageIndex": 11
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -190,9 +160,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARSENICUM ALBUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 33
+          "remedyName": "ARSENICUM ALBUM"
         }
       ]
     },
@@ -202,9 +170,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "THUJA OCCIDENTALIS",
-          "sectionTitle": "Women",
-          "passageIndex": 15
+          "remedyName": "THUJA OCCIDENTALIS"
         }
       ]
     },
@@ -214,9 +180,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Sulphur",
-          "sectionTitle": "Appetite",
-          "passageIndex": 18
+          "remedyName": "Sulphur"
         }
       ]
     },
@@ -226,9 +190,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Ears",
-          "passageIndex": 9
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -238,9 +200,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "General",
-          "passageIndex": 4
+          "remedyName": "NUX VOMICA"
         }
       ]
     },
@@ -250,9 +210,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CHELIDONIUM MAJUS",
-          "sectionTitle": "Modalities",
-          "passageIndex": 0
+          "remedyName": "CHELIDONIUM MAJUS"
         }
       ]
     },
@@ -262,9 +220,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "FERRUM METALLICUM",
-          "sectionTitle": "Iron",
-          "passageIndex": 22
+          "remedyName": "FERRUM METALLICUM"
         }
       ]
     },
@@ -274,9 +230,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Modalities",
-          "passageIndex": 1
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -286,9 +240,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Cuprum Aceticum",
-          "sectionTitle": "Generalities",
-          "passageIndex": 0
+          "remedyName": "Cuprum Aceticum"
         }
       ]
     },
@@ -298,9 +250,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Carcinosinum",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 1
+          "remedyName": "Carcinosinum"
         }
       ]
     },
@@ -310,9 +260,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 6
+          "remedyName": "LYCOPODIUM CLAVATUM"
         }
       ]
     },
@@ -322,9 +270,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "IGNATIA AMARA",
-          "sectionTitle": "Hypertrophy",
-          "passageIndex": 5
+          "remedyName": "IGNATIA AMARA"
         }
       ]
     },
@@ -334,9 +280,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Carcinosinum",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 1
+          "remedyName": "Carcinosinum"
         }
       ]
     },
@@ -346,9 +290,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "COCA-ERYTHROXYLON COCA",
-          "sectionTitle": "Sleep",
-          "passageIndex": 0
+          "remedyName": "COCA-ERYTHROXYLON COCA"
         }
       ]
     },
@@ -358,9 +300,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "BELLADONNA",
-          "sectionTitle": "Eyes",
-          "passageIndex": 13
+          "remedyName": "BELLADONNA"
         }
       ]
     },
@@ -370,9 +310,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Belladonna",
-          "sectionTitle": "Respiratory Organs",
-          "passageIndex": 10
+          "remedyName": "Belladonna"
         }
       ]
     },
@@ -382,9 +320,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Stramonium",
-          "sectionTitle": "Mind",
-          "passageIndex": 3
+          "remedyName": "Stramonium"
         }
       ]
     },
@@ -394,9 +330,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "MEDORRHINUM",
-          "sectionTitle": "LOWER LIMBS",
-          "passageIndex": 46
+          "remedyName": "MEDORRHINUM"
         }
       ]
     },
@@ -406,9 +340,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NAJA TRIPUDIANS",
-          "sectionTitle": "General",
-          "passageIndex": 14
+          "remedyName": "NAJA TRIPUDIANS"
         }
       ]
     },
@@ -418,9 +350,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "OPIUM",
-          "sectionTitle": "Face",
-          "passageIndex": 8
+          "remedyName": "OPIUM"
         }
       ]
     },
@@ -430,9 +360,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "BRYONIA ALBA",
-          "sectionTitle": "Stomach",
-          "passageIndex": 11
+          "remedyName": "BRYONIA ALBA"
         }
       ]
     },
@@ -442,9 +370,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "MERCURIUS SOLUBILIS",
-          "sectionTitle": "General",
-          "passageIndex": 9
+          "remedyName": "MERCURIUS SOLUBILIS"
         }
       ]
     },
@@ -454,9 +380,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "BOTHROPS LANCEOLATUS",
-          "sectionTitle": "General",
-          "passageIndex": 8
+          "remedyName": "BOTHROPS LANCEOLATUS"
         }
       ]
     },
@@ -466,9 +390,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Viscum Album",
-          "sectionTitle": "Heart",
-          "passageIndex": 0
+          "remedyName": "Viscum Album"
         }
       ]
     },
@@ -478,9 +400,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "IRIS VERSICOLOR",
-          "sectionTitle": "Head",
-          "passageIndex": 3
+          "remedyName": "IRIS VERSICOLOR"
         }
       ]
     },
@@ -490,9 +410,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Mind",
-          "passageIndex": 15
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -502,9 +420,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "HAMAMELIS VIRGINIANA",
-          "sectionTitle": "Female Sexual Organs",
-          "passageIndex": 0
+          "remedyName": "HAMAMELIS VIRGINIANA"
         }
       ]
     },
@@ -514,9 +430,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Stomach",
-          "passageIndex": 12
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -526,9 +440,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CONIUM MACULATUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 6
+          "remedyName": "CONIUM MACULATUM"
         }
       ]
     },
@@ -538,9 +450,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphorus",
-          "sectionTitle": "Female Sexual Organs",
-          "passageIndex": 5
+          "remedyName": "Phosphorus"
         }
       ]
     },
@@ -550,9 +460,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "MURIATICUM ACIDUM",
-          "sectionTitle": "General",
-          "passageIndex": 2
+          "remedyName": "MURIATICUM ACIDUM"
         }
       ]
     },
@@ -562,9 +470,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "SECALE CORNUTUM",
-          "sectionTitle": "LOWER LIMBS",
-          "passageIndex": 6
+          "remedyName": "SECALE CORNUTUM"
         }
       ]
     },
@@ -574,9 +480,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "IGNATIA AMARA",
-          "sectionTitle": "Anxiety",
-          "passageIndex": 4
+          "remedyName": "IGNATIA AMARA"
         }
       ]
     },
@@ -586,9 +490,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CARCINOSINUM",
-          "sectionTitle": "General",
-          "passageIndex": 2
+          "remedyName": "CARCINOSINUM"
         }
       ]
     },
@@ -598,9 +500,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphoricum Acidum",
-          "sectionTitle": "Fever",
-          "passageIndex": 0
+          "remedyName": "Phosphoricum Acidum"
         }
       ]
     },
@@ -610,9 +510,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "MAGNESIUM CARBONICUM",
-          "sectionTitle": "General features",
-          "passageIndex": 34
+          "remedyName": "MAGNESIUM CARBONICUM"
         }
       ]
     },
@@ -622,9 +520,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "SECALE CORNUTUM",
-          "sectionTitle": "FEMALE SEXUAL ORGANS",
-          "passageIndex": 38
+          "remedyName": "SECALE CORNUTUM"
         }
       ]
     },
@@ -634,9 +530,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Tabacum",
-          "sectionTitle": "Throat",
-          "passageIndex": 1
+          "remedyName": "Tabacum"
         }
       ]
     },
@@ -646,9 +540,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 7
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -658,9 +550,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Theridion",
-          "sectionTitle": "Head",
-          "passageIndex": 2
+          "remedyName": "Theridion"
         }
       ]
     },
@@ -670,9 +560,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CARDUUS MARIANUS",
-          "sectionTitle": "General",
-          "passageIndex": 41
+          "remedyName": "CARDUUS MARIANUS"
         }
       ]
     },
@@ -682,9 +570,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "OPIUM",
-          "sectionTitle": "Face",
-          "passageIndex": 13
+          "remedyName": "OPIUM"
         }
       ]
     },
@@ -694,9 +580,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NITRICUM ACIDUM",
-          "sectionTitle": "Generalities",
-          "passageIndex": 1
+          "remedyName": "NITRICUM ACIDUM"
         }
       ]
     },
@@ -706,9 +590,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SILICEA TERRA",
-          "sectionTitle": "Case",
-          "passageIndex": 4
+          "remedyName": "SILICEA TERRA"
         }
       ]
     },
@@ -718,9 +600,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Genitals",
-          "passageIndex": 2
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -730,9 +610,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Stomach and liver",
-          "passageIndex": 2
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -742,9 +620,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "RHUS TOXICODENDRON",
-          "sectionTitle": "Respiratory",
-          "passageIndex": 1
+          "remedyName": "RHUS TOXICODENDRON"
         }
       ]
     },
@@ -754,9 +630,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CAUSTICUM",
-          "sectionTitle": "Insanity",
-          "passageIndex": 4
+          "remedyName": "CAUSTICUM"
         }
       ]
     },
@@ -766,9 +640,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "BRYONIA ALBA",
-          "sectionTitle": "Mind",
-          "passageIndex": 11
+          "remedyName": "BRYONIA ALBA"
         }
       ]
     },
@@ -778,9 +650,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Pharynx",
-          "passageIndex": 4
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -790,9 +660,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NUX MOSCHATA",
-          "sectionTitle": "Mind",
-          "passageIndex": 0
+          "remedyName": "NUX MOSCHATA"
         }
       ]
     },
@@ -802,9 +670,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "IGNATIA AMARA",
-          "sectionTitle": "General",
-          "passageIndex": 6
+          "remedyName": "IGNATIA AMARA"
         }
       ]
     },
@@ -814,9 +680,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "CROCUS SATIVUS",
-          "sectionTitle": "Heart",
-          "passageIndex": 0
+          "remedyName": "CROCUS SATIVUS"
         }
       ]
     },
@@ -826,9 +690,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Aconitum Napellus",
-          "sectionTitle": "Female Sexual Organs",
-          "passageIndex": 1
+          "remedyName": "Aconitum Napellus"
         }
       ]
     },
@@ -838,9 +700,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SANICULA AQUA",
-          "sectionTitle": "Generalities",
-          "passageIndex": 3
+          "remedyName": "SANICULA AQUA"
         }
       ]
     },
@@ -850,9 +710,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Arsenicum Album",
-          "sectionTitle": "Generalities",
-          "passageIndex": 3
+          "remedyName": "Arsenicum Album"
         }
       ]
     },
@@ -862,9 +720,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Generals",
-          "passageIndex": 30
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -874,9 +730,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CARCINOSINUM",
-          "sectionTitle": "General",
-          "passageIndex": 2
+          "remedyName": "CARCINOSINUM"
         }
       ]
     },
@@ -886,9 +740,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "MURIATICUM ACIDUM",
-          "sectionTitle": "General",
-          "passageIndex": 0
+          "remedyName": "MURIATICUM ACIDUM"
         }
       ]
     },
@@ -898,9 +750,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Head",
-          "passageIndex": 7
+          "remedyName": "LYCOPODIUM CLAVATUM"
         }
       ]
     },
@@ -910,9 +760,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Anhalonium Lewinii",
-          "sectionTitle": "Head",
-          "passageIndex": 0
+          "remedyName": "Anhalonium Lewinii"
         }
       ]
     },
@@ -922,9 +770,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphoricum Acidum",
-          "sectionTitle": "Respiratory Organs",
-          "passageIndex": 4
+          "remedyName": "Phosphoricum Acidum"
         }
       ]
     },
@@ -934,9 +780,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 0
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -946,9 +790,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "FERRUM METALLICUM",
-          "sectionTitle": "Iron",
-          "passageIndex": 22
+          "remedyName": "FERRUM METALLICUM"
         }
       ]
     },
@@ -958,9 +800,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARNICA MONTANA",
-          "sectionTitle": "Pregnancy",
-          "passageIndex": 6
+          "remedyName": "ARNICA MONTANA"
         }
       ]
     },
@@ -970,9 +810,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Cannabis Indica",
-          "sectionTitle": "Neck and Back",
-          "passageIndex": 0
+          "remedyName": "Cannabis Indica"
         }
       ]
     },
@@ -982,9 +820,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Sinapis Alba",
-          "sectionTitle": "Stomach",
-          "passageIndex": 11
+          "remedyName": "Sinapis Alba"
         }
       ]
     },
@@ -994,9 +830,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "PALLADIUM METALLICUM",
-          "sectionTitle": "Head",
-          "passageIndex": 2
+          "remedyName": "PALLADIUM METALLICUM"
         }
       ]
     },
@@ -1006,9 +840,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Aconitum Napellus",
-          "sectionTitle": "Mind",
-          "passageIndex": 9
+          "remedyName": "Aconitum Napellus"
         }
       ]
     },
@@ -1018,9 +850,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "MERCURIUS SOLUBILIS",
-          "sectionTitle": "Mind",
-          "passageIndex": 8
+          "remedyName": "MERCURIUS SOLUBILIS"
         }
       ]
     },
@@ -1030,9 +860,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CERIUM OXALICUM",
-          "sectionTitle": "General",
-          "passageIndex": 0
+          "remedyName": "CERIUM OXALICUM"
         }
       ]
     },
@@ -1042,9 +870,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "TUBERCULINUM",
-          "sectionTitle": "SKIN",
-          "passageIndex": 6
+          "remedyName": "TUBERCULINUM"
         }
       ]
     },
@@ -1054,9 +880,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "GELSEMIUM SEMPERVIRENS",
-          "sectionTitle": "Complaints",
-          "passageIndex": 17
+          "remedyName": "GELSEMIUM SEMPERVIRENS"
         }
       ]
     },
@@ -1066,9 +890,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "PSORINUM",
-          "sectionTitle": "SKIN",
-          "passageIndex": 9
+          "remedyName": "PSORINUM"
         }
       ]
     },
@@ -1078,9 +900,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Amylenum Nitrosum",
-          "sectionTitle": "Mind",
-          "passageIndex": 0
+          "remedyName": "Amylenum Nitrosum"
         }
       ]
     },
@@ -1090,9 +910,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "OPIUM",
-          "sectionTitle": "Face",
-          "passageIndex": 11
+          "remedyName": "OPIUM"
         }
       ]
     },
@@ -1102,9 +920,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CAUSTICUM",
-          "sectionTitle": "General",
-          "passageIndex": 4
+          "remedyName": "CAUSTICUM"
         }
       ]
     },
@@ -1114,9 +930,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ACONITUM NAPELLUS",
-          "sectionTitle": "Introduction",
-          "passageIndex": 2
+          "remedyName": "ACONITUM NAPELLUS"
         }
       ]
     },
@@ -1126,9 +940,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "AMBRA GRISEA",
-          "sectionTitle": "Mind",
-          "passageIndex": 8
+          "remedyName": "AMBRA GRISEA"
         }
       ]
     },
@@ -1138,9 +950,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Modalities",
-          "passageIndex": 1
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -1150,9 +960,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphorus",
-          "sectionTitle": "Generalities",
-          "passageIndex": 47
+          "remedyName": "Phosphorus"
         }
       ]
     },
@@ -1162,9 +970,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Prunus Spinosa",
-          "sectionTitle": "Lower Limbs",
-          "passageIndex": 6
+          "remedyName": "Prunus Spinosa"
         }
       ]
     },
@@ -1174,9 +980,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Aqua Marina",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 2
+          "remedyName": "Aqua Marina"
         }
       ]
     },
@@ -1186,9 +990,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Carbo Animalis",
-          "sectionTitle": "Appetite",
-          "passageIndex": 3
+          "remedyName": "Carbo Animalis"
         }
       ]
     },
@@ -1198,9 +1000,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "LIMULUS CYCLOPS",
-          "sectionTitle": "General",
-          "passageIndex": 5
+          "remedyName": "LIMULUS CYCLOPS"
         }
       ]
     },
@@ -1210,9 +1010,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LAC CANINUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 2
+          "remedyName": "LAC CANINUM"
         }
       ]
     },
@@ -1222,9 +1020,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "COCCULUS INDICUS",
-          "sectionTitle": "Stomach",
-          "passageIndex": 0
+          "remedyName": "COCCULUS INDICUS"
         }
       ]
     },
@@ -1234,9 +1030,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Generals and aspect",
-          "passageIndex": 0
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -1246,9 +1040,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Fever",
-          "passageIndex": 3
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -1258,9 +1050,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 2
+          "remedyName": "LYCOPODIUM CLAVATUM"
         }
       ]
     },
@@ -1270,9 +1060,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Carcinosinum",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 1
+          "remedyName": "Carcinosinum"
         }
       ]
     },
@@ -1282,9 +1070,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Head",
-          "passageIndex": 11
+          "remedyName": "LYCOPODIUM CLAVATUM"
         }
       ]
     },
@@ -1294,9 +1080,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "ARTEMISIA VULGARIS",
-          "sectionTitle": "General",
-          "passageIndex": 3
+          "remedyName": "ARTEMISIA VULGARIS"
         }
       ]
     },
@@ -1306,9 +1090,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "OPIUM",
-          "sectionTitle": "Generals",
-          "passageIndex": 1
+          "remedyName": "OPIUM"
         }
       ]
     },
@@ -1318,9 +1100,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "COCCULUS INDICUS",
-          "sectionTitle": "Slowly",
-          "passageIndex": 3
+          "remedyName": "COCCULUS INDICUS"
         }
       ]
     },
@@ -1330,9 +1110,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "AVENA SATIVA",
-          "sectionTitle": "Head",
-          "passageIndex": 0
+          "remedyName": "AVENA SATIVA"
         }
       ]
     },
@@ -1342,9 +1120,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Genitals",
-          "passageIndex": 6
+          "remedyName": "LYCOPODIUM CLAVATUM"
         }
       ]
     },
@@ -1354,9 +1130,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "AMMONIUM MURIATICUM",
-          "sectionTitle": "Extremities",
-          "passageIndex": 4
+          "remedyName": "AMMONIUM MURIATICUM"
         }
       ]
     },
@@ -1366,9 +1140,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Conium Maculatum",
-          "sectionTitle": "Sleep",
-          "passageIndex": 4
+          "remedyName": "Conium Maculatum"
         }
       ]
     },
@@ -1378,9 +1150,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Carcinosinum",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 1
+          "remedyName": "Carcinosinum"
         }
       ]
     },
@@ -1390,9 +1160,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "MAGNETIS POLI AMBO",
-          "sectionTitle": "SLEEP",
-          "passageIndex": 6
+          "remedyName": "MAGNETIS POLI AMBO"
         }
       ]
     },
@@ -1402,9 +1170,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Aqua Marina",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 2
+          "remedyName": "Aqua Marina"
         }
       ]
     },
@@ -1414,9 +1180,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Heloderma",
-          "sectionTitle": "Upper Limbs",
-          "passageIndex": 4
+          "remedyName": "Heloderma"
         }
       ]
     },
@@ -1426,9 +1190,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SILICEA TERRA",
-          "sectionTitle": "Mind",
-          "passageIndex": 0
+          "remedyName": "SILICEA TERRA"
         }
       ]
     },
@@ -1438,9 +1200,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARGENTUM NITRICUM",
-          "sectionTitle": "Digestion",
-          "passageIndex": 12
+          "remedyName": "ARGENTUM NITRICUM"
         }
       ]
     },
@@ -1450,9 +1210,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "Mind",
-          "passageIndex": 12
+          "remedyName": "NUX VOMICA"
         }
       ]
     },
@@ -1462,9 +1220,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "BELLADONNA",
-          "sectionTitle": "Head",
-          "passageIndex": 8
+          "remedyName": "BELLADONNA"
         }
       ]
     },
@@ -1474,9 +1230,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Crotalus Cascavella",
-          "sectionTitle": "Female Sexual Organs",
-          "passageIndex": 0
+          "remedyName": "Crotalus Cascavella"
         }
       ]
     },
@@ -1486,9 +1240,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "MEDORRHINUM",
-          "sectionTitle": "MIND",
-          "passageIndex": 20
+          "remedyName": "MEDORRHINUM"
         }
       ]
     },
@@ -1498,9 +1250,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Natrum Muriaticum",
-          "passageIndex": 11
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -1510,9 +1260,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "ARNICA MONTANA",
-          "sectionTitle": "Generalities",
-          "passageIndex": 9
+          "remedyName": "ARNICA MONTANA"
         }
       ]
     },
@@ -1522,9 +1270,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CALCAREA CARBONICA",
-          "sectionTitle": "Stomach",
-          "passageIndex": 3
+          "remedyName": "CALCAREA CARBONICA"
         }
       ]
     },
@@ -1534,9 +1280,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Arum Triphyllum",
-          "sectionTitle": "Face",
-          "passageIndex": 1
+          "remedyName": "Arum Triphyllum"
         }
       ]
     },
@@ -1546,9 +1290,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "LYSSINUM",
-          "sectionTitle": "MIND",
-          "passageIndex": 82
+          "remedyName": "LYSSINUM"
         }
       ]
     },
@@ -1558,9 +1300,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "COLOCYNTHIS",
-          "sectionTitle": "Abdomen",
-          "passageIndex": 4
+          "remedyName": "COLOCYNTHIS"
         }
       ]
     },
@@ -1570,9 +1310,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "RHUS TOXICODENDRON",
-          "sectionTitle": "Generalities",
-          "passageIndex": 0
+          "remedyName": "RHUS TOXICODENDRON"
         }
       ]
     },
@@ -1582,9 +1320,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "MERCURIUS SOLUBILIS",
-          "sectionTitle": "Respiratory",
-          "passageIndex": 7
+          "remedyName": "MERCURIUS SOLUBILIS"
         }
       ]
     },
@@ -1594,9 +1330,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "STAPHYSAGRIA",
-          "sectionTitle": "Skin",
-          "passageIndex": 0
+          "remedyName": "STAPHYSAGRIA"
         }
       ]
     },
@@ -1606,9 +1340,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Mind",
-          "passageIndex": 5
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -1618,9 +1350,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Aurum Metallicum",
-          "sectionTitle": "Head",
-          "passageIndex": 0
+          "remedyName": "Aurum Metallicum"
         }
       ]
     },
@@ -1630,9 +1360,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "BUFO RANA",
-          "sectionTitle": "General",
-          "passageIndex": 6
+          "remedyName": "BUFO RANA"
         }
       ]
     },
@@ -1642,9 +1370,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Ears",
-          "passageIndex": 1
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -1654,9 +1380,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CROTALUS HORRIDUS",
-          "sectionTitle": "Women",
-          "passageIndex": 6
+          "remedyName": "CROTALUS HORRIDUS"
         }
       ]
     },
@@ -1666,9 +1390,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "ANTHRACINUM",
-          "sectionTitle": "SKIN",
-          "passageIndex": 46
+          "remedyName": "ANTHRACINUM"
         }
       ]
     },
@@ -1678,9 +1400,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SILICEA TERRA",
-          "sectionTitle": "Case",
-          "passageIndex": 10
+          "remedyName": "SILICEA TERRA"
         }
       ]
     },
@@ -1690,9 +1410,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARGENTUM NITRICUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 6
+          "remedyName": "ARGENTUM NITRICUM"
         }
       ]
     },
@@ -1702,9 +1420,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "MERCURIUS IODATUS FLAVUS",
-          "sectionTitle": "General",
-          "passageIndex": 2
+          "remedyName": "MERCURIUS IODATUS FLAVUS"
         }
       ]
     },
@@ -1714,9 +1430,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SILICEA TERRA",
-          "sectionTitle": "Head",
-          "passageIndex": 16
+          "remedyName": "SILICEA TERRA"
         }
       ]
     },
@@ -1726,9 +1440,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Sulphur",
-          "sectionTitle": "Generalities",
-          "passageIndex": 10
+          "remedyName": "Sulphur"
         }
       ]
     },
@@ -1738,9 +1450,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Urinary",
-          "passageIndex": 5
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -1750,9 +1460,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "BARYTA CARBONICA",
-          "sectionTitle": "Mind",
-          "passageIndex": 4
+          "remedyName": "BARYTA CARBONICA"
         }
       ]
     },
@@ -1762,9 +1470,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "ARTEMISIA VULGARIS",
-          "sectionTitle": "General",
-          "passageIndex": 0
+          "remedyName": "ARTEMISIA VULGARIS"
         }
       ]
     },
@@ -1774,9 +1480,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CARCINOSINUM",
-          "sectionTitle": "General",
-          "passageIndex": 2
+          "remedyName": "CARCINOSINUM"
         }
       ]
     },
@@ -1786,9 +1490,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "ARTEMISIA VULGARIS",
-          "sectionTitle": "General",
-          "passageIndex": 0
+          "remedyName": "ARTEMISIA VULGARIS"
         }
       ]
     },
@@ -1798,9 +1500,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Face",
-          "passageIndex": 12
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -1810,9 +1510,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "ARNICA MONTANA",
-          "sectionTitle": "Head",
-          "passageIndex": 0
+          "remedyName": "ARNICA MONTANA"
         }
       ]
     },
@@ -1822,9 +1520,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Conium Maculatum",
-          "sectionTitle": "Head",
-          "passageIndex": 2
+          "remedyName": "Conium Maculatum"
         }
       ]
     },
@@ -1834,9 +1530,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CAMPHORA",
-          "sectionTitle": "General",
-          "passageIndex": 2
+          "remedyName": "CAMPHORA"
         }
       ]
     },
@@ -1846,9 +1540,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "ELAPS CORALLINUS",
-          "sectionTitle": "Mind",
-          "passageIndex": 2
+          "remedyName": "ELAPS CORALLINUS"
         }
       ]
     },
@@ -1858,9 +1550,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "MEDORRHINUM",
-          "sectionTitle": "MIND",
-          "passageIndex": 1
+          "remedyName": "MEDORRHINUM"
         }
       ]
     },
@@ -1870,9 +1560,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "GELSEMIUM SEMPERVIRENS",
-          "sectionTitle": "Complaints",
-          "passageIndex": 60
+          "remedyName": "GELSEMIUM SEMPERVIRENS"
         }
       ]
     },
@@ -1882,9 +1570,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Modalities",
-          "passageIndex": 2
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -1894,9 +1580,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "TARENTULA HISPANICA",
-          "sectionTitle": "Head",
-          "passageIndex": 9
+          "remedyName": "TARENTULA HISPANICA"
         }
       ]
     },
@@ -1906,9 +1590,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CENCHRIS CONTORTRIX",
-          "sectionTitle": "Sleep",
-          "passageIndex": 0
+          "remedyName": "CENCHRIS CONTORTRIX"
         }
       ]
     },
@@ -1918,9 +1600,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "BRYONIA ALBA",
-          "sectionTitle": "Sleep",
-          "passageIndex": 8
+          "remedyName": "BRYONIA ALBA"
         }
       ]
     },
@@ -1930,9 +1610,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "PHOSPHORUS",
-          "sectionTitle": "Female",
-          "passageIndex": 5
+          "remedyName": "PHOSPHORUS"
         }
       ]
     },
@@ -1942,9 +1620,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "CALCAREA FLUORICA",
-          "sectionTitle": "Mind",
-          "passageIndex": 1
+          "remedyName": "CALCAREA FLUORICA"
         }
       ]
     },
@@ -1954,9 +1630,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Generals",
-          "passageIndex": 30
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -1966,9 +1640,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CALCAREA SULPHURICA",
-          "sectionTitle": "Mind",
-          "passageIndex": 32
+          "remedyName": "CALCAREA SULPHURICA"
         }
       ]
     },
@@ -1978,9 +1650,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Stramonium",
-          "sectionTitle": "Generalities",
-          "passageIndex": 33
+          "remedyName": "Stramonium"
         }
       ]
     },
@@ -1990,9 +1660,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "IGNATIA AMARA",
-          "sectionTitle": "General",
-          "passageIndex": 6
+          "remedyName": "IGNATIA AMARA"
         }
       ]
     },
@@ -2002,9 +1670,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "DULCAMARA",
-          "sectionTitle": "Modalities",
-          "passageIndex": 0
+          "remedyName": "DULCAMARA"
         }
       ]
     },
@@ -2014,9 +1680,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "INDIGO TINCTORIA",
-          "sectionTitle": "General",
-          "passageIndex": 1
+          "remedyName": "INDIGO TINCTORIA"
         }
       ]
     },
@@ -2026,9 +1690,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Stomach and abdomen",
-          "passageIndex": 17
+          "remedyName": "LYCOPODIUM CLAVATUM"
         }
       ]
     },
@@ -2038,9 +1700,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 6
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -2050,9 +1710,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "TUBERCULINUM",
-          "sectionTitle": "FEMALE SEXUAL ORGANS",
-          "passageIndex": 13
+          "remedyName": "TUBERCULINUM"
         }
       ]
     },
@@ -2062,9 +1720,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Carcinosinum",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 1
+          "remedyName": "Carcinosinum"
         }
       ]
     },
@@ -2074,9 +1730,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 7
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -2086,9 +1740,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "RHUS TOXICODENDRON",
-          "sectionTitle": "General",
-          "passageIndex": 4
+          "remedyName": "RHUS TOXICODENDRON"
         }
       ]
     },
@@ -2098,9 +1750,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Respiratory Organs",
-          "passageIndex": 5
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -2110,9 +1760,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "ARSENICUM ALBUM",
-          "sectionTitle": "General",
-          "passageIndex": 5
+          "remedyName": "ARSENICUM ALBUM"
         }
       ]
     },
@@ -2122,9 +1770,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "General",
-          "passageIndex": 15
+          "remedyName": "NUX VOMICA"
         }
       ]
     },
@@ -2134,9 +1780,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARSENICUM ALBUM",
-          "sectionTitle": "Stomach and bowels",
-          "passageIndex": 8
+          "remedyName": "ARSENICUM ALBUM"
         }
       ]
     },
@@ -2146,9 +1790,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "FORMICA RUFA",
-          "sectionTitle": "Head",
-          "passageIndex": 0
+          "remedyName": "FORMICA RUFA"
         }
       ]
     },
@@ -2158,9 +1800,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Spongia Tosta",
-          "sectionTitle": "Face",
-          "passageIndex": 1
+          "remedyName": "Spongia Tosta"
         }
       ]
     },
@@ -2170,9 +1810,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "PHOSPHORUS",
-          "sectionTitle": "Stomach",
-          "passageIndex": 2
+          "remedyName": "PHOSPHORUS"
         }
       ]
     },
@@ -2182,9 +1820,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Sleep",
-          "passageIndex": 0
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -2194,9 +1830,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CALCAREA CARBONICA",
-          "sectionTitle": "General",
-          "passageIndex": 13
+          "remedyName": "CALCAREA CARBONICA"
         }
       ]
     },
@@ -2206,9 +1840,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "RHUS TOXICODENDRON",
-          "sectionTitle": "Generalities",
-          "passageIndex": 0
+          "remedyName": "RHUS TOXICODENDRON"
         }
       ]
     },
@@ -2218,9 +1850,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARGENTUM NITRICUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 17
+          "remedyName": "ARGENTUM NITRICUM"
         }
       ]
     },
@@ -2230,9 +1860,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "FORMICA RUFA",
-          "sectionTitle": "Mind",
-          "passageIndex": 1
+          "remedyName": "FORMICA RUFA"
         }
       ]
     },
@@ -2242,9 +1870,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Generals",
-          "passageIndex": 30
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -2254,9 +1880,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "BARYTA CARBONICA",
-          "sectionTitle": "Tonsils",
-          "passageIndex": 2
+          "remedyName": "BARYTA CARBONICA"
         }
       ]
     },
@@ -2266,9 +1890,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "NAJA TRIPUDIANS",
-          "sectionTitle": "Heart",
-          "passageIndex": 2
+          "remedyName": "NAJA TRIPUDIANS"
         }
       ]
     },
@@ -2278,9 +1900,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "RUTA GRAVEOLENS",
-          "sectionTitle": "Upper Limbs",
-          "passageIndex": 9
+          "remedyName": "RUTA GRAVEOLENS"
         }
       ]
     },
@@ -2290,9 +1910,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Generals",
-          "passageIndex": 30
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -2302,9 +1920,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "LITHIUM CARBONICUM",
-          "sectionTitle": "Modalities",
-          "passageIndex": 0
+          "remedyName": "LITHIUM CARBONICUM"
         }
       ]
     },
@@ -2314,9 +1930,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphorus",
-          "sectionTitle": "Stool and Anus",
-          "passageIndex": 1
+          "remedyName": "Phosphorus"
         }
       ]
     },
@@ -2326,9 +1940,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Female",
-          "passageIndex": 3
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -2338,9 +1950,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "VALERIANA OFFICINALIS",
-          "sectionTitle": "Face",
-          "passageIndex": 1
+          "remedyName": "VALERIANA OFFICINALIS"
         }
       ]
     },
@@ -2350,9 +1960,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CHAMOMILLA",
-          "sectionTitle": "Loss of generosity",
-          "passageIndex": 3
+          "remedyName": "CHAMOMILLA"
         }
       ]
     },
@@ -2362,9 +1970,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "TUBERCULINUM",
-          "sectionTitle": "General",
-          "passageIndex": 5
+          "remedyName": "TUBERCULINUM"
         }
       ]
     },
@@ -2374,9 +1980,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "STAPHYSAGRIA",
-          "sectionTitle": "Mind",
-          "passageIndex": 0
+          "remedyName": "STAPHYSAGRIA"
         }
       ]
     },
@@ -2386,9 +1990,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "MURIATICUM ACIDUM",
-          "sectionTitle": "General",
-          "passageIndex": 61
+          "remedyName": "MURIATICUM ACIDUM"
         }
       ]
     },
@@ -2398,9 +2000,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Aqua Marina",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 2
+          "remedyName": "Aqua Marina"
         }
       ]
     },
@@ -2410,9 +2010,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SILICEA TERRA",
-          "sectionTitle": "Case",
-          "passageIndex": 10
+          "remedyName": "SILICEA TERRA"
         }
       ]
     },
@@ -2422,9 +2020,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Atropinum",
-          "sectionTitle": "Head",
-          "passageIndex": 6
+          "remedyName": "Atropinum"
         }
       ]
     },
@@ -2434,9 +2030,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "HECLA LAVA",
-          "sectionTitle": "Teeth",
-          "passageIndex": 0
+          "remedyName": "HECLA LAVA"
         }
       ]
     },
@@ -2446,9 +2040,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "STAPHYSAGRIA",
-          "sectionTitle": "Stool and Anus",
-          "passageIndex": 5
+          "remedyName": "STAPHYSAGRIA"
         }
       ]
     },
@@ -2458,9 +2050,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "COBALTUM METALLICUM",
-          "sectionTitle": "Skin",
-          "passageIndex": 0
+          "remedyName": "COBALTUM METALLICUM"
         }
       ]
     },
@@ -2470,9 +2060,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "COCCULUS INDICUS",
-          "sectionTitle": "Slowly",
-          "passageIndex": 3
+          "remedyName": "COCCULUS INDICUS"
         }
       ]
     },
@@ -2482,9 +2070,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "LAC CANINUM",
-          "sectionTitle": "EARS",
-          "passageIndex": 9
+          "remedyName": "LAC CANINUM"
         }
       ]
     },
@@ -2494,9 +2080,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "AURUM METALLICUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 8
+          "remedyName": "AURUM METALLICUM"
         }
       ]
     },
@@ -2506,9 +2090,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "MURIATICUM ACIDUM",
-          "sectionTitle": "General",
-          "passageIndex": 85
+          "remedyName": "MURIATICUM ACIDUM"
         }
       ]
     },
@@ -2518,9 +2100,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "General",
-          "passageIndex": 2
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -2530,9 +2110,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARSENICUM ALBUM",
-          "sectionTitle": "Periodicity",
-          "passageIndex": 1
+          "remedyName": "ARSENICUM ALBUM"
         }
       ]
     },
@@ -2542,9 +2120,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Cannabis Indica",
-          "sectionTitle": "Generalities",
-          "passageIndex": 2
+          "remedyName": "Cannabis Indica"
         }
       ]
     },
@@ -2554,9 +2130,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Urine",
-          "passageIndex": 8
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -2566,9 +2140,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SULPHUR",
-          "sectionTitle": "Head",
-          "passageIndex": 16
+          "remedyName": "SULPHUR"
         }
       ]
     },
@@ -2578,9 +2150,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "DIGITALIS PURPUREA",
-          "sectionTitle": "General",
-          "passageIndex": 0
+          "remedyName": "DIGITALIS PURPUREA"
         }
       ]
     },
@@ -2590,9 +2160,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CUPRUM METALLICUM",
-          "sectionTitle": "Convulsions",
-          "passageIndex": 0
+          "remedyName": "CUPRUM METALLICUM"
         }
       ]
     },
@@ -2602,9 +2170,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "SECALE CORNUTUM",
-          "sectionTitle": "NERVES",
-          "passageIndex": 27
+          "remedyName": "SECALE CORNUTUM"
         }
       ]
     },
@@ -2614,9 +2180,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CHAMOMILLA",
-          "sectionTitle": "Throat",
-          "passageIndex": 14
+          "remedyName": "CHAMOMILLA"
         }
       ]
     },
@@ -2626,9 +2190,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Modalities",
-          "passageIndex": 0
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -2638,9 +2200,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Head",
-          "passageIndex": 5
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -2650,9 +2210,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "BERBERIS VULGARIS",
-          "sectionTitle": "Urinary",
-          "passageIndex": 6
+          "remedyName": "BERBERIS VULGARIS"
         }
       ]
     },
@@ -2662,9 +2220,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CENCHRIS CONTORTRIX",
-          "sectionTitle": "General",
-          "passageIndex": 1
+          "remedyName": "CENCHRIS CONTORTRIX"
         }
       ]
     },
@@ -2674,9 +2230,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Upper Limbs",
-          "passageIndex": 21
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -2686,9 +2240,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Aurum Sulphuratum",
-          "sectionTitle": "Respiratory Organs",
-          "passageIndex": 1
+          "remedyName": "Aurum Sulphuratum"
         }
       ]
     },
@@ -2698,9 +2250,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SULPHUR",
-          "sectionTitle": "Head",
-          "passageIndex": 20
+          "remedyName": "SULPHUR"
         }
       ]
     },
@@ -2710,9 +2260,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Generals and aspect",
-          "passageIndex": 0
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -2722,9 +2270,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARNICA MONTANA",
-          "sectionTitle": "Soreness",
-          "passageIndex": 31
+          "remedyName": "ARNICA MONTANA"
         }
       ]
     },
@@ -2734,9 +2280,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SULPHURICUM ACIDUM",
-          "sectionTitle": "Women",
-          "passageIndex": 5
+          "remedyName": "SULPHURICUM ACIDUM"
         }
       ]
     },
@@ -2746,9 +2290,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CAPSICUM ANNUUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 0
+          "remedyName": "CAPSICUM ANNUUM"
         }
       ]
     },
@@ -2758,9 +2300,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "HYPERICUM PERFORATUM",
-          "sectionTitle": "Generalities",
-          "passageIndex": 5
+          "remedyName": "HYPERICUM PERFORATUM"
         }
       ]
     },
@@ -2770,9 +2310,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "BELLADONNA",
-          "sectionTitle": "Head",
-          "passageIndex": 15
+          "remedyName": "BELLADONNA"
         }
       ]
     },
@@ -2782,9 +2320,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Head",
-          "passageIndex": 7
+          "remedyName": "LYCOPODIUM CLAVATUM"
         }
       ]
     },
@@ -2794,9 +2330,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Mind",
-          "passageIndex": 3
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -2806,9 +2340,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Head",
-          "passageIndex": 16
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -2818,9 +2350,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "GELSEMIUM SEMPERVIRENS",
-          "sectionTitle": "Stool and Anus",
-          "passageIndex": 6
+          "remedyName": "GELSEMIUM SEMPERVIRENS"
         }
       ]
     },
@@ -2830,9 +2360,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NAJA TRIPUDIANS",
-          "sectionTitle": "General",
-          "passageIndex": 24
+          "remedyName": "NAJA TRIPUDIANS"
         }
       ]
     },
@@ -2842,9 +2370,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CYTISUS LABURNUM",
-          "sectionTitle": "Stomach",
-          "passageIndex": 1
+          "remedyName": "CYTISUS LABURNUM"
         }
       ]
     },
@@ -2854,9 +2380,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Women",
-          "passageIndex": 41
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -2866,9 +2390,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SILICEA TERRA",
-          "sectionTitle": "Head",
-          "passageIndex": 26
+          "remedyName": "SILICEA TERRA"
         }
       ]
     },
@@ -2878,9 +2400,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Calcarea Carbonica",
-          "sectionTitle": "Mind",
-          "passageIndex": 23
+          "remedyName": "Calcarea Carbonica"
         }
       ]
     },
@@ -2890,9 +2410,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CAUSTICUM",
-          "sectionTitle": "Respiratory",
-          "passageIndex": 4
+          "remedyName": "CAUSTICUM"
         }
       ]
     },
@@ -2902,9 +2420,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphorus",
-          "sectionTitle": "Generalities",
-          "passageIndex": 47
+          "remedyName": "Phosphorus"
         }
       ]
     },
@@ -2914,9 +2430,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "SYPHILINUM",
-          "sectionTitle": "STOOL AND ANUS",
-          "passageIndex": 5
+          "remedyName": "SYPHILINUM"
         }
       ]
     },
@@ -2926,9 +2440,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SULPHUR",
-          "sectionTitle": "Odor",
-          "passageIndex": 2
+          "remedyName": "SULPHUR"
         }
       ]
     },
@@ -2938,9 +2450,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "BERBERIS VULGARIS",
-          "sectionTitle": "Pains and urines",
-          "passageIndex": 2
+          "remedyName": "BERBERIS VULGARIS"
         }
       ]
     },
@@ -2950,9 +2460,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "ELAPS CORALLINUS",
-          "sectionTitle": "Mind",
-          "passageIndex": 2
+          "remedyName": "ELAPS CORALLINUS"
         }
       ]
     },
@@ -2962,9 +2470,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CALCAREA SULPHURICA",
-          "sectionTitle": "General",
-          "passageIndex": 16
+          "remedyName": "CALCAREA SULPHURICA"
         }
       ]
     },
@@ -2974,9 +2480,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "RHUS TOXICODENDRON",
-          "sectionTitle": "Neck and Back",
-          "passageIndex": 6
+          "remedyName": "RHUS TOXICODENDRON"
         }
       ]
     },
@@ -2986,9 +2490,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "MERCURIUS SOLUBILIS",
-          "sectionTitle": "General features",
-          "passageIndex": 20
+          "remedyName": "MERCURIUS SOLUBILIS"
         }
       ]
     },
@@ -2998,9 +2500,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CALCAREA CARBONICA",
-          "sectionTitle": "Mind",
-          "passageIndex": 15
+          "remedyName": "CALCAREA CARBONICA"
         }
       ]
     },
@@ -3010,9 +2510,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Sulphur",
-          "sectionTitle": "Face",
-          "passageIndex": 1
+          "remedyName": "Sulphur"
         }
       ]
     },
@@ -3022,9 +2520,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "RHUS TOXICODENDRON",
-          "sectionTitle": "Modalities",
-          "passageIndex": 1
+          "remedyName": "RHUS TOXICODENDRON"
         }
       ]
     },
@@ -3034,9 +2530,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Head",
-          "passageIndex": 7
+          "remedyName": "LYCOPODIUM CLAVATUM"
         }
       ]
     },
@@ -3046,9 +2540,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SULPHUR",
-          "sectionTitle": "Odor",
-          "passageIndex": 2
+          "remedyName": "SULPHUR"
         }
       ]
     },
@@ -3058,9 +2550,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Aqua Marina",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 5
+          "remedyName": "Aqua Marina"
         }
       ]
     },
@@ -3070,9 +2560,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NITRICUM ACIDUM",
-          "sectionTitle": "Larynx",
-          "passageIndex": 5
+          "remedyName": "NITRICUM ACIDUM"
         }
       ]
     },
@@ -3082,9 +2570,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CINA MARITIMA",
-          "sectionTitle": "Sleep",
-          "passageIndex": 0
+          "remedyName": "CINA MARITIMA"
         }
       ]
     },
@@ -3094,9 +2580,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "IGNATIA AMARA",
-          "sectionTitle": "Mind",
-          "passageIndex": 39
+          "remedyName": "IGNATIA AMARA"
         }
       ]
     },
@@ -3106,9 +2590,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Stomach and abdomen",
-          "passageIndex": 14
+          "remedyName": "LYCOPODIUM CLAVATUM"
         }
       ]
     },
@@ -3118,9 +2600,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Brassica Napus",
-          "sectionTitle": "Limbs",
-          "passageIndex": 0
+          "remedyName": "Brassica Napus"
         }
       ]
     },
@@ -3130,9 +2610,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Asterias Rubens",
-          "sectionTitle": "Head",
-          "passageIndex": 1
+          "remedyName": "Asterias Rubens"
         }
       ]
     },
@@ -3142,9 +2620,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Bromium",
-          "sectionTitle": "Head",
-          "passageIndex": 2
+          "remedyName": "Bromium"
         }
       ]
     },
@@ -3154,9 +2630,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 6
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -3166,9 +2640,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Generals",
-          "passageIndex": 30
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -3178,9 +2650,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "GELSEMIUM SEMPERVIRENS",
-          "sectionTitle": "Complaints",
-          "passageIndex": 19
+          "remedyName": "GELSEMIUM SEMPERVIRENS"
         }
       ]
     },
@@ -3190,9 +2660,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "STRAMONIUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 3
+          "remedyName": "STRAMONIUM"
         }
       ]
     },
@@ -3202,9 +2670,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Sulphur",
-          "sectionTitle": "Generalities",
-          "passageIndex": 10
+          "remedyName": "Sulphur"
         }
       ]
     },
@@ -3214,9 +2680,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Genitals",
-          "passageIndex": 4
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -3226,9 +2690,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CANNABIS INDICA",
-          "sectionTitle": "Mind",
-          "passageIndex": 39
+          "remedyName": "CANNABIS INDICA"
         }
       ]
     },
@@ -3238,9 +2700,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Head",
-          "passageIndex": 8
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -3250,9 +2710,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Sulphur",
-          "sectionTitle": "Sleep",
-          "passageIndex": 18
+          "remedyName": "Sulphur"
         }
       ]
     },
@@ -3262,9 +2720,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Calcarea Carbonica",
-          "sectionTitle": "Sleep",
-          "passageIndex": 6
+          "remedyName": "Calcarea Carbonica"
         }
       ]
     },
@@ -3274,9 +2730,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "MAGNESIUM SULPHURICUM",
-          "sectionTitle": "Neck and Back",
-          "passageIndex": 0
+          "remedyName": "MAGNESIUM SULPHURICUM"
         }
       ]
     },
@@ -3286,9 +2740,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Arsenicum Album",
-          "sectionTitle": "Generalities",
-          "passageIndex": 0
+          "remedyName": "Arsenicum Album"
         }
       ]
     },
@@ -3298,9 +2750,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CRATAEGUS OXYACANTHA",
-          "sectionTitle": "General",
-          "passageIndex": 9
+          "remedyName": "CRATAEGUS OXYACANTHA"
         }
       ]
     },
@@ -3310,9 +2760,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "BRYONIA ALBA",
-          "sectionTitle": "Mind",
-          "passageIndex": 4
+          "remedyName": "BRYONIA ALBA"
         }
       ]
     },
@@ -3322,9 +2770,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "ARGENTUM NITRICUM",
-          "sectionTitle": "Modalities",
-          "passageIndex": 0
+          "remedyName": "ARGENTUM NITRICUM"
         }
       ]
     },
@@ -3334,9 +2780,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "BERBERIS VULGARIS",
-          "sectionTitle": "Kidneys",
-          "passageIndex": 12
+          "remedyName": "BERBERIS VULGARIS"
         }
       ]
     },
@@ -3346,9 +2790,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARSENICUM ALBUM",
-          "sectionTitle": "Bowels",
-          "passageIndex": 11
+          "remedyName": "ARSENICUM ALBUM"
         }
       ]
     },
@@ -3358,9 +2800,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Pharynx",
-          "passageIndex": 1
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -3370,9 +2810,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "FERRUM METALLICUM",
-          "sectionTitle": "Pregnancy",
-          "passageIndex": 4
+          "remedyName": "FERRUM METALLICUM"
         }
       ]
     },
@@ -3382,9 +2820,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NITRICUM ACIDUM",
-          "sectionTitle": "Generalities",
-          "passageIndex": 18
+          "remedyName": "NITRICUM ACIDUM"
         }
       ]
     },
@@ -3394,9 +2830,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Agnus Castus",
-          "sectionTitle": "Male Sexual Organs",
-          "passageIndex": 5
+          "remedyName": "Agnus Castus"
         }
       ]
     },
@@ -3406,9 +2840,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "MYRICA CERIFERA",
-          "sectionTitle": "Stool",
-          "passageIndex": 1
+          "remedyName": "MYRICA CERIFERA"
         }
       ]
     },
@@ -3418,9 +2850,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CINA MARITIMA",
-          "sectionTitle": "Child",
-          "passageIndex": 0
+          "remedyName": "CINA MARITIMA"
         }
       ]
     },
@@ -3430,9 +2860,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Colocynthis",
-          "sectionTitle": "Male Sexual Organs",
-          "passageIndex": 0
+          "remedyName": "Colocynthis"
         }
       ]
     },
@@ -3442,9 +2870,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "MEDORRHINUM",
-          "sectionTitle": "SLEEP",
-          "passageIndex": 17
+          "remedyName": "MEDORRHINUM"
         }
       ]
     },
@@ -3454,9 +2880,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARGENTUM NITRICUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 4
+          "remedyName": "ARGENTUM NITRICUM"
         }
       ]
     },
@@ -3466,9 +2890,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "RHUS TOXICODENDRON",
-          "sectionTitle": "Abdomen",
-          "passageIndex": 0
+          "remedyName": "RHUS TOXICODENDRON"
         }
       ]
     },
@@ -3478,9 +2900,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SULPHUR",
-          "sectionTitle": "Eyes",
-          "passageIndex": 0
+          "remedyName": "SULPHUR"
         }
       ]
     },
@@ -3490,9 +2910,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CAPSICUM ANNUUM",
-          "sectionTitle": "Face",
-          "passageIndex": 28
+          "remedyName": "CAPSICUM ANNUUM"
         }
       ]
     },
@@ -3502,9 +2920,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Sulphur",
-          "sectionTitle": "Appetite",
-          "passageIndex": 13
+          "remedyName": "Sulphur"
         }
       ]
     },
@@ -3514,9 +2930,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "General",
-          "passageIndex": 4
+          "remedyName": "NUX VOMICA"
         }
       ]
     },
@@ -3526,9 +2940,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "AMBRA GRISEA",
-          "sectionTitle": "CHARACTERISTICS",
-          "passageIndex": 0
+          "remedyName": "AMBRA GRISEA"
         }
       ]
     },
@@ -3538,9 +2950,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "Mind",
-          "passageIndex": 29
+          "remedyName": "NUX VOMICA"
         }
       ]
     },
@@ -3550,9 +2960,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "MEDORRHINUM",
-          "sectionTitle": "General",
-          "passageIndex": 7
+          "remedyName": "MEDORRHINUM"
         }
       ]
     },
@@ -3562,9 +2970,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Pharynx",
-          "passageIndex": 1
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -3574,9 +2980,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Carcinosinum",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 1
+          "remedyName": "Carcinosinum"
         }
       ]
     },
@@ -3586,9 +2990,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 7
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -3598,9 +3000,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Stomach",
-          "passageIndex": 12
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -3610,9 +3010,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SILICEA TERRA",
-          "sectionTitle": "Stomach",
-          "passageIndex": 4
+          "remedyName": "SILICEA TERRA"
         }
       ]
     },
@@ -3622,9 +3020,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CALCAREA CARBONICA",
-          "sectionTitle": "General",
-          "passageIndex": 5
+          "remedyName": "CALCAREA CARBONICA"
         }
       ]
     },
@@ -3634,9 +3030,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "THYROIDINUM",
-          "sectionTitle": "HEAD",
-          "passageIndex": 4
+          "remedyName": "THYROIDINUM"
         }
       ]
     },
@@ -3646,9 +3040,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CARBO ANIMALIS",
-          "sectionTitle": "Glands and veins",
-          "passageIndex": 4
+          "remedyName": "CARBO ANIMALIS"
         }
       ]
     },
@@ -3658,9 +3050,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CALCAREA CARBONICA",
-          "sectionTitle": "Head",
-          "passageIndex": 13
+          "remedyName": "CALCAREA CARBONICA"
         }
       ]
     },
@@ -3670,9 +3060,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Mind again",
-          "passageIndex": 1
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -3682,9 +3070,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "BRYONIA ALBA",
-          "sectionTitle": "Mind",
-          "passageIndex": 10
+          "remedyName": "BRYONIA ALBA"
         }
       ]
     },
@@ -3694,9 +3080,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "SALIX NIGRA",
-          "sectionTitle": "Male",
-          "passageIndex": 0
+          "remedyName": "SALIX NIGRA"
         }
       ]
     },
@@ -3706,9 +3090,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "RHUS TOXICODENDRON",
-          "sectionTitle": "Back",
-          "passageIndex": 1
+          "remedyName": "RHUS TOXICODENDRON"
         }
       ]
     },
@@ -3718,9 +3100,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Head",
-          "passageIndex": 34
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -3730,9 +3110,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "MEDORRHINUM",
-          "sectionTitle": "STOOL AND RECTUM",
-          "passageIndex": 14
+          "remedyName": "MEDORRHINUM"
         }
       ]
     },
@@ -3742,9 +3120,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "APIS MELLIFICA",
-          "sectionTitle": "Skin",
-          "passageIndex": 5
+          "remedyName": "APIS MELLIFICA"
         }
       ]
     },
@@ -3754,9 +3130,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Head",
-          "passageIndex": 23
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -3766,9 +3140,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Respiratory",
-          "passageIndex": 3
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -3778,9 +3150,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CALCAREA CARBONICA",
-          "sectionTitle": "Mind",
-          "passageIndex": 19
+          "remedyName": "CALCAREA CARBONICA"
         }
       ]
     },
@@ -3790,9 +3160,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CALCAREA SILICATA",
-          "sectionTitle": "General",
-          "passageIndex": 3
+          "remedyName": "CALCAREA SILICATA"
         }
       ]
     },
@@ -3802,9 +3170,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Chamomilla",
-          "sectionTitle": "Face",
-          "passageIndex": 3
+          "remedyName": "Chamomilla"
         }
       ]
     },
@@ -3814,9 +3180,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "LAC CANINUM",
-          "sectionTitle": "LOWER LIMBS",
-          "passageIndex": 37
+          "remedyName": "LAC CANINUM"
         }
       ]
     },
@@ -3826,9 +3190,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CHELIDONIUM MAJUS",
-          "sectionTitle": "Right scapula",
-          "passageIndex": 19
+          "remedyName": "CHELIDONIUM MAJUS"
         }
       ]
     },
@@ -3838,9 +3200,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CALCAREA CARBONICA",
-          "sectionTitle": "Stomach",
-          "passageIndex": 0
+          "remedyName": "CALCAREA CARBONICA"
         }
       ]
     },
@@ -3850,9 +3210,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "MEDORRHINUM",
-          "sectionTitle": "Rheumatic symptoms",
-          "passageIndex": 3
+          "remedyName": "MEDORRHINUM"
         }
       ]
     },
@@ -3862,9 +3220,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Aurum Muriaticum Natronatum",
-          "sectionTitle": "Neck and Back",
-          "passageIndex": 3
+          "remedyName": "Aurum Muriaticum Natronatum"
         }
       ]
     },
@@ -3874,9 +3230,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Carcinosinum",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 1
+          "remedyName": "Carcinosinum"
         }
       ]
     },
@@ -3886,9 +3240,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "RHUS TOXICODENDRON",
-          "sectionTitle": "Generalities",
-          "passageIndex": 10
+          "remedyName": "RHUS TOXICODENDRON"
         }
       ]
     },
@@ -3898,9 +3250,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARGENTUM NITRICUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 5
+          "remedyName": "ARGENTUM NITRICUM"
         }
       ]
     },
@@ -3910,9 +3260,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CONIUM MACULATUM",
-          "sectionTitle": "Vertigo",
-          "passageIndex": 2
+          "remedyName": "CONIUM MACULATUM"
         }
       ]
     },
@@ -3922,9 +3270,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Cinnabaris",
-          "sectionTitle": "Sleep",
-          "passageIndex": 3
+          "remedyName": "Cinnabaris"
         }
       ]
     },
@@ -3934,9 +3280,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "FAGOPYRUM ESCULENTUM",
-          "sectionTitle": "Skin",
-          "passageIndex": 0
+          "remedyName": "FAGOPYRUM ESCULENTUM"
         }
       ]
     },
@@ -3946,9 +3290,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "General",
-          "passageIndex": 10
+          "remedyName": "LYCOPODIUM CLAVATUM"
         }
       ]
     },
@@ -3958,9 +3300,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "Fever",
-          "passageIndex": 4
+          "remedyName": "NUX VOMICA"
         }
       ]
     },
@@ -3970,9 +3310,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "STAPHYSAGRIA",
-          "sectionTitle": "Sleep",
-          "passageIndex": 6
+          "remedyName": "STAPHYSAGRIA"
         }
       ]
     },
@@ -3982,9 +3320,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphorus",
-          "sectionTitle": "Generalities",
-          "passageIndex": 47
+          "remedyName": "Phosphorus"
         }
       ]
     },
@@ -3994,9 +3330,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Syphilinum",
-          "sectionTitle": "Face",
-          "passageIndex": 1
+          "remedyName": "Syphilinum"
         }
       ]
     },
@@ -4006,9 +3340,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SARRACENIA PURPUREA",
-          "sectionTitle": "Neck and Back",
-          "passageIndex": 3
+          "remedyName": "SARRACENIA PURPUREA"
         }
       ]
     },
@@ -4018,9 +3350,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CISTUS CANADENSIS",
-          "sectionTitle": "Skin",
-          "passageIndex": 5
+          "remedyName": "CISTUS CANADENSIS"
         }
       ]
     },
@@ -4030,9 +3360,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphoricum Acidum",
-          "sectionTitle": "Respiratory Organs",
-          "passageIndex": 4
+          "remedyName": "Phosphoricum Acidum"
         }
       ]
     },
@@ -4042,9 +3370,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CALCAREA CARBONICA",
-          "sectionTitle": "Head",
-          "passageIndex": 42
+          "remedyName": "CALCAREA CARBONICA"
         }
       ]
     },
@@ -4054,9 +3380,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Generals",
-          "passageIndex": 30
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -4066,9 +3390,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Female",
-          "passageIndex": 6
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -4078,9 +3400,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "AETHUSA CYNAPIUM",
-          "sectionTitle": "General",
-          "passageIndex": 1
+          "remedyName": "AETHUSA CYNAPIUM"
         }
       ]
     },
@@ -4090,9 +3410,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CONIUM MACULATUM",
-          "sectionTitle": "Women",
-          "passageIndex": 4
+          "remedyName": "CONIUM MACULATUM"
         }
       ]
     },
@@ -4102,9 +3420,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Cannabis Indica",
-          "sectionTitle": "Head",
-          "passageIndex": 14
+          "remedyName": "Cannabis Indica"
         }
       ]
     },
@@ -4114,9 +3430,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CAUSTICUM",
-          "sectionTitle": "Respiratory",
-          "passageIndex": 4
+          "remedyName": "CAUSTICUM"
         }
       ]
     },
@@ -4126,9 +3440,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "PARIS QUADRIFOLIA",
-          "sectionTitle": "Mouth",
-          "passageIndex": 0
+          "remedyName": "PARIS QUADRIFOLIA"
         }
       ]
     },
@@ -4138,9 +3450,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Causticum",
-          "sectionTitle": "Urinary Organs",
-          "passageIndex": 2
+          "remedyName": "Causticum"
         }
       ]
     },
@@ -4150,9 +3460,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphoricum Acidum",
-          "sectionTitle": "Sleep",
-          "passageIndex": 6
+          "remedyName": "Phosphoricum Acidum"
         }
       ]
     },
@@ -4162,9 +3470,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "PSORINUM",
-          "sectionTitle": "SKIN",
-          "passageIndex": 24
+          "remedyName": "PSORINUM"
         }
       ]
     },
@@ -4174,9 +3480,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Calcarea Iodata",
-          "sectionTitle": "Skin",
-          "passageIndex": 0
+          "remedyName": "Calcarea Iodata"
         }
       ]
     },
@@ -4186,9 +3490,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "Mind",
-          "passageIndex": 26
+          "remedyName": "NUX VOMICA"
         }
       ]
     },
@@ -4198,9 +3500,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "PHOSPHORICUM ACIDUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 5
+          "remedyName": "PHOSPHORICUM ACIDUM"
         }
       ]
     },
@@ -4210,9 +3510,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CALCAREA CARBONICA",
-          "sectionTitle": "Modalities",
-          "passageIndex": 0
+          "remedyName": "CALCAREA CARBONICA"
         }
       ]
     },
@@ -4222,9 +3520,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "APIS MELLIFICA",
-          "sectionTitle": "Scarlet fever",
-          "passageIndex": 2
+          "remedyName": "APIS MELLIFICA"
         }
       ]
     },
@@ -4234,9 +3530,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARSENICUM ALBUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 3
+          "remedyName": "ARSENICUM ALBUM"
         }
       ]
     },
@@ -4246,9 +3540,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Stramonium",
-          "sectionTitle": "Mind",
-          "passageIndex": 3
+          "remedyName": "Stramonium"
         }
       ]
     },
@@ -4258,9 +3550,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Tartaricum Acidum",
-          "sectionTitle": "Stomach",
-          "passageIndex": 3
+          "remedyName": "Tartaricum Acidum"
         }
       ]
     },
@@ -4270,9 +3560,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "PHOSPHORUS",
-          "sectionTitle": "Women",
-          "passageIndex": 5
+          "remedyName": "PHOSPHORUS"
         }
       ]
     },
@@ -4282,9 +3570,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "RHUS TOXICODENDRON",
-          "sectionTitle": "Modalities",
-          "passageIndex": 0
+          "remedyName": "RHUS TOXICODENDRON"
         }
       ]
     },
@@ -4294,9 +3580,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "STAPHYSAGRIA",
-          "sectionTitle": "Sleep",
-          "passageIndex": 6
+          "remedyName": "STAPHYSAGRIA"
         }
       ]
     },
@@ -4306,9 +3590,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CROTALUS HORRIDUS",
-          "sectionTitle": "Aspect",
-          "passageIndex": 1
+          "remedyName": "CROTALUS HORRIDUS"
         }
       ]
     },
@@ -4318,9 +3600,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "AGARICUS MUSCARIUS",
-          "sectionTitle": "Back",
-          "passageIndex": 8
+          "remedyName": "AGARICUS MUSCARIUS"
         }
       ]
     },
@@ -4330,9 +3610,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "MOSCHUS",
-          "sectionTitle": "Mind",
-          "passageIndex": 1
+          "remedyName": "MOSCHUS"
         }
       ]
     },
@@ -4342,9 +3620,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CARBO ANIMALIS",
-          "sectionTitle": "Mind",
-          "passageIndex": 0
+          "remedyName": "CARBO ANIMALIS"
         }
       ]
     },
@@ -4354,9 +3630,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Croton Tiglium",
-          "sectionTitle": "Head",
-          "passageIndex": 4
+          "remedyName": "Croton Tiglium"
         }
       ]
     },
@@ -4366,9 +3640,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "CAULOPHYLLUM THALICTROIDES",
-          "sectionTitle": "Female Sexual Organs",
-          "passageIndex": 2
+          "remedyName": "CAULOPHYLLUM THALICTROIDES"
         }
       ]
     },
@@ -4378,9 +3650,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Stramonium",
-          "sectionTitle": "Mind",
-          "passageIndex": 3
+          "remedyName": "Stramonium"
         }
       ]
     },
@@ -4390,9 +3660,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Sleep",
-          "passageIndex": 3
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -4402,9 +3670,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CLEMATIS ERECTA",
-          "sectionTitle": "Teeth",
-          "passageIndex": 4
+          "remedyName": "CLEMATIS ERECTA"
         }
       ]
     },
@@ -4414,9 +3680,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Veratrum Album",
-          "sectionTitle": "Fever",
-          "passageIndex": 25
+          "remedyName": "Veratrum Album"
         }
       ]
     },
@@ -4426,9 +3690,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "APIS MELLIFICA",
-          "sectionTitle": "Violence and rapidity",
-          "passageIndex": 1
+          "remedyName": "APIS MELLIFICA"
         }
       ]
     },
@@ -4438,9 +3700,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Upper Limbs",
-          "passageIndex": 21
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -4450,9 +3710,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Stomach and abdomen",
-          "passageIndex": 17
+          "remedyName": "LYCOPODIUM CLAVATUM"
         }
       ]
     },
@@ -4462,9 +3720,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Argentum Nitricum",
-          "sectionTitle": "Stool and Anus",
-          "passageIndex": 2
+          "remedyName": "Argentum Nitricum"
         }
       ]
     },
@@ -4474,9 +3730,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SILICEA TERRA",
-          "sectionTitle": "Head",
-          "passageIndex": 17
+          "remedyName": "SILICEA TERRA"
         }
       ]
     },
@@ -4486,9 +3740,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Generals and aspect",
-          "passageIndex": 0
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -4498,9 +3750,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Aconitum Napellus",
-          "sectionTitle": "Mind",
-          "passageIndex": 2
+          "remedyName": "Aconitum Napellus"
         }
       ]
     },
@@ -4510,9 +3760,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "TUBERCULINUM",
-          "sectionTitle": "SKIN",
-          "passageIndex": 18
+          "remedyName": "TUBERCULINUM"
         }
       ]
     },
@@ -4522,9 +3770,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CONIUM MACULATUM",
-          "sectionTitle": "Modalities",
-          "passageIndex": 1
+          "remedyName": "CONIUM MACULATUM"
         }
       ]
     },
@@ -4534,9 +3780,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "GELSEMIUM SEMPERVIRENS",
-          "sectionTitle": "Mind",
-          "passageIndex": 1
+          "remedyName": "GELSEMIUM SEMPERVIRENS"
         }
       ]
     },
@@ -4546,9 +3790,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "BARYTA CARBONICA",
-          "sectionTitle": "Throat",
-          "passageIndex": 11
+          "remedyName": "BARYTA CARBONICA"
         }
       ]
     },
@@ -4558,9 +3800,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARSENICUM ALBUM",
-          "sectionTitle": "Eyes",
-          "passageIndex": 8
+          "remedyName": "ARSENICUM ALBUM"
         }
       ]
     },
@@ -4570,9 +3810,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARNICA MONTANA",
-          "sectionTitle": "Pregnancy",
-          "passageIndex": 6
+          "remedyName": "ARNICA MONTANA"
         }
       ]
     },
@@ -4582,9 +3820,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Head",
-          "passageIndex": 10
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -4594,9 +3830,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Aurum Sulphuratum",
-          "sectionTitle": "Male Sexual Organs",
-          "passageIndex": 0
+          "remedyName": "Aurum Sulphuratum"
         }
       ]
     },
@@ -4606,9 +3840,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "GELSEMIUM SEMPERVIRENS",
-          "sectionTitle": "Mind",
-          "passageIndex": 1
+          "remedyName": "GELSEMIUM SEMPERVIRENS"
         }
       ]
     },
@@ -4618,9 +3850,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Piper Nigrum",
-          "sectionTitle": "Sleep",
-          "passageIndex": 2
+          "remedyName": "Piper Nigrum"
         }
       ]
     },
@@ -4630,9 +3860,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Echinacea Angustifolia",
-          "sectionTitle": "Stomach",
-          "passageIndex": 0
+          "remedyName": "Echinacea Angustifolia"
         }
       ]
     },
@@ -4642,9 +3870,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CALCAREA SULPHURICA",
-          "sectionTitle": "Mind",
-          "passageIndex": 32
+          "remedyName": "CALCAREA SULPHURICA"
         }
       ]
     },
@@ -4654,9 +3880,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "PHOSPHORUS",
-          "sectionTitle": "Head",
-          "passageIndex": 6
+          "remedyName": "PHOSPHORUS"
         }
       ]
     },
@@ -4666,9 +3890,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SULPHUR",
-          "sectionTitle": "Skin",
-          "passageIndex": 14
+          "remedyName": "SULPHUR"
         }
       ]
     },
@@ -4678,9 +3900,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Generals",
-          "passageIndex": 30
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -4690,9 +3910,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "PHOSPHORUS",
-          "sectionTitle": "Head",
-          "passageIndex": 6
+          "remedyName": "PHOSPHORUS"
         }
       ]
     },
@@ -4702,9 +3920,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "KREOSOTUM",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 35
+          "remedyName": "KREOSOTUM"
         }
       ]
     },
@@ -4714,9 +3930,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Bromium",
-          "sectionTitle": "Female Sexual Organs",
-          "passageIndex": 2
+          "remedyName": "Bromium"
         }
       ]
     },
@@ -4726,9 +3940,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphorus",
-          "sectionTitle": "Generalities",
-          "passageIndex": 47
+          "remedyName": "Phosphorus"
         }
       ]
     },
@@ -4738,9 +3950,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "PHYSOSTIGMA VENENOSUM",
-          "sectionTitle": "Sleep",
-          "passageIndex": 2
+          "remedyName": "PHYSOSTIGMA VENENOSUM"
         }
       ]
     },
@@ -4750,9 +3960,7 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 6
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -4762,9 +3970,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Skin",
-          "passageIndex": 5
+          "remedyName": "LYCOPODIUM CLAVATUM"
         }
       ]
     },
@@ -4774,9 +3980,7 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "PSORINUM",
-          "sectionTitle": "SKIN",
-          "passageIndex": 9
+          "remedyName": "PSORINUM"
         }
       ]
     },
@@ -4786,9 +3990,7 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "AURUM METALLICUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 8
+          "remedyName": "AURUM METALLICUM"
         }
       ]
     },
@@ -4798,9 +4000,7 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "AILANTHUS GLANDULOSA",
-          "sectionTitle": "General",
-          "passageIndex": 0
+          "remedyName": "AILANTHUS GLANDULOSA"
         }
       ]
     },
@@ -4810,21 +4010,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Carcinosinum",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 1
+          "remedyName": "Carcinosinum"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 7
+          "remedyName": "PULSATILLA PRATENSIS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARSENICUM ALBUM",
-          "sectionTitle": "Bowels",
-          "passageIndex": 2
+          "remedyName": "ARSENICUM ALBUM"
         }
       ]
     },
@@ -4834,15 +4028,11 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Sulphur",
-          "sectionTitle": "Generalities",
-          "passageIndex": 10
+          "remedyName": "Sulphur"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 7
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -4852,21 +4042,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "IGNATIA AMARA",
-          "sectionTitle": "Mind",
-          "passageIndex": 39
+          "remedyName": "IGNATIA AMARA"
         },
         {
           "bookId": "allen-nosodes",
-          "remedyName": "MEDORRHINUM",
-          "sectionTitle": "SLEEP",
-          "passageIndex": 17
+          "remedyName": "MEDORRHINUM"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Modalities",
-          "passageIndex": 0
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -4876,21 +4060,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 7
+          "remedyName": "PULSATILLA PRATENSIS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Stomach and abdomen",
-          "passageIndex": 20
+          "remedyName": "LYCOPODIUM CLAVATUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "THUJA OCCIDENTALIS",
-          "sectionTitle": "Warts",
-          "passageIndex": 0
+          "remedyName": "THUJA OCCIDENTALIS"
         }
       ]
     },
@@ -4900,21 +4078,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "APIS MELLIFICA",
-          "sectionTitle": "Urines",
-          "passageIndex": 20
+          "remedyName": "APIS MELLIFICA"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "PAREIRA BRAVA",
-          "sectionTitle": "Urinary",
-          "passageIndex": 2
+          "remedyName": "PAREIRA BRAVA"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "BELLADONNA",
-          "sectionTitle": "Head",
-          "passageIndex": 11
+          "remedyName": "BELLADONNA"
         }
       ]
     },
@@ -4924,21 +4096,15 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "General",
-          "passageIndex": 15
+          "remedyName": "NUX VOMICA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Genitals",
-          "passageIndex": 6
+          "remedyName": "LYCOPODIUM CLAVATUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "SULPHUR",
-          "sectionTitle": "Head",
-          "passageIndex": 3
+          "remedyName": "SULPHUR"
         }
       ]
     },
@@ -4948,21 +4114,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CALCAREA CARBONICA",
-          "sectionTitle": "Head",
-          "passageIndex": 13
+          "remedyName": "CALCAREA CARBONICA"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 7
+          "remedyName": "PULSATILLA PRATENSIS"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "ALOE SOCOTRINA",
-          "sectionTitle": "Fever",
-          "passageIndex": 0
+          "remedyName": "ALOE SOCOTRINA"
         }
       ]
     },
@@ -4972,21 +4132,15 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "MEDORRHINUM",
-          "sectionTitle": "STOOL AND RECTUM",
-          "passageIndex": 14
+          "remedyName": "MEDORRHINUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Head",
-          "passageIndex": 7
+          "remedyName": "LYCOPODIUM CLAVATUM"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "CALENDULA OFFICINALIS",
-          "sectionTitle": "Fever",
-          "passageIndex": 7
+          "remedyName": "CALENDULA OFFICINALIS"
         }
       ]
     },
@@ -4996,21 +4150,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Urinary",
-          "passageIndex": 5
+          "remedyName": "SEPIA OFFICINALIS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "SULPHUR",
-          "sectionTitle": "Head",
-          "passageIndex": 20
+          "remedyName": "SULPHUR"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphorus",
-          "sectionTitle": "Generalities",
-          "passageIndex": 47
+          "remedyName": "Phosphorus"
         }
       ]
     },
@@ -5020,21 +4168,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "OPIUM",
-          "sectionTitle": "Convulsions",
-          "passageIndex": 8
+          "remedyName": "OPIUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 4
+          "remedyName": "NATRIUM MURIATICUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "CAPSICUM ANNUUM",
-          "sectionTitle": "Face",
-          "passageIndex": 28
+          "remedyName": "CAPSICUM ANNUUM"
         }
       ]
     },
@@ -5044,21 +4186,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 7
+          "remedyName": "PULSATILLA PRATENSIS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "IGNATIA AMARA",
-          "sectionTitle": "Nose",
-          "passageIndex": 15
+          "remedyName": "IGNATIA AMARA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Female",
-          "passageIndex": 9
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -5068,15 +4204,11 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "SERUM ANGUILLAE",
-          "sectionTitle": "General",
-          "passageIndex": 1
+          "remedyName": "SERUM ANGUILLAE"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 7
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -5086,21 +4218,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CALCAREA CARBONICA",
-          "sectionTitle": "Throat",
-          "passageIndex": 0
+          "remedyName": "CALCAREA CARBONICA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "MEDORRHINUM",
-          "sectionTitle": "Liver",
-          "passageIndex": 7
+          "remedyName": "MEDORRHINUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "BELLADONNA",
-          "sectionTitle": "Mind",
-          "passageIndex": 19
+          "remedyName": "BELLADONNA"
         }
       ]
     },
@@ -5110,21 +4236,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphorus",
-          "sectionTitle": "Generalities",
-          "passageIndex": 47
+          "remedyName": "Phosphorus"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "BRYONIA ALBA",
-          "sectionTitle": "Respiratory Organs",
-          "passageIndex": 17
+          "remedyName": "BRYONIA ALBA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Generals",
-          "passageIndex": 30
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -5134,21 +4254,15 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "SYZYGIUM JAMBOLANUM",
-          "sectionTitle": "General",
-          "passageIndex": 2
+          "remedyName": "SYZYGIUM JAMBOLANUM"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Respiratory",
-          "passageIndex": 1
+          "remedyName": "PULSATILLA PRATENSIS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "BELLADONNA",
-          "sectionTitle": "Sleep",
-          "passageIndex": 23
+          "remedyName": "BELLADONNA"
         }
       ]
     },
@@ -5158,21 +4272,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "China Officinalis",
-          "sectionTitle": "Fever",
-          "passageIndex": 12
+          "remedyName": "China Officinalis"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "BRYONIA ALBA",
-          "sectionTitle": "Mind",
-          "passageIndex": 11
+          "remedyName": "BRYONIA ALBA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "OPIUM",
-          "sectionTitle": "Face",
-          "passageIndex": 13
+          "remedyName": "OPIUM"
         }
       ]
     },
@@ -5182,21 +4290,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 7
+          "remedyName": "PULSATILLA PRATENSIS"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "Modalities",
-          "passageIndex": 1
+          "remedyName": "NUX VOMICA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Mind",
-          "passageIndex": 5
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -5206,21 +4308,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Arsenicum Album",
-          "sectionTitle": "Chest",
-          "passageIndex": 0
+          "remedyName": "Arsenicum Album"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "STAPHYSAGRIA",
-          "sectionTitle": "Teeth",
-          "passageIndex": 1
+          "remedyName": "STAPHYSAGRIA"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Belladonna",
-          "sectionTitle": "Head",
-          "passageIndex": 22
+          "remedyName": "Belladonna"
         }
       ]
     },
@@ -5230,21 +4326,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "GELSEMIUM SEMPERVIRENS",
-          "sectionTitle": "Complaints",
-          "passageIndex": 31
+          "remedyName": "GELSEMIUM SEMPERVIRENS"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Hall",
-          "sectionTitle": "Female Sexual Organs",
-          "passageIndex": 2
+          "remedyName": "Hall"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "BRYONIA ALBA",
-          "sectionTitle": "Mind",
-          "passageIndex": 11
+          "remedyName": "BRYONIA ALBA"
         }
       ]
     },
@@ -5254,21 +4344,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Aurum Sulphuratum",
-          "sectionTitle": "Male Sexual Organs",
-          "passageIndex": 0
+          "remedyName": "Aurum Sulphuratum"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Sulphur",
-          "sectionTitle": "Mind",
-          "passageIndex": 28
+          "remedyName": "Sulphur"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "AURUM METALLICUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 8
+          "remedyName": "AURUM METALLICUM"
         }
       ]
     },
@@ -5278,21 +4362,15 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CAUSTICUM",
-          "sectionTitle": "Respiratory",
-          "passageIndex": 4
+          "remedyName": "CAUSTICUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Head",
-          "passageIndex": 21
+          "remedyName": "NATRIUM MURIATICUM"
         },
         {
           "bookId": "allen-nosodes",
-          "remedyName": "TUBERCULINUM",
-          "sectionTitle": "SKIN",
-          "passageIndex": 21
+          "remedyName": "TUBERCULINUM"
         }
       ]
     },
@@ -5302,21 +4380,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Stramonium",
-          "sectionTitle": "Sleep",
-          "passageIndex": 4
+          "remedyName": "Stramonium"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Sulphur",
-          "sectionTitle": "Generalities",
-          "passageIndex": 3
+          "remedyName": "Sulphur"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Calcarea Carbonica",
-          "sectionTitle": "Fever",
-          "passageIndex": 6
+          "remedyName": "Calcarea Carbonica"
         }
       ]
     },
@@ -5326,15 +4398,11 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "COLOCYNTHIS",
-          "sectionTitle": "Face",
-          "passageIndex": 1
+          "remedyName": "COLOCYNTHIS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARSENICUM ALBUM",
-          "sectionTitle": "Bowels",
-          "passageIndex": 10
+          "remedyName": "ARSENICUM ALBUM"
         }
       ]
     },
@@ -5344,21 +4412,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "IGNATIA AMARA",
-          "sectionTitle": "Mind",
-          "passageIndex": 7
+          "remedyName": "IGNATIA AMARA"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Stramonium",
-          "sectionTitle": "Head",
-          "passageIndex": 9
+          "remedyName": "Stramonium"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Aurum Bromatum",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 1
+          "remedyName": "Aurum Bromatum"
         }
       ]
     },
@@ -5368,21 +4430,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "OPIUM",
-          "sectionTitle": "Generals",
-          "passageIndex": 1
+          "remedyName": "OPIUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "MOSCHUS",
-          "sectionTitle": "Mind",
-          "passageIndex": 8
+          "remedyName": "MOSCHUS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Generals",
-          "passageIndex": 30
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -5392,21 +4448,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "COCCUS CACTI",
-          "sectionTitle": "Cough",
-          "passageIndex": 22
+          "remedyName": "COCCUS CACTI"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "HYOSCYAMUS NIGER",
-          "sectionTitle": "Chest",
-          "passageIndex": 2
+          "remedyName": "HYOSCYAMUS NIGER"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Modalities",
-          "passageIndex": 0
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -5416,15 +4466,11 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 6
+          "remedyName": "SEPIA OFFICINALIS"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "PHOSPHORUS",
-          "sectionTitle": "Modalities",
-          "passageIndex": 0
+          "remedyName": "PHOSPHORUS"
         }
       ]
     },
@@ -5434,21 +4480,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SILICEA TERRA",
-          "sectionTitle": "Throat",
-          "passageIndex": 3
+          "remedyName": "SILICEA TERRA"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "MYRISTICA SEBIFERA",
-          "sectionTitle": "General",
-          "passageIndex": 8
+          "remedyName": "MYRISTICA SEBIFERA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "SULPHUR",
-          "sectionTitle": "Head",
-          "passageIndex": 6
+          "remedyName": "SULPHUR"
         }
       ]
     },
@@ -5458,21 +4498,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "DULCAMARA",
-          "sectionTitle": "Rheumatism",
-          "passageIndex": 3
+          "remedyName": "DULCAMARA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "SULPHUR",
-          "sectionTitle": "Respiration",
-          "passageIndex": 8
+          "remedyName": "SULPHUR"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "RHUS TOXICODENDRON",
-          "sectionTitle": "Generalities",
-          "passageIndex": 0
+          "remedyName": "RHUS TOXICODENDRON"
         }
       ]
     },
@@ -5482,21 +4516,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "MERCURIUS CORROSIVUS",
-          "sectionTitle": "General",
-          "passageIndex": 1
+          "remedyName": "MERCURIUS CORROSIVUS"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "CALENDULA OFFICINALIS",
-          "sectionTitle": "Clinical",
-          "passageIndex": 19
+          "remedyName": "CALENDULA OFFICINALIS"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Syphilinum",
-          "sectionTitle": "Mouth",
-          "passageIndex": 8
+          "remedyName": "Syphilinum"
         }
       ]
     },
@@ -5506,21 +4534,15 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CANNABIS INDICA",
-          "sectionTitle": "Urinary",
-          "passageIndex": 1
+          "remedyName": "CANNABIS INDICA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "NATRIUM PHOSPHORICUM",
-          "sectionTitle": "Stomach",
-          "passageIndex": 2
+          "remedyName": "NATRIUM PHOSPHORICUM"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Veratrum Album",
-          "sectionTitle": "Generalities",
-          "passageIndex": 0
+          "remedyName": "Veratrum Album"
         }
       ]
     },
@@ -5530,21 +4552,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "IGNATIA AMARA",
-          "sectionTitle": "Nose",
-          "passageIndex": 7
+          "remedyName": "IGNATIA AMARA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "Mind",
-          "passageIndex": 12
+          "remedyName": "NUX VOMICA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARSENICUM ALBUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 21
+          "remedyName": "ARSENICUM ALBUM"
         }
       ]
     },
@@ -5554,21 +4570,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Chamomilla",
-          "sectionTitle": "Fever",
-          "passageIndex": 3
+          "remedyName": "Chamomilla"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Sulphur",
-          "sectionTitle": "Respiratory Organs",
-          "passageIndex": 12
+          "remedyName": "Sulphur"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "BRYONIA ALBA",
-          "sectionTitle": "Mind",
-          "passageIndex": 11
+          "remedyName": "BRYONIA ALBA"
         }
       ]
     },
@@ -5578,15 +4588,11 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "TUBERCULINUM",
-          "sectionTitle": "HEAD",
-          "passageIndex": 40
+          "remedyName": "TUBERCULINUM"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "ARNICA MONTANA",
-          "sectionTitle": "Sleep",
-          "passageIndex": 5
+          "remedyName": "ARNICA MONTANA"
         }
       ]
     },
@@ -5596,21 +4602,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Cuprum Metallicum",
-          "sectionTitle": "Mind",
-          "passageIndex": 0
+          "remedyName": "Cuprum Metallicum"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "CALCAREA CARBONICA",
-          "sectionTitle": "Modalities",
-          "passageIndex": 0
+          "remedyName": "CALCAREA CARBONICA"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "THUJA OCCIDENTALIS",
-          "sectionTitle": "Eyes",
-          "passageIndex": 12
+          "remedyName": "THUJA OCCIDENTALIS"
         }
       ]
     },
@@ -5620,21 +4620,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "IGNATIA AMARA",
-          "sectionTitle": "Anxiety",
-          "passageIndex": 1
+          "remedyName": "IGNATIA AMARA"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Urtica Urens",
-          "sectionTitle": "Stool and Anus",
-          "passageIndex": 1
+          "remedyName": "Urtica Urens"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "CAUSTICUM",
-          "sectionTitle": "Cough",
-          "passageIndex": 12
+          "remedyName": "CAUSTICUM"
         }
       ]
     },
@@ -5644,15 +4638,11 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 0
+          "remedyName": "SEPIA OFFICINALIS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "MANGANUM ACETICUM",
-          "sectionTitle": "Larynx",
-          "passageIndex": 0
+          "remedyName": "MANGANUM ACETICUM"
         }
       ]
     },
@@ -5662,15 +4652,11 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CALCAREA CARBONICA",
-          "sectionTitle": "Stomach",
-          "passageIndex": 0
+          "remedyName": "CALCAREA CARBONICA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Genitals",
-          "passageIndex": 5
+          "remedyName": "LYCOPODIUM CLAVATUM"
         }
       ]
     },
@@ -5680,15 +4666,11 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARSENICUM ALBUM",
-          "sectionTitle": "Bowels",
-          "passageIndex": 11
+          "remedyName": "ARSENICUM ALBUM"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Ears",
-          "passageIndex": 9
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -5698,21 +4680,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "CAULOPHYLLUM THALICTROIDES",
-          "sectionTitle": "Female Sexual Organs",
-          "passageIndex": 7
+          "remedyName": "CAULOPHYLLUM THALICTROIDES"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Female Sexual Organs",
-          "passageIndex": 15
+          "remedyName": "PULSATILLA PRATENSIS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "SILICEA TERRA",
-          "sectionTitle": "Mind",
-          "passageIndex": 1
+          "remedyName": "SILICEA TERRA"
         }
       ]
     },
@@ -5722,21 +4698,15 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Modalities",
-          "passageIndex": 0
+          "remedyName": "NATRIUM MURIATICUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "CAUSTICUM",
-          "sectionTitle": "Joints",
-          "passageIndex": 0
+          "remedyName": "CAUSTICUM"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "SILICEA TERRA",
-          "sectionTitle": "Head",
-          "passageIndex": 26
+          "remedyName": "SILICEA TERRA"
         }
       ]
     },
@@ -5746,21 +4716,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "COCCULUS INDICUS",
-          "sectionTitle": "Joints",
-          "passageIndex": 9
+          "remedyName": "COCCULUS INDICUS"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Sinapis Nigra",
-          "sectionTitle": "Female Sexual Organs",
-          "passageIndex": 0
+          "remedyName": "Sinapis Nigra"
         },
         {
           "bookId": "allen-nosodes",
-          "remedyName": "LAC CANINUM",
-          "sectionTitle": "LOWER LIMBS",
-          "passageIndex": 37
+          "remedyName": "LAC CANINUM"
         }
       ]
     },
@@ -5770,21 +4734,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "KALMIA LATIFOLIA",
-          "sectionTitle": "Pains",
-          "passageIndex": 6
+          "remedyName": "KALMIA LATIFOLIA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "IGNATIA AMARA",
-          "sectionTitle": "Anxiety",
-          "passageIndex": 1
+          "remedyName": "IGNATIA AMARA"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "BOTULINUM",
-          "sectionTitle": "General",
-          "passageIndex": 4
+          "remedyName": "BOTULINUM"
         }
       ]
     },
@@ -5794,21 +4752,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARSENICUM ALBUM",
-          "sectionTitle": "Fever",
-          "passageIndex": 2
+          "remedyName": "ARSENICUM ALBUM"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "STAPHYSAGRIA",
-          "sectionTitle": "Sleep",
-          "passageIndex": 6
+          "remedyName": "STAPHYSAGRIA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "FERRUM METALLICUM",
-          "sectionTitle": "Rheumatic pains",
-          "passageIndex": 4
+          "remedyName": "FERRUM METALLICUM"
         }
       ]
     },
@@ -5818,15 +4770,11 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "BELLADONNA",
-          "sectionTitle": "Joints",
-          "passageIndex": 6
+          "remedyName": "BELLADONNA"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "IRIS VERSICOLOR",
-          "sectionTitle": "Head",
-          "passageIndex": 0
+          "remedyName": "IRIS VERSICOLOR"
         }
       ]
     },
@@ -5836,21 +4784,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Head",
-          "passageIndex": 12
+          "remedyName": "SEPIA OFFICINALIS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARNICA MONTANA",
-          "sectionTitle": "Mind",
-          "passageIndex": 1
+          "remedyName": "ARNICA MONTANA"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "THEA CHINENSIS",
-          "sectionTitle": "Head",
-          "passageIndex": 3
+          "remedyName": "THEA CHINENSIS"
         }
       ]
     },
@@ -5860,21 +4802,15 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "MEDORRHINUM",
-          "sectionTitle": "FEVER",
-          "passageIndex": 2
+          "remedyName": "MEDORRHINUM"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Modalities",
-          "passageIndex": 1
+          "remedyName": "PULSATILLA PRATENSIS"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "DROSERA ROTUNDIFOLIA",
-          "sectionTitle": "Respiratory Organs",
-          "passageIndex": 14
+          "remedyName": "DROSERA ROTUNDIFOLIA"
         }
       ]
     },
@@ -5884,21 +4820,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "DIGITALIS PURPUREA",
-          "sectionTitle": "Respiratory Organs",
-          "passageIndex": 3
+          "remedyName": "DIGITALIS PURPUREA"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "OPIUM",
-          "sectionTitle": "Skin",
-          "passageIndex": 1
+          "remedyName": "OPIUM"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "ARNICA MONTANA",
-          "sectionTitle": "Respiratory Organs",
-          "passageIndex": 12
+          "remedyName": "ARNICA MONTANA"
         }
       ]
     },
@@ -5908,21 +4838,15 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "MEDORRHINUM",
-          "sectionTitle": "HEAD",
-          "passageIndex": 0
+          "remedyName": "MEDORRHINUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Head",
-          "passageIndex": 14
+          "remedyName": "SEPIA OFFICINALIS"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphorus",
-          "sectionTitle": "Generalities",
-          "passageIndex": 47
+          "remedyName": "Phosphorus"
         }
       ]
     },
@@ -5932,15 +4856,11 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CINA MARITIMA",
-          "sectionTitle": "Child",
-          "passageIndex": 0
+          "remedyName": "CINA MARITIMA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "ANTIMONIUM CRUDUM",
-          "sectionTitle": "Catarrhal symptoms",
-          "passageIndex": 5
+          "remedyName": "ANTIMONIUM CRUDUM"
         }
       ]
     },
@@ -5950,15 +4870,11 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "APIS MELLIFICA",
-          "sectionTitle": "Skin",
-          "passageIndex": 5
+          "remedyName": "APIS MELLIFICA"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "PHYTOLACCA DECANDRA",
-          "sectionTitle": "Modalities",
-          "passageIndex": 1
+          "remedyName": "PHYTOLACCA DECANDRA"
         }
       ]
     },
@@ -5968,21 +4884,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "OPIUM",
-          "sectionTitle": "Face",
-          "passageIndex": 13
+          "remedyName": "OPIUM"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Sulphur",
-          "sectionTitle": "Generalities",
-          "passageIndex": 10
+          "remedyName": "Sulphur"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Belladonna",
-          "sectionTitle": "Head",
-          "passageIndex": 7
+          "remedyName": "Belladonna"
         }
       ]
     },
@@ -5992,21 +4902,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "ARNICA MONTANA",
-          "sectionTitle": "Fever",
-          "passageIndex": 6
+          "remedyName": "ARNICA MONTANA"
         },
         {
           "bookId": "allen-nosodes",
-          "remedyName": "X-RAY",
-          "sectionTitle": "LOWER EXTREMITIES",
-          "passageIndex": 10
+          "remedyName": "X-RAY"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Generals",
-          "passageIndex": 30
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -6016,21 +4920,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "BRYONIA ALBA",
-          "sectionTitle": "Respiratory Organs",
-          "passageIndex": 12
+          "remedyName": "BRYONIA ALBA"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Modalities",
-          "passageIndex": 0
+          "remedyName": "NATRIUM MURIATICUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "MURIATICUM ACIDUM",
-          "sectionTitle": "General",
-          "passageIndex": 2
+          "remedyName": "MURIATICUM ACIDUM"
         }
       ]
     },
@@ -6040,21 +4938,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Stramonium",
-          "sectionTitle": "Head",
-          "passageIndex": 9
+          "remedyName": "Stramonium"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "CROTALUS HORRIDUS",
-          "sectionTitle": "Skin",
-          "passageIndex": 0
+          "remedyName": "CROTALUS HORRIDUS"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphoricum Acidum",
-          "sectionTitle": "Mind",
-          "passageIndex": 7
+          "remedyName": "Phosphoricum Acidum"
         }
       ]
     },
@@ -6064,15 +4956,11 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphorus",
-          "sectionTitle": "Generalities",
-          "passageIndex": 47
+          "remedyName": "Phosphorus"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 6
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -6082,15 +4970,11 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SULPHUR",
-          "sectionTitle": "Head",
-          "passageIndex": 3
+          "remedyName": "SULPHUR"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphorus",
-          "sectionTitle": "Generalities",
-          "passageIndex": 47
+          "remedyName": "Phosphorus"
         }
       ]
     },
@@ -6100,15 +4984,11 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "MURIATICUM ACIDUM",
-          "sectionTitle": "Skin",
-          "passageIndex": 0
+          "remedyName": "MURIATICUM ACIDUM"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Saccharum Lactis",
-          "sectionTitle": "Heart and Pulse",
-          "passageIndex": 1
+          "remedyName": "Saccharum Lactis"
         }
       ]
     },
@@ -6118,21 +4998,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CALCAREA CARBONICA",
-          "sectionTitle": "Throat",
-          "passageIndex": 0
+          "remedyName": "CALCAREA CARBONICA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Head",
-          "passageIndex": 3
+          "remedyName": "SEPIA OFFICINALIS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "BELLADONNA",
-          "sectionTitle": "Skin",
-          "passageIndex": 6
+          "remedyName": "BELLADONNA"
         }
       ]
     },
@@ -6142,21 +5016,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Stramonium",
-          "sectionTitle": "Head",
-          "passageIndex": 9
+          "remedyName": "Stramonium"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "APIS MELLIFICA",
-          "sectionTitle": "Scarlet fever",
-          "passageIndex": 4
+          "remedyName": "APIS MELLIFICA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "HYOSCYAMUS NIGER",
-          "sectionTitle": "Mind",
-          "passageIndex": 8
+          "remedyName": "HYOSCYAMUS NIGER"
         }
       ]
     },
@@ -6166,21 +5034,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Colocynthis",
-          "sectionTitle": "Stool and Anus",
-          "passageIndex": 8
+          "remedyName": "Colocynthis"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "APIS MELLIFICA",
-          "sectionTitle": "Scarlet fever",
-          "passageIndex": 4
+          "remedyName": "APIS MELLIFICA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "BRYONIA ALBA",
-          "sectionTitle": "Stomach",
-          "passageIndex": 4
+          "remedyName": "BRYONIA ALBA"
         }
       ]
     },
@@ -6190,21 +5052,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Generals",
-          "passageIndex": 30
+          "remedyName": "LACHESIS MUTUS"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "CRATAEGUS OXYACANTHA",
-          "sectionTitle": "Heart",
-          "passageIndex": 7
+          "remedyName": "CRATAEGUS OXYACANTHA"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "DROSERA ROTUNDIFOLIA",
-          "sectionTitle": "Respiratory Organs",
-          "passageIndex": 15
+          "remedyName": "DROSERA ROTUNDIFOLIA"
         }
       ]
     },
@@ -6214,21 +5070,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARNICA MONTANA",
-          "sectionTitle": "Mind",
-          "passageIndex": 1
+          "remedyName": "ARNICA MONTANA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "BRYONIA ALBA",
-          "sectionTitle": "Mind",
-          "passageIndex": 11
+          "remedyName": "BRYONIA ALBA"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphorus",
-          "sectionTitle": "Generalities",
-          "passageIndex": 47
+          "remedyName": "Phosphorus"
         }
       ]
     },
@@ -6238,15 +5088,11 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Mind",
-          "passageIndex": 15
+          "remedyName": "LACHESIS MUTUS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "APIS MELLIFICA",
-          "sectionTitle": "Urines",
-          "passageIndex": 20
+          "remedyName": "APIS MELLIFICA"
         }
       ]
     },
@@ -6256,15 +5102,11 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Head",
-          "passageIndex": 11
+          "remedyName": "SEPIA OFFICINALIS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Female",
-          "passageIndex": 11
+          "remedyName": "LACHESIS MUTUS"
         }
       ]
     },
@@ -6274,21 +5116,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 13
+          "remedyName": "LYCOPODIUM CLAVATUM"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphorus",
-          "sectionTitle": "Generalities",
-          "passageIndex": 47
+          "remedyName": "Phosphorus"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "ANTIMONIUM TARTARICUM",
-          "sectionTitle": "Pains",
-          "passageIndex": 4
+          "remedyName": "ANTIMONIUM TARTARICUM"
         }
       ]
     },
@@ -6298,21 +5134,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Modalities",
-          "passageIndex": 3
+          "remedyName": "NATRIUM MURIATICUM"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "BOTULINUM",
-          "sectionTitle": "General",
-          "passageIndex": 3
+          "remedyName": "BOTULINUM"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "CARCINOSINUM",
-          "sectionTitle": "General",
-          "passageIndex": 2
+          "remedyName": "CARCINOSINUM"
         }
       ]
     },
@@ -6322,21 +5152,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "RHEUM PALMATUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 4
+          "remedyName": "RHEUM PALMATUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Bladder",
-          "passageIndex": 3
+          "remedyName": "NATRIUM MURIATICUM"
         },
         {
           "bookId": "allen-nosodes",
-          "remedyName": "TUBERCULINUM",
-          "sectionTitle": "HEAD",
-          "passageIndex": 40
+          "remedyName": "TUBERCULINUM"
         }
       ]
     },
@@ -6346,15 +5170,11 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "COLOCYNTHIS",
-          "sectionTitle": "Pains",
-          "passageIndex": 9
+          "remedyName": "COLOCYNTHIS"
         },
         {
           "bookId": "allen-nosodes",
-          "remedyName": "MEDORRHINUM",
-          "sectionTitle": "LOWER LIMBS",
-          "passageIndex": 29
+          "remedyName": "MEDORRHINUM"
         }
       ]
     },
@@ -6364,21 +5184,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 6
+          "remedyName": "SEPIA OFFICINALIS"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "COCCULUS INDICUS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 25
+          "remedyName": "COCCULUS INDICUS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "AURUM METALLICUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 8
+          "remedyName": "AURUM METALLICUM"
         }
       ]
     },
@@ -6388,21 +5202,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Belladonna",
-          "sectionTitle": "Sleep",
-          "passageIndex": 8
+          "remedyName": "Belladonna"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "ACONITUM NAPELLUS",
-          "sectionTitle": "General",
-          "passageIndex": 1
+          "remedyName": "ACONITUM NAPELLUS"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Stramonium",
-          "sectionTitle": "Mind",
-          "passageIndex": 3
+          "remedyName": "Stramonium"
         }
       ]
     },
@@ -6412,15 +5220,11 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "SILICEA TERRA",
-          "sectionTitle": "Fever",
-          "passageIndex": 17
+          "remedyName": "SILICEA TERRA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "NITRICUM ACIDUM",
-          "sectionTitle": "Women",
-          "passageIndex": 4
+          "remedyName": "NITRICUM ACIDUM"
         }
       ]
     },
@@ -6430,21 +5234,15 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "LATRODECTUS MACTANS",
-          "sectionTitle": "Respiratory",
-          "passageIndex": 2
+          "remedyName": "LATRODECTUS MACTANS"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 7
+          "remedyName": "PULSATILLA PRATENSIS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "AURUM METALLICUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 8
+          "remedyName": "AURUM METALLICUM"
         }
       ]
     },
@@ -6454,15 +5252,11 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Carcinosinum",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 1
+          "remedyName": "Carcinosinum"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "BELLADONNA",
-          "sectionTitle": "Sleep",
-          "passageIndex": 23
+          "remedyName": "BELLADONNA"
         }
       ]
     },
@@ -6472,21 +5266,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "CONIUM MACULATUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 6
+          "remedyName": "CONIUM MACULATUM"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "COCCULUS INDICUS",
-          "sectionTitle": "Mind",
-          "passageIndex": 1
+          "remedyName": "COCCULUS INDICUS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "ACONITUM NAPELLUS",
-          "sectionTitle": "Genital",
-          "passageIndex": 2
+          "remedyName": "ACONITUM NAPELLUS"
         }
       ]
     },
@@ -6496,15 +5284,11 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "MERCURIUS SOLUBILIS",
-          "sectionTitle": "Liver",
-          "passageIndex": 4
+          "remedyName": "MERCURIUS SOLUBILIS"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "General",
-          "passageIndex": 2
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -6514,15 +5298,11 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Arsenicum Album",
-          "sectionTitle": "Generalities",
-          "passageIndex": 0
+          "remedyName": "Arsenicum Album"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Belladonna",
-          "sectionTitle": "Respiratory Organs",
-          "passageIndex": 7
+          "remedyName": "Belladonna"
         }
       ]
     },
@@ -6532,21 +5312,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Discharges",
-          "passageIndex": 1
+          "remedyName": "NATRIUM MURIATICUM"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "ARSENICUM ALBUM",
-          "sectionTitle": "General",
-          "passageIndex": 14
+          "remedyName": "ARSENICUM ALBUM"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "MURIATICUM ACIDUM",
-          "sectionTitle": "General",
-          "passageIndex": 0
+          "remedyName": "MURIATICUM ACIDUM"
         }
       ]
     },
@@ -6556,15 +5330,11 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "PHYTOLACCA DECANDRA",
-          "sectionTitle": "Glands",
-          "passageIndex": 15
+          "remedyName": "PHYTOLACCA DECANDRA"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Hydrangea Arborescens",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 4
+          "remedyName": "Hydrangea Arborescens"
         }
       ]
     },
@@ -6574,15 +5344,11 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "STAPHYSAGRIA",
-          "sectionTitle": "Mind",
-          "passageIndex": 1
+          "remedyName": "STAPHYSAGRIA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Stomach",
-          "passageIndex": 6
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -6592,21 +5358,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LYCOPODIUM CLAVATUM",
-          "sectionTitle": "Stomach and abdomen",
-          "passageIndex": 17
+          "remedyName": "LYCOPODIUM CLAVATUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "SULPHUR",
-          "sectionTitle": "Head",
-          "passageIndex": 6
+          "remedyName": "SULPHUR"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "SEPIA OFFICINALIS",
-          "sectionTitle": "General",
-          "passageIndex": 2
+          "remedyName": "SEPIA OFFICINALIS"
         }
       ]
     },
@@ -6616,15 +5376,11 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "IODIUM",
-          "sectionTitle": "Stool",
-          "passageIndex": 2
+          "remedyName": "IODIUM"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "General",
-          "passageIndex": 4
+          "remedyName": "NUX VOMICA"
         }
       ]
     },
@@ -6634,15 +5390,11 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SULPHUR",
-          "sectionTitle": "Head",
-          "passageIndex": 3
+          "remedyName": "SULPHUR"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "LYCOPERSICUM ESCULENTUM",
-          "sectionTitle": "General",
-          "passageIndex": 4
+          "remedyName": "LYCOPERSICUM ESCULENTUM"
         }
       ]
     },
@@ -6652,15 +5404,11 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "SULPHUR",
-          "sectionTitle": "Head",
-          "passageIndex": 16
+          "remedyName": "SULPHUR"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "Fever",
-          "passageIndex": 4
+          "remedyName": "NUX VOMICA"
         }
       ]
     },
@@ -6670,15 +5418,11 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "CARCINOSINUM",
-          "sectionTitle": "General",
-          "passageIndex": 2
+          "remedyName": "CARCINOSINUM"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Nose",
-          "passageIndex": 0
+          "remedyName": "NATRIUM MURIATICUM"
         }
       ]
     },
@@ -6688,21 +5432,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "FERRUM METALLICUM",
-          "sectionTitle": "Headaches",
-          "passageIndex": 30
+          "remedyName": "FERRUM METALLICUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "SABINA",
-          "sectionTitle": "Women again",
-          "passageIndex": 5
+          "remedyName": "SABINA"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "THUJA OCCIDENTALIS",
-          "sectionTitle": "Stool and Anus",
-          "passageIndex": 5
+          "remedyName": "THUJA OCCIDENTALIS"
         }
       ]
     },
@@ -6712,21 +5450,15 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "TUBERCULINUM",
-          "sectionTitle": "HEAD",
-          "passageIndex": 40
+          "remedyName": "TUBERCULINUM"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Stramonium",
-          "sectionTitle": "Head",
-          "passageIndex": 9
+          "remedyName": "Stramonium"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "SILICEA TERRA",
-          "sectionTitle": "Mind",
-          "passageIndex": 0
+          "remedyName": "SILICEA TERRA"
         }
       ]
     },
@@ -6736,15 +5468,11 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "Mind",
-          "passageIndex": 26
+          "remedyName": "NUX VOMICA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "BRYONIA ALBA",
-          "sectionTitle": "Mind",
-          "passageIndex": 11
+          "remedyName": "BRYONIA ALBA"
         }
       ]
     },
@@ -6754,21 +5482,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Chromium Kali Sulphuratum",
-          "sectionTitle": "Characteristics",
-          "passageIndex": 1
+          "remedyName": "Chromium Kali Sulphuratum"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "MURIATICUM ACIDUM",
-          "sectionTitle": "General",
-          "passageIndex": 6
+          "remedyName": "MURIATICUM ACIDUM"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "ALOE SOCOTRINA",
-          "sectionTitle": "General",
-          "passageIndex": 1
+          "remedyName": "ALOE SOCOTRINA"
         }
       ]
     },
@@ -6778,21 +5500,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "LACHESIS MUTUS",
-          "sectionTitle": "Pharynx",
-          "passageIndex": 1
+          "remedyName": "LACHESIS MUTUS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "STAPHYSAGRIA",
-          "sectionTitle": "Mind",
-          "passageIndex": 10
+          "remedyName": "STAPHYSAGRIA"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Castor Equi",
-          "sectionTitle": "Back",
-          "passageIndex": 1
+          "remedyName": "Castor Equi"
         }
       ]
     },
@@ -6802,21 +5518,15 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "NUX MOSCHATA",
-          "sectionTitle": "Mouth",
-          "passageIndex": 1
+          "remedyName": "NUX MOSCHATA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "Mind",
-          "passageIndex": 26
+          "remedyName": "NUX VOMICA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Head",
-          "passageIndex": 6
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -6826,21 +5536,15 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "KREOSOTUM",
-          "sectionTitle": "Urine",
-          "passageIndex": 2
+          "remedyName": "KREOSOTUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "HYOSCYAMUS NIGER",
-          "sectionTitle": "Stomach and abdominal symptoms",
-          "passageIndex": 14
+          "remedyName": "HYOSCYAMUS NIGER"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphorus",
-          "sectionTitle": "Stool and Anus",
-          "passageIndex": 0
+          "remedyName": "Phosphorus"
         }
       ]
     },
@@ -6850,21 +5554,15 @@
       "relevant": [
         {
           "bookId": "allen-nosodes",
-          "remedyName": "LYSSINUM",
-          "sectionTitle": "THROAT",
-          "passageIndex": 39
+          "remedyName": "LYSSINUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "BORAX VENETA",
-          "sectionTitle": "Mind",
-          "passageIndex": 2
+          "remedyName": "BORAX VENETA"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "Phosphorus",
-          "sectionTitle": "Generalities",
-          "passageIndex": 47
+          "remedyName": "Phosphorus"
         }
       ]
     },
@@ -6874,21 +5572,15 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "THERIDION CURASSAVICUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 0
+          "remedyName": "THERIDION CURASSAVICUM"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "General",
-          "passageIndex": 4
+          "remedyName": "NUX VOMICA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "AURUM METALLICUM",
-          "sectionTitle": "Mind",
-          "passageIndex": 4
+          "remedyName": "AURUM METALLICUM"
         }
       ]
     },
@@ -6898,21 +5590,15 @@
       "relevant": [
         {
           "bookId": "boericke-MM",
-          "remedyName": "KALIUM CARBONICUM",
-          "sectionTitle": "General",
-          "passageIndex": 0
+          "remedyName": "KALIUM CARBONICUM"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "NUX VOMICA",
-          "sectionTitle": "Fever",
-          "passageIndex": 4
+          "remedyName": "NUX VOMICA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "MERCURIUS SOLUBILIS",
-          "sectionTitle": "Respiratory",
-          "passageIndex": 7
+          "remedyName": "MERCURIUS SOLUBILIS"
         }
       ]
     },
@@ -6922,21 +5608,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "GELSEMIUM SEMPERVIRENS",
-          "sectionTitle": "Head",
-          "passageIndex": 8
+          "remedyName": "GELSEMIUM SEMPERVIRENS"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "APIS MELLIFICA",
-          "sectionTitle": "Scarlet fever",
-          "passageIndex": 2
+          "remedyName": "APIS MELLIFICA"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "PHOSPHORICUM ACIDUM",
-          "sectionTitle": "Modalities",
-          "passageIndex": 0
+          "remedyName": "PHOSPHORICUM ACIDUM"
         }
       ]
     },
@@ -6946,21 +5626,15 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "ARNICA MONTANA",
-          "sectionTitle": "Mind",
-          "passageIndex": 4
+          "remedyName": "ARNICA MONTANA"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "CALENDULA OFFICINALIS",
-          "sectionTitle": "Generalities",
-          "passageIndex": 4
+          "remedyName": "CALENDULA OFFICINALIS"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "NATRIUM CARBONICUM",
-          "sectionTitle": "Head",
-          "passageIndex": 0
+          "remedyName": "NATRIUM CARBONICUM"
         }
       ]
     },
@@ -6970,21 +5644,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "Stramonium",
-          "sectionTitle": "Generalities",
-          "passageIndex": 33
+          "remedyName": "Stramonium"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "CAUSTICUM",
-          "sectionTitle": "Rheumatic diathesis",
-          "passageIndex": 20
+          "remedyName": "CAUSTICUM"
         },
         {
           "bookId": "kent-lectures",
-          "remedyName": "MURIATICUM ACIDUM",
-          "sectionTitle": "General",
-          "passageIndex": 8
+          "remedyName": "MURIATICUM ACIDUM"
         }
       ]
     },
@@ -6994,15 +5662,11 @@
       "relevant": [
         {
           "bookId": "kent-lectures",
-          "remedyName": "NATRIUM MURIATICUM",
-          "sectionTitle": "Generals and aspect",
-          "passageIndex": 0
+          "remedyName": "NATRIUM MURIATICUM"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "PULSATILLA PRATENSIS",
-          "sectionTitle": "Mind",
-          "passageIndex": 1
+          "remedyName": "PULSATILLA PRATENSIS"
         }
       ]
     },
@@ -7012,21 +5676,15 @@
       "relevant": [
         {
           "bookId": "clarke-MM",
-          "remedyName": "ARNICA MONTANA",
-          "sectionTitle": "Chest",
-          "passageIndex": 4
+          "remedyName": "ARNICA MONTANA"
         },
         {
           "bookId": "boericke-MM",
-          "remedyName": "CARCINOSINUM",
-          "sectionTitle": "General",
-          "passageIndex": 2
+          "remedyName": "CARCINOSINUM"
         },
         {
           "bookId": "clarke-MM",
-          "remedyName": "SILICEA TERRA",
-          "sectionTitle": "Head",
-          "passageIndex": 26
+          "remedyName": "SILICEA TERRA"
         }
       ]
     }

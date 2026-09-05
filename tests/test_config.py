@@ -8,7 +8,7 @@ from homeoremedica_corpus.config import load_pipeline_config
 
 CONFIG = """
 [corpus]
-processed_directory = "dataset/processed"
+combined_dataset = "dataset/combined.json"
 output_directory = "output/releases"
 artifact_schema_version = 1
 manifest_schema_version = 1
@@ -46,7 +46,7 @@ def test_loads_and_resolves_the_versioned_pipeline_configuration(tmp_path: Path)
 
     config = load_pipeline_config(path)
 
-    assert config.processed_directory == tmp_path / "dataset" / "processed"
+    assert config.combined_dataset == tmp_path / "dataset" / "combined.json"
     assert config.output_directory == tmp_path / "output" / "releases"
     assert config.evaluation_dataset == tmp_path / "evaluation" / "v1" / "queries.json"
     assert config.evaluation_result == tmp_path / "evaluation" / "v1" / "result.json"

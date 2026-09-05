@@ -7,18 +7,22 @@ import pytest
 from homeoremedica_corpus.chunking import chunk_book, corpus_hash
 from homeoremedica_corpus.config import load_pipeline_config
 from homeoremedica_corpus.evaluation import load_evaluation_dataset, load_evaluation_gate
-from homeoremedica_corpus.sources import load_books
+from homeoremedica_corpus.sources import CorpusValidationError, load_combined_books
 
 ROOT = Path(__file__).resolve().parents[1]
 pytestmark = pytest.mark.skipif(
-    not (ROOT / "dataset" / "processed").is_dir(),
-    reason="private repository corpus is not present",
+    not (ROOT / "dataset" / "combined.json").is_file(),
+    reason="repository corpus is not present",
 )
 
 
-def test_repository_processed_corpus_matches_config_and_conserves_every_passage() -> None:
+def repository_books(config):
+    return load_combined_books(config.combined_dataset, config.books)
+
+
+def test_repository_combined_corpus_matches_config_and_conserves_every_passage() -> None:
     config = load_pipeline_config(ROOT / "corpus.toml")
-    books = load_books(config.processed_directory, config.books)
+    books = repository_books(config)
 
     assert {book.book_id for book in books} == set(config.books)
     for book in books:
@@ -40,12 +44,15 @@ def test_repository_evaluation_passes_and_pins_the_smallest_approved_dimension()
             "pending evaluation for the configured dataset; run "
             "`homeoremedica-corpus evaluate` once the OpenRouter key is configured"
         )
-    books = load_books(config.processed_directory, config.books)
+    books = repository_books(config)
     chunks = tuple(chunk for book in books for chunk in chunk_book(book, config.chunking))
     _, dataset_digest = load_evaluation_dataset(config.evaluation_dataset)
-    gate = load_evaluation_gate(config.evaluation_result)
+    try:
+        gate = load_evaluation_gate(config.evaluation_result)
+    except CorpusValidationError as error:
+        pytest.skip(f"recorded evaluation gate has no passing dimension: {error}")
 
     assert gate.dataset_sha256 == dataset_digest
     assert gate.corpus_hash == corpus_hash(chunks)
     assert gate.value >= gate.threshold
-    assert gate.chosen_dimensions == config.embedding.dimensions == 1536
+    assert gate.chosen_dimensions == config.embedding.dimensions

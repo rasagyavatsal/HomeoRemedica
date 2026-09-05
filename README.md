@@ -16,7 +16,8 @@ remain separate from the repository and require their own credentials where appl
 - `src/homeoremedica_corpus/` — source validation, chunking, evaluation, release building, and
   Cloud Storage publication pipeline.
 - `dataset/raw-text/` — source text for the four books.
-- `dataset/processed/` — validated sectioned JSON used by the pipeline.
+- `dataset/processed/` — validated per-book sectioned JSON sources.
+- `dataset/combined.json` — the remedy-merged corpus file consumed by the pipeline.
 - `evaluation/` — versioned retrieval queries and immutable evaluation results.
 - `corpus.toml` — corpus, embedding, compatibility, and release configuration.
 
@@ -181,16 +182,17 @@ requires write access to the destination Storage bucket. The `sync`, `ask`, and 
 not read the source dataset directly; they use an accessible hosted release or an existing verified
 cache.
 
-The corpus pipeline reads only direct `dataset/processed/*.json` files using the sectioned
-`remedy -> section -> passages` schema. It validates the complete corpus, conserves every passage,
-creates stable boundary-safe chunks, generates OpenRouter Qwen3 embeddings, and writes one
-independently searchable SQLite artifact per book. A release becomes visible to consumers only
-after every artifact and its immutable manifest have been uploaded and verified.
+The corpus pipeline reads the remedy-merged `dataset/combined.json` file, whose
+`remedy -> book -> section -> passages` structure is validated against the configured book mapping.
+It validates the complete corpus, conserves every passage, creates stable boundary-safe chunks,
+generates OpenRouter Qwen3 embeddings, and writes one independently searchable SQLite artifact per
+book. A release becomes visible to consumers only after every artifact and its immutable manifest
+have been uploaded and verified.
 
 ### Validate sources locally
 
-This command needs no cloud credentials. It checks that the configured book mapping exactly
-matches `dataset/processed/*.json`, validates the sectioned schema, and reports book, passage,
+This command needs no cloud credentials. It checks that `dataset/combined.json` matches the
+configured book mapping, validates the remedy-merged sectioned schema, and reports book, passage,
 chunk, and corpus-hash counts. Symlinked source files are rejected.
 
 ```sh
@@ -199,23 +201,49 @@ uv run --locked homeoremedica-corpus validate
 
 ### Retrieval evaluation
 
-The evaluator reads `evaluation/v3/queries.json` and writes the immutable
-`evaluation/v3/result.json` release input:
+The evaluator reads `evaluation/v3/queries.json` at depth `k = 8` and writes the immutable
+`evaluation/v3/result.json` release input. The 500 clinical case queries carry remedy-level
+relevance targets (`bookId` + `remedyName`): each target is one intent of its query and counts as
+covered when any excerpt of the prescribed remedy appears among the retrieved chunks, matching the
+queries' "List remedies" intent. Passage-level targets (`sectionTitle` with an optional
+`passageIndex`) remain supported and resolve to the chunk holding that passage.
 
 ```sh
 export OPENROUTER_API_KEY=... # or put it in .env
 uv run --locked homeoremedica-corpus evaluate
 ```
 
-The evaluator compares 768, 1536, 3072, and 4096 dimensions against the same corpus, uses
-`RETRIEVAL_DOCUMENT` for labelled chunks and `RETRIEVAL_QUERY` for queries, and combines semantic
-and Porter-stemmed FTS5 candidates with reciprocal-rank fusion. Because `qwen/qwen3-embedding-8b`
-supports Matryoshka prefixes, one 4096-dimensional request per input supplies every normalized
-dimension: the provider truncates the native vector locally, so results do not depend on whether an
-OpenRouter upstream provider honors a `dimensions` request parameter. The result records lexical,
-semantic, and fused recall and MRR and is never overwritten. The builder rejects a stale
-evaluation, a changed dataset digest, or a configured dimension that differs from the recorded
-choice.
+The corpus is loaded from the remedy-merged `dataset/combined.json`, which the evaluator validates
+against the configured book mapping. The evaluator compares 768, 1536, 3072, and 4096 dimensions
+against the same corpus, uses `RETRIEVAL_DOCUMENT` for labelled chunks and `RETRIEVAL_QUERY` for
+queries, and combines semantic and Porter-stemmed FTS5 candidates with reciprocal-rank fusion.
+Because `qwen/qwen3-embedding-8b` supports Matryoshka prefixes, one 4096-dimensional request per
+input supplies every normalized dimension: the provider truncates the native vector locally, so
+results do not depend on whether an OpenRouter upstream provider honors a `dimensions` request
+parameter.
+
+Every ranking strategy (lexical, semantic, and fused) is scored at depth 8 with five metrics:
+
+- **Recall@8** — intent coverage: the fraction of the query's relevance targets with at least one
+  retrieved chunk in the top 8 (the release quality gate). Passage-level targets make this equal
+  classic recall; remedy-level targets count a target as soon as any excerpt of the prescribed
+  remedy appears.
+- **MRR@8** — the mean reciprocal rank of the first relevant chunk in the top 8.
+- **nDCG@8** — binary-relevance discounted cumulative gain with the standard log2 rank discount,
+  normalized by the ideal ranking.
+- **α-nDCG@8** — the novelty- and diversity-biased nDCG of Clarke et al. (SIGIR 2008) with
+  α = 0.5: every relevance target is treated as one intent of its query, and each repeated
+  coverage of an already-satisfied intent contributes its gain multiplied by (1 − α). The
+  normalizer is the greedy ideal α-DCG over all relevant chunks.
+- **Evidence Precision@8** — the expected fraction of the top 8 slots that supply novel evidence:
+  each relevance target is one equally weighted intent, a ranked chunk contributes the
+  (1 − α)-discounted share of the intents it covers that higher-ranked chunks have not already
+  satisfied, and the top-8 total is scaled by 1/8. With one intent and no repeated coverage this
+  reduces to precision@8.
+
+The result records lexical, semantic, and fused values for every metric and is never overwritten.
+The builder rejects a stale evaluation, a changed dataset digest, or a configured dimension that
+differs from the recorded choice.
 
 ### Build a complete release
 

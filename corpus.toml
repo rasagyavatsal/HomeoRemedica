@@ -1,5 +1,5 @@
 [corpus]
-processed_directory = "dataset/processed"
+combined_dataset = "dataset/combined.json"
 output_directory = "output/releases"
 artifact_schema_version = 1
 manifest_schema_version = 1
