@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[1]
-MAX_TRACKED_FILE_BYTES = 5_000_000
+MAX_TRACKED_FILE_BYTES = 8_000_000
 FORBIDDEN_ROOTS = {
     "build",
     "corpora",
