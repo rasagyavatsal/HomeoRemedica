@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import math
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
@@ -25,12 +26,34 @@ from homeoremedica_corpus.sources import CorpusValidationError
 
 QualityMetric = Literal["recallAtK", "mrrAtK"]
 
+# Clarke, Kolla, Cormack, Vechtomova, Ashkan, Buettcher, and MacKinnon (SIGIR 2008):
+# each time a ranked chunk covers an intent a higher ranked chunk already covered,
+# the gain that intent contributes is multiplied by (1 - alpha).
+ALPHA_NOVELTY_DISCOUNT = 0.5
+
+
+@dataclass(frozen=True, slots=True)
+class RankingQuality:
+    """Quality of one ranking strategy averaged over every evaluation query at depth k."""
+
+    recall_at_k: float
+    mrr_at_k: float
+    ndcg_at_k: float
+    alpha_ndcg_at_k: float
+    evidence_precision_at_k: float
+
 
 class EvaluationTarget(Contract):
     book_id: str
     remedy_name: str
-    section_title: str
+    section_title: str | None = None
     passage_index: int | None = Field(default=None, ge=0)
+
+    @model_validator(mode="after")
+    def validate_target(self) -> EvaluationTarget:
+        if self.passage_index is not None and self.section_title is None:
+            raise ValueError("passage_index requires section_title")
+        return self
 
 
 class EvaluationQuery(Contract):
@@ -60,14 +83,20 @@ class DimensionScore(Contract):
     dimensions: int = Field(gt=0)
     semantic_recall_at_k: float = Field(ge=0, le=1)
     semantic_mrr_at_k: float = Field(ge=0, le=1)
+    semantic_ndcg_at_k: float = Field(ge=0, le=1)
+    semantic_alpha_ndcg_at_k: float = Field(ge=0, le=1)
+    semantic_evidence_precision_at_k: float = Field(ge=0, le=1)
     recall_at_k: float = Field(ge=0, le=1)
     mrr_at_k: float = Field(ge=0, le=1)
+    ndcg_at_k: float = Field(ge=0, le=1)
+    alpha_ndcg_at_k: float = Field(ge=0, le=1)
+    evidence_precision_at_k: float = Field(ge=0, le=1)
     quality_value: float = Field(ge=0, le=1)
     passed: bool
 
 
 class EvaluationResult(Contract):
-    evaluation_schema_version: int = 2
+    evaluation_schema_version: int = 3
     dataset_version: str
     dataset_sha256: str
     corpus_hash: str
@@ -77,6 +106,7 @@ class EvaluationResult(Contract):
     normalization: str = "l2"
     distance_function: str = "cosine"
     k: int = Field(gt=0)
+    alpha_discount: float = Field(default=ALPHA_NOVELTY_DISCOUNT, ge=0, lt=1)
     quality_metric: QualityMetric
     minimum_quality: float = Field(ge=0, le=1)
     retrieval_strategy: str = "fts5VectorRrf"
@@ -85,6 +115,9 @@ class EvaluationResult(Contract):
     reciprocal_rank_constant: int = Field(gt=0)
     lexical_recall_at_k: float = Field(ge=0, le=1)
     lexical_mrr_at_k: float = Field(ge=0, le=1)
+    lexical_ndcg_at_k: float = Field(ge=0, le=1)
+    lexical_alpha_ndcg_at_k: float = Field(ge=0, le=1)
+    lexical_evidence_precision_at_k: float = Field(ge=0, le=1)
     scores: tuple[DimensionScore, ...] = Field(min_length=2)
     chosen_dimensions: int | None = Field(default=None, gt=0)
 
@@ -118,7 +151,7 @@ def run_dimension_evaluation(
     ):
         raise ValueError("evaluation requires at least two unique positive dimensions")
 
-    relevant_by_query = _resolve_relevance(dataset, materialized_chunks)
+    intents_by_query = _resolve_intents(dataset, materialized_chunks)
     maximum_dimensions = max(dimensions)
     provider = provider_for_dimensions(maximum_dimensions)
     _validate_provider_dimensions(provider, maximum_dimensions)
@@ -155,8 +188,8 @@ def run_dimension_evaluation(
         limit=candidate_limit,
         policy=retrieval,
     )
-    lexical_recall, lexical_mrr = _quality_metrics(
-        lexical_rankings, relevant_by_query, dataset.k
+    lexical_quality = _mean_quality(
+        _ranking_quality(lexical_rankings, intents_by_query, dataset.k, ALPHA_NOVELTY_DISCOUNT)
     )
 
     scores = []
@@ -174,20 +207,30 @@ def run_dimension_evaluation(
             )
             for semantic, lexical in zip(semantic_rankings, lexical_rankings, strict=True)
         )
-        semantic_recall, semantic_mrr = _quality_metrics(
-            semantic_rankings, relevant_by_query, dataset.k
+        semantic_quality = _mean_quality(
+            _ranking_quality(semantic_rankings, intents_by_query, dataset.k, ALPHA_NOVELTY_DISCOUNT)
         )
-        recall_at_k, mrr_at_k = _quality_metrics(
-            fused_rankings, relevant_by_query, dataset.k
+        fused_quality = _mean_quality(
+            _ranking_quality(fused_rankings, intents_by_query, dataset.k, ALPHA_NOVELTY_DISCOUNT)
         )
-        quality_value = recall_at_k if dataset.quality_metric == "recallAtK" else mrr_at_k
+        quality_value = (
+            fused_quality.recall_at_k
+            if dataset.quality_metric == "recallAtK"
+            else fused_quality.mrr_at_k
+        )
         scores.append(
             DimensionScore(
                 dimensions=dimension,
-                semantic_recall_at_k=semantic_recall,
-                semantic_mrr_at_k=semantic_mrr,
-                recall_at_k=recall_at_k,
-                mrr_at_k=mrr_at_k,
+                semantic_recall_at_k=semantic_quality.recall_at_k,
+                semantic_mrr_at_k=semantic_quality.mrr_at_k,
+                semantic_ndcg_at_k=semantic_quality.ndcg_at_k,
+                semantic_alpha_ndcg_at_k=semantic_quality.alpha_ndcg_at_k,
+                semantic_evidence_precision_at_k=semantic_quality.evidence_precision_at_k,
+                recall_at_k=fused_quality.recall_at_k,
+                mrr_at_k=fused_quality.mrr_at_k,
+                ndcg_at_k=fused_quality.ndcg_at_k,
+                alpha_ndcg_at_k=fused_quality.alpha_ndcg_at_k,
+                evidence_precision_at_k=fused_quality.evidence_precision_at_k,
                 quality_value=quality_value,
                 passed=quality_value >= dataset.minimum_quality,
             )
@@ -202,12 +245,16 @@ def run_dimension_evaluation(
         corpus_hash=corpus_hash,
         model=model,
         k=dataset.k,
+        alpha_discount=ALPHA_NOVELTY_DISCOUNT,
         quality_metric=dataset.quality_metric,
         minimum_quality=dataset.minimum_quality,
         candidate_pool_size=retrieval.candidate_pool_size,
         reciprocal_rank_constant=retrieval.reciprocal_rank_constant,
-        lexical_recall_at_k=lexical_recall,
-        lexical_mrr_at_k=lexical_mrr,
+        lexical_recall_at_k=lexical_quality.recall_at_k,
+        lexical_mrr_at_k=lexical_quality.mrr_at_k,
+        lexical_ndcg_at_k=lexical_quality.ndcg_at_k,
+        lexical_alpha_ndcg_at_k=lexical_quality.alpha_ndcg_at_k,
+        lexical_evidence_precision_at_k=lexical_quality.evidence_precision_at_k,
         scores=tuple(scores),
         chosen_dimensions=min(passing) if passing else None,
     )
@@ -259,19 +306,27 @@ def load_evaluation_gate(path: Path) -> EvaluationGate:
     )
 
 
-def _resolve_relevance(
+def _resolve_intents(
     dataset: EvaluationDataset, chunks: tuple[Chunk, ...]
-) -> tuple[frozenset[str], ...]:
+) -> tuple[tuple[frozenset[str], ...], ...]:
+    """Resolve every relevance target to the chunk IDs that satisfy it.
+
+    Each target acts as one intent of its query. A target with a section title
+    covers the chunk holding that passage (or every chunk of the section when no
+    passage index is given); a remedy-level target without a section title covers
+    every chunk of the remedy in the target's book, so a query intent stays
+    satisfied by any excerpt of the prescribed remedy.
+    """
     resolved_queries = []
     for query in dataset.queries:
-        resolved: set[str] = set()
+        intents: list[frozenset[str]] = []
         for target in query.relevant:
             matches = {
                 chunk.id
                 for chunk in chunks
                 if chunk.book_id == target.book_id
                 and chunk.remedy_name == target.remedy_name
-                and chunk.section_title == target.section_title
+                and (target.section_title is None or chunk.section_title == target.section_title)
                 and (target.passage_index is None or target.passage_index in chunk.passage_indexes)
             }
             if not matches:
@@ -280,8 +335,8 @@ def _resolve_relevance(
                     f"{target.book_id} / {target.remedy_name} / {target.section_title} / "
                     f"{target.passage_index}"
                 )
-            resolved.update(matches)
-        resolved_queries.append(frozenset(resolved))
+            intents.append(frozenset(matches))
+        resolved_queries.append(tuple(intents))
     return tuple(resolved_queries)
 
 
@@ -292,25 +347,153 @@ def _validate_provider_dimensions(provider: EmbeddingProvider, expected: int) ->
         )
 
 
-def _quality_metrics(
+def _ranking_quality(
     rankings: Iterable[Iterable[str]],
-    relevant_by_query: tuple[frozenset[str], ...],
+    intents_by_query: tuple[tuple[frozenset[str], ...], ...],
     k: int,
-) -> tuple[float, float]:
-    recalls = []
-    reciprocal_ranks = []
-    for ranking, relevant in zip(rankings, relevant_by_query, strict=True):
+    alpha: float,
+) -> tuple[RankingQuality, ...]:
+    qualities = []
+    for ranking, intents in zip(rankings, intents_by_query, strict=True):
+        relevant = frozenset().union(*intents)
         ranked_ids = tuple(ranking)[:k]
-        recalls.append(len(set(ranked_ids) & relevant) / len(relevant))
+        ranked_set = set(ranked_ids)
+        covered_intents = sum(1 for intent in intents if intent & ranked_set)
         first_relevant_rank = next(
-            (index for index, chunk_id in enumerate(ranked_ids, start=1) if chunk_id in relevant),
+            (rank for rank, chunk_id in enumerate(ranked_ids, start=1) if chunk_id in relevant),
             None,
         )
-        reciprocal_ranks.append(0.0 if first_relevant_rank is None else 1 / first_relevant_rank)
-    return (
-        math.fsum(recalls) / len(recalls),
-        math.fsum(reciprocal_ranks) / len(reciprocal_ranks),
+        qualities.append(
+            RankingQuality(
+                recall_at_k=covered_intents / len(intents),
+                mrr_at_k=0.0 if first_relevant_rank is None else 1 / first_relevant_rank,
+                ndcg_at_k=_ndcg_at_k(ranked_ids, relevant, k),
+                alpha_ndcg_at_k=_alpha_ndcg_at_k(ranked_ids, intents, k, alpha),
+                evidence_precision_at_k=_evidence_precision_at_k(ranked_ids, intents, k, alpha),
+            )
+        )
+    return tuple(qualities)
+
+
+def _mean_quality(qualities: tuple[RankingQuality, ...]) -> RankingQuality:
+    count = len(qualities)
+    if count == 0:
+        raise CorpusValidationError("cannot average quality over zero queries")
+    return RankingQuality(
+        recall_at_k=math.fsum(item.recall_at_k for item in qualities) / count,
+        mrr_at_k=math.fsum(item.mrr_at_k for item in qualities) / count,
+        ndcg_at_k=math.fsum(item.ndcg_at_k for item in qualities) / count,
+        alpha_ndcg_at_k=math.fsum(item.alpha_ndcg_at_k for item in qualities) / count,
+        evidence_precision_at_k=math.fsum(item.evidence_precision_at_k for item in qualities)
+        / count,
     )
+
+
+def _ndcg_at_k(ranked_ids: Sequence[str], relevant: frozenset[str], k: int) -> float:
+    """Binary-relevance nDCG with the standard log2 rank discount."""
+    discounts = [1 / math.log2(rank + 1) for rank in range(1, k + 1)]
+    dcg = math.fsum(
+        discount
+        for chunk_id, discount in zip(ranked_ids, discounts, strict=False)
+        if chunk_id in relevant
+    )
+    ideal = math.fsum(discounts[: min(k, len(relevant))])
+    return dcg / ideal if ideal else 0.0
+
+
+def _alpha_ndcg_at_k(
+    ranked_ids: Sequence[str],
+    intents: tuple[frozenset[str], ...],
+    k: int,
+    alpha: float,
+) -> float:
+    """Novelty- and diversity-biased nDCG (Clarke et al., SIGIR 2008).
+
+    Every relevance target is one intent. A chunk covering an intent that
+    higher-ranked chunks already covered contributes that intent's gain times
+    (1 - alpha) once per previous covering chunk, discounted by log2 rank. The
+    normalizer is the greedy ideal alpha-DCG over all relevant chunks.
+    """
+    intents_by_chunk = _intent_coverage(intents)
+    ideal = _greedy_alpha_ideal_dcg(intents_by_chunk, k, alpha)
+    if not ideal:
+        return 0.0
+    seen: dict[int, int] = {}
+    dcg = 0.0
+    for rank, chunk_id in enumerate(ranked_ids[:k], start=1):
+        gain = _discounted_intent_gain(intents_by_chunk, chunk_id, seen, alpha)
+        dcg += gain / math.log2(rank + 1)
+        _record_intent_coverage(intents_by_chunk, chunk_id, seen)
+    return dcg / ideal
+
+
+def _evidence_precision_at_k(
+    ranked_ids: Sequence[str],
+    intents: tuple[frozenset[str], ...],
+    k: int,
+    alpha: float,
+) -> float:
+    """Novelty-discounted evidence density over the top k slots.
+
+    Every relevance target is one equally weighted intent. A ranked chunk
+    contributes the (1 - alpha)-discounted share of the intents it covers that
+    higher-ranked chunks have not already satisfied, and the top-k total is
+    scaled by 1/k. With one intent and no repeated coverage this is precision@k,
+    and every score stays within [0, 1].
+    """
+    intents_by_chunk = _intent_coverage(intents)
+    seen: dict[int, int] = {}
+    evidence = 0.0
+    for chunk_id in ranked_ids[:k]:
+        gain = _discounted_intent_gain(intents_by_chunk, chunk_id, seen, alpha)
+        evidence += gain / len(intents)
+        _record_intent_coverage(intents_by_chunk, chunk_id, seen)
+    return evidence / k
+
+
+def _intent_coverage(intents: tuple[frozenset[str], ...]) -> dict[str, tuple[int, ...]]:
+    coverage: dict[str, list[int]] = {}
+    for intent_index, intent_chunks in enumerate(intents):
+        for chunk_id in intent_chunks:
+            coverage.setdefault(chunk_id, []).append(intent_index)
+    return {chunk_id: tuple(indexes) for chunk_id, indexes in coverage.items()}
+
+
+def _discounted_intent_gain(
+    intents_by_chunk: Mapping[str, tuple[int, ...]],
+    chunk_id: str,
+    seen: Mapping[int, int],
+    alpha: float,
+) -> float:
+    return math.fsum(
+        (1.0 - alpha) ** seen.get(intent, 0)
+        for intent in intents_by_chunk.get(chunk_id, ())
+    )
+
+
+def _record_intent_coverage(
+    intents_by_chunk: Mapping[str, tuple[int, ...]], chunk_id: str, seen: dict[int, int]
+) -> None:
+    for intent in intents_by_chunk.get(chunk_id, ()):
+        seen[intent] = seen.get(intent, 0) + 1
+
+
+def _greedy_alpha_ideal_dcg(
+    intents_by_chunk: Mapping[str, tuple[int, ...]], k: int, alpha: float
+) -> float:
+    remaining = sorted(intents_by_chunk)
+    seen: dict[int, int] = {}
+    ideal = 0.0
+    for rank in range(1, min(k, len(remaining)) + 1):
+        best_id = max(
+            remaining,
+            key=lambda item: _discounted_intent_gain(intents_by_chunk, item, seen, alpha),
+        )
+        gain = _discounted_intent_gain(intents_by_chunk, best_id, seen, alpha)
+        ideal += gain / math.log2(rank + 1)
+        _record_intent_coverage(intents_by_chunk, best_id, seen)
+        remaining.remove(best_id)
+    return ideal
 
 
 def _embed_vectors(
@@ -325,7 +508,9 @@ def _embed_vectors(
         results = map(embed, materialized)
         executor = None
     else:
-        executor = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="vertex-embedding")
+        executor = ThreadPoolExecutor(
+            max_workers=workers, thread_name_prefix="openrouter-embedding"
+        )
         results = executor.map(embed, materialized, buffersize=workers)
     vectors = []
     try:
