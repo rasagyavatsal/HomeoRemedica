@@ -11,18 +11,19 @@ minimum_tokens = 300
 target_tokens = 500
 
 [embedding]
-model = "gemini-embedding-001"
+model = "qwen/qwen3-embedding-8b"
+native_dimensions = 4096
 dimensions = 1536
-evaluation_dimensions = [768, 1536, 3072]
+evaluation_dimensions = [768, 1536, 3072, 4096]
 document_task_type = "RETRIEVAL_DOCUMENT"
 query_task_type = "RETRIEVAL_QUERY"
 normalization = "l2"
 distance_function = "cosine"
-model_input_limit = 2048
+model_input_limit = 32768
 
 [evaluation]
-dataset = "evaluation/v2/queries.json"
-result = "evaluation/v2/result.json"
+dataset = "evaluation/v3/queries.json"
+result = "evaluation/v3/result.json"
 
 [books."allen-nosodes"]
 title = "Allen's Materia Medica of the Nosodes"
