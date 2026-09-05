@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.3.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v2.2.0...HomeoRemedica-v2.3.0) (2026-09-05)
+
+
+### Features
+
+* **dataset:** add combined corpus file ([#8](https://github.com/rasagyavatsal/HomeoRemedica/issues/8)) ([37ba8d6](https://github.com/rasagyavatsal/HomeoRemedica/commit/37ba8d6da43f430168747b58ff5535718b89411f))
+* **evaluation:** add v3 clinical case queries ([#10](https://github.com/rasagyavatsal/HomeoRemedica/issues/10)) ([07f4082](https://github.com/rasagyavatsal/HomeoRemedica/commit/07f4082a38822a7595f530e6416a95e9db785ec8))
+
 ## [2.2.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v2.1.1...HomeoRemedica-v2.2.0) (2026-09-04)
 
 
