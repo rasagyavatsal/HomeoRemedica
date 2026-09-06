@@ -14,12 +14,17 @@ from homeoremedica_corpus.evaluation import (
     EvaluationQuery,
     EvaluationTarget,
     _aggregate_query_rankings,
+    _aggregate_scored_query_rankings,
+    _load_scored_ranking_cache,
     _ranking_quality,
     _rankings_for_unit,
     _resolve_intents,
+    _scored_rankings_for_unit,
+    _store_scored_ranking_cache,
     record_evaluation,
     run_dimension_evaluation,
 )
+from homeoremedica_corpus.retrieval import ScoredCandidate
 from homeoremedica_corpus.sources import Book, CorpusValidationError, Remedy, Section
 
 
@@ -118,7 +123,7 @@ def test_compares_dimensions_and_selects_the_smallest_passing_result(tmp_path: P
     assert result.lexical_recall_at_k == 0.0
     assert result.scores[0].semantic_recall_at_k == 0.0
     assert result.scores[1].semantic_recall_at_k == 1.0
-    assert result.evaluation_schema_version == 6
+    assert result.evaluation_schema_version == 7
     assert result.retrieval_strategy == "symptomRrfThenFts5VectorRrf"
     assert result.alpha_discount == 0.5
     assert result.lexical_mrr_at_k == 0.0
@@ -314,6 +319,24 @@ def test_global_remedy_ranking_rejects_duplicate_target_names() -> None:
         )
 
 
+def test_normalized_score_fusion_requires_global_remedy_ranking() -> None:
+    with pytest.raises(ValidationError, match="requires global remedy"):
+        EvaluationDataset(
+            version="v7",
+            k=1,
+            fusion_strategy="normalizedScore",
+            quality_metric="recallAtK",
+            minimum_quality=0.8,
+            queries=(
+                EvaluationQuery(
+                    id="q1",
+                    symptoms=("raw symptom",),
+                    relevant=(EvaluationTarget(book_id="alpha", remedy_name="REMEDY"),),
+                ),
+            ),
+        )
+
+
 def test_rejects_passage_index_without_section_title() -> None:
     with pytest.raises(ValidationError):
         EvaluationTarget(book_id="alpha", remedy_name="REMEDY", passage_index=0)
@@ -399,6 +422,68 @@ def test_dimension_evaluation_reuses_cached_embeddings(tmp_path: Path) -> None:
     ]
 
 
+def test_dimension_evaluation_uses_normalized_global_remedy_score_fusion(
+    tmp_path: Path,
+) -> None:
+    corpus_chunks = tuple(chunk for book in books() for chunk in chunk_book(book))
+    score_dataset = EvaluationDataset(
+        version="v7",
+        k=1,
+        ranking_unit="globalRemedy",
+        fusion_strategy="normalizedScore",
+        quality_metric="recallAtK",
+        minimum_quality=0.8,
+        queries=(
+            EvaluationQuery(
+                id="q1",
+                symptoms=("raw user symptom",),
+                relevant=(EvaluationTarget(book_id="alpha", remedy_name="REMEDY"),),
+            ),
+        ),
+    )
+
+    result = run_dimension_evaluation(
+        score_dataset,
+        corpus_chunks,
+        lambda dimensions: EvaluationProvider(dimensions),
+        model="qwen/qwen3-embedding-8b",
+        model_input_limit=2048,
+        dimensions=(3,),
+        corpus_hash=corpus_hash(corpus_chunks),
+        dataset_sha256="d" * 64,
+        embedding_cache_directory=tmp_path / "cache",
+    )
+
+    assert result.chosen_dimensions == 3
+    assert result.retrieval_strategy == "symptomGlobalRemedyNormalizedScoreFusion"
+    assert result.reciprocal_rank_constant is None
+    assert result.score_fusion_normalization == "perRankingMinMax"
+    assert result.score_fusion_exponent == 2.0
+    assert result.scores[0].recall_at_k == 1.0
+    assert sorted(path.suffix for path in (tmp_path / "cache").iterdir()) == [
+        ".bin",
+        ".bin",
+        ".f32",
+        ".f32",
+    ]
+
+    def reject_provider(_dimensions: int) -> EvaluationProvider:
+        raise AssertionError("ranking cache should bypass the embedding provider")
+
+    cached_result = run_dimension_evaluation(
+        score_dataset,
+        corpus_chunks,
+        reject_provider,
+        model="qwen/qwen3-embedding-8b",
+        model_input_limit=2048,
+        dimensions=(3,),
+        corpus_hash=corpus_hash(corpus_chunks),
+        dataset_sha256="d" * 64,
+        embedding_cache_directory=tmp_path / "cache",
+    )
+    assert cached_result == result
+
+
 def test_symptom_rankings_are_fused_back_into_one_case_ranking() -> None:
     rankings = (
         ("shared", "first"),
@@ -430,6 +515,52 @@ def test_remedy_rankings_combine_distinct_chunks_of_the_same_remedy() -> None:
         ("book\x1fREMEDY A", "book\x1fREMEDY B"),
     )
     assert aggregated == (("book\x1fREMEDY A", "book\x1fREMEDY B"),)
+
+
+def test_normalized_score_fusion_suppresses_weak_tail_matches() -> None:
+    rankings = (
+        (ScoredCandidate("specific-a", 1.0), ScoredCandidate("broad", 0.2)),
+        (ScoredCandidate("specific-b", 0.8), ScoredCandidate("broad", 0.2)),
+    )
+
+    aggregated = _aggregate_scored_query_rankings(rankings, (2,), limit=3, exponent=2.0)
+
+    assert aggregated == (("specific-a", "specific-b", "broad"),)
+
+
+def test_scored_global_remedy_ranking_keeps_the_strongest_cross_book_chunk() -> None:
+    rankings = (
+        (
+            ScoredCandidate("alpha-remedy", 0.9),
+            ScoredCandidate("beta-remedy", 0.8),
+            ScoredCandidate("other", 0.7),
+        ),
+    )
+    mapping = {
+        "alpha-remedy": "REMEDY",
+        "beta-remedy": "REMEDY",
+        "other": "OTHER",
+    }
+
+    collapsed = _scored_rankings_for_unit(rankings, mapping)
+
+    assert collapsed == ((ScoredCandidate("REMEDY", 1.0), ScoredCandidate("OTHER", 0.0)),)
+
+
+def test_scored_ranking_cache_round_trips_and_rejects_trailing_data(tmp_path: Path) -> None:
+    path = tmp_path / "rankings.bin"
+    chunk_ids = ("chunk-a", "chunk-b")
+    rankings = (
+        (ScoredCandidate("chunk-b", 0.75), ScoredCandidate("chunk-a", 0.25)),
+        (),
+    )
+
+    _store_scored_ranking_cache(path, chunk_ids, rankings)
+
+    assert _load_scored_ranking_cache(path, chunk_ids, 2) == rankings
+    path.write_bytes(path.read_bytes() + b"invalid")
+    with pytest.raises(RuntimeError, match="trailing data"):
+        _load_scored_ranking_cache(path, chunk_ids, 2)
 
 
 def test_ranking_quality_discounts_repeated_intent_coverage() -> None:

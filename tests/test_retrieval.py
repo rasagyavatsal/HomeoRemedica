@@ -7,6 +7,8 @@ from homeoremedica_corpus.retrieval import (
     rank_lexical_queries,
     rank_semantic_queries,
     reciprocal_rank_fusion,
+    score_lexical_queries,
+    score_semantic_queries,
 )
 from homeoremedica_corpus.sources import Book, Remedy, Section
 
@@ -43,6 +45,10 @@ def test_lexical_ranking_uses_safe_or_terms_and_porter_stemming() -> None:
 
     assert rankings == ((corpus_chunks[0].id,), ())
 
+    scored = score_lexical_queries(corpus_chunks, ("monster",), limit=2)
+    assert tuple(candidate.chunk_id for candidate in scored[0]) == (corpus_chunks[0].id,)
+    assert scored[0][0].score > 0
+
 
 def test_semantic_ranking_derives_and_normalizes_dimension_prefixes() -> None:
     corpus_chunks = chunks()
@@ -56,6 +62,16 @@ def test_semantic_ranking_derives_and_normalizes_dimension_prefixes() -> None:
     )
 
     assert rankings == ((corpus_chunks[0].id, corpus_chunks[1].id),)
+
+    scored = score_semantic_queries(
+        tuple(chunk.id for chunk in corpus_chunks),
+        ((0.0, 1.0, 1.0), (1.0, 0.0, -1.0)),
+        ((1.0, 0.0, 1.0),),
+        dimensions=3,
+        limit=2,
+    )
+    assert tuple(candidate.chunk_id for candidate in scored[0]) == rankings[0]
+    assert scored[0][0].score > scored[0][1].score
 
 
 def test_reciprocal_rank_fusion_rewards_results_found_by_both_channels() -> None:

@@ -35,6 +35,16 @@ class HybridRetrievalPolicy:
 DEFAULT_HYBRID_RETRIEVAL_POLICY = HybridRetrievalPolicy()
 
 
+@dataclass(frozen=True, slots=True)
+class ScoredCandidate:
+    chunk_id: str
+    score: float
+
+    def __post_init__(self) -> None:
+        if not self.chunk_id or not math.isfinite(self.score):
+            raise ValueError("scored retrieval candidates require an ID and a finite score")
+
+
 def rank_lexical_queries(
     chunks: Sequence[Chunk],
     queries: Iterable[str],
@@ -43,6 +53,20 @@ def rank_lexical_queries(
     policy: HybridRetrievalPolicy = DEFAULT_HYBRID_RETRIEVAL_POLICY,
 ) -> tuple[tuple[str, ...], ...]:
     """Rank natural-language queries with the same FTS5 contract as release artifacts."""
+    return tuple(
+        tuple(candidate.chunk_id for candidate in ranking)
+        for ranking in score_lexical_queries(chunks, queries, limit=limit, policy=policy)
+    )
+
+
+def score_lexical_queries(
+    chunks: Sequence[Chunk],
+    queries: Iterable[str],
+    *,
+    limit: int,
+    policy: HybridRetrievalPolicy = DEFAULT_HYBRID_RETRIEVAL_POLICY,
+) -> tuple[tuple[ScoredCandidate, ...], ...]:
+    """Return FTS5 candidates with higher-is-better BM25 relevance scores."""
     if limit <= 0:
         raise ValueError("lexical result limit must be positive")
     connection = sqlite3.connect(":memory:")
@@ -61,10 +85,7 @@ def rank_lexical_queries(
         connection.executemany(
             "INSERT INTO chunks_fts(chunk_id, text, remedy_name, section_title) "
             "VALUES (?, ?, ?, ?)",
-            (
-                (chunk.id, chunk.text, chunk.remedy_name, chunk.section_title)
-                for chunk in chunks
-            ),
+            ((chunk.id, chunk.text, chunk.remedy_name, chunk.section_title) for chunk in chunks),
         )
         rankings = []
         for query in queries:
@@ -74,13 +95,16 @@ def rank_lexical_queries(
                 continue
             rows = connection.execute(
                 """
-                SELECT chunk_id
+                SELECT chunk_id, bm25(chunks_fts, 0.0, ?, ?, ?)
                 FROM chunks_fts
                 WHERE chunks_fts MATCH ?
                 ORDER BY bm25(chunks_fts, 0.0, ?, ?, ?), chunk_id
                 LIMIT ?
                 """,
                 (
+                    policy.text_weight,
+                    policy.remedy_weight,
+                    policy.section_weight,
                     match_query,
                     policy.text_weight,
                     policy.remedy_weight,
@@ -88,7 +112,9 @@ def rank_lexical_queries(
                     limit,
                 ),
             )
-            rankings.append(tuple(str(row[0]) for row in rows))
+            rankings.append(
+                tuple(ScoredCandidate(chunk_id=str(row[0]), score=-float(row[1])) for row in rows)
+            )
         return tuple(rankings)
     finally:
         connection.close()
@@ -103,6 +129,27 @@ def rank_semantic_queries(
     limit: int,
 ) -> tuple[tuple[str, ...], ...]:
     """Rank vector prefixes through sqlite-vec, matching the released vector index."""
+    return tuple(
+        tuple(candidate.chunk_id for candidate in ranking)
+        for ranking in score_semantic_queries(
+            chunk_ids,
+            document_vectors,
+            query_vectors,
+            dimensions=dimensions,
+            limit=limit,
+        )
+    )
+
+
+def score_semantic_queries(
+    chunk_ids: Sequence[str],
+    document_vectors: Sequence[Sequence[float]],
+    query_vectors: Iterable[Sequence[float]],
+    *,
+    dimensions: int,
+    limit: int,
+) -> tuple[tuple[ScoredCandidate, ...], ...]:
+    """Return sqlite-vec candidates with higher-is-better cosine similarity scores."""
     if dimensions <= 0 or limit <= 0:
         raise ValueError("semantic dimensions and result limit must be positive")
     if len(chunk_ids) != len(document_vectors):
@@ -133,14 +180,19 @@ def rank_semantic_queries(
         for vector in query_vectors:
             rows = connection.execute(
                 """
-                SELECT chunk_rowid
+                SELECT chunk_rowid, distance
                 FROM chunk_vectors
                 WHERE embedding MATCH ? AND k = ?
                 ORDER BY distance
                 """,
                 (_normalized_prefix(vector, dimensions), actual_limit),
             )
-            rankings.append(tuple(chunk_ids[int(row[0]) - 1] for row in rows))
+            rankings.append(
+                tuple(
+                    ScoredCandidate(chunk_id=chunk_ids[int(row[0]) - 1], score=1.0 - float(row[1]))
+                    for row in rows
+                )
+            )
         return tuple(rankings)
     finally:
         connection.close()
@@ -183,9 +235,9 @@ def _normalized_prefix(values: Sequence[float], dimensions: int) -> bytes:
     norm = math.sqrt(math.fsum(float(values[index]) ** 2 for index in range(dimensions)))
     if norm == 0 or not math.isfinite(norm):
         raise RuntimeError("embedding prefix has an invalid zero or non-finite norm")
-    return sqlite_vec.serialize_float32(
-        [float(values[index]) / norm for index in range(dimensions)]
-    )
+    return sqlite_vec.serialize_float32([
+        float(values[index]) / norm for index in range(dimensions)
+    ])
 
 
 def _load_vec(connection: sqlite3.Connection) -> None:
