@@ -118,7 +118,7 @@ def test_compares_dimensions_and_selects_the_smallest_passing_result(tmp_path: P
     assert result.lexical_recall_at_k == 0.0
     assert result.scores[0].semantic_recall_at_k == 0.0
     assert result.scores[1].semantic_recall_at_k == 1.0
-    assert result.evaluation_schema_version == 5
+    assert result.evaluation_schema_version == 6
     assert result.retrieval_strategy == "symptomRrfThenFts5VectorRrf"
     assert result.alpha_discount == 0.5
     assert result.lexical_mrr_at_k == 0.0
@@ -257,6 +257,57 @@ def test_remedy_ranking_rejects_passage_level_targets() -> None:
                             remedy_name="REMEDY",
                             section_title="Mind",
                         ),
+                    ),
+                ),
+            ),
+        )
+
+
+def test_global_remedy_ranking_matches_the_same_remedy_from_any_book() -> None:
+    corpus_chunks = tuple(chunk for book in books() for chunk in chunk_book(book))
+    global_dataset = EvaluationDataset(
+        version="v6",
+        k=1,
+        ranking_unit="globalRemedy",
+        quality_metric="recallAtK",
+        minimum_quality=0.8,
+        queries=(
+            EvaluationQuery(
+                id="q1",
+                symptoms=("find remedy",),
+                relevant=(EvaluationTarget(book_id="alpha", remedy_name="REMEDY"),),
+            ),
+        ),
+    )
+
+    intents = _resolve_intents(global_dataset, corpus_chunks)
+    beta_chunk = next(chunk for chunk in corpus_chunks if chunk.book_id == "beta")
+    rankings = _rankings_for_unit(
+        ((beta_chunk.id,),),
+        "globalRemedy",
+        {chunk.id: chunk.remedy_name for chunk in corpus_chunks},
+    )
+
+    assert intents == ((frozenset({"REMEDY"}),),)
+    assert rankings == (("REMEDY",),)
+    assert _ranking_quality(rankings, intents, k=1, alpha=0.5)[0].recall_at_k == 1.0
+
+
+def test_global_remedy_ranking_rejects_duplicate_target_names() -> None:
+    with pytest.raises(ValidationError, match="unique remedy names"):
+        EvaluationDataset(
+            version="v6",
+            k=1,
+            ranking_unit="globalRemedy",
+            quality_metric="recallAtK",
+            minimum_quality=0.8,
+            queries=(
+                EvaluationQuery(
+                    id="q1",
+                    symptoms=("find remedy",),
+                    relevant=(
+                        EvaluationTarget(book_id="alpha", remedy_name="REMEDY"),
+                        EvaluationTarget(book_id="beta", remedy_name="REMEDY"),
                     ),
                 ),
             ),

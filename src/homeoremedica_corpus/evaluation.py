@@ -32,7 +32,7 @@ from homeoremedica_corpus.retrieval import (
 from homeoremedica_corpus.sources import CorpusValidationError
 
 QualityMetric = Literal["recallAtK", "mrrAtK"]
-RankingUnit = Literal["chunk", "remedy"]
+RankingUnit = Literal["chunk", "remedy", "globalRemedy"]
 
 # Clarke, Kolla, Cormack, Vechtomova, Ashkan, Buettcher, and MacKinnon (SIGIR 2008):
 # each time a ranked chunk covers an intent a higher ranked chunk already covered,
@@ -114,10 +114,15 @@ class EvaluationDataset(Contract):
             raise ValueError("evaluation query IDs must be unique")
         if any(not query.id.strip() for query in self.queries):
             raise ValueError("evaluation query IDs must be non-empty")
-        if self.ranking_unit == "remedy" and any(
+        if self.ranking_unit != "chunk" and any(
             target.section_title is not None for query in self.queries for target in query.relevant
         ):
-            raise ValueError("remedy ranking requires remedy-level relevance targets")
+            raise ValueError("non-chunk ranking requires remedy-level relevance targets")
+        if self.ranking_unit == "globalRemedy" and any(
+            len(query.relevant) != len({target.remedy_name for target in query.relevant})
+            for query in self.queries
+        ):
+            raise ValueError("global remedy targets must have unique remedy names per query")
         return self
 
 
@@ -140,7 +145,7 @@ class DimensionScore(Contract):
 
 
 class EvaluationResult(Contract):
-    evaluation_schema_version: int = 5
+    evaluation_schema_version: int = 6
     dataset_version: str
     dataset_sha256: str
     corpus_hash: str
@@ -245,7 +250,9 @@ def run_dimension_evaluation(
         ),
     )
     candidate_limit = min(len(materialized_chunks), max(dataset.k, dataset.candidate_pool_size))
-    chunk_remedies = {chunk.id: _remedy_id(chunk) for chunk in materialized_chunks}
+    chunk_ranking_ids = {
+        chunk.id: _ranking_id(chunk, dataset.ranking_unit) for chunk in materialized_chunks
+    }
     lexical_input_groups = tuple(query.lexical_inputs for query in dataset.queries)
     flat_lexical_rankings = rank_lexical_queries(
         materialized_chunks,
@@ -254,7 +261,7 @@ def run_dimension_evaluation(
         policy=retrieval,
     )
     lexical_unit_rankings = _rankings_for_unit(
-        flat_lexical_rankings, dataset.ranking_unit, chunk_remedies
+        flat_lexical_rankings, dataset.ranking_unit, chunk_ranking_ids
     )
     lexical_rankings = _aggregate_query_rankings(
         lexical_unit_rankings,
@@ -277,7 +284,7 @@ def run_dimension_evaluation(
             limit=candidate_limit,
         )
         semantic_unit_rankings = _rankings_for_unit(
-            flat_semantic_rankings, dataset.ranking_unit, chunk_remedies
+            flat_semantic_rankings, dataset.ranking_unit, chunk_ranking_ids
         )
         semantic_rankings = _aggregate_query_rankings(
             semantic_unit_rankings,
@@ -285,7 +292,7 @@ def run_dimension_evaluation(
             candidate_limit,
             retrieval.reciprocal_rank_constant,
         )
-        if dataset.ranking_unit == "remedy":
+        if dataset.ranking_unit != "chunk":
             flat_fused_rankings = tuple(
                 reciprocal_rank_fusion(
                     (semantic, lexical), rank_constant=retrieval.reciprocal_rank_constant
@@ -355,11 +362,7 @@ def run_dimension_evaluation(
         quality_metric=dataset.quality_metric,
         minimum_quality=dataset.minimum_quality,
         ranking_unit=dataset.ranking_unit,
-        retrieval_strategy=(
-            "symptomRemedyRrf"
-            if dataset.ranking_unit == "remedy"
-            else "symptomRrfThenFts5VectorRrf"
-        ),
+        retrieval_strategy=_retrieval_strategy(dataset.ranking_unit),
         candidate_pool_size=dataset.candidate_pool_size,
         reciprocal_rank_constant=retrieval.reciprocal_rank_constant,
         lexical_candidate_recall_at_pool=lexical_candidate_recall,
@@ -448,10 +451,7 @@ def _resolve_intents(
                     f"{target.book_id} / {target.remedy_name} / {target.section_title} / "
                     f"{target.passage_index}"
                 )
-            matches = {
-                _remedy_id(chunk) if dataset.ranking_unit == "remedy" else chunk.id
-                for chunk in matching_chunks
-            }
+            matches = {_ranking_id(chunk, dataset.ranking_unit) for chunk in matching_chunks}
             intents.append(frozenset(matches))
         resolved_queries.append(tuple(intents))
     return tuple(resolved_queries)
@@ -646,19 +646,31 @@ def _aggregate_query_rankings(
 def _rankings_for_unit(
     rankings: Sequence[Sequence[str]],
     ranking_unit: RankingUnit,
-    chunk_remedies: Mapping[str, str],
+    chunk_ranking_ids: Mapping[str, str],
 ) -> tuple[tuple[str, ...], ...]:
     if ranking_unit == "chunk":
         return tuple(tuple(ranking) for ranking in rankings)
     remedy_rankings = []
     for ranking in rankings:
-        remedies = dict.fromkeys(chunk_remedies[chunk_id] for chunk_id in ranking)
+        remedies = dict.fromkeys(chunk_ranking_ids[chunk_id] for chunk_id in ranking)
         remedy_rankings.append(tuple(remedies))
     return tuple(remedy_rankings)
 
 
-def _remedy_id(chunk: Chunk) -> str:
-    return f"{chunk.book_id}\x1f{chunk.remedy_name}"
+def _ranking_id(chunk: Chunk, ranking_unit: RankingUnit) -> str:
+    if ranking_unit == "chunk":
+        return chunk.id
+    if ranking_unit == "remedy":
+        return f"{chunk.book_id}\x1f{chunk.remedy_name}"
+    return chunk.remedy_name
+
+
+def _retrieval_strategy(ranking_unit: RankingUnit) -> str:
+    if ranking_unit == "chunk":
+        return "symptomRrfThenFts5VectorRrf"
+    if ranking_unit == "remedy":
+        return "symptomRemedyRrf"
+    return "symptomGlobalRemedyRrf"
 
 
 def _embed_provider_vectors(

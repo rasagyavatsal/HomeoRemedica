@@ -202,14 +202,14 @@ uv run --locked homeoremedica-corpus validate
 
 ### Retrieval evaluation
 
-The evaluator reads `evaluation/v5/queries.json` at depth `k = 8` and writes the immutable
-`evaluation/v5/result.json` release input. It splits the 500 clinical cases into 2,117 raw symptom
+The evaluator reads `evaluation/v6/queries.json` at depth `k = 8` and writes the immutable
+`evaluation/v6/result.json` release input. It splits the 500 clinical cases into 2,117 raw symptom
 queries and embeds each symptom separately, without an instruction or context prefix. Per-symptom
-semantic and lexical candidates are collapsed to unique remedies before reciprocal-rank fusion, so
-evidence from different chunks of the same remedy reinforces one result. The cases carry
-remedy-level relevance targets (`bookId` + `remedyName`): each target is one intent and counts as
-covered when its remedy appears in the ranking. Chunk ranking remains available for passage-level
-evaluation datasets.
+semantic and lexical candidates are collapsed by the corpus-wide canonical `remedyName` before
+reciprocal-rank fusion, so evidence from different chunks and books reinforces one remedy. The
+cases carry remedy-level relevance targets (`bookId` + `remedyName`): the book validates that the
+labelled source exists, while the remedy name is the scored intent and can be satisfied by evidence
+from any book. Chunk and book-remedy ranking remain available for older evaluation datasets.
 
 ```sh
 export OPENROUTER_API_KEY=... # or put it in .env
@@ -217,12 +217,14 @@ uv run --locked homeoremedica-corpus evaluate
 ```
 
 The corpus is loaded from the remedy-merged `dataset/combined.json`, which the evaluator validates
-against the configured book mapping. V5 evaluates only the model's native 4096 dimensions. It uses
+against the configured book mapping. V6 evaluates only the model's native 4096 dimensions. It uses
 `RETRIEVAL_DOCUMENT` for contextualized symptom chunks and `RETRIEVAL_QUERY` for raw query
 symptoms, retrieves up to 640 candidates per symptom, and combines semantic and Porter-stemmed FTS5
-remedy rankings with reciprocal-rank fusion. Inputs are sent in bounded batches. Native vectors are
-cached under `.cache/evaluation/`, keyed by the model, dimensions, and complete ordered inputs, so
-an interrupted ranking or later fusion experiment can reuse the paid embeddings.
+global-remedy rankings with reciprocal-rank fusion. The ranked remedy identity does not replace the
+underlying chunk, book, section, or passage metadata used for evidence and citations. Inputs are
+sent in bounded batches. Native vectors are cached under `.cache/evaluation/`, keyed by the model,
+dimensions, and complete ordered inputs, so an interrupted ranking or later fusion experiment can
+reuse the paid embeddings.
 
 Every ranking strategy (lexical, semantic, and fused) is scored at depth 8 with five metrics:
 
