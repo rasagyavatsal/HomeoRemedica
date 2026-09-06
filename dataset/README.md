@@ -13,7 +13,8 @@ Processed files use the `remedy -> section -> passages` JSON structure. The four
 merged losslessly into `combined.json`, a remedy-merged
 `remedy -> book -> section -> passages` structure with 1,250 unique remedies over 1,645
 remedy-book pairs, 18,183 sections, and 118,259 passages. The retrieval pipeline reads
-`combined.json` as its corpus source; run
+`combined.json` as its corpus source and treats every passage as one separately embedded symptom;
+run
 `uv run --locked homeoremedica-corpus validate` from the repository root to validate it and
 reproduce its counts and digest.
 

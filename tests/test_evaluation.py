@@ -13,6 +13,7 @@ from homeoremedica_corpus.evaluation import (
     EvaluationDataset,
     EvaluationQuery,
     EvaluationTarget,
+    _aggregate_query_rankings,
     _ranking_quality,
     _resolve_intents,
     record_evaluation,
@@ -116,7 +117,8 @@ def test_compares_dimensions_and_selects_the_smallest_passing_result(tmp_path: P
     assert result.lexical_recall_at_k == 0.0
     assert result.scores[0].semantic_recall_at_k == 0.0
     assert result.scores[1].semantic_recall_at_k == 1.0
-    assert result.evaluation_schema_version == 3
+    assert result.evaluation_schema_version == 4
+    assert result.retrieval_strategy == "symptomRrfThenFts5VectorRrf"
     assert result.alpha_discount == 0.5
     assert result.lexical_mrr_at_k == 0.0
     assert result.lexical_ndcg_at_k == 0.0
@@ -128,16 +130,12 @@ def test_compares_dimensions_and_selects_the_smallest_passing_result(tmp_path: P
     assert (failing.recall_at_k, failing.passed) == (0.0, False)
     assert failing.semantic_ndcg_at_k == failing.ndcg_at_k == 0.0
     assert failing.semantic_alpha_ndcg_at_k == failing.alpha_ndcg_at_k == 0.0
-    assert (
-        failing.semantic_evidence_precision_at_k == failing.evidence_precision_at_k == 0.0
-    )
+    assert failing.semantic_evidence_precision_at_k == failing.evidence_precision_at_k == 0.0
     assert passing.dimensions == 3
     assert passing.mrr_at_k == passing.semantic_mrr_at_k == 1.0
     assert (passing.recall_at_k, passing.ndcg_at_k) == (1.0, 1.0)
     assert passing.alpha_ndcg_at_k == passing.semantic_alpha_ndcg_at_k == 1.0
-    assert (
-        passing.evidence_precision_at_k == passing.semantic_evidence_precision_at_k == 1.0
-    )
+    assert passing.evidence_precision_at_k == passing.semantic_evidence_precision_at_k == 1.0
 
     result_path = tmp_path / "evaluation" / "v1-result.json"
     gate = record_evaluation(result_path, result)
@@ -223,6 +221,68 @@ def test_remedy_level_targets_cover_every_chunk_of_the_remedy() -> None:
 def test_rejects_passage_index_without_section_title() -> None:
     with pytest.raises(ValidationError):
         EvaluationTarget(book_id="alpha", remedy_name="REMEDY", passage_index=0)
+
+
+def test_each_query_symptom_is_a_raw_semantic_and_lexical_input() -> None:
+    query = EvaluationQuery(
+        id="q1",
+        symptoms=("Head pain.", "Worse from heat."),
+        relevant=(EvaluationTarget(book_id="alpha", remedy_name="REMEDY"),),
+    )
+
+    assert query.semantic_inputs == ("Head pain.", "Worse from heat.")
+    assert query.lexical_inputs == ("Head pain.", "Worse from heat.")
+
+
+def test_dimension_evaluation_embeds_each_raw_query_symptom() -> None:
+    corpus_chunks = tuple(chunk for book in books() for chunk in chunk_book(book))
+    provider = EvaluationProvider(3)
+    query_dataset = EvaluationDataset(
+        version="v4",
+        k=1,
+        quality_metric="recallAtK",
+        minimum_quality=0.8,
+        queries=(
+            EvaluationQuery(
+                id="q1",
+                symptoms=("Head pain.", "Worse from heat."),
+                relevant=(EvaluationTarget(book_id="alpha", remedy_name="REMEDY"),),
+            ),
+        ),
+    )
+    query_inputs: list[str] = []
+    original_embed = provider.embed_query
+
+    def record_query(text: str) -> tuple[float, ...]:
+        query_inputs.append(text)
+        return original_embed(text)
+
+    provider.embed_query = record_query  # type: ignore[method-assign]
+
+    run_dimension_evaluation(
+        query_dataset,
+        corpus_chunks,
+        lambda _dimensions: provider,
+        model="qwen/qwen3-embedding-8b",
+        model_input_limit=2048,
+        dimensions=(2, 3),
+        corpus_hash=corpus_hash(corpus_chunks),
+        dataset_sha256="d" * 64,
+    )
+
+    assert query_inputs == ["Head pain.", "Worse from heat."]
+
+
+def test_symptom_rankings_are_fused_back_into_one_case_ranking() -> None:
+    rankings = (
+        ("shared", "first"),
+        ("second", "shared"),
+        ("third",),
+    )
+
+    aggregated = _aggregate_query_rankings(rankings, (2, 1), limit=2, rank_constant=60)
+
+    assert aggregated == (("shared", "second"), ("third",))
 
 
 def test_ranking_quality_discounts_repeated_intent_coverage() -> None:

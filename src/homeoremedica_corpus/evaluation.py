@@ -6,13 +6,17 @@ from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal
+from typing import Literal, cast
 
 from pydantic import Field, model_validator
 
 from homeoremedica_corpus.chunking import Chunk
 from homeoremedica_corpus.contracts import Contract, EvaluationGate, canonical_json_bytes
-from homeoremedica_corpus.embeddings import EmbeddingProvider, preflight_embedding_inputs
+from homeoremedica_corpus.embeddings import (
+    EMBEDDING_BATCH_SIZE,
+    EmbeddingProvider,
+    preflight_embedding_inputs,
+)
 from homeoremedica_corpus.retrieval import (
     DEFAULT_HYBRID_RETRIEVAL_POLICY,
     FTS5_TOKENIZER,
@@ -58,8 +62,36 @@ class EvaluationTarget(Contract):
 
 class EvaluationQuery(Contract):
     id: str
-    query: str
+    query: str | None = None
+    symptoms: tuple[str, ...] | None = Field(default=None, min_length=1)
     relevant: tuple[EvaluationTarget, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_query_shape(self) -> EvaluationQuery:
+        legacy = self.query is not None
+        symptom_query = self.symptoms is not None
+        if legacy == symptom_query:
+            raise ValueError("evaluation query must contain either query or symptoms")
+        if legacy:
+            if not self.query or not self.query.strip():
+                raise ValueError("evaluation query text must be non-empty")
+        elif self.symptoms is None or any(not symptom.strip() for symptom in self.symptoms):
+            raise ValueError("evaluation symptoms must be non-empty")
+        return self
+
+    @property
+    def semantic_inputs(self) -> tuple[str, ...]:
+        if self.query is not None:
+            return (self.query,)
+        assert self.symptoms is not None
+        return self.symptoms
+
+    @property
+    def lexical_inputs(self) -> tuple[str, ...]:
+        if self.query is not None:
+            return (self.query,)
+        assert self.symptoms is not None
+        return self.symptoms
 
 
 class EvaluationDataset(Contract):
@@ -74,8 +106,8 @@ class EvaluationDataset(Contract):
         identifiers = [query.id for query in self.queries]
         if len(set(identifiers)) != len(identifiers):
             raise ValueError("evaluation query IDs must be unique")
-        if any(not query.id.strip() or not query.query.strip() for query in self.queries):
-            raise ValueError("evaluation query IDs and text must be non-empty")
+        if any(not query.id.strip() for query in self.queries):
+            raise ValueError("evaluation query IDs must be non-empty")
         return self
 
 
@@ -96,7 +128,7 @@ class DimensionScore(Contract):
 
 
 class EvaluationResult(Contract):
-    evaluation_schema_version: int = 3
+    evaluation_schema_version: int = 4
     dataset_version: str
     dataset_sha256: str
     corpus_hash: str
@@ -109,7 +141,7 @@ class EvaluationResult(Contract):
     alpha_discount: float = Field(default=ALPHA_NOVELTY_DISCOUNT, ge=0, lt=1)
     quality_metric: QualityMetric
     minimum_quality: float = Field(ge=0, le=1)
-    retrieval_strategy: str = "fts5VectorRrf"
+    retrieval_strategy: str = "symptomRrfThenFts5VectorRrf"
     lexical_tokenizer: str = FTS5_TOKENIZER
     candidate_pool_size: int = Field(gt=0)
     reciprocal_rank_constant: int = Field(gt=0)
@@ -165,28 +197,39 @@ def run_dimension_evaluation(
         progress=_progress_counter(progress, "counted embedding tokens"),
     )
 
-    document_vectors = _embed_vectors(
+    document_vectors = _embed_provider_vectors(
         (chunk.embedding_text for chunk in materialized_chunks),
-        provider.embed_document,
+        provider,
+        "embed_document",
+        "embed_documents",
         maximum_dimensions,
         workers,
         _progress_counter(progress, "embedded documents"),
     )
-    query_vectors = _embed_vectors(
-        (query.query for query in dataset.queries),
-        provider.embed_query,
+    query_input_groups = tuple(query.semantic_inputs for query in dataset.queries)
+    query_group_sizes = tuple(len(group) for group in query_input_groups)
+    query_vectors = _embed_provider_vectors(
+        (text for group in query_input_groups for text in group),
+        provider,
+        "embed_query",
+        "embed_queries",
         maximum_dimensions,
         workers,
         _progress_counter(progress, "embedded queries"),
     )
-    candidate_limit = min(
-        len(materialized_chunks), max(dataset.k, retrieval.candidate_pool_size)
-    )
-    lexical_rankings = rank_lexical_queries(
+    candidate_limit = min(len(materialized_chunks), max(dataset.k, retrieval.candidate_pool_size))
+    lexical_input_groups = tuple(query.lexical_inputs for query in dataset.queries)
+    flat_lexical_rankings = rank_lexical_queries(
         materialized_chunks,
-        (query.query for query in dataset.queries),
+        (text for group in lexical_input_groups for text in group),
         limit=candidate_limit,
         policy=retrieval,
+    )
+    lexical_rankings = _aggregate_query_rankings(
+        flat_lexical_rankings,
+        query_group_sizes,
+        candidate_limit,
+        retrieval.reciprocal_rank_constant,
     )
     lexical_quality = _mean_quality(
         _ranking_quality(lexical_rankings, intents_by_query, dataset.k, ALPHA_NOVELTY_DISCOUNT)
@@ -194,12 +237,18 @@ def run_dimension_evaluation(
 
     scores = []
     for dimension in dimensions:
-        semantic_rankings = rank_semantic_queries(
+        flat_semantic_rankings = rank_semantic_queries(
             tuple(chunk.id for chunk in materialized_chunks),
             document_vectors,
             query_vectors,
             dimensions=dimension,
             limit=candidate_limit,
+        )
+        semantic_rankings = _aggregate_query_rankings(
+            flat_semantic_rankings,
+            query_group_sizes,
+            candidate_limit,
+            retrieval.reciprocal_rank_constant,
         )
         fused_rankings = tuple(
             reciprocal_rank_fusion(
@@ -466,8 +515,7 @@ def _discounted_intent_gain(
     alpha: float,
 ) -> float:
     return math.fsum(
-        (1.0 - alpha) ** seen.get(intent, 0)
-        for intent in intents_by_chunk.get(chunk_id, ())
+        (1.0 - alpha) ** seen.get(intent, 0) for intent in intents_by_chunk.get(chunk_id, ())
     )
 
 
@@ -494,6 +542,78 @@ def _greedy_alpha_ideal_dcg(
         _record_intent_coverage(intents_by_chunk, best_id, seen)
         remaining.remove(best_id)
     return ideal
+
+
+def _aggregate_query_rankings(
+    flat_rankings: Sequence[Sequence[str]],
+    group_sizes: Sequence[int],
+    limit: int,
+    rank_constant: int,
+) -> tuple[tuple[str, ...], ...]:
+    if sum(group_sizes) != len(flat_rankings):
+        raise RuntimeError("query ranking count does not match the symptom groups")
+    aggregated = []
+    start = 0
+    for size in group_sizes:
+        end = start + size
+        aggregated.append(
+            reciprocal_rank_fusion(flat_rankings[start:end], rank_constant=rank_constant)[:limit]
+        )
+        start = end
+    return tuple(aggregated)
+
+
+def _embed_provider_vectors(
+    inputs: Iterable[str],
+    provider: EmbeddingProvider,
+    single_method: str,
+    batch_method: str,
+    dimensions: int,
+    workers: int,
+    progress: Callable[[int, int], None] | None,
+) -> tuple:
+    batch_embed = getattr(provider, batch_method, None)
+    if not callable(batch_embed):
+        return _embed_vectors(
+            inputs,
+            getattr(provider, single_method),
+            dimensions,
+            workers,
+            progress,
+        )
+    typed_batch_embed = cast(Callable[[Sequence[str]], Iterable[Iterable[float]]], batch_embed)
+
+    materialized = tuple(inputs)
+    batches = tuple(
+        materialized[start : start + EMBEDDING_BATCH_SIZE]
+        for start in range(0, len(materialized), EMBEDDING_BATCH_SIZE)
+    )
+    if workers == 1:
+        results = map(typed_batch_embed, batches)
+        executor = None
+    else:
+        executor = ThreadPoolExecutor(
+            max_workers=workers, thread_name_prefix="openrouter-embedding"
+        )
+        results = executor.map(typed_batch_embed, batches, buffersize=workers)
+    vectors = []
+    completed = 0
+    try:
+        for batch, batch_vectors in zip(batches, results, strict=True):
+            materialized_vectors = tuple(batch_vectors)
+            if len(materialized_vectors) != len(batch):
+                raise RuntimeError(
+                    "Embedding provider returned a different number of vectors than inputs"
+                )
+            for values in materialized_vectors:
+                vectors.append(materialize_float32(values, dimensions))
+                completed += 1
+                if progress is not None:
+                    progress(completed, len(materialized))
+    finally:
+        if executor is not None:
+            executor.shutdown(wait=True, cancel_futures=True)
+    return tuple(vectors)
 
 
 def _embed_vectors(

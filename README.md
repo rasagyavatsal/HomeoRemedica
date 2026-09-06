@@ -184,10 +184,11 @@ cache.
 
 The corpus pipeline reads the remedy-merged `dataset/combined.json` file, whose
 `remedy -> book -> section -> passages` structure is validated against the configured book mapping.
-It validates the complete corpus, conserves every passage, creates stable boundary-safe chunks,
-generates OpenRouter Qwen3 embeddings, and writes one independently searchable SQLite artifact per
-book. A release becomes visible to consumers only after every artifact and its immutable manifest
-have been uploaded and verified.
+It validates the complete corpus, conserves every passage, treats each passage as one symptom
+chunk, generates OpenRouter Qwen3 embeddings, and writes one independently searchable SQLite
+artifact per book. Each document embedding keeps the current `Book`, `Remedy`, `Section`, and
+`Text` context prefix. A release becomes visible to consumers only after every artifact and its
+immutable manifest have been uploaded and verified.
 
 ### Validate sources locally
 
@@ -201,12 +202,15 @@ uv run --locked homeoremedica-corpus validate
 
 ### Retrieval evaluation
 
-The evaluator reads `evaluation/v3/queries.json` at depth `k = 8` and writes the immutable
-`evaluation/v3/result.json` release input. The 500 clinical case queries carry remedy-level
-relevance targets (`bookId` + `remedyName`): each target is one intent of its query and counts as
-covered when any excerpt of the prescribed remedy appears among the retrieved chunks, matching the
-queries' "List remedies" intent. Passage-level targets (`sectionTitle` with an optional
-`passageIndex`) remain supported and resolve to the chunk holding that passage.
+The evaluator reads `evaluation/v4/queries.json` at depth `k = 8` and writes the immutable
+`evaluation/v4/result.json` release input. It splits the 500 clinical cases into 2,117 raw symptom
+queries and embeds each symptom separately, without an instruction or context prefix. Per-symptom
+semantic rankings and per-symptom lexical rankings are each combined with reciprocal-rank fusion,
+then the two case-level rankings are fused for scoring. The cases carry remedy-level relevance
+targets (`bookId` + `remedyName`): each target is one intent and counts as covered when any symptom
+excerpt of the prescribed remedy appears among the retrieved chunks. Passage-level targets
+(`sectionTitle` with an optional `passageIndex`) remain supported and resolve to the individual
+symptom chunk holding that passage.
 
 ```sh
 export OPENROUTER_API_KEY=... # or put it in .env
@@ -215,12 +219,12 @@ uv run --locked homeoremedica-corpus evaluate
 
 The corpus is loaded from the remedy-merged `dataset/combined.json`, which the evaluator validates
 against the configured book mapping. The evaluator compares 768, 1536, 3072, and 4096 dimensions
-against the same corpus, uses `RETRIEVAL_DOCUMENT` for labelled chunks and `RETRIEVAL_QUERY` for
-queries, and combines semantic and Porter-stemmed FTS5 candidates with reciprocal-rank fusion.
-Because `qwen/qwen3-embedding-8b` supports Matryoshka prefixes, one 4096-dimensional request per
-input supplies every normalized dimension: the provider truncates the native vector locally, so
-results do not depend on whether an OpenRouter upstream provider honors a `dimensions` request
-parameter.
+against the same corpus, uses `RETRIEVAL_DOCUMENT` for contextualized symptom chunks and
+`RETRIEVAL_QUERY` for raw query symptoms, and combines semantic and Porter-stemmed FTS5 candidates
+with reciprocal-rank fusion. Because `qwen/qwen3-embedding-8b` supports Matryoshka prefixes, one
+4096-dimensional vector per input supplies every normalized dimension. Inputs are sent in bounded
+batches, and the provider truncates each native vector locally, so results do not depend on whether
+an OpenRouter upstream provider honors a `dimensions` request parameter.
 
 Every ranking strategy (lexical, semantic, and fused) is scored at depth 8 with five metrics:
 
