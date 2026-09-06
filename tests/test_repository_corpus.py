@@ -38,11 +38,13 @@ def test_repository_combined_corpus_matches_config_and_conserves_every_passage()
         assert all(len(chunk.passages) == 1 for chunk in chunks)
 
 
-def test_repository_v4_embeds_each_raw_query_symptom_separately() -> None:
+def test_repository_v5_embeds_each_raw_query_symptom_separately() -> None:
     config = load_pipeline_config(ROOT / "corpus.toml")
     dataset, _ = load_evaluation_dataset(config.evaluation_dataset)
 
-    assert dataset.version == "v4"
+    assert dataset.version == "v5"
+    assert dataset.ranking_unit == "remedy"
+    assert dataset.candidate_pool_size == 640
     assert len(dataset.queries) == 500
     assert sum(len(query.semantic_inputs) for query in dataset.queries) == 2117
     assert all(query.semantic_inputs == query.lexical_inputs for query in dataset.queries)

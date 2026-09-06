@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import math
+import os
+import tempfile
+from array import array
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
@@ -29,6 +32,7 @@ from homeoremedica_corpus.retrieval import (
 from homeoremedica_corpus.sources import CorpusValidationError
 
 QualityMetric = Literal["recallAtK", "mrrAtK"]
+RankingUnit = Literal["chunk", "remedy"]
 
 # Clarke, Kolla, Cormack, Vechtomova, Ashkan, Buettcher, and MacKinnon (SIGIR 2008):
 # each time a ranked chunk covers an intent a higher ranked chunk already covered,
@@ -97,6 +101,8 @@ class EvaluationQuery(Contract):
 class EvaluationDataset(Contract):
     version: str
     k: int = Field(gt=0)
+    ranking_unit: RankingUnit = "chunk"
+    candidate_pool_size: int = Field(default=100, gt=0)
     quality_metric: QualityMetric
     minimum_quality: float = Field(ge=0, le=1)
     queries: tuple[EvaluationQuery, ...] = Field(min_length=1)
@@ -108,16 +114,22 @@ class EvaluationDataset(Contract):
             raise ValueError("evaluation query IDs must be unique")
         if any(not query.id.strip() for query in self.queries):
             raise ValueError("evaluation query IDs must be non-empty")
+        if self.ranking_unit == "remedy" and any(
+            target.section_title is not None for query in self.queries for target in query.relevant
+        ):
+            raise ValueError("remedy ranking requires remedy-level relevance targets")
         return self
 
 
 class DimensionScore(Contract):
     dimensions: int = Field(gt=0)
+    semantic_candidate_recall_at_pool: float = Field(ge=0, le=1)
     semantic_recall_at_k: float = Field(ge=0, le=1)
     semantic_mrr_at_k: float = Field(ge=0, le=1)
     semantic_ndcg_at_k: float = Field(ge=0, le=1)
     semantic_alpha_ndcg_at_k: float = Field(ge=0, le=1)
     semantic_evidence_precision_at_k: float = Field(ge=0, le=1)
+    candidate_recall_at_pool: float = Field(ge=0, le=1)
     recall_at_k: float = Field(ge=0, le=1)
     mrr_at_k: float = Field(ge=0, le=1)
     ndcg_at_k: float = Field(ge=0, le=1)
@@ -128,7 +140,7 @@ class DimensionScore(Contract):
 
 
 class EvaluationResult(Contract):
-    evaluation_schema_version: int = 4
+    evaluation_schema_version: int = 5
     dataset_version: str
     dataset_sha256: str
     corpus_hash: str
@@ -141,16 +153,18 @@ class EvaluationResult(Contract):
     alpha_discount: float = Field(default=ALPHA_NOVELTY_DISCOUNT, ge=0, lt=1)
     quality_metric: QualityMetric
     minimum_quality: float = Field(ge=0, le=1)
-    retrieval_strategy: str = "symptomRrfThenFts5VectorRrf"
+    ranking_unit: RankingUnit = "chunk"
+    retrieval_strategy: str
     lexical_tokenizer: str = FTS5_TOKENIZER
     candidate_pool_size: int = Field(gt=0)
     reciprocal_rank_constant: int = Field(gt=0)
+    lexical_candidate_recall_at_pool: float = Field(ge=0, le=1)
     lexical_recall_at_k: float = Field(ge=0, le=1)
     lexical_mrr_at_k: float = Field(ge=0, le=1)
     lexical_ndcg_at_k: float = Field(ge=0, le=1)
     lexical_alpha_ndcg_at_k: float = Field(ge=0, le=1)
     lexical_evidence_precision_at_k: float = Field(ge=0, le=1)
-    scores: tuple[DimensionScore, ...] = Field(min_length=2)
+    scores: tuple[DimensionScore, ...] = Field(min_length=1)
     chosen_dimensions: int | None = Field(default=None, gt=0)
 
 
@@ -170,18 +184,15 @@ def run_dimension_evaluation(
     corpus_hash: str,
     dataset_sha256: str,
     retrieval: HybridRetrievalPolicy = DEFAULT_HYBRID_RETRIEVAL_POLICY,
+    embedding_cache_directory: Path | None = None,
     workers: int = 1,
     progress: Callable[[str], None] | None = None,
 ) -> EvaluationResult:
     materialized_chunks = tuple(chunks)
     if not materialized_chunks:
         raise CorpusValidationError("cannot evaluate an empty corpus")
-    if (
-        len(dimensions) < 2
-        or len(set(dimensions)) != len(dimensions)
-        or any(d <= 0 for d in dimensions)
-    ):
-        raise ValueError("evaluation requires at least two unique positive dimensions")
+    if not dimensions or len(set(dimensions)) != len(dimensions) or any(d <= 0 for d in dimensions):
+        raise ValueError("evaluation requires unique positive dimensions")
 
     intents_by_query = _resolve_intents(dataset, materialized_chunks)
     maximum_dimensions = max(dimensions)
@@ -197,27 +208,44 @@ def run_dimension_evaluation(
         progress=_progress_counter(progress, "counted embedding tokens"),
     )
 
+    document_inputs = tuple(chunk.embedding_text for chunk in materialized_chunks)
     document_vectors = _embed_provider_vectors(
-        (chunk.embedding_text for chunk in materialized_chunks),
+        document_inputs,
         provider,
         "embed_document",
         "embed_documents",
         maximum_dimensions,
         workers,
         _progress_counter(progress, "embedded documents"),
+        cache_path=_embedding_cache_path(
+            embedding_cache_directory,
+            "documents",
+            model,
+            maximum_dimensions,
+            document_inputs,
+        ),
     )
     query_input_groups = tuple(query.semantic_inputs for query in dataset.queries)
     query_group_sizes = tuple(len(group) for group in query_input_groups)
+    query_inputs = tuple(text for group in query_input_groups for text in group)
     query_vectors = _embed_provider_vectors(
-        (text for group in query_input_groups for text in group),
+        query_inputs,
         provider,
         "embed_query",
         "embed_queries",
         maximum_dimensions,
         workers,
         _progress_counter(progress, "embedded queries"),
+        cache_path=_embedding_cache_path(
+            embedding_cache_directory,
+            "queries",
+            model,
+            maximum_dimensions,
+            query_inputs,
+        ),
     )
-    candidate_limit = min(len(materialized_chunks), max(dataset.k, retrieval.candidate_pool_size))
+    candidate_limit = min(len(materialized_chunks), max(dataset.k, dataset.candidate_pool_size))
+    chunk_remedies = {chunk.id: _remedy_id(chunk) for chunk in materialized_chunks}
     lexical_input_groups = tuple(query.lexical_inputs for query in dataset.queries)
     flat_lexical_rankings = rank_lexical_queries(
         materialized_chunks,
@@ -225,8 +253,11 @@ def run_dimension_evaluation(
         limit=candidate_limit,
         policy=retrieval,
     )
+    lexical_unit_rankings = _rankings_for_unit(
+        flat_lexical_rankings, dataset.ranking_unit, chunk_remedies
+    )
     lexical_rankings = _aggregate_query_rankings(
-        flat_lexical_rankings,
+        lexical_unit_rankings,
         query_group_sizes,
         candidate_limit,
         retrieval.reciprocal_rank_constant,
@@ -234,6 +265,7 @@ def run_dimension_evaluation(
     lexical_quality = _mean_quality(
         _ranking_quality(lexical_rankings, intents_by_query, dataset.k, ALPHA_NOVELTY_DISCOUNT)
     )
+    lexical_candidate_recall = _mean_recall(lexical_rankings, intents_by_query, candidate_limit)
 
     scores = []
     for dimension in dimensions:
@@ -244,24 +276,47 @@ def run_dimension_evaluation(
             dimensions=dimension,
             limit=candidate_limit,
         )
+        semantic_unit_rankings = _rankings_for_unit(
+            flat_semantic_rankings, dataset.ranking_unit, chunk_remedies
+        )
         semantic_rankings = _aggregate_query_rankings(
-            flat_semantic_rankings,
+            semantic_unit_rankings,
             query_group_sizes,
             candidate_limit,
             retrieval.reciprocal_rank_constant,
         )
-        fused_rankings = tuple(
-            reciprocal_rank_fusion(
-                (semantic, lexical), rank_constant=retrieval.reciprocal_rank_constant
+        if dataset.ranking_unit == "remedy":
+            flat_fused_rankings = tuple(
+                reciprocal_rank_fusion(
+                    (semantic, lexical), rank_constant=retrieval.reciprocal_rank_constant
+                )[:candidate_limit]
+                for semantic, lexical in zip(
+                    semantic_unit_rankings, lexical_unit_rankings, strict=True
+                )
             )
-            for semantic, lexical in zip(semantic_rankings, lexical_rankings, strict=True)
-        )
+            fused_rankings = _aggregate_query_rankings(
+                flat_fused_rankings,
+                query_group_sizes,
+                candidate_limit,
+                retrieval.reciprocal_rank_constant,
+            )
+        else:
+            fused_rankings = tuple(
+                reciprocal_rank_fusion(
+                    (semantic, lexical), rank_constant=retrieval.reciprocal_rank_constant
+                )
+                for semantic, lexical in zip(semantic_rankings, lexical_rankings, strict=True)
+            )
         semantic_quality = _mean_quality(
             _ranking_quality(semantic_rankings, intents_by_query, dataset.k, ALPHA_NOVELTY_DISCOUNT)
         )
         fused_quality = _mean_quality(
             _ranking_quality(fused_rankings, intents_by_query, dataset.k, ALPHA_NOVELTY_DISCOUNT)
         )
+        semantic_candidate_recall = _mean_recall(
+            semantic_rankings, intents_by_query, candidate_limit
+        )
+        fused_candidate_recall = _mean_recall(fused_rankings, intents_by_query, candidate_limit)
         quality_value = (
             fused_quality.recall_at_k
             if dataset.quality_metric == "recallAtK"
@@ -270,11 +325,13 @@ def run_dimension_evaluation(
         scores.append(
             DimensionScore(
                 dimensions=dimension,
+                semantic_candidate_recall_at_pool=semantic_candidate_recall,
                 semantic_recall_at_k=semantic_quality.recall_at_k,
                 semantic_mrr_at_k=semantic_quality.mrr_at_k,
                 semantic_ndcg_at_k=semantic_quality.ndcg_at_k,
                 semantic_alpha_ndcg_at_k=semantic_quality.alpha_ndcg_at_k,
                 semantic_evidence_precision_at_k=semantic_quality.evidence_precision_at_k,
+                candidate_recall_at_pool=fused_candidate_recall,
                 recall_at_k=fused_quality.recall_at_k,
                 mrr_at_k=fused_quality.mrr_at_k,
                 ndcg_at_k=fused_quality.ndcg_at_k,
@@ -297,8 +354,15 @@ def run_dimension_evaluation(
         alpha_discount=ALPHA_NOVELTY_DISCOUNT,
         quality_metric=dataset.quality_metric,
         minimum_quality=dataset.minimum_quality,
-        candidate_pool_size=retrieval.candidate_pool_size,
+        ranking_unit=dataset.ranking_unit,
+        retrieval_strategy=(
+            "symptomRemedyRrf"
+            if dataset.ranking_unit == "remedy"
+            else "symptomRrfThenFts5VectorRrf"
+        ),
+        candidate_pool_size=dataset.candidate_pool_size,
         reciprocal_rank_constant=retrieval.reciprocal_rank_constant,
+        lexical_candidate_recall_at_pool=lexical_candidate_recall,
         lexical_recall_at_k=lexical_quality.recall_at_k,
         lexical_mrr_at_k=lexical_quality.mrr_at_k,
         lexical_ndcg_at_k=lexical_quality.ndcg_at_k,
@@ -358,7 +422,7 @@ def load_evaluation_gate(path: Path) -> EvaluationGate:
 def _resolve_intents(
     dataset: EvaluationDataset, chunks: tuple[Chunk, ...]
 ) -> tuple[tuple[frozenset[str], ...], ...]:
-    """Resolve every relevance target to the chunk IDs that satisfy it.
+    """Resolve every relevance target to the ranking IDs that satisfy it.
 
     Each target acts as one intent of its query. A target with a section title
     covers the chunk holding that passage (or every chunk of the section when no
@@ -370,20 +434,24 @@ def _resolve_intents(
     for query in dataset.queries:
         intents: list[frozenset[str]] = []
         for target in query.relevant:
-            matches = {
-                chunk.id
+            matching_chunks = {
+                chunk
                 for chunk in chunks
                 if chunk.book_id == target.book_id
                 and chunk.remedy_name == target.remedy_name
                 and (target.section_title is None or chunk.section_title == target.section_title)
                 and (target.passage_index is None or target.passage_index in chunk.passage_indexes)
             }
-            if not matches:
+            if not matching_chunks:
                 raise CorpusValidationError(
                     f"evaluation query {query.id!r} has an unresolved target: "
                     f"{target.book_id} / {target.remedy_name} / {target.section_title} / "
                     f"{target.passage_index}"
                 )
+            matches = {
+                _remedy_id(chunk) if dataset.ranking_unit == "remedy" else chunk.id
+                for chunk in matching_chunks
+            }
             intents.append(frozenset(matches))
         resolved_queries.append(tuple(intents))
     return tuple(resolved_queries)
@@ -436,6 +504,18 @@ def _mean_quality(qualities: tuple[RankingQuality, ...]) -> RankingQuality:
         evidence_precision_at_k=math.fsum(item.evidence_precision_at_k for item in qualities)
         / count,
     )
+
+
+def _mean_recall(
+    rankings: Iterable[Iterable[str]],
+    intents_by_query: tuple[tuple[frozenset[str], ...], ...],
+    k: int,
+) -> float:
+    recalls = []
+    for ranking, intents in zip(rankings, intents_by_query, strict=True):
+        ranked_set = set(tuple(ranking)[:k])
+        recalls.append(sum(1 for intent in intents if intent & ranked_set) / len(intents))
+    return math.fsum(recalls) / len(recalls)
 
 
 def _ndcg_at_k(ranked_ids: Sequence[str], relevant: frozenset[str], k: int) -> float:
@@ -563,6 +643,24 @@ def _aggregate_query_rankings(
     return tuple(aggregated)
 
 
+def _rankings_for_unit(
+    rankings: Sequence[Sequence[str]],
+    ranking_unit: RankingUnit,
+    chunk_remedies: Mapping[str, str],
+) -> tuple[tuple[str, ...], ...]:
+    if ranking_unit == "chunk":
+        return tuple(tuple(ranking) for ranking in rankings)
+    remedy_rankings = []
+    for ranking in rankings:
+        remedies = dict.fromkeys(chunk_remedies[chunk_id] for chunk_id in ranking)
+        remedy_rankings.append(tuple(remedies))
+    return tuple(remedy_rankings)
+
+
+def _remedy_id(chunk: Chunk) -> str:
+    return f"{chunk.book_id}\x1f{chunk.remedy_name}"
+
+
 def _embed_provider_vectors(
     inputs: Iterable[str],
     provider: EmbeddingProvider,
@@ -571,49 +669,115 @@ def _embed_provider_vectors(
     dimensions: int,
     workers: int,
     progress: Callable[[int, int], None] | None,
+    *,
+    cache_path: Path | None = None,
 ) -> tuple:
+    materialized = tuple(inputs)
+    if cache_path is not None and cache_path.is_file():
+        return _load_embedding_cache(cache_path, len(materialized), dimensions, progress)
+
     batch_embed = getattr(provider, batch_method, None)
     if not callable(batch_embed):
-        return _embed_vectors(
-            inputs,
+        vectors = _embed_vectors(
+            materialized,
             getattr(provider, single_method),
             dimensions,
             workers,
             progress,
         )
-    typed_batch_embed = cast(Callable[[Sequence[str]], Iterable[Iterable[float]]], batch_embed)
-
-    materialized = tuple(inputs)
-    batches = tuple(
-        materialized[start : start + EMBEDDING_BATCH_SIZE]
-        for start in range(0, len(materialized), EMBEDDING_BATCH_SIZE)
-    )
-    if workers == 1:
-        results = map(typed_batch_embed, batches)
-        executor = None
     else:
-        executor = ThreadPoolExecutor(
-            max_workers=workers, thread_name_prefix="openrouter-embedding"
+        typed_batch_embed = cast(Callable[[Sequence[str]], Iterable[Iterable[float]]], batch_embed)
+        batches = tuple(
+            materialized[start : start + EMBEDDING_BATCH_SIZE]
+            for start in range(0, len(materialized), EMBEDDING_BATCH_SIZE)
         )
-        results = executor.map(typed_batch_embed, batches, buffersize=workers)
+        if workers == 1:
+            results = map(typed_batch_embed, batches)
+            executor = None
+        else:
+            executor = ThreadPoolExecutor(
+                max_workers=workers, thread_name_prefix="openrouter-embedding"
+            )
+            results = executor.map(typed_batch_embed, batches, buffersize=workers)
+        materialized_results = []
+        completed = 0
+        try:
+            for batch, batch_vectors in zip(batches, results, strict=True):
+                materialized_vectors = tuple(batch_vectors)
+                if len(materialized_vectors) != len(batch):
+                    raise RuntimeError(
+                        "Embedding provider returned a different number of vectors than inputs"
+                    )
+                for values in materialized_vectors:
+                    materialized_results.append(materialize_float32(values, dimensions))
+                    completed += 1
+                    if progress is not None:
+                        progress(completed, len(materialized))
+        finally:
+            if executor is not None:
+                executor.shutdown(wait=True, cancel_futures=True)
+        vectors = tuple(materialized_results)
+    if cache_path is not None:
+        _store_embedding_cache(cache_path, vectors)
+    return vectors
+
+
+def _embedding_cache_path(
+    directory: Path | None,
+    role: str,
+    model: str,
+    dimensions: int,
+    inputs: Sequence[str],
+) -> Path | None:
+    if directory is None:
+        return None
+    digest = hashlib.sha256()
+    digest.update(b"homeoremedica-embedding-cache-v1\0")
+    digest.update(model.encode("utf-8"))
+    digest.update(dimensions.to_bytes(4, "big"))
+    for text in inputs:
+        encoded = text.encode("utf-8")
+        digest.update(len(encoded).to_bytes(8, "big"))
+        digest.update(encoded)
+    return directory / f"{role}-{dimensions}-{digest.hexdigest()}.f32"
+
+
+def _load_embedding_cache(
+    path: Path,
+    count: int,
+    dimensions: int,
+    progress: Callable[[int, int], None] | None,
+) -> tuple[array[float], ...]:
+    expected_bytes = count * dimensions * array("f").itemsize
+    if path.stat().st_size != expected_bytes:
+        raise RuntimeError(f"embedding cache has an invalid byte size: {path}")
     vectors = []
-    completed = 0
-    try:
-        for batch, batch_vectors in zip(batches, results, strict=True):
-            materialized_vectors = tuple(batch_vectors)
-            if len(materialized_vectors) != len(batch):
-                raise RuntimeError(
-                    "Embedding provider returned a different number of vectors than inputs"
-                )
-            for values in materialized_vectors:
-                vectors.append(materialize_float32(values, dimensions))
-                completed += 1
-                if progress is not None:
-                    progress(completed, len(materialized))
-    finally:
-        if executor is not None:
-            executor.shutdown(wait=True, cancel_futures=True)
+    with path.open("rb") as source:
+        for completed in range(1, count + 1):
+            vector = array("f")
+            vector.fromfile(source, dimensions)
+            vectors.append(vector)
+            if progress is not None:
+                progress(completed, count)
     return tuple(vectors)
+
+
+def _store_embedding_cache(path: Path, vectors: Sequence[array[float]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            prefix=f".{path.name}.", suffix=".tmp", dir=path.parent, delete=False
+        ) as temporary:
+            temporary_path = Path(temporary.name)
+            for vector in vectors:
+                vector.tofile(temporary)
+            temporary.flush()
+            os.fsync(temporary.fileno())
+        os.replace(temporary_path, path)
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
 
 
 def _embed_vectors(

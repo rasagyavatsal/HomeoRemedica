@@ -15,6 +15,7 @@ from homeoremedica_corpus.evaluation import (
     EvaluationTarget,
     _aggregate_query_rankings,
     _ranking_quality,
+    _rankings_for_unit,
     _resolve_intents,
     record_evaluation,
     run_dimension_evaluation,
@@ -117,7 +118,7 @@ def test_compares_dimensions_and_selects_the_smallest_passing_result(tmp_path: P
     assert result.lexical_recall_at_k == 0.0
     assert result.scores[0].semantic_recall_at_k == 0.0
     assert result.scores[1].semantic_recall_at_k == 1.0
-    assert result.evaluation_schema_version == 4
+    assert result.evaluation_schema_version == 5
     assert result.retrieval_strategy == "symptomRrfThenFts5VectorRrf"
     assert result.alpha_discount == 0.5
     assert result.lexical_mrr_at_k == 0.0
@@ -218,6 +219,50 @@ def test_remedy_level_targets_cover_every_chunk_of_the_remedy() -> None:
     assert empty.recall_at_k == 0.0
 
 
+def test_remedy_ranking_resolves_each_target_to_one_remedy_id() -> None:
+    corpus_chunks = tuple(chunk for book in books() for chunk in chunk_book(book))
+    remedy_dataset = EvaluationDataset(
+        version="v5",
+        k=1,
+        ranking_unit="remedy",
+        quality_metric="recallAtK",
+        minimum_quality=0.8,
+        queries=(
+            EvaluationQuery(
+                id="q1",
+                symptoms=("find alpha",),
+                relevant=(EvaluationTarget(book_id="alpha", remedy_name="REMEDY"),),
+            ),
+        ),
+    )
+
+    assert _resolve_intents(remedy_dataset, corpus_chunks) == ((frozenset({"alpha\x1fREMEDY"}),),)
+
+
+def test_remedy_ranking_rejects_passage_level_targets() -> None:
+    with pytest.raises(ValidationError, match="remedy-level"):
+        EvaluationDataset(
+            version="v5",
+            k=1,
+            ranking_unit="remedy",
+            quality_metric="recallAtK",
+            minimum_quality=0.8,
+            queries=(
+                EvaluationQuery(
+                    id="q1",
+                    symptoms=("find alpha",),
+                    relevant=(
+                        EvaluationTarget(
+                            book_id="alpha",
+                            remedy_name="REMEDY",
+                            section_title="Mind",
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+
 def test_rejects_passage_index_without_section_title() -> None:
     with pytest.raises(ValidationError):
         EvaluationTarget(book_id="alpha", remedy_name="REMEDY", passage_index=0)
@@ -273,6 +318,36 @@ def test_dimension_evaluation_embeds_each_raw_query_symptom() -> None:
     assert query_inputs == ["Head pain.", "Worse from heat."]
 
 
+def test_dimension_evaluation_reuses_cached_embeddings(tmp_path: Path) -> None:
+    corpus_chunks = tuple(chunk for book in books() for chunk in chunk_book(book))
+    providers: list[EvaluationProvider] = []
+
+    def provider_for(dimensions: int) -> EvaluationProvider:
+        provider = EvaluationProvider(dimensions)
+        providers.append(provider)
+        return provider
+
+    for _ in range(2):
+        run_dimension_evaluation(
+            dataset(),
+            corpus_chunks,
+            provider_for,
+            model="qwen/qwen3-embedding-8b",
+            model_input_limit=2048,
+            dimensions=(3,),
+            corpus_hash=corpus_hash(corpus_chunks),
+            dataset_sha256="d" * 64,
+            embedding_cache_directory=tmp_path / "cache",
+        )
+
+    assert providers[0].events == ["count", "count", "document", "document", "query"]
+    assert providers[1].events == ["count", "count"]
+    assert sorted(path.name.split("-", 1)[0] for path in (tmp_path / "cache").iterdir()) == [
+        "documents",
+        "queries",
+    ]
+
+
 def test_symptom_rankings_are_fused_back_into_one_case_ranking() -> None:
     rankings = (
         ("shared", "first"),
@@ -283,6 +358,27 @@ def test_symptom_rankings_are_fused_back_into_one_case_ranking() -> None:
     aggregated = _aggregate_query_rankings(rankings, (2, 1), limit=2, rank_constant=60)
 
     assert aggregated == (("shared", "second"), ("third",))
+
+
+def test_remedy_rankings_combine_distinct_chunks_of_the_same_remedy() -> None:
+    chunk_remedies = {
+        "remedy-a-mind": "book\x1fREMEDY A",
+        "remedy-a-head": "book\x1fREMEDY A",
+        "remedy-b": "book\x1fREMEDY B",
+    }
+    rankings = (
+        ("remedy-a-mind", "remedy-b"),
+        ("remedy-a-head", "remedy-b"),
+    )
+
+    remedy_rankings = _rankings_for_unit(rankings, "remedy", chunk_remedies)
+    aggregated = _aggregate_query_rankings(remedy_rankings, (2,), limit=2, rank_constant=60)
+
+    assert remedy_rankings == (
+        ("book\x1fREMEDY A", "book\x1fREMEDY B"),
+        ("book\x1fREMEDY A", "book\x1fREMEDY B"),
+    )
+    assert aggregated == (("book\x1fREMEDY A", "book\x1fREMEDY B"),)
 
 
 def test_ranking_quality_discounts_repeated_intent_coverage() -> None:

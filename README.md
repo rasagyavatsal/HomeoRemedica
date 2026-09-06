@@ -202,15 +202,14 @@ uv run --locked homeoremedica-corpus validate
 
 ### Retrieval evaluation
 
-The evaluator reads `evaluation/v4/queries.json` at depth `k = 8` and writes the immutable
-`evaluation/v4/result.json` release input. It splits the 500 clinical cases into 2,117 raw symptom
+The evaluator reads `evaluation/v5/queries.json` at depth `k = 8` and writes the immutable
+`evaluation/v5/result.json` release input. It splits the 500 clinical cases into 2,117 raw symptom
 queries and embeds each symptom separately, without an instruction or context prefix. Per-symptom
-semantic rankings and per-symptom lexical rankings are each combined with reciprocal-rank fusion,
-then the two case-level rankings are fused for scoring. The cases carry remedy-level relevance
-targets (`bookId` + `remedyName`): each target is one intent and counts as covered when any symptom
-excerpt of the prescribed remedy appears among the retrieved chunks. Passage-level targets
-(`sectionTitle` with an optional `passageIndex`) remain supported and resolve to the individual
-symptom chunk holding that passage.
+semantic and lexical candidates are collapsed to unique remedies before reciprocal-rank fusion, so
+evidence from different chunks of the same remedy reinforces one result. The cases carry
+remedy-level relevance targets (`bookId` + `remedyName`): each target is one intent and counts as
+covered when its remedy appears in the ranking. Chunk ranking remains available for passage-level
+evaluation datasets.
 
 ```sh
 export OPENROUTER_API_KEY=... # or put it in .env
@@ -218,36 +217,36 @@ uv run --locked homeoremedica-corpus evaluate
 ```
 
 The corpus is loaded from the remedy-merged `dataset/combined.json`, which the evaluator validates
-against the configured book mapping. The evaluator compares 768, 1536, 3072, and 4096 dimensions
-against the same corpus, uses `RETRIEVAL_DOCUMENT` for contextualized symptom chunks and
-`RETRIEVAL_QUERY` for raw query symptoms, and combines semantic and Porter-stemmed FTS5 candidates
-with reciprocal-rank fusion. Because `qwen/qwen3-embedding-8b` supports Matryoshka prefixes, one
-4096-dimensional vector per input supplies every normalized dimension. Inputs are sent in bounded
-batches, and the provider truncates each native vector locally, so results do not depend on whether
-an OpenRouter upstream provider honors a `dimensions` request parameter.
+against the configured book mapping. V5 evaluates only the model's native 4096 dimensions. It uses
+`RETRIEVAL_DOCUMENT` for contextualized symptom chunks and `RETRIEVAL_QUERY` for raw query
+symptoms, retrieves up to 640 candidates per symptom, and combines semantic and Porter-stemmed FTS5
+remedy rankings with reciprocal-rank fusion. Inputs are sent in bounded batches. Native vectors are
+cached under `.cache/evaluation/`, keyed by the model, dimensions, and complete ordered inputs, so
+an interrupted ranking or later fusion experiment can reuse the paid embeddings.
 
 Every ranking strategy (lexical, semantic, and fused) is scored at depth 8 with five metrics:
 
 - **Recall@8** — intent coverage: the fraction of the query's relevance targets with at least one
-  retrieved chunk in the top 8 (the release quality gate). Passage-level targets make this equal
-  classic recall; remedy-level targets count a target as soon as any excerpt of the prescribed
-  remedy appears.
-- **MRR@8** — the mean reciprocal rank of the first relevant chunk in the top 8.
+  matching ranked item in the top 8 (the release quality gate). Passage-level targets make this
+  equal classic recall; remedy-level targets count a target as soon as the prescribed remedy
+  appears.
+- **MRR@8** — the mean reciprocal rank of the first relevant item in the top 8.
 - **nDCG@8** — binary-relevance discounted cumulative gain with the standard log2 rank discount,
   normalized by the ideal ranking.
 - **α-nDCG@8** — the novelty- and diversity-biased nDCG of Clarke et al. (SIGIR 2008) with
   α = 0.5: every relevance target is treated as one intent of its query, and each repeated
   coverage of an already-satisfied intent contributes its gain multiplied by (1 − α). The
-  normalizer is the greedy ideal α-DCG over all relevant chunks.
+  normalizer is the greedy ideal α-DCG over all relevant items.
 - **Evidence Precision@8** — the expected fraction of the top 8 slots that supply novel evidence:
-  each relevance target is one equally weighted intent, a ranked chunk contributes the
-  (1 − α)-discounted share of the intents it covers that higher-ranked chunks have not already
+  each relevance target is one equally weighted intent, a ranked item contributes the
+  (1 − α)-discounted share of the intents it covers that higher-ranked items have not already
   satisfied, and the top-8 total is scaled by 1/8. With one intent and no repeated coverage this
   reduces to precision@8.
 
-The result records lexical, semantic, and fused values for every metric and is never overwritten.
-The builder rejects a stale evaluation, a changed dataset digest, or a configured dimension that
-differs from the recorded choice.
+The result records lexical, semantic, and fused values for every metric, plus candidate recall at
+the configured pool depth to distinguish candidate-generation misses from top-8 ordering errors.
+It is never overwritten. The builder rejects a stale evaluation, a changed dataset digest, or a
+configured dimension that differs from the recorded choice.
 
 ### Build a complete release
 

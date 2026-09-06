@@ -13,8 +13,8 @@ target_tokens = 1
 [embedding]
 model = "qwen/qwen3-embedding-8b"
 native_dimensions = 4096
-dimensions = 1536
-evaluation_dimensions = [768, 1536, 3072, 4096]
+dimensions = 4096
+evaluation_dimensions = [4096]
 document_task_type = "RETRIEVAL_DOCUMENT"
 query_task_type = "RETRIEVAL_QUERY"
 normalization = "l2"
@@ -22,8 +22,8 @@ distance_function = "cosine"
 model_input_limit = 32768
 
 [evaluation]
-dataset = "evaluation/v4/queries.json"
-result = "evaluation/v4/result.json"
+dataset = "evaluation/v5/queries.json"
+result = "evaluation/v5/result.json"
 
 [books."allen-nosodes"]
 title = "Allen's Materia Medica of the Nosodes"
