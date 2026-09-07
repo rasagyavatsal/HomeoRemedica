@@ -22,8 +22,8 @@ distance_function = "cosine"
 model_input_limit = 32768
 
 [evaluation]
-dataset = "evaluation/v8/queries.json"
-result = "evaluation/v8/result.json"
+dataset = "evaluation/v9/queries.json"
+result = "evaluation/v9/result.json"
 
 [books."allen-nosodes"]
 title = "Allen's Materia Medica of the Nosodes"

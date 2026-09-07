@@ -123,7 +123,7 @@ def test_compares_dimensions_and_selects_the_smallest_passing_result(tmp_path: P
     assert result.lexical_recall_at_k == 0.0
     assert result.scores[0].semantic_recall_at_k == 0.0
     assert result.scores[1].semantic_recall_at_k == 1.0
-    assert result.evaluation_schema_version == 8
+    assert result.evaluation_schema_version == 9
     assert result.retrieval_strategy == "symptomRrfThenFts5VectorRrf"
     assert result.alpha_discount == 0.5
     assert result.lexical_mrr_at_k == 0.0
@@ -454,6 +454,22 @@ def test_each_query_symptom_is_a_raw_semantic_and_lexical_input() -> None:
     assert query.lexical_inputs == ("Head pain.", "Worse from heat.")
 
 
+def test_semantic_instruction_preserves_raw_queries_and_lexical_inputs() -> None:
+    original = dataset()
+    instructed = original.model_copy(update={"semantic_query_instruction": "Retrieve passages."})
+    assert original.semantic_input_groups == (("find alpha",),)
+    assert instructed.semantic_input_groups == (
+        ("Instruct: Retrieve passages.\nQuery:find alpha",),
+    )
+    assert instructed.queries == original.queries
+    assert instructed.queries[0].lexical_inputs == ("find alpha",)
+    with pytest.raises(ValidationError, match="instruction must be non-empty"):
+        EvaluationDataset.model_validate({
+            **original.model_dump(),
+            "semantic_query_instruction": "  \n ",
+        })
+
+
 def test_dimension_evaluation_embeds_each_raw_query_symptom() -> None:
     corpus_chunks = tuple(chunk for book in books() for chunk in chunk_book(book))
     provider = EvaluationProvider(3)
@@ -605,6 +621,34 @@ def test_dimension_evaluation_uses_normalized_global_remedy_score_fusion(
     )
     assert filtered_result.scores[0].recall_at_k == 1.0
     assert len(tuple((tmp_path / "cache").glob("semantic-rankings-*.bin"))) == 1
+    assert len(tuple((tmp_path / "cache").glob("lexical-rankings-*.bin"))) == 2
+
+    instructed_provider = EvaluationProvider(3)
+    query_inputs = []
+    original_embed_query = instructed_provider.embed_query
+
+    def embed_instructed_query(text):
+        query_inputs.append(text)
+        return original_embed_query(text)
+
+    instructed_provider.embed_query = embed_instructed_query
+    instructed_result = run_dimension_evaluation(
+        filtered_dataset.model_copy(update={"semantic_query_instruction": "Retrieve passages."}),
+        corpus_chunks,
+        lambda _dimensions: instructed_provider,
+        model="qwen/qwen3-embedding-8b",
+        model_input_limit=2048,
+        dimensions=(3,),
+        corpus_hash=corpus_hash(corpus_chunks),
+        dataset_sha256="f" * 64,
+        embedding_cache_directory=tmp_path / "cache",
+    )
+    assert query_inputs == ["Instruct: Retrieve passages.\nQuery:the raw user symptom"]
+    assert instructed_provider.events == ["count", "count", "query"]
+    assert instructed_result.semantic_query_instruction == "Retrieve passages."
+    assert len(tuple((tmp_path / "cache").glob("documents-*.f32"))) == 1
+    assert len(tuple((tmp_path / "cache").glob("queries-*.f32"))) == 2
+    assert len(tuple((tmp_path / "cache").glob("semantic-rankings-*.bin"))) == 2
     assert len(tuple((tmp_path / "cache").glob("lexical-rankings-*.bin"))) == 2
 
 

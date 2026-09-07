@@ -33,12 +33,17 @@ def replay(dataset, chunks, config):
     limit = min(len(chunks), max(dataset.k, dataset.candidate_pool_size))
     channels = []
     for role in ("semantic", "lexical"):
+        input_groups = (
+            dataset.semantic_input_groups
+            if role == "semantic"
+            else tuple(query.lexical_inputs for query in dataset.queries)
+        )
         inputs = tuple(
             lexical_content_terms(text)
             if role == "lexical" and dataset.lexical_query_mode == "contentTerms"
             else text
-            for query in dataset.queries
-            for text in query.semantic_inputs
+            for group in input_groups
+            for text in group
         )
         path = evaluation._ranking_cache_path(
             ROOT / ".cache/evaluation",

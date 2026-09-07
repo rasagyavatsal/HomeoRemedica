@@ -202,9 +202,9 @@ uv run --locked homeoremedica-corpus validate
 
 ### Retrieval evaluation
 
-The evaluator reads `evaluation/v8/queries.json` at depth `k = 8` and writes the immutable
-`evaluation/v8/result.json` release input. It embeds the 2,117 raw symptom strings from 500 clinical
-cases separately and unchanged, without an instruction or context prefix. Per-symptom semantic and
+The evaluator reads `evaluation/v9/queries.json` at depth `k = 8` and writes the immutable
+`evaluation/v9/result.json` release input. It embeds the 2,117 symptom strings from 500 clinical
+cases separately, with a retrieval instruction prepended to each semantic query. Per-symptom semantic and
 lexical candidates are min-max normalized from their cosine-similarity and BM25 relevance scores.
 The normalized scores are squared to suppress weak tail matches and summed by the corpus-wide
 normalized remedy identity across symptoms and retrieval channels, so strong evidence from different
@@ -221,21 +221,36 @@ that otherwise accumulate irrelevant matches in an FTS5 OR search. Explicit nega
 direction words, and modalities such as `not`, `before`, `after`, `down`, `better`, and `worse` remain.
 Semantic queries retain every word. Older datasets default to exact identity and raw lexical input.
 
+V9 retains v8's queries, labels, lexical search, document embeddings, fusion settings, and quality
+threshold. It uses Qwen's documented `Instruct: ...\nQuery:...` query format with the task recorded
+in `semanticQueryInstruction` in both the dataset and result. This conditions the embedding on
+retrieving matching materia medica passages. The original symptom text remains intact after the
+prefix, and lexical queries receive no instruction. Datasets without this field keep raw query
+embeddings. See the [Qwen model card](https://huggingface.co/Qwen/Qwen3-Embedding-8B#usage).
+
 The recorded v8 Recall@8 is **20.77%**, compared with v7's **14.40%**. Scoring the original v7 results
 with normalized labels alone gives **16.30%**; the remaining gain reflects changed retrieval and
-evidence aggregation. V8 still fails the unchanged 80% release gate. The detailed
+evidence aggregation. The detailed
 [comparison](evaluation/v8/comparison.json) includes per-query rankings, an identity-only ablation,
 and an exploratory split with no shared exact symptom text between development and validation.
-Validation recall rises from 17.82% (v7 with normalized labels) to 19.86%. This version changes the
-corpus evaluator; the terminal client's existing chunk-level RRF search is a separate path.
+Validation recall rises from 17.82% (v7 with normalized labels) to 19.86% in v8.
+
+V9 reaches **24.57% Recall@8**, with validation recall increasing to **25.61%** and development
+recall increasing from 21.76% to 23.43%. The [v9 comparison](evaluation/v9/comparison.json) preserves
+per-query rankings; [experiment results](evaluation/v9/experiments.json) also record rejected
+scoring and reranking approaches. This remains an exploratory benchmark comparison, and v9 still
+fails the unchanged 80% release gate. These versions change the corpus evaluator; the terminal
+client's existing chunk-level RRF search and raw query embeddings are a separate path.
 
 To reproduce the comparison after populating both versions' candidate caches, without network calls:
 
 ```sh
 uv run --locked python scripts/compare_v8_retrieval.py
+uv run --locked python scripts/compare_v9_retrieval.py
 ```
 
-The default comparison output is `.cache/evaluation/v8-comparison.json`. Versioned evaluation
+The default comparison outputs are `.cache/evaluation/v8-comparison.json` and `v9-comparison.json`.
+Versioned evaluation
 results are immutable; rerunning `evaluate` against an existing result refuses to overwrite it.
 
 ```sh
@@ -244,14 +259,31 @@ uv run --locked homeoremedica-corpus evaluate
 ```
 
 The corpus is loaded from the remedy-merged `dataset/combined.json`, which the evaluator validates
-against the configured book mapping. V8 evaluates only the model's native 4096 dimensions. It uses
-`RETRIEVAL_DOCUMENT` for contextualized symptom chunks and `RETRIEVAL_QUERY` for raw query
+against the configured book mapping. V9 evaluates only the model's native 4096 dimensions. It uses
+`RETRIEVAL_DOCUMENT` for contextualized symptom chunks and `RETRIEVAL_QUERY` for instructed query
 symptoms and retrieves up to 640 candidates per symptom from semantic and Porter-stemmed FTS5
 search. The ranked remedy identity does not replace the underlying chunk, book, section, or passage
 metadata used for evidence and citations. Inputs are sent in bounded batches. Native vectors and
 scored candidate rankings are cached under `.cache/evaluation/`, keyed by the corpus, model,
 dimensions, retrieval policy, and complete ordered inputs. Later fusion experiments can therefore
 reuse the paid embeddings and skip the exhaustive vector scan.
+
+With the document embedding cache already present, you can prepare semantic candidates using
+NumPy's exhaustive cosine search over document blocks. This optional development tool limits the
+document working set and reuses the same candidate-cache contract as the evaluator. It searches
+every vector; floating-point rounding and ties may differ from sqlite-vec. Its raw-query baseline
+reproduced v8's recorded recall, and synthetic tests compare its scores and rankings with sqlite-vec.
+
+```sh
+# --embed-queries permits OpenRouter calls only if these query embeddings are missing.
+uv run --locked python scripts/prepare_semantic_candidates.py --embed-queries
+uv run --locked homeoremedica-corpus evaluate
+```
+
+Omit `--embed-queries` for cache-only operation. This command preserves existing candidate files;
+changing the instruction generates new query-embedding and semantic-candidate cache keys while
+reusing the document and lexical caches. NumPy is a development dependency, not a runtime dependency
+of the terminal client.
 
 Every ranking strategy (lexical, semantic, and fused) is scored at depth 8 with five metrics:
 

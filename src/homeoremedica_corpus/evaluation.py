@@ -117,13 +117,31 @@ class EvaluationDataset(Contract):
     fusion_strategy: FusionStrategy = "rrf"
     remedy_name_normalization: RemedyNameNormalization = "exact"
     lexical_query_mode: LexicalQueryMode = "raw"
+    semantic_query_instruction: str | None = Field(default=None, min_length=1)
     candidate_pool_size: int = Field(default=100, gt=0)
     quality_metric: QualityMetric
     minimum_quality: float = Field(ge=0, le=1)
     queries: tuple[EvaluationQuery, ...] = Field(min_length=1)
 
+    @property
+    def semantic_input_groups(self) -> tuple[tuple[str, ...], ...]:
+        return tuple(
+            tuple(
+                f"Instruct: {self.semantic_query_instruction}\nQuery:{text}"
+                if self.semantic_query_instruction is not None
+                else text
+                for text in query.semantic_inputs
+            )
+            for query in self.queries
+        )
+
     @model_validator(mode="after")
     def validate_queries(self) -> EvaluationDataset:
+        if (
+            self.semantic_query_instruction is not None
+            and not self.semantic_query_instruction.strip()
+        ):
+            raise ValueError("semantic query instruction must be non-empty")
         identifiers = [query.id for query in self.queries]
         if len(set(identifiers)) != len(identifiers):
             raise ValueError("evaluation query IDs must be unique")
@@ -168,7 +186,7 @@ class DimensionScore(Contract):
 
 
 class EvaluationResult(Contract):
-    evaluation_schema_version: int = 8
+    evaluation_schema_version: int = 9
     dataset_version: str
     dataset_sha256: str
     corpus_hash: str
@@ -185,6 +203,7 @@ class EvaluationResult(Contract):
     fusion_strategy: FusionStrategy = "rrf"
     remedy_name_normalization: RemedyNameNormalization = "exact"
     lexical_query_mode: LexicalQueryMode = "raw"
+    semantic_query_instruction: str | None = Field(default=None, min_length=1)
     retrieval_strategy: str
     lexical_tokenizer: str = FTS5_TOKENIZER
     candidate_pool_size: int = Field(gt=0)
@@ -248,7 +267,7 @@ def run_dimension_evaluation(
     maximum_dimensions = max(dimensions)
     if workers <= 0:
         raise ValueError("embedding workers must be positive")
-    query_input_groups = tuple(query.semantic_inputs for query in dataset.queries)
+    query_input_groups = dataset.semantic_input_groups
     query_group_sizes = tuple(len(group) for group in query_input_groups)
     query_inputs = tuple(text for group in query_input_groups for text in group)
     candidate_limit = min(len(materialized_chunks), max(dataset.k, dataset.candidate_pool_size))
@@ -509,6 +528,7 @@ def run_dimension_evaluation(
         fusion_strategy=dataset.fusion_strategy,
         remedy_name_normalization=dataset.remedy_name_normalization,
         lexical_query_mode=dataset.lexical_query_mode,
+        semantic_query_instruction=dataset.semantic_query_instruction,
         retrieval_strategy=_retrieval_strategy(dataset.ranking_unit, dataset.fusion_strategy),
         candidate_pool_size=dataset.candidate_pool_size,
         reciprocal_rank_constant=(
