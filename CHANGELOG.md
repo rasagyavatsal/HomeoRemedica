@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v2.3.0...HomeoRemedica-v3.0.0) (2026-09-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* **evaluation:** corpus chunking now emits one chunk per passage, and evaluation datasets may define grouped symptom queries.
+* **evaluation:** corpus.toml no longer accepts processed_directory and the pipeline no longer reads dataset/processed/*.json; configure combined_dataset instead.
+* **embeddings:** evaluate and build no longer accept --project or --location and authenticate with OPENROUTER_API_KEY instead of Vertex AI. corpus.toml requires native_dimensions, pins the new model, raises model_input_limit to 32768, evaluates [768, 1536, 3072, 4096] dimensions, and points evaluation at the v3 dataset. Dimension caps in the manifest and evaluation contracts rise from 3072 to 4096, and the chat client rejects corpora built with a different embedding model.
+
+### Features
+
+* **embeddings:** migrate embeddings from Vertex Gemini to OpenRouter Qwen3 ([#11](https://github.com/rasagyavatsal/HomeoRemedica/issues/11)) ([8fe7fea](https://github.com/rasagyavatsal/HomeoRemedica/commit/8fe7fea4a3958100098d5865a5bb56be01150f0e))
+* **evaluation:** depth-8 intent-aware metric suite on the combined corpus ([#13](https://github.com/rasagyavatsal/HomeoRemedica/issues/13)) ([99e853f](https://github.com/rasagyavatsal/HomeoRemedica/commit/99e853f7d10b37544db3552f57835f75331c90af))
+* **evaluation:** switch corpus defaults to v9 symptom retrieval ([#15](https://github.com/rasagyavatsal/HomeoRemedica/issues/15)) ([c0e2190](https://github.com/rasagyavatsal/HomeoRemedica/commit/c0e2190f95d5580c6d7f66703ef9cc7715ad12bc))
+
 ## [2.3.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v2.2.0...HomeoRemedica-v2.3.0) (2026-09-05)
 
 
