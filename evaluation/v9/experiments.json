@@ -1,0 +1,346 @@
+{
+  "baselineVersion": "v8",
+  "selectedVersion": "v9",
+  "developmentQueries": 239,
+  "validationQueries": 261,
+  "selectionNote": "Exploratory experiments using the same symptom-disjoint development/validation split as the v8 comparison. No relevance labels were included in embedding or reranking requests. The selected instruction was fixed before its evaluation. Validation has been inspected during this work and is not an untouched external test set.",
+  "baseline": {
+    "developmentRecall": 0.2175732217573222,
+    "validationRecall": 0.19859514687100896,
+    "allRecall": 0.20766666666666667
+  },
+  "selected": {
+    "method": "Qwen retrieval query instruction",
+    "instruction": "Given a symptom description, retrieve relevant materia medica passages describing matching symptoms, modalities, and locations.",
+    "developmentRecall": 0.23430962343096234,
+    "validationRecall": 0.256066411238825,
+    "allRecall": 0.24566666666666664
+  },
+  "rejected": [
+    {
+      "method": "Combine semantic and lexical scores on the same passage before remedy aggregation",
+      "trials": [
+        {
+          "mode": "arithmetic",
+          "power": 1,
+          "weight": 0.25,
+          "developmentRecall": 0.2175732217573222
+        },
+        {
+          "mode": "arithmetic",
+          "power": 1,
+          "weight": 0.5,
+          "developmentRecall": 0.22594142259414227
+        },
+        {
+          "mode": "arithmetic",
+          "power": 1,
+          "weight": 0.75,
+          "developmentRecall": 0.15481171548117154
+        },
+        {
+          "mode": "arithmetic",
+          "power": 2,
+          "weight": 0.25,
+          "developmentRecall": 0.19665271966527198
+        },
+        {
+          "mode": "arithmetic",
+          "power": 2,
+          "weight": 0.5,
+          "developmentRecall": 0.2175732217573222
+        },
+        {
+          "mode": "arithmetic",
+          "power": 2,
+          "weight": 0.75,
+          "developmentRecall": 0.16317991631799164
+        },
+        {
+          "mode": "arithmetic",
+          "power": 4,
+          "weight": 0.25,
+          "developmentRecall": 0.1506276150627615
+        },
+        {
+          "mode": "arithmetic",
+          "power": 4,
+          "weight": 0.5,
+          "developmentRecall": 0.1799163179916318
+        },
+        {
+          "mode": "arithmetic",
+          "power": 4,
+          "weight": 0.75,
+          "developmentRecall": 0.1589958158995816
+        },
+        {
+          "mode": "geometric",
+          "power": 1,
+          "weight": 0.5,
+          "developmentRecall": 0.19665271966527198
+        },
+        {
+          "mode": "geometric",
+          "power": 2,
+          "weight": 0.5,
+          "developmentRecall": 0.19665271966527198
+        },
+        {
+          "mode": "geometric",
+          "power": 4,
+          "weight": 0.5,
+          "developmentRecall": 0.16736401673640167
+        },
+        {
+          "mode": "bonus",
+          "power": 1,
+          "weight": 0.5,
+          "developmentRecall": 0.2175732217573222
+        },
+        {
+          "mode": "bonus",
+          "power": 2,
+          "weight": 0.5,
+          "developmentRecall": 0.20920502092050208
+        },
+        {
+          "mode": "bonus",
+          "power": 4,
+          "weight": 0.5,
+          "developmentRecall": 0.17573221757322174
+        },
+        {
+          "mode": "harmonic",
+          "power": 1,
+          "weight": 0.5,
+          "developmentRecall": 0.19665271966527198
+        },
+        {
+          "mode": "harmonic",
+          "power": 2,
+          "weight": 0.5,
+          "developmentRecall": 0.18828451882845187
+        },
+        {
+          "mode": "harmonic",
+          "power": 4,
+          "weight": 0.5,
+          "developmentRecall": 0.15481171548117154
+        }
+      ],
+      "selected": {
+        "mode": "arithmetic",
+        "power": 1,
+        "weight": 0.5,
+        "developmentRecall": 0.22594142259414227,
+        "validationRecall": 0.19540229885057472,
+        "allRecall": 0.21
+      }
+    },
+    {
+      "method": "Channel weighting, strongest-symptom selection, and corpus-size penalties",
+      "trials": [
+        {
+          "weight": 0.25,
+          "topSymptoms": 0,
+          "sizePenalty": 0,
+          "developmentRecall": 0.21338912133891214
+        },
+        {
+          "weight": 0.25,
+          "topSymptoms": 0,
+          "sizePenalty": 0.1,
+          "developmentRecall": 0.19665271966527198
+        },
+        {
+          "weight": 0.25,
+          "topSymptoms": 0,
+          "sizePenalty": 0.25,
+          "developmentRecall": 0.17154811715481172
+        },
+        {
+          "weight": 0.25,
+          "topSymptoms": 1,
+          "sizePenalty": 0,
+          "developmentRecall": 0.1297071129707113
+        },
+        {
+          "weight": 0.25,
+          "topSymptoms": 1,
+          "sizePenalty": 0.1,
+          "developmentRecall": 0.12552301255230125
+        },
+        {
+          "weight": 0.25,
+          "topSymptoms": 1,
+          "sizePenalty": 0.25,
+          "developmentRecall": 0.0794979079497908
+        },
+        {
+          "weight": 0.25,
+          "topSymptoms": 2,
+          "sizePenalty": 0,
+          "developmentRecall": 0.16317991631799164
+        },
+        {
+          "weight": 0.25,
+          "topSymptoms": 2,
+          "sizePenalty": 0.1,
+          "developmentRecall": 0.1506276150627615
+        },
+        {
+          "weight": 0.25,
+          "topSymptoms": 2,
+          "sizePenalty": 0.25,
+          "developmentRecall": 0.12133891213389121
+        },
+        {
+          "weight": 0.5,
+          "topSymptoms": 0,
+          "sizePenalty": 0,
+          "developmentRecall": 0.2175732217573222
+        },
+        {
+          "weight": 0.5,
+          "topSymptoms": 0,
+          "sizePenalty": 0.1,
+          "developmentRecall": 0.20920502092050208
+        },
+        {
+          "weight": 0.5,
+          "topSymptoms": 0,
+          "sizePenalty": 0.25,
+          "developmentRecall": 0.18410041841004185
+        },
+        {
+          "weight": 0.5,
+          "topSymptoms": 1,
+          "sizePenalty": 0,
+          "developmentRecall": 0.1506276150627615
+        },
+        {
+          "weight": 0.5,
+          "topSymptoms": 1,
+          "sizePenalty": 0.1,
+          "developmentRecall": 0.12552301255230125
+        },
+        {
+          "weight": 0.5,
+          "topSymptoms": 1,
+          "sizePenalty": 0.25,
+          "developmentRecall": 0.10460251046025104
+        },
+        {
+          "weight": 0.5,
+          "topSymptoms": 2,
+          "sizePenalty": 0,
+          "developmentRecall": 0.200836820083682
+        },
+        {
+          "weight": 0.5,
+          "topSymptoms": 2,
+          "sizePenalty": 0.1,
+          "developmentRecall": 0.18828451882845187
+        },
+        {
+          "weight": 0.5,
+          "topSymptoms": 2,
+          "sizePenalty": 0.25,
+          "developmentRecall": 0.15481171548117154
+        },
+        {
+          "weight": 0.75,
+          "topSymptoms": 0,
+          "sizePenalty": 0,
+          "developmentRecall": 0.16317991631799164
+        },
+        {
+          "weight": 0.75,
+          "topSymptoms": 0,
+          "sizePenalty": 0.1,
+          "developmentRecall": 0.15481171548117154
+        },
+        {
+          "weight": 0.75,
+          "topSymptoms": 0,
+          "sizePenalty": 0.25,
+          "developmentRecall": 0.1297071129707113
+        },
+        {
+          "weight": 0.75,
+          "topSymptoms": 1,
+          "sizePenalty": 0,
+          "developmentRecall": 0.12552301255230125
+        },
+        {
+          "weight": 0.75,
+          "topSymptoms": 1,
+          "sizePenalty": 0.1,
+          "developmentRecall": 0.11297071129707113
+        },
+        {
+          "weight": 0.75,
+          "topSymptoms": 1,
+          "sizePenalty": 0.25,
+          "developmentRecall": 0.09623430962343096
+        },
+        {
+          "weight": 0.75,
+          "topSymptoms": 2,
+          "sizePenalty": 0,
+          "developmentRecall": 0.14225941422594143
+        },
+        {
+          "weight": 0.75,
+          "topSymptoms": 2,
+          "sizePenalty": 0.1,
+          "developmentRecall": 0.12133891213389121
+        },
+        {
+          "weight": 0.75,
+          "topSymptoms": 2,
+          "sizePenalty": 0.25,
+          "developmentRecall": 0.12133891213389121
+        }
+      ],
+      "selected": {
+        "weight": 0.5,
+        "topSymptoms": 0,
+        "sizePenalty": 0,
+        "developmentRecall": 0.2175732217573222,
+        "validationRecall": 0.19859514687100896,
+        "allRecall": 0.20766666666666667
+      }
+    },
+    {
+      "method": "Content-term bigram phrase matching",
+      "developmentRecall": 0.18828451882845187,
+      "validationRecall": 0.1839080459770115,
+      "allRecall": 0.186
+    },
+    {
+      "method": "Content phrases with worse/better notation expansion",
+      "developmentRecall": 0.18828451882845187,
+      "validationRecall": 0.1851851851851852,
+      "allRecall": 0.18666666666666665
+    },
+    {
+      "method": "Term matching with worse/better and right/left notation expansion",
+      "developmentRecall": 0.20502092050209206,
+      "validationRecall": 0.194125159642401,
+      "allRecall": 0.19933333333333333
+    },
+    {
+      "method": "Listwise reranking of the top 64 remedies using at most 4 quoted passages per remedy",
+      "model": "google/gemini-2.5-flash-lite",
+      "split": "development",
+      "validationRun": false,
+      "queries": 239,
+      "before": 0.2175732217573222,
+      "after": 0.17154811715481172,
+      "cost": 0.1789478
+    }
+  ],
+  "semanticCandidatePreparation": "Exhaustive cosine search using NumPy float32 matrix multiplication with float64 norm accumulation, scanning all 118259 document vectors. The raw-query control reproduced v8 recall on the full benchmark and both subsets."
+}

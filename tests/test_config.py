@@ -65,8 +65,8 @@ def test_loads_and_resolves_the_versioned_pipeline_configuration(tmp_path: Path)
     [
         (
             "evaluation_dimensions = [768, 1536, 3072, 4096]",
-            "evaluation_dimensions = [768]",
-            "higher",
+            "evaluation_dimensions = [768, 768]",
+            "unique",
         ),
         ('model = "qwen/qwen3-embedding-8b"', 'model = "other"', "qwen/qwen3-embedding-8b"),
         ("native_dimensions = 4096", "native_dimensions = 2048", "4096 native dimensions"),

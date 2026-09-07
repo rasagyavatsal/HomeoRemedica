@@ -55,6 +55,13 @@ class RecordingProvider:
         return (0.0, 1.0)
 
 
+@dataclass
+class BatchRecordingProvider(RecordingProvider):
+    def embed_documents(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
+        self.events.append(("embed_documents", " | ".join(texts)))
+        return tuple((1.0, 0.0) for _ in texts)
+
+
 def test_preflights_every_input_before_embedding_any_chunk() -> None:
     chunks = chunks_with("first", "second")
     provider = RecordingProvider({chunks[1].embedding_text: 11})
@@ -105,6 +112,21 @@ def test_parallel_embedding_preserves_chunk_order() -> None:
     assert [item.chunk for item in embedded] == list(chunks)
 
 
+def test_chunk_embedding_batches_inputs_when_the_provider_supports_it() -> None:
+    chunks = chunks_with("first", "second")
+    provider = BatchRecordingProvider({})
+
+    embedded = embed_chunks(chunks, provider, model_input_limit=10, preflight=False)
+
+    assert [item.chunk for item in embedded] == list(chunks)
+    assert provider.events == [
+        (
+            "embed_documents",
+            f"{chunks[0].embedding_text} | {chunks[1].embedding_text}",
+        )
+    ]
+
+
 class FakeResponse:
     def __init__(
         self,
@@ -142,6 +164,16 @@ def embedding_payload(values: list[float], prompt_tokens: int = 7) -> dict[str, 
     return {
         "data": [{"embedding": values, "index": 0}],
         "usage": {"prompt_tokens": prompt_tokens, "total_tokens": prompt_tokens},
+    }
+
+
+def batch_embedding_payload(values: list[list[float]]) -> dict[str, object]:
+    return {
+        "data": [
+            {"embedding": embedding, "index": index}
+            for index, embedding in reversed(tuple(enumerate(values)))
+        ],
+        "usage": {"prompt_tokens": 14, "total_tokens": 14},
     }
 
 
@@ -226,6 +258,22 @@ def test_provider_sends_the_openai_compatible_contract_and_truncates_mrl_prefixe
         "encoding_format": "float",
     }
     assert call["timeout"] == 60.0
+
+
+def test_provider_batches_inputs_and_restores_response_index_order() -> None:
+    session = FakeSession([
+        FakeResponse(payload=batch_embedding_payload([[3.0, 4.0, 5.0, 6.0], [0.0, 5.0, 6.0, 7.0]]))
+    ])
+
+    vectors = provider(session).embed_documents(("first", "second"))
+
+    assert vectors[0] == pytest.approx((0.6, 0.8))
+    assert vectors[1] == pytest.approx((0.0, 1.0))
+    assert session.calls[0]["json"] == {
+        "model": "qwen/qwen3-embedding-8b",
+        "input": ["first", "second"],
+        "encoding_format": "float",
+    }
 
 
 def test_provider_counts_tokens_with_the_conservative_character_bound() -> None:

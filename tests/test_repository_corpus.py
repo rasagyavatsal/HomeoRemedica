@@ -35,6 +35,30 @@ def test_repository_combined_corpus_matches_config_and_conserves_every_passage()
         chunks = chunk_book(book, config.chunking)
         chunked_passages = [passage for chunk in chunks for passage in chunk.passages]
         assert chunked_passages == source_passages
+        assert all(len(chunk.passages) == 1 for chunk in chunks)
+
+
+def test_repository_v9_preserves_queries_and_adds_only_a_semantic_instruction() -> None:
+    config = load_pipeline_config(ROOT / "corpus.toml")
+    dataset, _ = load_evaluation_dataset(config.evaluation_dataset)
+
+    previous, _ = load_evaluation_dataset(ROOT / "evaluation/v7/queries.json")
+    assert dataset.version == "v9"
+    assert dataset.queries == previous.queries
+    assert dataset.minimum_quality == previous.minimum_quality == 0.8
+    assert dataset.remedy_name_normalization == "nfkcCasefoldWhitespace"
+    assert dataset.lexical_query_mode == "contentTerms"
+    assert dataset.ranking_unit == "globalRemedy"
+    assert dataset.fusion_strategy == "normalizedScore"
+    assert dataset.candidate_pool_size == 640
+    assert len(dataset.queries) == 500
+    assert sum(len(query.semantic_inputs) for query in dataset.queries) == 2117
+    assert all(query.semantic_inputs == query.lexical_inputs for query in dataset.queries)
+    assert dataset.semantic_query_instruction is not None
+    assert dataset.semantic_input_groups[0][0] == (
+        f"Instruct: {dataset.semantic_query_instruction}\n"
+        f"Query:{dataset.queries[0].semantic_inputs[0]}"
+    )
 
 
 def test_repository_evaluation_passes_and_pins_the_smallest_approved_dimension() -> None:
