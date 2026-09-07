@@ -14,6 +14,7 @@ from homeoremedica_corpus.chunking import corpus_hash
 from homeoremedica_corpus.cli import _load_chunks
 from homeoremedica_corpus.config import load_pipeline_config
 from homeoremedica_corpus.evaluation import load_evaluation_dataset
+from homeoremedica_corpus.paths import evaluation_path
 from homeoremedica_corpus.retrieval import normalized_remedy_name
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +26,7 @@ def main() -> None:
         "--output", type=Path, default=ROOT / ".cache/evaluation/v9-comparison.json"
     )
     args = parser.parse_args()
+    output = evaluation_path(args.output, ROOT, allow_cache=True)
     config = load_pipeline_config(ROOT / "corpus.toml")
     _, chunks = _load_chunks(config)
     before, before_digest = load_evaluation_dataset(ROOT / "evaluation/v8/queries.json")
@@ -102,8 +104,8 @@ def main() -> None:
             for i, query in enumerate(after.queries)
         ],
     }
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     print(json.dumps(summary, indent=2))

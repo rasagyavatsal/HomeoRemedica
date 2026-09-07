@@ -160,27 +160,30 @@ class OpenRouterEmbeddingProvider:
                 f"OpenRouter returned {len(data) if isinstance(data, list) else 0} embeddings "
                 f"for {expected} inputs"
             )
-        indexed: list[tuple[int, tuple[float, ...]]] = []
-        for fallback_index, item in enumerate(data):
-            if not isinstance(item, dict):
-                raise RuntimeError("OpenRouter returned an invalid embedding item")
-            index = item.get("index", fallback_index)
-            if isinstance(index, bool) or not isinstance(index, int):
-                raise RuntimeError("OpenRouter returned an invalid embedding index")
-            embedding = item.get("embedding")
-            if not isinstance(embedding, list):
-                raise RuntimeError("OpenRouter returned a missing or non-list embedding vector")
-            if len(embedding) != self.spec.native_dimensions:
-                raise RuntimeError(
-                    "OpenRouter returned the wrong embedding dimensions "
-                    f"(expected {self.spec.native_dimensions}, got {len(embedding)})"
-                )
-            if self.spec.dimensions < self.spec.native_dimensions:
-                embedding = embedding[: self.spec.dimensions]
-            indexed.append((index, _normalize_l2(embedding)))
+        indexed = [self._parse_embedding_item(item, index) for index, item in enumerate(data)]
         if sorted(index for index, _ in indexed) != list(range(expected)):
             raise RuntimeError("OpenRouter returned missing or duplicate embedding indexes")
         return tuple(embedding for _, embedding in sorted(indexed))
+
+    def _parse_embedding_item(
+        self, item: object, fallback_index: int
+    ) -> tuple[int, tuple[float, ...]]:
+        if not isinstance(item, dict):
+            raise RuntimeError("OpenRouter returned an invalid embedding item")
+        index = item.get("index", fallback_index)
+        if isinstance(index, bool) or not isinstance(index, int):
+            raise RuntimeError("OpenRouter returned an invalid embedding index")
+        embedding = item.get("embedding")
+        if not isinstance(embedding, list):
+            raise RuntimeError("OpenRouter returned a missing or non-list embedding vector")
+        if len(embedding) != self.spec.native_dimensions:
+            raise RuntimeError(
+                "OpenRouter returned the wrong embedding dimensions "
+                f"(expected {self.spec.native_dimensions}, got {len(embedding)})"
+            )
+        if self.spec.dimensions < self.spec.native_dimensions:
+            embedding = embedding[: self.spec.dimensions]
+        return index, _normalize_l2(embedding)
 
     def _request(self, payload: dict[str, Any]) -> dict[str, Any]:
         url = f"{self._base_url}/embeddings"

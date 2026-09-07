@@ -104,10 +104,7 @@ class EvaluationQuery(Contract):
 
     @property
     def lexical_inputs(self) -> tuple[str, ...]:
-        if self.query is not None:
-            return (self.query,)
-        assert self.symptoms is not None
-        return self.symptoms
+        return self.semantic_inputs
 
 
 class EvaluationDataset(Contract):

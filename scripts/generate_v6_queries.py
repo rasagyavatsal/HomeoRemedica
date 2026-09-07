@@ -20,10 +20,9 @@ def main() -> None:
         "queries": source["queries"],
     }
     DESTINATION.parent.mkdir(parents=True, exist_ok=True)
-    DESTINATION.write_text(
-        json.dumps(destination, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    with DESTINATION.open("w", encoding="utf-8") as output:
+        json.dump(destination, output, ensure_ascii=False, indent=2)
+        output.write("\n")
 
 
 if __name__ == "__main__":

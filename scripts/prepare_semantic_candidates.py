@@ -18,6 +18,7 @@ from homeoremedica_corpus.chunking import corpus_hash
 from homeoremedica_corpus.cli import _load_chunks
 from homeoremedica_corpus.config import load_pipeline_config
 from homeoremedica_corpus.embeddings import OpenRouterEmbeddingProvider
+from homeoremedica_corpus.paths import evaluation_path
 from homeoremedica_corpus.retrieval import DEFAULT_HYBRID_RETRIEVAL_POLICY, ScoredCandidate
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -84,7 +85,8 @@ def main() -> None:
     args = parser.parse_args()
     config = load_pipeline_config(ROOT / "corpus.toml")
     _, chunks = _load_chunks(config)
-    dataset, _ = evaluation.load_evaluation_dataset(args.dataset or config.evaluation_dataset)
+    dataset_path = evaluation_path(args.dataset or config.evaluation_dataset, ROOT)
+    dataset, _ = evaluation.load_evaluation_dataset(dataset_path)
     inputs = tuple(text for group in dataset.semantic_input_groups for text in group)
     directory = ROOT / ".cache/evaluation"
     native = config.embedding.native_dimensions
