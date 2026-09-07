@@ -4,6 +4,8 @@ from pathlib import Path
 
 from homeoremedica_corpus.chunking import ChunkingPolicy, chunk_book
 from homeoremedica_corpus.retrieval import (
+    lexical_content_terms,
+    normalized_remedy_name,
     rank_lexical_queries,
     rank_semantic_queries,
     reciprocal_rank_fusion,
@@ -11,6 +13,27 @@ from homeoremedica_corpus.retrieval import (
     score_semantic_queries,
 )
 from homeoremedica_corpus.sources import Book, Remedy, Section
+
+
+def test_remedy_identity_unifies_typography_but_not_different_remedies() -> None:
+    fullwidth_name = "  Ｓｕｌｐｈｕｒ\u00a0 "  # noqa: RUF001 -- deliberate typography fixture
+    assert normalized_remedy_name(fullwidth_name) == normalized_remedy_name("SULPHUR")
+    assert normalized_remedy_name("Natrum   Muriaticum") == "natrum muriaticum"
+    assert normalized_remedy_name("Natrum muriaticum") != normalized_remedy_name(
+        "Natrum carbonicum"
+    )
+    assert normalized_remedy_name("Sulphur") != normalized_remedy_name("Sulphur iodatum")
+
+
+def test_lexical_content_terms_keep_explicit_negation_and_modalities() -> None:
+    assert (
+        lexical_content_terms(
+            "He was not worse before walking, but better after walking down during rain."
+        )
+        == "not worse before walking better after walking down during rain"
+    )
+    assert lexical_content_terms("no pain without cold") == "no pain without cold"
+    assert lexical_content_terms("He was there and it was his.") == ""
 
 
 def chunks():

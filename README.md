@@ -202,16 +202,41 @@ uv run --locked homeoremedica-corpus validate
 
 ### Retrieval evaluation
 
-The evaluator reads `evaluation/v7/queries.json` at depth `k = 8` and writes the immutable
-`evaluation/v7/result.json` release input. It embeds the 2,117 raw symptom strings from 500 clinical
+The evaluator reads `evaluation/v8/queries.json` at depth `k = 8` and writes the immutable
+`evaluation/v8/result.json` release input. It embeds the 2,117 raw symptom strings from 500 clinical
 cases separately and unchanged, without an instruction or context prefix. Per-symptom semantic and
 lexical candidates are min-max normalized from their cosine-similarity and BM25 relevance scores.
 The normalized scores are squared to suppress weak tail matches and summed by the corpus-wide
-canonical `remedyName` across symptoms and retrieval channels, so strong evidence from different
+normalized remedy identity across symptoms and retrieval channels, so strong evidence from different
 chunks and books reinforces one remedy. The cases carry remedy-level relevance targets (`bookId` +
 `remedyName`): the book validates that the labelled source exists, while the remedy name is the
 scored intent and can be satisfied by evidence from any book. Chunk and book-remedy ranking remain
 available with legacy reciprocal-rank fusion for older evaluation datasets.
+
+V8 preserves all v7 queries, labels, candidate limits, and the 80% quality threshold. It normalizes
+global remedy identities using Unicode NFKC, case folding, and collapsed whitespace, so names such
+as `Sulphur` and `SULPHUR` share evidence and a result slot. It does not infer synonyms, and source
+names and book-level label validation remain literal. Lexical queries omit common function words
+that otherwise accumulate irrelevant matches in an FTS5 OR search. Explicit negation, timing and
+direction words, and modalities such as `not`, `before`, `after`, `down`, `better`, and `worse` remain.
+Semantic queries retain every word. Older datasets default to exact identity and raw lexical input.
+
+The recorded v8 Recall@8 is **20.77%**, compared with v7's **14.40%**. Scoring the original v7 results
+with normalized labels alone gives **16.30%**; the remaining gain reflects changed retrieval and
+evidence aggregation. V8 still fails the unchanged 80% release gate. The detailed
+[comparison](evaluation/v8/comparison.json) includes per-query rankings, an identity-only ablation,
+and an exploratory split with no shared exact symptom text between development and validation.
+Validation recall rises from 17.82% (v7 with normalized labels) to 19.86%. This version changes the
+corpus evaluator; the terminal client's existing chunk-level RRF search is a separate path.
+
+To reproduce the comparison after populating both versions' candidate caches, without network calls:
+
+```sh
+uv run --locked python scripts/compare_v8_retrieval.py
+```
+
+The default comparison output is `.cache/evaluation/v8-comparison.json`. Versioned evaluation
+results are immutable; rerunning `evaluate` against an existing result refuses to overwrite it.
 
 ```sh
 export OPENROUTER_API_KEY=... # or put it in .env
@@ -219,7 +244,7 @@ uv run --locked homeoremedica-corpus evaluate
 ```
 
 The corpus is loaded from the remedy-merged `dataset/combined.json`, which the evaluator validates
-against the configured book mapping. V7 evaluates only the model's native 4096 dimensions. It uses
+against the configured book mapping. V8 evaluates only the model's native 4096 dimensions. It uses
 `RETRIEVAL_DOCUMENT` for contextualized symptom chunks and `RETRIEVAL_QUERY` for raw query
 symptoms and retrieves up to 640 candidates per symptom from semantic and Porter-stemmed FTS5
 search. The ranked remedy identity does not replace the underlying chunk, book, section, or passage

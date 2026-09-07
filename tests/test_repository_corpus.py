@@ -38,11 +38,16 @@ def test_repository_combined_corpus_matches_config_and_conserves_every_passage()
         assert all(len(chunk.passages) == 1 for chunk in chunks)
 
 
-def test_repository_v7_embeds_each_raw_query_symptom_separately() -> None:
+def test_repository_v8_preserves_v7_queries_and_embeds_each_raw_symptom() -> None:
     config = load_pipeline_config(ROOT / "corpus.toml")
     dataset, _ = load_evaluation_dataset(config.evaluation_dataset)
 
-    assert dataset.version == "v7"
+    previous, _ = load_evaluation_dataset(ROOT / "evaluation/v7/queries.json")
+    assert dataset.version == "v8"
+    assert dataset.queries == previous.queries
+    assert dataset.minimum_quality == previous.minimum_quality == 0.8
+    assert dataset.remedy_name_normalization == "nfkcCasefoldWhitespace"
+    assert dataset.lexical_query_mode == "contentTerms"
     assert dataset.ranking_unit == "globalRemedy"
     assert dataset.fusion_strategy == "normalizedScore"
     assert dataset.candidate_pool_size == 640

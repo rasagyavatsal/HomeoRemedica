@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 import re
 import sqlite3
+import unicodedata
 from array import array
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
@@ -12,6 +13,32 @@ import sqlite_vec
 from homeoremedica_corpus.chunking import Chunk
 
 FTS5_TOKENIZER = "porter unicode61 remove_diacritics 2"
+
+# These function words can overwhelm an OR query with narrative matches. Keep
+# negation, timing, direction, and modalities (e.g. not, before, down, worse).
+_LEXICAL_FUNCTION_WORD_TEXT = (
+    "a an the and or of to in on at for from by with as it its is are was were be been "
+    "being he she they we you i his her their our your my him them us me this that these "
+    "those there here who whom which what when where how why have has had having do "
+    "does did doing can could would should will shall may might must also very just "
+    "then than so because if but about into through each some any all both such only "
+    "other another own same now once while again further too s t"
+)
+LEXICAL_FUNCTION_WORDS = frozenset(_LEXICAL_FUNCTION_WORD_TEXT.split())
+
+
+def lexical_content_terms(query: str) -> str:
+    """Filter lexical function words; the semantic query retains the full text."""
+    return " ".join(
+        token
+        for token in re.findall(r"[^\W_]+", query.casefold(), flags=re.UNICODE)
+        if token not in LEXICAL_FUNCTION_WORDS
+    )
+
+
+def normalized_remedy_name(name: str) -> str:
+    """Unify typography without guessing aliases or changing source display names."""
+    return " ".join(unicodedata.normalize("NFKC", name).casefold().split())
 
 
 @dataclass(frozen=True, slots=True)

@@ -26,7 +26,9 @@ from homeoremedica_corpus.retrieval import (
     FTS5_TOKENIZER,
     HybridRetrievalPolicy,
     ScoredCandidate,
+    lexical_content_terms,
     materialize_float32,
+    normalized_remedy_name,
     rank_lexical_queries,
     rank_semantic_queries,
     reciprocal_rank_fusion,
@@ -38,6 +40,8 @@ from homeoremedica_corpus.sources import CorpusValidationError
 QualityMetric = Literal["recallAtK", "mrrAtK"]
 RankingUnit = Literal["chunk", "remedy", "globalRemedy"]
 FusionStrategy = Literal["rrf", "normalizedScore"]
+RemedyNameNormalization = Literal["exact", "nfkcCasefoldWhitespace"]
+LexicalQueryMode = Literal["raw", "contentTerms"]
 
 # Clarke, Kolla, Cormack, Vechtomova, Ashkan, Buettcher, and MacKinnon (SIGIR 2008):
 # each time a ranked chunk covers an intent a higher ranked chunk already covered,
@@ -111,6 +115,8 @@ class EvaluationDataset(Contract):
     k: int = Field(gt=0)
     ranking_unit: RankingUnit = "chunk"
     fusion_strategy: FusionStrategy = "rrf"
+    remedy_name_normalization: RemedyNameNormalization = "exact"
+    lexical_query_mode: LexicalQueryMode = "raw"
     candidate_pool_size: int = Field(default=100, gt=0)
     quality_metric: QualityMetric
     minimum_quality: float = Field(ge=0, le=1)
@@ -128,10 +134,16 @@ class EvaluationDataset(Contract):
         ):
             raise ValueError("non-chunk ranking requires remedy-level relevance targets")
         if self.ranking_unit == "globalRemedy" and any(
-            len(query.relevant) != len({target.remedy_name for target in query.relevant})
+            len(query.relevant)
+            != len({
+                _remedy_identity(target.remedy_name, self.remedy_name_normalization)
+                for target in query.relevant
+            })
             for query in self.queries
         ):
             raise ValueError("global remedy targets must have unique remedy names per query")
+        if self.remedy_name_normalization != "exact" and self.ranking_unit != "globalRemedy":
+            raise ValueError("remedy name normalization requires global remedy ranking")
         if self.fusion_strategy == "normalizedScore" and self.ranking_unit != "globalRemedy":
             raise ValueError("normalized score fusion requires global remedy ranking")
         return self
@@ -156,7 +168,7 @@ class DimensionScore(Contract):
 
 
 class EvaluationResult(Contract):
-    evaluation_schema_version: int = 7
+    evaluation_schema_version: int = 8
     dataset_version: str
     dataset_sha256: str
     corpus_hash: str
@@ -171,6 +183,8 @@ class EvaluationResult(Contract):
     minimum_quality: float = Field(ge=0, le=1)
     ranking_unit: RankingUnit = "chunk"
     fusion_strategy: FusionStrategy = "rrf"
+    remedy_name_normalization: RemedyNameNormalization = "exact"
+    lexical_query_mode: LexicalQueryMode = "raw"
     retrieval_strategy: str
     lexical_tokenizer: str = FTS5_TOKENIZER
     candidate_pool_size: int = Field(gt=0)
@@ -304,10 +318,15 @@ def run_dimension_evaluation(
             ),
         )
     chunk_ranking_ids = {
-        chunk.id: _ranking_id(chunk, dataset.ranking_unit) for chunk in materialized_chunks
+        chunk.id: _ranking_id(chunk, dataset.ranking_unit, dataset.remedy_name_normalization)
+        for chunk in materialized_chunks
     }
     lexical_input_groups = tuple(query.lexical_inputs for query in dataset.queries)
-    lexical_inputs = tuple(text for group in lexical_input_groups for text in group)
+    lexical_inputs = tuple(
+        lexical_content_terms(text) if dataset.lexical_query_mode == "contentTerms" else text
+        for group in lexical_input_groups
+        for text in group
+    )
     lexical_unit_scores: tuple[tuple[ScoredCandidate, ...], ...] = ()
     lexical_unit_rankings: tuple[tuple[str, ...], ...] = ()
     if dataset.fusion_strategy == "normalizedScore":
@@ -488,6 +507,8 @@ def run_dimension_evaluation(
         minimum_quality=dataset.minimum_quality,
         ranking_unit=dataset.ranking_unit,
         fusion_strategy=dataset.fusion_strategy,
+        remedy_name_normalization=dataset.remedy_name_normalization,
+        lexical_query_mode=dataset.lexical_query_mode,
         retrieval_strategy=_retrieval_strategy(dataset.ranking_unit, dataset.fusion_strategy),
         candidate_pool_size=dataset.candidate_pool_size,
         reciprocal_rank_constant=(
@@ -585,7 +606,10 @@ def _resolve_intents(
                     f"{target.book_id} / {target.remedy_name} / {target.section_title} / "
                     f"{target.passage_index}"
                 )
-            matches = {_ranking_id(chunk, dataset.ranking_unit) for chunk in matching_chunks}
+            matches = {
+                _ranking_id(chunk, dataset.ranking_unit, dataset.remedy_name_normalization)
+                for chunk in matching_chunks
+            }
             intents.append(frozenset(matches))
         resolved_queries.append(tuple(intents))
     return tuple(resolved_queries)
@@ -866,12 +890,20 @@ def _rankings_for_unit(
     return tuple(remedy_rankings)
 
 
-def _ranking_id(chunk: Chunk, ranking_unit: RankingUnit) -> str:
+def _remedy_identity(name: str, normalization: RemedyNameNormalization) -> str:
+    return normalized_remedy_name(name) if normalization == "nfkcCasefoldWhitespace" else name
+
+
+def _ranking_id(
+    chunk: Chunk,
+    ranking_unit: RankingUnit,
+    normalization: RemedyNameNormalization = "exact",
+) -> str:
     if ranking_unit == "chunk":
         return chunk.id
     if ranking_unit == "remedy":
         return f"{chunk.book_id}\x1f{chunk.remedy_name}"
-    return chunk.remedy_name
+    return _remedy_identity(chunk.remedy_name, normalization)
 
 
 def _retrieval_strategy(ranking_unit: RankingUnit, fusion_strategy: FusionStrategy) -> str:

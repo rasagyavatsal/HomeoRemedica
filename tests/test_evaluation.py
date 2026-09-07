@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 import pytest
@@ -123,7 +123,7 @@ def test_compares_dimensions_and_selects_the_smallest_passing_result(tmp_path: P
     assert result.lexical_recall_at_k == 0.0
     assert result.scores[0].semantic_recall_at_k == 0.0
     assert result.scores[1].semantic_recall_at_k == 1.0
-    assert result.evaluation_schema_version == 7
+    assert result.evaluation_schema_version == 8
     assert result.retrieval_strategy == "symptomRrfThenFts5VectorRrf"
     assert result.alpha_discount == 0.5
     assert result.lexical_mrr_at_k == 0.0
@@ -337,6 +337,107 @@ def test_normalized_score_fusion_requires_global_remedy_ranking() -> None:
         )
 
 
+def test_normalized_identity_rejects_duplicate_intents_with_different_typography() -> None:
+    with pytest.raises(ValidationError, match="unique remedy names"):
+        EvaluationDataset(
+            version="v8",
+            k=8,
+            ranking_unit="globalRemedy",
+            remedy_name_normalization="nfkcCasefoldWhitespace",
+            quality_metric="recallAtK",
+            minimum_quality=0.8,
+            queries=(
+                EvaluationQuery(
+                    id="q1",
+                    symptoms=("pain",),
+                    relevant=(
+                        EvaluationTarget(book_id="alpha", remedy_name="SULPHUR"),
+                        EvaluationTarget(book_id="beta", remedy_name=" Sulphur "),
+                    ),
+                ),
+            ),
+        )
+
+
+def test_normalized_identity_requires_global_remedy_ranking() -> None:
+    with pytest.raises(ValidationError, match="requires global remedy"):
+        EvaluationDataset.model_validate({
+            **dataset().model_dump(),
+            "remedy_name_normalization": "nfkcCasefoldWhitespace",
+        })
+
+
+def test_content_queries_and_cross_book_identity_recover_a_matching_remedy(monkeypatch) -> None:
+    corpus_chunks = tuple(
+        replace(chunk, remedy_name="Remedy" if chunk.book_id == "beta" else "REMEDY")
+        for book in books()
+        for chunk in chunk_book(book)
+    )
+    beta_id = next(chunk.id for chunk in corpus_chunks if chunk.book_id == "beta")
+    lexical_inputs = []
+    semantic_inputs = []
+    provider = EvaluationProvider(3)
+
+    def embed_query(text):
+        semantic_inputs.append(text)
+        return (1.0, 0.0, 1.0)
+
+    provider.embed_query = embed_query
+
+    def lexical(_chunks, queries, **_kwargs):
+        lexical_inputs.extend(queries)
+        return ((),)
+
+    monkeypatch.setattr("homeoremedica_corpus.evaluation.score_lexical_queries", lexical)
+    monkeypatch.setattr(
+        "homeoremedica_corpus.evaluation.score_semantic_queries",
+        lambda *_args, **_kwargs: ((ScoredCandidate(beta_id, 0.9),),),
+    )
+    query_dataset = EvaluationDataset(
+        version="v8",
+        k=1,
+        ranking_unit="globalRemedy",
+        fusion_strategy="normalizedScore",
+        remedy_name_normalization="nfkcCasefoldWhitespace",
+        lexical_query_mode="contentTerms",
+        quality_metric="recallAtK",
+        minimum_quality=0.8,
+        queries=(
+            EvaluationQuery(
+                id="q1",
+                symptoms=("He was not worse after walking.",),
+                relevant=(EvaluationTarget(book_id="alpha", remedy_name="REMEDY"),),
+            ),
+        ),
+    )
+    result = run_dimension_evaluation(
+        query_dataset,
+        corpus_chunks,
+        lambda _dimensions: provider,
+        model="qwen/qwen3-embedding-8b",
+        model_input_limit=2048,
+        dimensions=(3,),
+        corpus_hash=corpus_hash(corpus_chunks),
+        dataset_sha256="d" * 64,
+    )
+    assert semantic_inputs == ["He was not worse after walking."]
+    assert lexical_inputs == ["not worse after walking"]
+    assert result.remedy_name_normalization == "nfkcCasefoldWhitespace"
+    assert result.lexical_query_mode == "contentTerms"
+    assert result.scores[0].recall_at_k == 1.0
+
+    # Source labels are still validated literally against the specified book.
+    invalid_query = query_dataset.queries[0].model_copy(
+        update={
+            "relevant": (EvaluationTarget(book_id="alpha", remedy_name="Remedy"),),
+        }
+    )
+    with pytest.raises(CorpusValidationError, match="unresolved target"):
+        _resolve_intents(
+            query_dataset.model_copy(update={"queries": (invalid_query,)}), corpus_chunks
+        )
+
+
 def test_rejects_passage_index_without_section_title() -> None:
     with pytest.raises(ValidationError):
         EvaluationTarget(book_id="alpha", remedy_name="REMEDY", passage_index=0)
@@ -436,7 +537,7 @@ def test_dimension_evaluation_uses_normalized_global_remedy_score_fusion(
         queries=(
             EvaluationQuery(
                 id="q1",
-                symptoms=("raw user symptom",),
+                symptoms=("the raw user symptom",),
                 relevant=(EvaluationTarget(book_id="alpha", remedy_name="REMEDY"),),
             ),
         ),
@@ -482,6 +583,29 @@ def test_dimension_evaluation_uses_normalized_global_remedy_score_fusion(
         embedding_cache_directory=tmp_path / "cache",
     )
     assert cached_result == result
+
+    # Changing lexical preprocessing must reuse semantic candidates while caching
+    # a distinct lexical search. The source query remains unchanged for embeddings.
+    filtered_dataset = score_dataset.model_copy(
+        update={
+            "lexical_query_mode": "contentTerms",
+            "remedy_name_normalization": "nfkcCasefoldWhitespace",
+        }
+    )
+    filtered_result = run_dimension_evaluation(
+        filtered_dataset,
+        corpus_chunks,
+        reject_provider,
+        model="qwen/qwen3-embedding-8b",
+        model_input_limit=2048,
+        dimensions=(3,),
+        corpus_hash=corpus_hash(corpus_chunks),
+        dataset_sha256="e" * 64,
+        embedding_cache_directory=tmp_path / "cache",
+    )
+    assert filtered_result.scores[0].recall_at_k == 1.0
+    assert len(tuple((tmp_path / "cache").glob("semantic-rankings-*.bin"))) == 1
+    assert len(tuple((tmp_path / "cache").glob("lexical-rankings-*.bin"))) == 2
 
 
 def test_symptom_rankings_are_fused_back_into_one_case_ranking() -> None:
