@@ -111,6 +111,7 @@ def _evaluate(config: PipelineConfig, arguments: argparse.Namespace) -> int:
         dimensions=config.evaluation_dimensions,
         corpus_hash=corpus_hash(chunks),
         dataset_sha256=dataset_digest,
+        embedding_cache_directory=config.config_path.parent / ".cache" / "evaluation",
         workers=arguments.workers,
         progress=lambda message: print(message, file=sys.stderr, flush=True),
     )

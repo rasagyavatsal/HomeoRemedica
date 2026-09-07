@@ -64,14 +64,9 @@ class _EmbeddingSettings(_Settings):
             )
         if self.dimensions > self.native_dimensions:
             raise ValueError("pinned dimensions cannot exceed the model's native dimensions")
-        if self.evaluation_dimensions[0] != 768 or not any(
-            dimension > 768 for dimension in self.evaluation_dimensions
-        ):
-            raise ValueError(
-                "evaluation must start at 768 and compare at least one higher dimension"
-            )
         if (
-            len(set(self.evaluation_dimensions)) != len(self.evaluation_dimensions)
+            not self.evaluation_dimensions
+            or len(set(self.evaluation_dimensions)) != len(self.evaluation_dimensions)
             or tuple(sorted(self.evaluation_dimensions)) != self.evaluation_dimensions
             or any(
                 not 1 <= dimension <= self.native_dimensions

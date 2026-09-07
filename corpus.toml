@@ -7,14 +7,14 @@ sqlite_version = "3.53.4"
 sqlite_vec_version = "0.1.9"
 
 [chunking]
-minimum_tokens = 300
-target_tokens = 500
+minimum_tokens = 1
+target_tokens = 1
 
 [embedding]
 model = "qwen/qwen3-embedding-8b"
 native_dimensions = 4096
-dimensions = 1536
-evaluation_dimensions = [768, 1536, 3072, 4096]
+dimensions = 4096
+evaluation_dimensions = [4096]
 document_task_type = "RETRIEVAL_DOCUMENT"
 query_task_type = "RETRIEVAL_QUERY"
 normalization = "l2"
@@ -22,8 +22,8 @@ distance_function = "cosine"
 model_input_limit = 32768
 
 [evaluation]
-dataset = "evaluation/v3/queries.json"
-result = "evaluation/v3/result.json"
+dataset = "evaluation/v9/queries.json"
+result = "evaluation/v9/result.json"
 
 [books."allen-nosodes"]
 title = "Allen's Materia Medica of the Nosodes"

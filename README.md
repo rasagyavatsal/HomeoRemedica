@@ -184,10 +184,11 @@ cache.
 
 The corpus pipeline reads the remedy-merged `dataset/combined.json` file, whose
 `remedy -> book -> section -> passages` structure is validated against the configured book mapping.
-It validates the complete corpus, conserves every passage, creates stable boundary-safe chunks,
-generates OpenRouter Qwen3 embeddings, and writes one independently searchable SQLite artifact per
-book. A release becomes visible to consumers only after every artifact and its immutable manifest
-have been uploaded and verified.
+It validates the complete corpus, conserves every passage, treats each passage as one symptom
+chunk, generates OpenRouter Qwen3 embeddings, and writes one independently searchable SQLite
+artifact per book. Each document embedding keeps the current `Book`, `Remedy`, `Section`, and
+`Text` context prefix. A release becomes visible to consumers only after every artifact and its
+immutable manifest have been uploaded and verified.
 
 ### Validate sources locally
 
@@ -201,12 +202,56 @@ uv run --locked homeoremedica-corpus validate
 
 ### Retrieval evaluation
 
-The evaluator reads `evaluation/v3/queries.json` at depth `k = 8` and writes the immutable
-`evaluation/v3/result.json` release input. The 500 clinical case queries carry remedy-level
-relevance targets (`bookId` + `remedyName`): each target is one intent of its query and counts as
-covered when any excerpt of the prescribed remedy appears among the retrieved chunks, matching the
-queries' "List remedies" intent. Passage-level targets (`sectionTitle` with an optional
-`passageIndex`) remain supported and resolve to the chunk holding that passage.
+The evaluator reads `evaluation/v9/queries.json` at depth `k = 8` and writes the immutable
+`evaluation/v9/result.json` release input. It embeds the 2,117 symptom strings from 500 clinical
+cases separately, with a retrieval instruction prepended to each semantic query. Per-symptom semantic and
+lexical candidates are min-max normalized from their cosine-similarity and BM25 relevance scores.
+The normalized scores are squared to suppress weak tail matches and summed by the corpus-wide
+normalized remedy identity across symptoms and retrieval channels, so strong evidence from different
+chunks and books reinforces one remedy. The cases carry remedy-level relevance targets (`bookId` +
+`remedyName`): the book validates that the labelled source exists, while the remedy name is the
+scored intent and can be satisfied by evidence from any book. Chunk and book-remedy ranking remain
+available with legacy reciprocal-rank fusion for older evaluation datasets.
+
+V8 preserves all v7 queries, labels, candidate limits, and the 80% quality threshold. It normalizes
+global remedy identities using Unicode NFKC, case folding, and collapsed whitespace, so names such
+as `Sulphur` and `SULPHUR` share evidence and a result slot. It does not infer synonyms, and source
+names and book-level label validation remain literal. Lexical queries omit common function words
+that otherwise accumulate irrelevant matches in an FTS5 OR search. Explicit negation, timing and
+direction words, and modalities such as `not`, `before`, `after`, `down`, `better`, and `worse` remain.
+Semantic queries retain every word. Older datasets default to exact identity and raw lexical input.
+
+V9 retains v8's queries, labels, lexical search, document embeddings, fusion settings, and quality
+threshold. It uses Qwen's documented `Instruct: ...\nQuery:...` query format with the task recorded
+in `semanticQueryInstruction` in both the dataset and result. This conditions the embedding on
+retrieving matching materia medica passages. The original symptom text remains intact after the
+prefix, and lexical queries receive no instruction. Datasets without this field keep raw query
+embeddings. See the [Qwen model card](https://huggingface.co/Qwen/Qwen3-Embedding-8B#usage).
+
+The recorded v8 Recall@8 is **20.77%**, compared with v7's **14.40%**. Scoring the original v7 results
+with normalized labels alone gives **16.30%**; the remaining gain reflects changed retrieval and
+evidence aggregation. The detailed
+[comparison](evaluation/v8/comparison.json) includes per-query rankings, an identity-only ablation,
+and an exploratory split with no shared exact symptom text between development and validation.
+Validation recall rises from 17.82% (v7 with normalized labels) to 19.86% in v8.
+
+V9 reaches **24.57% Recall@8**, with validation recall increasing to **25.61%** and development
+recall increasing from 21.76% to 23.43%. The [v9 comparison](evaluation/v9/comparison.json) preserves
+per-query rankings; [experiment results](evaluation/v9/experiments.json) also record rejected
+scoring and reranking approaches. This remains an exploratory benchmark comparison, and v9 still
+fails the unchanged 80% release gate. These versions change the corpus evaluator; the terminal
+client's existing chunk-level RRF search and raw query embeddings are a separate path.
+
+To reproduce the comparison after populating both versions' candidate caches, without network calls:
+
+```sh
+uv run --locked python scripts/compare_v8_retrieval.py
+uv run --locked python scripts/compare_v9_retrieval.py
+```
+
+The default comparison outputs are `.cache/evaluation/v8-comparison.json` and `v9-comparison.json`.
+Versioned evaluation
+results are immutable; rerunning `evaluate` against an existing result refuses to overwrite it.
 
 ```sh
 export OPENROUTER_API_KEY=... # or put it in .env
@@ -214,36 +259,55 @@ uv run --locked homeoremedica-corpus evaluate
 ```
 
 The corpus is loaded from the remedy-merged `dataset/combined.json`, which the evaluator validates
-against the configured book mapping. The evaluator compares 768, 1536, 3072, and 4096 dimensions
-against the same corpus, uses `RETRIEVAL_DOCUMENT` for labelled chunks and `RETRIEVAL_QUERY` for
-queries, and combines semantic and Porter-stemmed FTS5 candidates with reciprocal-rank fusion.
-Because `qwen/qwen3-embedding-8b` supports Matryoshka prefixes, one 4096-dimensional request per
-input supplies every normalized dimension: the provider truncates the native vector locally, so
-results do not depend on whether an OpenRouter upstream provider honors a `dimensions` request
-parameter.
+against the configured book mapping. V9 evaluates only the model's native 4096 dimensions. It uses
+`RETRIEVAL_DOCUMENT` for contextualized symptom chunks and `RETRIEVAL_QUERY` for instructed query
+symptoms and retrieves up to 640 candidates per symptom from semantic and Porter-stemmed FTS5
+search. The ranked remedy identity does not replace the underlying chunk, book, section, or passage
+metadata used for evidence and citations. Inputs are sent in bounded batches. Native vectors and
+scored candidate rankings are cached under `.cache/evaluation/`, keyed by the corpus, model,
+dimensions, retrieval policy, and complete ordered inputs. Later fusion experiments can therefore
+reuse the paid embeddings and skip the exhaustive vector scan.
+
+With the document embedding cache already present, you can prepare semantic candidates using
+NumPy's exhaustive cosine search over document blocks. This optional development tool limits the
+document working set and reuses the same candidate-cache contract as the evaluator. It searches
+every vector; floating-point rounding and ties may differ from sqlite-vec. Its raw-query baseline
+reproduced v8's recorded recall, and synthetic tests compare its scores and rankings with sqlite-vec.
+
+```sh
+# --embed-queries permits OpenRouter calls only if these query embeddings are missing.
+uv run --locked python scripts/prepare_semantic_candidates.py --embed-queries
+uv run --locked homeoremedica-corpus evaluate
+```
+
+Omit `--embed-queries` for cache-only operation. This command preserves existing candidate files;
+changing the instruction generates new query-embedding and semantic-candidate cache keys while
+reusing the document and lexical caches. NumPy is a development dependency, not a runtime dependency
+of the terminal client.
 
 Every ranking strategy (lexical, semantic, and fused) is scored at depth 8 with five metrics:
 
 - **Recall@8** — intent coverage: the fraction of the query's relevance targets with at least one
-  retrieved chunk in the top 8 (the release quality gate). Passage-level targets make this equal
-  classic recall; remedy-level targets count a target as soon as any excerpt of the prescribed
-  remedy appears.
-- **MRR@8** — the mean reciprocal rank of the first relevant chunk in the top 8.
+  matching ranked item in the top 8 (the release quality gate). Passage-level targets make this
+  equal classic recall; remedy-level targets count a target as soon as the prescribed remedy
+  appears.
+- **MRR@8** — the mean reciprocal rank of the first relevant item in the top 8.
 - **nDCG@8** — binary-relevance discounted cumulative gain with the standard log2 rank discount,
   normalized by the ideal ranking.
 - **α-nDCG@8** — the novelty- and diversity-biased nDCG of Clarke et al. (SIGIR 2008) with
   α = 0.5: every relevance target is treated as one intent of its query, and each repeated
   coverage of an already-satisfied intent contributes its gain multiplied by (1 − α). The
-  normalizer is the greedy ideal α-DCG over all relevant chunks.
+  normalizer is the greedy ideal α-DCG over all relevant items.
 - **Evidence Precision@8** — the expected fraction of the top 8 slots that supply novel evidence:
-  each relevance target is one equally weighted intent, a ranked chunk contributes the
-  (1 − α)-discounted share of the intents it covers that higher-ranked chunks have not already
+  each relevance target is one equally weighted intent, a ranked item contributes the
+  (1 − α)-discounted share of the intents it covers that higher-ranked items have not already
   satisfied, and the top-8 total is scaled by 1/8. With one intent and no repeated coverage this
   reduces to precision@8.
 
-The result records lexical, semantic, and fused values for every metric and is never overwritten.
-The builder rejects a stale evaluation, a changed dataset digest, or a configured dimension that
-differs from the recorded choice.
+The result records lexical, semantic, and fused values for every metric, plus candidate recall at
+the configured pool depth to distinguish candidate-generation misses from top-8 ordering errors.
+It is never overwritten. The builder rejects a stale evaluation, a changed dataset digest, or a
+configured dimension that differs from the recorded choice.
 
 ### Build a complete release
 

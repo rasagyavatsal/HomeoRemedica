@@ -3,11 +3,11 @@ from __future__ import annotations
 import math
 import os
 import time
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Protocol, TypeVar
+from typing import Any, Protocol, TypeVar, cast
 
 import requests
 
@@ -26,6 +26,7 @@ _ESTIMATED_CHARS_PER_TOKEN = 4
 _RETRYABLE_STATUS_CODES = frozenset({408, 409, 429, 500, 502, 503, 504})
 _MAX_ATTEMPTS = 3
 _INITIAL_BACKOFF_SECONDS = 1.0
+EMBEDDING_BATCH_SIZE = 64
 
 # Mirrors the chat client's SettingsConfigDict env_file order: the real
 # environment wins, then .env.local overrides .env.
@@ -121,6 +122,12 @@ class OpenRouterEmbeddingProvider:
     def embed_query(self, text: str) -> tuple[float, ...]:
         return self._embed(text)
 
+    def embed_documents(self, texts: Sequence[str]) -> tuple[tuple[float, ...], ...]:
+        return self._embed_batch(texts)
+
+    def embed_queries(self, texts: Sequence[str]) -> tuple[tuple[float, ...], ...]:
+        return self._embed_batch(texts)
+
     def _embed(self, text: str) -> tuple[float, ...]:
         response = self._request({
             "model": self.spec.model,
@@ -128,10 +135,45 @@ class OpenRouterEmbeddingProvider:
             "encoding_format": "float",
         })
         _reject_oversized_input(response, self.spec.model_input_limit)
+        embeddings = self._parse_embeddings(response, 1)
+        return embeddings[0]
+
+    def _embed_batch(self, texts: Sequence[str]) -> tuple[tuple[float, ...], ...]:
+        materialized = tuple(texts)
+        if not materialized:
+            return ()
+        response = self._request({
+            "model": self.spec.model,
+            "input": list(materialized),
+            "encoding_format": "float",
+        })
+        return self._parse_embeddings(response, len(materialized))
+
+    def _parse_embeddings(
+        self, response: dict[str, Any], expected: int
+    ) -> tuple[tuple[float, ...], ...]:
         data = response.get("data")
-        if not isinstance(data, list) or len(data) != 1:
-            raise RuntimeError("OpenRouter did not return exactly one embedding for one input")
-        embedding = data[0].get("embedding") if isinstance(data[0], dict) else None
+        if not isinstance(data, list) or len(data) != expected:
+            if expected == 1:
+                raise RuntimeError("OpenRouter did not return exactly one embedding for one input")
+            raise RuntimeError(
+                f"OpenRouter returned {len(data) if isinstance(data, list) else 0} embeddings "
+                f"for {expected} inputs"
+            )
+        indexed = [self._parse_embedding_item(item, index) for index, item in enumerate(data)]
+        if sorted(index for index, _ in indexed) != list(range(expected)):
+            raise RuntimeError("OpenRouter returned missing or duplicate embedding indexes")
+        return tuple(embedding for _, embedding in sorted(indexed))
+
+    def _parse_embedding_item(
+        self, item: object, fallback_index: int
+    ) -> tuple[int, tuple[float, ...]]:
+        if not isinstance(item, dict):
+            raise RuntimeError("OpenRouter returned an invalid embedding item")
+        index = item.get("index", fallback_index)
+        if isinstance(index, bool) or not isinstance(index, int):
+            raise RuntimeError("OpenRouter returned an invalid embedding index")
+        embedding = item.get("embedding")
         if not isinstance(embedding, list):
             raise RuntimeError("OpenRouter returned a missing or non-list embedding vector")
         if len(embedding) != self.spec.native_dimensions:
@@ -141,7 +183,7 @@ class OpenRouterEmbeddingProvider:
             )
         if self.spec.dimensions < self.spec.native_dimensions:
             embedding = embedding[: self.spec.dimensions]
-        return _normalize_l2(embedding)
+        return index, _normalize_l2(embedding)
 
     def _request(self, payload: dict[str, Any]) -> dict[str, Any]:
         url = f"{self._base_url}/embeddings"
@@ -293,24 +335,59 @@ def embed_chunks(
             workers=workers,
         )
 
-    def embed(chunk: Chunk) -> EmbeddedChunk:
-        embedding = provider.embed_document(chunk.embedding_text)
-        if len(embedding) != provider.dimensions:
+    def validate(chunk: Chunk, embedding: Iterable[float]) -> EmbeddedChunk:
+        materialized_embedding = tuple(embedding)
+        if len(materialized_embedding) != provider.dimensions:
             raise RuntimeError(
-                f"Embedding provider returned {len(embedding)} dimensions; "
+                f"Embedding provider returned {len(materialized_embedding)} dimensions; "
                 f"expected {provider.dimensions}"
             )
-        return EmbeddedChunk(chunk=chunk, embedding=embedding)
+        return EmbeddedChunk(chunk=chunk, embedding=materialized_embedding)
 
     embedded = []
-    for completed, item in enumerate(
-        _bounded_map(embed, materialized, workers),
-        start=1,
-    ):
-        embedded.append(item)
-        if progress is not None:
-            progress(completed, len(materialized))
+    batch_embed = getattr(provider, "embed_documents", None)
+    if callable(batch_embed):
+        typed_batch_embed = cast(Callable[[Sequence[str]], Iterable[Iterable[float]]], batch_embed)
+        batches = tuple(_batches(materialized, EMBEDDING_BATCH_SIZE))
+        completed = 0
+        for chunk_batch, embeddings in zip(
+            batches,
+            _bounded_map(
+                lambda batch: tuple(
+                    typed_batch_embed(tuple(chunk.embedding_text for chunk in batch))
+                ),
+                batches,
+                workers,
+            ),
+            strict=True,
+        ):
+            if len(embeddings) != len(chunk_batch):
+                raise RuntimeError(
+                    "Embedding provider returned a different number of vectors than inputs"
+                )
+            for chunk, embedding in zip(chunk_batch, embeddings, strict=True):
+                embedded.append(validate(chunk, embedding))
+                completed += 1
+                if progress is not None:
+                    progress(completed, len(materialized))
+    else:
+
+        def embed(chunk: Chunk) -> EmbeddedChunk:
+            return validate(chunk, provider.embed_document(chunk.embedding_text))
+
+        for completed, item in enumerate(
+            _bounded_map(embed, materialized, workers),
+            start=1,
+        ):
+            embedded.append(item)
+            if progress is not None:
+                progress(completed, len(materialized))
     return tuple(embedded)
+
+
+def _batches[BatchItem](values: Sequence[BatchItem], size: int) -> Iterable[Sequence[BatchItem]]:
+    for start in range(0, len(values), size):
+        yield values[start : start + size]
 
 
 def _normalize_l2(values: Iterable[float]) -> tuple[float, ...]:
