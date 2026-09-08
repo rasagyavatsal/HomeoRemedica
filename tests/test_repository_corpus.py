@@ -38,12 +38,15 @@ def test_repository_combined_corpus_matches_config_and_conserves_every_passage()
         assert all(len(chunk.passages) == 1 for chunk in chunks)
 
 
-def test_repository_v9_preserves_queries_and_adds_only_a_semantic_instruction() -> None:
+def test_repository_v10_preserves_queries_and_weights_semantic_scores() -> None:
     config = load_pipeline_config(ROOT / "corpus.toml")
     dataset, _ = load_evaluation_dataset(config.evaluation_dataset)
 
-    previous, _ = load_evaluation_dataset(ROOT / "evaluation/v7/queries.json")
-    assert dataset.version == "v9"
+    previous, _ = load_evaluation_dataset(ROOT / "evaluation/v9/queries.json")
+    assert dataset.version == "v10"
+    assert dataset.semantic_score_weight == 2.0
+    assert previous.semantic_score_weight == 1.0
+    assert dataset.semantic_query_instruction == previous.semantic_query_instruction
     assert dataset.queries == previous.queries
     assert dataset.minimum_quality == previous.minimum_quality == 0.8
     assert dataset.remedy_name_normalization == "nfkcCasefoldWhitespace"

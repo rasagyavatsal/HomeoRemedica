@@ -112,6 +112,7 @@ class EvaluationDataset(Contract):
     k: int = Field(gt=0)
     ranking_unit: RankingUnit = "chunk"
     fusion_strategy: FusionStrategy = "rrf"
+    semantic_score_weight: float = Field(default=1.0, gt=0, allow_inf_nan=False)
     remedy_name_normalization: RemedyNameNormalization = "exact"
     lexical_query_mode: LexicalQueryMode = "raw"
     semantic_query_instruction: str | None = Field(default=None, min_length=1)
@@ -159,6 +160,8 @@ class EvaluationDataset(Contract):
             raise ValueError("global remedy targets must have unique remedy names per query")
         if self.remedy_name_normalization != "exact" and self.ranking_unit != "globalRemedy":
             raise ValueError("remedy name normalization requires global remedy ranking")
+        if self.semantic_score_weight != 1.0 and self.fusion_strategy != "normalizedScore":
+            raise ValueError("semantic score weighting requires normalized score fusion")
         if self.fusion_strategy == "normalizedScore" and self.ranking_unit != "globalRemedy":
             raise ValueError("normalized score fusion requires global remedy ranking")
         return self
@@ -202,6 +205,7 @@ class EvaluationResult(Contract):
     lexical_query_mode: LexicalQueryMode = "raw"
     semantic_query_instruction: str | None = Field(default=None, min_length=1)
     retrieval_strategy: str
+    semantic_score_weight: float = Field(default=1.0, gt=0, allow_inf_nan=False)
     lexical_tokenizer: str = FTS5_TOKENIZER
     candidate_pool_size: int = Field(gt=0)
     reciprocal_rank_constant: int | None = Field(default=None, gt=0)
@@ -424,10 +428,21 @@ def run_dimension_evaluation(
                 candidate_limit,
                 SCORE_FUSION_EXPONENT,
             )
+            # Fusion raises scores to the exponent, so scale by the weight
+            # root here to apply the channel weight after that transformation.
             interleaved_scores = tuple(
                 ranking
                 for semantic, lexical in zip(semantic_unit_scores, lexical_unit_scores, strict=True)
-                for ranking in (semantic, lexical)
+                for ranking in (
+                    tuple(
+                        ScoredCandidate(
+                            c.chunk_id,
+                            c.score * dataset.semantic_score_weight ** (1 / SCORE_FUSION_EXPONENT),
+                        )
+                        for c in semantic
+                    ),
+                    lexical,
+                )
             )
             fused_rankings = _aggregate_scored_query_rankings(
                 interleaved_scores,
@@ -526,6 +541,7 @@ def run_dimension_evaluation(
         remedy_name_normalization=dataset.remedy_name_normalization,
         lexical_query_mode=dataset.lexical_query_mode,
         semantic_query_instruction=dataset.semantic_query_instruction,
+        semantic_score_weight=dataset.semantic_score_weight,
         retrieval_strategy=_retrieval_strategy(dataset.ranking_unit, dataset.fusion_strategy),
         candidate_pool_size=dataset.candidate_pool_size,
         reciprocal_rank_constant=(

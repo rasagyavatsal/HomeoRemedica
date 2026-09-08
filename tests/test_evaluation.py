@@ -539,8 +539,10 @@ def test_dimension_evaluation_reuses_cached_embeddings(tmp_path: Path) -> None:
     ]
 
 
+@pytest.mark.parametrize("semantic_weight", [1.0, 2.0])
 def test_dimension_evaluation_uses_normalized_global_remedy_score_fusion(
     tmp_path: Path,
+    semantic_weight: float,
 ) -> None:
     corpus_chunks = tuple(chunk for book in books() for chunk in chunk_book(book))
     score_dataset = EvaluationDataset(
@@ -548,6 +550,7 @@ def test_dimension_evaluation_uses_normalized_global_remedy_score_fusion(
         k=1,
         ranking_unit="globalRemedy",
         fusion_strategy="normalizedScore",
+        semantic_score_weight=semantic_weight,
         quality_metric="recallAtK",
         minimum_quality=0.8,
         queries=(
@@ -576,6 +579,7 @@ def test_dimension_evaluation_uses_normalized_global_remedy_score_fusion(
     assert result.reciprocal_rank_constant is None
     assert result.score_fusion_normalization == "perRankingMinMax"
     assert result.score_fusion_exponent == 2.0
+    assert result.semantic_score_weight == semantic_weight
     assert result.scores[0].recall_at_k == 1.0
     assert sorted(path.suffix for path in (tmp_path / "cache").iterdir()) == [
         ".bin",
@@ -758,3 +762,55 @@ def test_ranking_quality_reduces_to_precision_for_single_intent_queries() -> Non
     assert quality.ndcg_at_k == pytest.approx(1 / math.log2(3))
     assert quality.alpha_ndcg_at_k == pytest.approx(quality.ndcg_at_k)
     assert quality.evidence_precision_at_k == pytest.approx(1 / 8)
+
+
+@pytest.mark.parametrize("weight,expected_recall", [(1.0, 0.0), (2.0, 1.0)])
+def test_semantic_weight_changes_fused_ranking_only(monkeypatch, weight, expected_recall):
+    corpus_chunks = tuple(chunk for book in books() for chunk in chunk_book(book))
+    score_dataset = EvaluationDataset(
+        version="weighted",
+        k=1,
+        ranking_unit="globalRemedy",
+        fusion_strategy="normalizedScore",
+        semantic_score_weight=weight,
+        quality_metric="recallAtK",
+        minimum_quality=0.8,
+        queries=(
+            EvaluationQuery(
+                id="q1",
+                query="evidence",
+                relevant=(EvaluationTarget(book_id="alpha", remedy_name="REMEDY"),),
+            ),
+        ),
+    )
+    # Controlled normalized candidates isolate channel weighting from retrieval.
+    channels = iter((
+        ((ScoredCandidate("OTHER", 1.0), ScoredCandidate("REMEDY", 0.5)),),
+        ((ScoredCandidate("REMEDY", 1.0), ScoredCandidate("OTHER", 0.7)),),
+    ))
+    monkeypatch.setattr(
+        "homeoremedica_corpus.evaluation._scored_rankings_for_unit",
+        lambda *_: next(channels),
+    )
+    result = run_dimension_evaluation(
+        score_dataset,
+        corpus_chunks,
+        lambda dimensions: EvaluationProvider(dimensions),
+        model="test",
+        model_input_limit=2048,
+        dimensions=(3,),
+        corpus_hash=corpus_hash(corpus_chunks),
+        dataset_sha256="d" * 64,
+    )
+    assert result.scores[0].recall_at_k == expected_recall
+    assert result.scores[0].semantic_recall_at_k == 1.0
+    assert result.lexical_recall_at_k == 0.0
+
+
+@pytest.mark.parametrize("weight", [0, -1, float("inf"), float("nan")])
+def test_semantic_weight_rejects_invalid_values(weight):
+    with pytest.raises(ValueError):
+        EvaluationDataset.model_validate({
+            **dataset().model_dump(),
+            "semantic_score_weight": weight,
+        })

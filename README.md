@@ -202,8 +202,8 @@ uv run --locked homeoremedica-corpus validate
 
 ### Retrieval evaluation
 
-The evaluator reads `evaluation/v9/queries.json` at depth `k = 8` and writes the immutable
-`evaluation/v9/result.json` release input. It embeds the 2,117 symptom strings from 500 clinical
+The evaluator reads `evaluation/v10/queries.json` at depth `k = 8` and writes the immutable
+`evaluation/v10/result.json` release input. It embeds the 2,117 symptom strings from 500 clinical
 cases separately, with a retrieval instruction prepended to each semantic query. Per-symptom semantic and
 lexical candidates are min-max normalized from their cosine-similarity and BM25 relevance scores.
 The normalized scores are squared to suppress weak tail matches and summed by the corpus-wide
@@ -242,11 +242,18 @@ scoring and reranking approaches. This remains an exploratory benchmark comparis
 fails the unchanged 80% release gate. These versions change the corpus evaluator; the terminal
 client's existing chunk-level RRF search and raw query embeddings are a separate path.
 
+V10 gives semantic scores twice the lexical weight after squaring. On the same 500 queries,
+recall at 8 increases from 24.57% to 24.97%; development recall increases from 23.43% to
+24.27%, while symptom-disjoint validation recall remains 25.61%. The
+[comparison](evaluation/v10/comparison.json) records every ranking. This is a modest exploratory
+gain, and the unchanged 80% gate still fails. Channel weighting applies to the evaluator.
+
 To reproduce the comparison after populating both versions' candidate caches, without network calls:
 
 ```sh
 uv run --locked python scripts/compare_v8_retrieval.py
 uv run --locked python scripts/compare_v9_retrieval.py
+uv run --locked python scripts/compare_v10_retrieval.py
 ```
 
 The default comparison outputs are `.cache/evaluation/v8-comparison.json` and `v9-comparison.json`.
@@ -259,7 +266,7 @@ uv run --locked homeoremedica-corpus evaluate
 ```
 
 The corpus is loaded from the remedy-merged `dataset/combined.json`, which the evaluator validates
-against the configured book mapping. V9 evaluates only the model's native 4096 dimensions. It uses
+against the configured book mapping. V10 evaluates only the model's native 4096 dimensions. It uses
 `RETRIEVAL_DOCUMENT` for contextualized symptom chunks and `RETRIEVAL_QUERY` for instructed query
 symptoms and retrieves up to 640 candidates per symptom from semantic and Porter-stemmed FTS5
 search. The ranked remedy identity does not replace the underlying chunk, book, section, or passage

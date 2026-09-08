@@ -1,0 +1,91 @@
+{
+  "baselineVersion": "v9",
+  "selectedVersion": "v10",
+  "developmentQueries": 239,
+  "validationQueries": 261,
+  "selectionNote": "Weights were selected by development recall at 8, then checked on the existing symptom-disjoint validation split. Validation has been inspected in this and prior experiments and is not an untouched external test set. Queries, labels, candidate pools, embeddings, result depth, and the 80% gate are unchanged. No network calls were made.",
+  "selected": {
+    "semanticScoreWeight": 2.0,
+    "lexicalScoreWeight": 1.0,
+    "scoreFusionExponent": 2.0,
+    "developmentRecall": 0.24267782426778242,
+    "validationRecall": 0.256066411238825,
+    "allRecall": 0.24966666666666665
+  },
+  "weightTrials": [
+    {
+      "semanticScoreWeight": 0.25,
+      "developmentRecall": 0.20920502092050208
+    },
+    {
+      "semanticScoreWeight": 0.5,
+      "developmentRecall": 0.2301255230125523
+    },
+    {
+      "semanticScoreWeight": 0.75,
+      "developmentRecall": 0.23430962343096234
+    },
+    {
+      "semanticScoreWeight": 1,
+      "developmentRecall": 0.23430962343096234
+    },
+    {
+      "semanticScoreWeight": 1.5,
+      "developmentRecall": 0.2384937238493724
+    },
+    {
+      "semanticScoreWeight": 2,
+      "developmentRecall": 0.24267782426778242
+    },
+    {
+      "semanticScoreWeight": 3,
+      "developmentRecall": 0.23430962343096234
+    },
+    {
+      "semanticScoreWeight": 4,
+      "developmentRecall": 0.2301255230125523
+    }
+  ],
+  "rejected": {
+    "method": "Increase normalized-score exponent with equal channel weights",
+    "developmentTrials": [
+      {
+        "exponent": 0.5,
+        "recall": 0.2175732217573222
+      },
+      {
+        "exponent": 1,
+        "recall": 0.23430962343096234
+      },
+      {
+        "exponent": 1.5,
+        "recall": 0.2384937238493724
+      },
+      {
+        "exponent": 2,
+        "recall": 0.23430962343096234
+      },
+      {
+        "exponent": 3,
+        "recall": 0.24267782426778242
+      },
+      {
+        "exponent": 4,
+        "recall": 0.23430962343096234
+      },
+      {
+        "exponent": 6,
+        "recall": 0.18828451882845187
+      },
+      {
+        "exponent": 8,
+        "recall": 0.17154811715481172
+      }
+    ],
+    "selectedExponent": 3,
+    "validationRecall": 0.2413793103448276,
+    "allRecall": 0.242,
+    "reason": "Validation and overall recall regressed."
+  },
+  "reproduceSelectedComparison": ".venv/bin/python scripts/compare_v10_retrieval.py"
+}

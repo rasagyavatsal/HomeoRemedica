@@ -15,6 +15,7 @@ from homeoremedica_corpus.config import load_pipeline_config
 from homeoremedica_corpus.paths import evaluation_path
 from homeoremedica_corpus.retrieval import (
     DEFAULT_HYBRID_RETRIEVAL_POLICY,
+    ScoredCandidate,
     lexical_content_terms,
     normalized_remedy_name,
 )
@@ -60,6 +61,16 @@ def replay(dataset, chunks, config):
             raise FileNotFoundError(f"run the {dataset.version} evaluation to populate {path}")
         raw = evaluation._load_scored_ranking_cache(path, chunk_ids, len(inputs))
         channels.append(evaluation._scored_rankings_for_unit(raw, identities))
+    channels[0] = tuple(
+        tuple(
+            ScoredCandidate(
+                c.chunk_id,
+                c.score * dataset.semantic_score_weight ** (1 / evaluation.SCORE_FUSION_EXPONENT),
+            )
+            for c in ranking
+        )
+        for ranking in channels[0]
+    )
     interleaved = tuple(ranking for pair in zip(*channels, strict=True) for ranking in pair)
     return evaluation._aggregate_scored_query_rankings(
         interleaved, tuple(size * 2 for size in groups), limit, evaluation.SCORE_FUSION_EXPONENT
@@ -178,9 +189,7 @@ def main() -> None:
         ],
     }
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(
-        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+    output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=2))
 
 
