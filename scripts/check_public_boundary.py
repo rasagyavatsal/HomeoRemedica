@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import ast
 import subprocess
+import tomllib
 from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_TRACKED_FILE_BYTES = 8_000_000
+LARGE_SOURCE_FILES = {PurePosixPath("dataset/combined.json")}
 FORBIDDEN_ROOTS = {
     "build",
     "corpora",
@@ -48,13 +51,76 @@ def violations() -> tuple[str, ...]:
             found.append(f"forbidden artifact: {path_text}")
         if path.is_symlink():
             found.append(f"tracked symlink: {path_text}")
-        if path.is_file() and path.stat().st_size > MAX_TRACKED_FILE_BYTES:
+        if (
+            path.is_file()
+            and path.stat().st_size > MAX_TRACKED_FILE_BYTES
+            and relative not in LARGE_SOURCE_FILES
+        ):
             found.append(f"oversized tracked file: {path_text}")
     return tuple(found)
 
 
+def pipeline_violations() -> tuple[str, ...]:
+    """Keep experimental code and settings out of the chat release graph."""
+    found: list[str] = []
+    production_roots = (ROOT / "src/homeoremedica_chat", ROOT / "src/homeoremedica_corpus")
+    for source_root in production_roots:
+        for path in source_root.glob("*.py"):
+            for imported in _imports(path):
+                if imported == "homeoremedica_evaluation" or imported.startswith(
+                    "homeoremedica_evaluation."
+                ):
+                    found.append(f"production imports evaluation code: {path.relative_to(ROOT)}")
+
+    allowed_corpus_imports = {
+        "homeoremedica_corpus.chunking",
+        "homeoremedica_corpus.sources",
+    }
+    for path in (ROOT / "src/homeoremedica_evaluation").glob("*.py"):
+        for imported in _imports(path):
+            if imported.startswith("homeoremedica_chat"):
+                found.append(f"evaluation imports chat code: {path.relative_to(ROOT)}")
+            if (
+                imported.startswith("homeoremedica_corpus")
+                and imported not in allowed_corpus_imports
+            ):
+                found.append(
+                    f"evaluation imports production implementation: {path.relative_to(ROOT)} "
+                    f"({imported})"
+                )
+
+    with (ROOT / "corpus.toml").open("rb") as source:
+        corpus_settings = tomllib.load(source)
+    with (ROOT / "evaluation.toml").open("rb") as source:
+        evaluation_settings = tomllib.load(source)
+    if "evaluation" in corpus_settings:
+        found.append("corpus.toml contains evaluation settings")
+    release_output = (ROOT / corpus_settings["corpus"]["output_directory"]).resolve()
+    evaluation_outputs = tuple(
+        (ROOT / evaluation_settings["output"][key]).resolve()
+        for key in ("result", "cache_directory")
+    )
+    if any(
+        path.is_relative_to(release_output) or release_output.is_relative_to(path)
+        for path in evaluation_outputs
+    ):
+        found.append("evaluation and release outputs overlap")
+    return tuple(found)
+
+
+def _imports(path: Path) -> tuple[str, ...]:
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    imported: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module:
+            imported.append(node.module)
+        elif isinstance(node, ast.Import):
+            imported.extend(alias.name for alias in node.names)
+    return tuple(imported)
+
+
 def main() -> int:
-    found = violations()
+    found = (*violations(), *pipeline_violations())
     if not found:
         print("Repository hygiene check is clean.")
         return 0

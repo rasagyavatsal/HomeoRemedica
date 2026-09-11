@@ -1,0 +1,33 @@
+[source]
+combined_dataset = "dataset/combined.json"
+
+[chunking]
+minimum_tokens = 1
+target_tokens = 1
+
+[embedding]
+model = "qwen/qwen3-embedding-8b"
+native_dimensions = 4096
+dimensions = [4096]
+model_input_limit = 32768
+
+[output]
+dataset = "evaluation/v9/queries.json"
+result = "evaluation/v9/result.json"
+cache_directory = ".cache/evaluation"
+
+[books."allen-nosodes"]
+title = "Allen's Materia Medica of the Nosodes"
+author = "Henry Clay Allen"
+
+[books."boericke-MM"]
+title = "Boericke Materia Medica"
+author = "William Boericke"
+
+[books."clarke-MM"]
+title = "Clarke Materia Medica"
+author = "John Henry Clarke"
+
+[books."kent-lectures"]
+title = "Kent's Lectures on Homoeopathic Materia Medica"
+author = "James Tyler Kent"

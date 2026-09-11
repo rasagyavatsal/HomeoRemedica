@@ -13,13 +13,16 @@ from pathlib import Path
 
 import numpy as np
 
-from homeoremedica_corpus import evaluation
 from homeoremedica_corpus.chunking import corpus_hash
-from homeoremedica_corpus.cli import _load_chunks
-from homeoremedica_corpus.config import load_pipeline_config
-from homeoremedica_corpus.embeddings import OpenRouterEmbeddingProvider
-from homeoremedica_corpus.paths import evaluation_path
-from homeoremedica_corpus.retrieval import DEFAULT_HYBRID_RETRIEVAL_POLICY, ScoredCandidate
+from homeoremedica_evaluation import evaluation
+from homeoremedica_evaluation.cli import _load_chunks
+from homeoremedica_evaluation.config import load_evaluation_config
+from homeoremedica_evaluation.embeddings import OpenRouterEmbeddingProvider
+from homeoremedica_evaluation.paths import evaluation_path
+from homeoremedica_evaluation.retrieval import (
+    DEFAULT_HYBRID_RETRIEVAL_POLICY,
+    ScoredCandidate,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -83,12 +86,12 @@ def main() -> None:
         help="call OpenRouter if query embeddings are missing",
     )
     args = parser.parse_args()
-    config = load_pipeline_config(ROOT / "corpus.toml")
+    config = load_evaluation_config(ROOT / "evaluation.toml")
     _, chunks = _load_chunks(config)
-    dataset_path = evaluation_path(args.dataset or config.evaluation_dataset, ROOT)
+    dataset_path = evaluation_path(args.dataset or config.dataset, ROOT)
     dataset, _ = evaluation.load_evaluation_dataset(dataset_path)
     inputs = tuple(text for group in dataset.semantic_input_groups for text in group)
-    directory = ROOT / ".cache/evaluation"
+    directory = config.cache_directory
     native = config.embedding.native_dimensions
     document_path = evaluation._embedding_cache_path(
         directory,
@@ -118,7 +121,7 @@ def main() -> None:
     queries = _open_vectors(query_path, len(inputs), native)
     chunk_ids = tuple(chunk.id for chunk in chunks)
     limit = min(len(chunks), max(dataset.k, dataset.candidate_pool_size))
-    for dimension in config.evaluation_dimensions:
+    for dimension in config.dimensions:
         path = evaluation._ranking_cache_path(
             directory,
             "semantic",

@@ -13,22 +13,25 @@ remain separate from the repository and require their own credentials where appl
 ## Repository layout
 
 - `src/homeoremedica_chat/` — terminal `ask`, `chat`, and corpus-cache client.
-- `src/homeoremedica_corpus/` — source validation, chunking, evaluation, release building, and
-  Cloud Storage publication pipeline.
+- `src/homeoremedica_corpus/` — source validation, chunking, release building, and Cloud Storage
+  publication pipeline.
+- `src/homeoremedica_evaluation/` — isolated experimental retrieval, embedding, configuration,
+  contracts, and result tooling.
 - `dataset/raw-text/` — source text for the four books.
 - `dataset/processed/` — validated per-book sectioned JSON sources.
 - `dataset/combined.json` — the remedy-merged corpus file consumed by the pipeline.
 - `evaluation/` — versioned retrieval queries and immutable evaluation results.
-- `corpus.toml` — corpus, embedding, compatibility, and release configuration.
+- `corpus.toml` — chat release configuration.
+- `evaluation.toml` — experimental evaluation inputs, embeddings, and output locations.
 
-The two Python packages are built and tested together from the repository root.
+The three Python packages are built and tested together from the repository root.
 The `homeoremedica_chat` import path is retained for Python compatibility. The project and CLI are
 branded `HomeoRemedica`.
 
 ## Reproducible environment
 
 Python 3.14.3, dependencies, SQLite 3.53.4, and pre-1.0 `sqlite-vec` 0.1.9 are pinned by
-`.python-version`, `uv.lock`, and `corpus.toml`.
+`.python-version`, `uv.lock`, `corpus.toml`, and `evaluation.toml`.
 
 ```sh
 uv sync --locked --all-groups
@@ -167,20 +170,19 @@ For every question:
 5. The answer is printed with numbered citations and the corpus version that produced them.
 
 `sync` validates the active pointer, manifest, object generations, sizes, SHA-256 digests, schema
-metadata, retrieval evaluation, SQLite integrity, and vector dimensions before activating a
-release. An interrupted download cannot replace the active cache.
+metadata, SQLite integrity, and vector dimensions before activating a release. An interrupted
+download cannot replace the active cache.
 
 The generation instruction treats retrieved text and conversation turns as untrusted data. It
 requires citations, avoids unsupported claims, and refuses diagnosis, prescribing, and dosage
 advice. For urgent or severe symptoms, consult qualified medical help.
 
-## Corpus pipeline
+## Corpus release pipeline
 
-The complete pipeline and its `dataset/` input are included in every clone. Source validation is
-fully local. Evaluation and build require an OpenRouter API key for embeddings, and publication
-requires write access to the destination Storage bucket. The `sync`, `ask`, and `chat` commands do
-not read the source dataset directly; they use an accessible hosted release or an existing verified
-cache.
+The complete release pipeline and its `dataset/` input are included in every clone. Source
+validation is fully local. Building requires an OpenRouter API key, and publication requires write
+access to the destination Storage bucket. The `sync`, `ask`, and `chat` commands do not read the
+source dataset directly; they use an accessible hosted release or an existing verified cache.
 
 The corpus pipeline reads the remedy-merged `dataset/combined.json` file, whose
 `remedy -> book -> section -> passages` structure is validated against the configured book mapping.
@@ -200,10 +202,11 @@ chunk, and corpus-hash counts. Symlinked source files are rejected.
 uv run --locked homeoremedica-corpus validate
 ```
 
-### Retrieval evaluation
+## Experimental retrieval evaluation
 
-The evaluator reads `evaluation/v9/queries.json` at depth `k = 8` and writes the immutable
-`evaluation/v9/result.json` release input. It embeds the 2,117 symptom strings from 500 clinical
+The isolated evaluator is configured by `evaluation.toml`. It reads
+`evaluation/v9/queries.json` at depth `k = 8` and writes the immutable
+`evaluation/v9/result.json` experiment result. It embeds the 2,117 symptom strings from 500 clinical
 cases separately, with a retrieval instruction prepended to each semantic query. Per-symptom semantic and
 lexical candidates are min-max normalized from their cosine-similarity and BM25 relevance scores.
 The normalized scores are squared to suppress weak tail matches and summed by the corpus-wide
@@ -239,7 +242,7 @@ V9 reaches **24.57% Recall@8**, with validation recall increasing to **25.61%** 
 recall increasing from 21.76% to 23.43%. The [v9 comparison](evaluation/v9/comparison.json) preserves
 per-query rankings; [experiment results](evaluation/v9/experiments.json) also record rejected
 scoring and reranking approaches. This remains an exploratory benchmark comparison, and v9 still
-fails the unchanged 80% release gate. These versions change the corpus evaluator; the terminal
+falls below the unchanged 80% experimental threshold. These versions change the evaluator; the terminal
 client's existing chunk-level RRF search and raw query embeddings are a separate path.
 
 To reproduce the comparison after populating both versions' candidate caches, without network calls:
@@ -250,18 +253,18 @@ uv run --locked python scripts/compare_v9_retrieval.py
 ```
 
 The default comparison outputs are `.cache/evaluation/v8-comparison.json` and `v9-comparison.json`.
-Versioned evaluation
-results are immutable; rerunning `evaluate` against an existing result refuses to overwrite it.
+Versioned evaluation results are immutable; rerunning the evaluator against an existing result
+refuses to overwrite it.
 
 ```sh
 export OPENROUTER_API_KEY=... # or put it in .env
-uv run --locked homeoremedica-corpus evaluate
+uv run --locked homeoremedica-evaluation
 ```
 
 The corpus is loaded from the remedy-merged `dataset/combined.json`, which the evaluator validates
-against the configured book mapping. V9 evaluates only the model's native 4096 dimensions. It uses
-`RETRIEVAL_DOCUMENT` for contextualized symptom chunks and `RETRIEVAL_QUERY` for instructed query
-symptoms and retrieves up to 640 candidates per symptom from semantic and Porter-stemmed FTS5
+against the configured book mapping. V9 evaluates only the model's native 4096 dimensions. It
+embeds contextualized symptom chunks and instructed query symptoms, and retrieves up to 640
+candidates per symptom from semantic and Porter-stemmed FTS5
 search. The ranked remedy identity does not replace the underlying chunk, book, section, or passage
 metadata used for evidence and citations. Inputs are sent in bounded batches. Native vectors and
 scored candidate rankings are cached under `.cache/evaluation/`, keyed by the corpus, model,
@@ -277,7 +280,7 @@ reproduced v8's recorded recall, and synthetic tests compare its scores and rank
 ```sh
 # --embed-queries permits OpenRouter calls only if these query embeddings are missing.
 uv run --locked python scripts/prepare_semantic_candidates.py --embed-queries
-uv run --locked homeoremedica-corpus evaluate
+uv run --locked homeoremedica-evaluation
 ```
 
 Omit `--embed-queries` for cache-only operation. This command preserves existing candidate files;
@@ -288,7 +291,7 @@ of the terminal client.
 Every ranking strategy (lexical, semantic, and fused) is scored at depth 8 with five metrics:
 
 - **Recall@8** — intent coverage: the fraction of the query's relevance targets with at least one
-  matching ranked item in the top 8 (the release quality gate). Passage-level targets make this
+  matching ranked item in the top 8 (the experimental acceptance metric). Passage-level targets make this
   equal classic recall; remedy-level targets count a target as soon as the prescribed remedy
   appears.
 - **MRR@8** — the mean reciprocal rank of the first relevant item in the top 8.
@@ -306,8 +309,11 @@ Every ranking strategy (lexical, semantic, and fused) is scored at depth 8 with 
 
 The result records lexical, semantic, and fused values for every metric, plus candidate recall at
 the configured pool depth to distinguish candidate-generation misses from top-8 ordering errors.
-It is never overwritten. The builder rejects a stale evaluation, a changed dataset digest, or a
-configured dimension that differs from the recorded choice.
+It is never overwritten. Evaluation results and caches are not release inputs. See
+[evaluation promotion](docs/evaluation-promotion.md) for the separately tested process that moves a
+successful experiment into chat.
+
+## Build and publish chat releases
 
 ### Build a complete release
 
@@ -329,8 +335,7 @@ transient failures with exponential backoff.
 The complete local release appears atomically under `output/releases/2026-08-14.v1/` and contains:
 
 - `books/<book-id>.sqlite` for every configured processed book;
-- `build.json` with local sizes, SHA-256 digests, source hashes, evaluation identity, and shared
-  compatibility fields.
+- `build.json` with local sizes, SHA-256 digests, source hashes, and compatibility fields.
 
 Each database contains immutable chunk metadata and source text, an FTS5 index, a cosine
 `sqlite-vec` index, and artifact metadata. The builder validates SQLite integrity, FTS lookup,
@@ -352,7 +357,7 @@ Failed staging can leave unreachable immutable objects but cannot expose a parti
 
 The active pointer identifies the manifest by object name, generation, byte size, and digest. The
 manifest identifies every book artifact by object name and generation and records all embedding,
-schema, SQLite, `sqlite-vec`, evaluation, and source compatibility fields.
+schema, SQLite, `sqlite-vec`, and source compatibility fields.
 
 ### Roll back
 

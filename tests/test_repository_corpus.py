@@ -6,8 +6,9 @@ import pytest
 
 from homeoremedica_corpus.chunking import chunk_book, corpus_hash
 from homeoremedica_corpus.config import load_pipeline_config
-from homeoremedica_corpus.evaluation import load_evaluation_dataset, load_evaluation_gate
 from homeoremedica_corpus.sources import CorpusValidationError, load_combined_books
+from homeoremedica_evaluation.config import load_evaluation_config
+from homeoremedica_evaluation.evaluation import load_evaluation_dataset, load_evaluation_gate
 
 ROOT = Path(__file__).resolve().parents[1]
 pytestmark = pytest.mark.skipif(
@@ -39,8 +40,8 @@ def test_repository_combined_corpus_matches_config_and_conserves_every_passage()
 
 
 def test_repository_v9_preserves_queries_and_adds_only_a_semantic_instruction() -> None:
-    config = load_pipeline_config(ROOT / "corpus.toml")
-    dataset, _ = load_evaluation_dataset(config.evaluation_dataset)
+    config = load_evaluation_config(ROOT / "evaluation.toml")
+    dataset, _ = load_evaluation_dataset(config.dataset)
 
     previous, _ = load_evaluation_dataset(ROOT / "evaluation/v7/queries.json")
     assert dataset.version == "v9"
@@ -61,22 +62,22 @@ def test_repository_v9_preserves_queries_and_adds_only_a_semantic_instruction() 
     )
 
 
-def test_repository_evaluation_passes_and_pins_the_smallest_approved_dimension() -> None:
-    config = load_pipeline_config(ROOT / "corpus.toml")
-    if not config.evaluation_result.exists():
+def test_repository_evaluation_result_matches_its_isolated_configuration() -> None:
+    config = load_evaluation_config(ROOT / "evaluation.toml")
+    if not config.result.exists():
         pytest.skip(
             "pending evaluation for the configured dataset; run "
-            "`homeoremedica-corpus evaluate` once the OpenRouter key is configured"
+            "`homeoremedica-evaluation` once the OpenRouter key is configured"
         )
     books = repository_books(config)
     chunks = tuple(chunk for book in books for chunk in chunk_book(book, config.chunking))
-    _, dataset_digest = load_evaluation_dataset(config.evaluation_dataset)
+    _, dataset_digest = load_evaluation_dataset(config.dataset)
     try:
-        gate = load_evaluation_gate(config.evaluation_result)
+        gate = load_evaluation_gate(config.result)
     except CorpusValidationError as error:
         pytest.skip(f"recorded evaluation gate has no passing dimension: {error}")
 
     assert gate.dataset_sha256 == dataset_digest
     assert gate.corpus_hash == corpus_hash(chunks)
     assert gate.value >= gate.threshold
-    assert gate.chosen_dimensions == config.embedding.dimensions
+    assert gate.chosen_dimensions in config.dimensions

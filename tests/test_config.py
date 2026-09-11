@@ -23,16 +23,11 @@ target_tokens = 500
 model = "qwen/qwen3-embedding-8b"
 native_dimensions = 4096
 dimensions = 768
-evaluation_dimensions = [768, 1536, 3072, 4096]
 document_task_type = "RETRIEVAL_DOCUMENT"
 query_task_type = "RETRIEVAL_QUERY"
 normalization = "l2"
 distance_function = "cosine"
 model_input_limit = 32768
-
-[evaluation]
-dataset = "evaluation/v1/queries.json"
-result = "evaluation/v1/result.json"
 
 [books.sample]
 title = "Sample Book"
@@ -48,12 +43,9 @@ def test_loads_and_resolves_the_versioned_pipeline_configuration(tmp_path: Path)
 
     assert config.combined_dataset == tmp_path / "dataset" / "combined.json"
     assert config.output_directory == tmp_path / "output" / "releases"
-    assert config.evaluation_dataset == tmp_path / "evaluation" / "v1" / "queries.json"
-    assert config.evaluation_result == tmp_path / "evaluation" / "v1" / "result.json"
     assert config.books["sample"].title == "Sample Book"
     assert config.chunking.target_tokens == 500
     assert config.embedding.dimensions == 768
-    assert config.evaluation_dimensions == (768, 1536, 3072, 4096)
     artifact = config.artifact_spec("2026-08-14.test")
     assert artifact.sqlite_version == "3.53.4"
     assert artifact.sqlite_vec_version == "0.1.9"
@@ -63,11 +55,7 @@ def test_loads_and_resolves_the_versioned_pipeline_configuration(tmp_path: Path)
 @pytest.mark.parametrize(
     ("old", "new", "message"),
     [
-        (
-            "evaluation_dimensions = [768, 1536, 3072, 4096]",
-            "evaluation_dimensions = [768, 768]",
-            "unique",
-        ),
+        ("dimensions = 768", "dimensions = 5000", "less than or equal to 4096"),
         ('model = "qwen/qwen3-embedding-8b"', 'model = "other"', "qwen/qwen3-embedding-8b"),
         ("native_dimensions = 4096", "native_dimensions = 2048", "4096 native dimensions"),
         ('sqlite_vec_version = "0.1.9"', 'sqlite_vec_version = "1.0.0"', "pre-1.0"),

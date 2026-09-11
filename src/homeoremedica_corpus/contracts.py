@@ -35,7 +35,7 @@ class Compatibility(Contract):
     sqlite_vec_version: str
 
 
-class EvaluationGate(Contract):
+class LegacyEvaluationGate(Contract):
     dataset_version: str
     dataset_sha256: str
     corpus_hash: str
@@ -46,11 +46,10 @@ class EvaluationGate(Contract):
     chosen_dimensions: int = Field(gt=0, le=4096)
 
     @model_validator(mode="after")
-    def validate_gate(self) -> EvaluationGate:
+    def validate_gate(self) -> LegacyEvaluationGate:
         _validate_digest(self.dataset_sha256, "evaluation dataset_sha256")
         _validate_digest(self.corpus_hash, "evaluation corpus_hash")
-        if not re.fullmatch(r"[0-9a-f]{64}", self.result_sha256):
-            raise ValueError("evaluation result_sha256 must be a lowercase SHA-256 digest")
+        _validate_digest(self.result_sha256, "evaluation result_sha256")
         if self.value < self.threshold:
             raise ValueError("evaluation quality result does not meet its threshold")
         return self
@@ -82,7 +81,9 @@ class BuildDescriptor(Contract):
     corpus_version: str
     corpus_hash: str
     compatibility: Compatibility
-    evaluation: EvaluationGate | None
+    legacy_evaluation: LegacyEvaluationGate | None = Field(
+        default=None, alias="evaluation", exclude=True
+    )
     books: tuple[BuildBook, ...] = Field(min_length=1)
 
     @model_validator(mode="after")
@@ -117,13 +118,17 @@ class ReleaseManifest(Contract):
     corpus_version: str
     corpus_hash: str
     compatibility: Compatibility
-    evaluation: EvaluationGate
+    legacy_evaluation: LegacyEvaluationGate | None = Field(
+        default=None, alias="evaluation", exclude=True
+    )
     books: tuple[PublishedBook, ...] = Field(min_length=1)
 
     @model_validator(mode="after")
     def validate_release(self) -> ReleaseManifest:
         _validate_digest(self.corpus_hash, "corpus hash")
         _validate_unique_books(self.books)
+        if self.manifest_schema_version == 1 and self.legacy_evaluation is None:
+            raise ValueError("schema 1 release manifest requires legacy evaluation metadata")
         return self
 
 
