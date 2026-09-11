@@ -3,36 +3,27 @@ from __future__ import annotations
 import hashlib
 import json
 import math
-import os
 import re
-import shutil
 import sqlite3
-import tempfile
 from collections.abc import Sequence
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
 
 import sqlite_vec
-from google.cloud import storage
-from pydantic import Field, model_validator
 
-from chat.chat import BookSummary, Contract, RetrievedSource
+from chat.chat import BookSummary, RetrievedSource
+from corpus.contracts import ActivePointer, Compatibility, PublishedBook, ReleaseManifest
 
 
 class CorpusError(RuntimeError):
-    """The published corpus is missing, corrupt, or incompatible."""
+    """The local corpus is missing, corrupt, or incompatible."""
 
 
 MAX_MANIFEST_BYTES = 1 * 1024 * 1024
-# Keep downloads bounded for a local serving process. The source adapter
-# materializes one artifact before validation and SQLite may allocate
-# additional pages while opening it.
-MAX_ARTIFACT_BYTES = 128 * 1024 * 1024
-MAX_TOTAL_ARTIFACT_BYTES = 256 * 1024 * 1024
+MAX_ARTIFACT_BYTES = 4 * 1024 * 1024 * 1024
+MAX_TOTAL_ARTIFACT_BYTES = 8 * 1024 * 1024 * 1024
 MAX_SOURCE_TEXT_CHARS = 8_000
 MAX_SOURCE_LABEL_CHARS = 256
-MAX_BOOK_COUNT = 4
+MAX_BOOK_COUNT = 16
 EXPECTED_BOOK_IDS = frozenset({
     "allen-nosodes",
     "boericke-MM",
@@ -47,291 +38,90 @@ def _require_safe_path_component(value: str, label: str) -> None:
         raise ValueError(f"{label} must be a safe path component")
 
 
-def _require_safe_object_name(value: str, label: str) -> None:
-    parts = value.split("/")
-    if (
-        not value
-        or value.startswith("/")
-        or "\\" in value
-        or any(not part or part in {".", ".."} for part in parts)
-    ):
-        raise ValueError(f"{label} must be a safe relative object name")
+class LocalCorpus:
+    """Load and verify the active release from a local corpus directory."""
 
-
-class Compatibility(Contract):
-    embedding_model: str = Field(min_length=1, max_length=128)
-    embedding_dimensions: int = Field(gt=0, le=4096)
-    document_task_type: str
-    query_task_type: str
-    embedding_normalization: str
-    distance_function: str
-    model_input_limit: int = Field(gt=0, le=100_000)
-    sqlite_version: str
-    sqlite_vec_version: str
-
-
-class LegacyEvaluationGate(Contract):
-    dataset_version: str
-    dataset_sha256: str
-    corpus_hash: str
-    result_sha256: str
-    metric: str
-    threshold: float = Field(ge=0)
-    value: float = Field(ge=0)
-    chosen_dimensions: int = Field(gt=0, le=4096)
-
-
-class PublishedBook(Contract):
-    book_id: str = Field(min_length=1, max_length=128)
-    title: str = Field(min_length=1, max_length=512)
-    author: str | None = Field(default=None, max_length=256)
-    object: str = Field(min_length=1, max_length=512)
-    generation: int = Field(gt=0)
-    byte_size: int = Field(gt=0, le=MAX_ARTIFACT_BYTES)
-    sha256: str
-    source_sha256: str
-    chunk_count: int = Field(gt=0, le=1_000_000)
-    passage_count: int = Field(gt=0, le=1_000_000)
-
-
-class ReleaseManifest(Contract):
-    manifest_schema_version: int = 1
-    artifact_schema_version: int = 1
-    corpus_version: str = Field(min_length=1, max_length=128)
-    corpus_hash: str
-    compatibility: Compatibility
-    legacy_evaluation: LegacyEvaluationGate | None = Field(
-        default=None, alias="evaluation", exclude=True
-    )
-    books: tuple[PublishedBook, ...] = Field(min_length=1, max_length=MAX_BOOK_COUNT)
-
-    @model_validator(mode="after")
-    def validate_release(self) -> ReleaseManifest:
-        _require_safe_path_component(self.corpus_version, "corpus version")
-        for book in self.books:
-            _require_safe_path_component(book.book_id, "book ID")
-        book_ids = {book.book_id for book in self.books}
-        if book_ids != EXPECTED_BOOK_IDS:
-            missing = sorted(EXPECTED_BOOK_IDS - book_ids)
-            unsupported = sorted(book_ids - EXPECTED_BOOK_IDS)
-            details = []
-            if missing:
-                details.append(f"missing: {', '.join(missing)}")
-            if unsupported:
-                details.append(f"unsupported: {', '.join(unsupported)}")
-            raise ValueError(
-                f"corpus must contain the exact expected book set ({'; '.join(details)})"
-            )
-        if sum(book.byte_size for book in self.books) > MAX_TOTAL_ARTIFACT_BYTES:
-            raise ValueError("corpus artifacts exceed the total size limit")
-        if self.manifest_schema_version not in {1, 2} or self.artifact_schema_version != 1:
-            raise ValueError("unsupported corpus schema version")
-        if self.manifest_schema_version == 1:
-            evaluation = self.legacy_evaluation
-            if evaluation is None:
-                raise ValueError("schema 1 corpus requires legacy evaluation metadata")
-            if evaluation.corpus_hash != self.corpus_hash:
-                raise ValueError("evaluation belongs to a different corpus")
-            if evaluation.chosen_dimensions != self.compatibility.embedding_dimensions:
-                raise ValueError("evaluation dimensions do not match the corpus")
-            if evaluation.value < evaluation.threshold:
-                raise ValueError("corpus retrieval evaluation did not pass")
-        if len({book.book_id for book in self.books}) != len(self.books):
-            raise ValueError("corpus contains duplicate book IDs")
-        _require_digest(self.corpus_hash, "corpus hash")
-        for book in self.books:
-            _require_digest(book.sha256, f"{book.book_id} digest")
-            _require_digest(book.source_sha256, f"{book.book_id} source digest")
-        return self
-
-
-class ActivePointer(Contract):
-    pointer_schema_version: int = 1
-    corpus_version: str = Field(min_length=1, max_length=128)
-    manifest_object: str = Field(min_length=1, max_length=512)
-    manifest_generation: int = Field(gt=0)
-    manifest_byte_size: int = Field(gt=0, le=MAX_MANIFEST_BYTES)
-    manifest_sha256: str
-
-    @model_validator(mode="after")
-    def validate_pointer(self) -> ActivePointer:
-        _require_safe_path_component(self.corpus_version, "corpus version")
-        _require_safe_object_name(self.manifest_object, "manifest object")
-        if self.pointer_schema_version != 1:
-            raise ValueError("unsupported active pointer schema version")
-        _require_digest(self.manifest_sha256, "manifest digest")
-        return self
-
-
-@dataclass(frozen=True, slots=True)
-class ObjectData:
-    name: str
-    generation: int
-    content: bytes
-
-
-class ObjectSource(Protocol):
-    def read(
+    def __init__(
         self,
-        name: str,
+        directory: Path,
         *,
-        generation: int | None = None,
-        max_bytes: int | None = None,
-    ) -> ObjectData: ...
+        expected_book_ids: frozenset[str] = EXPECTED_BOOK_IDS,
+    ) -> None:
+        self._directory = directory.expanduser()
+        self._expected_book_ids = expected_book_ids
 
+    def load(self) -> CorpusRelease:
+        root = self._directory
+        if root.is_symlink():
+            raise CorpusError(f"corpus directory must not be a symbolic link: {root}")
+        if not root.is_dir():
+            raise CorpusError(f"corpus directory does not exist: {root}")
 
-class GoogleCloudCorpusSource:
-    """Read immutable corpus object generations without exposing Storage details to callers."""
-
-    def __init__(self, bucket: str, *, project: str = "homeoremedica") -> None:
-        self._bucket = storage.Client(project=project).bucket(bucket)
-
-    def read(
-        self,
-        name: str,
-        *,
-        generation: int | None = None,
-        max_bytes: int | None = None,
-    ) -> ObjectData:
-        if generation is None:
-            current = self._bucket.get_blob(name)
-            if current is None or current.generation is None:
-                raise CorpusError(f"corpus object does not exist: gs://{self._bucket.name}/{name}")
-            generation = int(current.generation)
-        blob = self._bucket.blob(name, generation=generation)
+        pointer_path = root / "active.json"
+        pointer_bytes = _read_bounded(pointer_path, MAX_MANIFEST_BYTES, "active pointer")
         try:
-            blob.reload(timeout=10)
-            if max_bytes is not None and (blob.size is None or blob.size > max_bytes):
-                raise CorpusError(f"corpus object exceeds the size limit: {name}")
-            content = blob.download_as_bytes(timeout=120)
-        except Exception as error:
-            raise CorpusError(
-                f"could not read gs://{self._bucket.name}/{name}#{generation}: {error}"
-            ) from error
-        return ObjectData(name=name, generation=generation, content=content)
-
-
-class CorpusCache:
-    """Atomically materialize and verify one active immutable corpus release."""
-
-    def __init__(self, directory: Path, *, prefix: str = "corpora") -> None:
-        self._directory = directory
-        self._prefix = prefix.strip("/")
-        _require_safe_object_name(self._prefix, "corpus prefix")
-
-    def sync(self, source: ObjectSource) -> CorpusRelease:
-        pointer_object = source.read(
-            f"{self._prefix}/active.json",
-            max_bytes=MAX_MANIFEST_BYTES,
-        )
-        try:
-            pointer = ActivePointer.model_validate_json(pointer_object.content)
+            pointer = ActivePointer.model_validate_json(pointer_bytes)
         except ValueError as error:
             raise CorpusError(f"invalid active corpus pointer: {error}") from error
 
-        expected_manifest = f"{self._prefix}/{pointer.corpus_version}/manifest.json"
-        if pointer.manifest_object != expected_manifest:
-            raise CorpusError("active pointer contains an unexpected manifest object path")
-        manifest_object = source.read(
-            pointer.manifest_object,
-            generation=pointer.manifest_generation,
-            max_bytes=pointer.manifest_byte_size,
-        )
+        release_directory = _safe_child(root, pointer.corpus_version, "active release")
+        expected_manifest_path = release_directory / "manifest.json"
+        manifest_path = _safe_child(root, pointer.manifest_path, "manifest")
+        if manifest_path != expected_manifest_path:
+            raise CorpusError("active pointer contains an unexpected manifest path")
+        manifest_bytes = _read_bounded(manifest_path, pointer.manifest_byte_size, "manifest")
         _verify_object(
-            manifest_object.content,
+            manifest_bytes,
             byte_size=pointer.manifest_byte_size,
             sha256=pointer.manifest_sha256,
             label="manifest",
         )
         try:
-            manifest = ReleaseManifest.model_validate_json(manifest_object.content)
+            manifest = ReleaseManifest.model_validate_json(manifest_bytes)
         except ValueError as error:
             raise CorpusError(f"invalid corpus manifest: {error}") from error
-        expected_manifest = f"{self._prefix}/{manifest.corpus_version}/manifest.json"
         if (
             pointer.corpus_version != manifest.corpus_version
-            or pointer.manifest_object != expected_manifest
+            or manifest_path != root / manifest.corpus_version / "manifest.json"
         ):
             raise CorpusError("active pointer and release manifest identities do not match")
 
-        self._prune_releases(manifest.corpus_version)
-        release_directory = self._directory / manifest.corpus_version
-        books_directory = release_directory / "books"
-        books_directory.mkdir(parents=True, exist_ok=True)
-        for book in manifest.books:
-            expected_object = (
-                f"{self._prefix}/{manifest.corpus_version}/books/{book.book_id}.sqlite"
+        book_ids = {book.book_id for book in manifest.books}
+        if book_ids != self._expected_book_ids:
+            missing = sorted(self._expected_book_ids - book_ids)
+            unsupported = sorted(book_ids - self._expected_book_ids)
+            details = []
+            if missing:
+                details.append(f"missing: {', '.join(missing)}")
+            if unsupported:
+                details.append(f"unsupported: {', '.join(unsupported)}")
+            raise CorpusError(
+                "corpus must contain the exact expected book set " + "; ".join(details)
             )
-            if book.object != expected_object:
-                raise CorpusError(f"unexpected corpus object path for {book.book_id}")
-            destination = books_directory / f"{book.book_id}.sqlite"
-            if not _matches_file(destination, book.byte_size, book.sha256):
-                artifact = source.read(
-                    book.object,
-                    generation=book.generation,
-                    max_bytes=book.byte_size,
-                )
-                _verify_object(
-                    artifact.content,
-                    byte_size=book.byte_size,
-                    sha256=book.sha256,
-                    label=book.book_id,
-                )
-                _atomic_write(destination, artifact.content)
-            _validate_artifact(destination, manifest, book)
+        if sum(book.byte_size for book in manifest.books) > MAX_TOTAL_ARTIFACT_BYTES:
+            raise CorpusError("corpus artifacts exceed the total size limit")
 
-        _atomic_write(release_directory / "manifest.json", manifest_object.content)
-        _atomic_write(self._directory / "active.json", pointer_object.content)
-        self._prune_releases(manifest.corpus_version)
+        _validate_release_artifacts(root, release_directory, manifest)
         return CorpusRelease(release_directory, manifest)
 
-    def _prune_releases(self, active_version: str) -> None:
-        """Keep the active release and one rollback release on ephemeral disk."""
-        if not self._directory.exists():
-            return
-        candidates = [
-            path
-            for path in self._directory.iterdir()
-            if path.is_dir() and _SAFE_PATH_COMPONENT.fullmatch(path.name)
-        ]
-        candidates.sort(
-            key=lambda path: path.stat().st_mtime_ns if path.exists() else 0,
-            reverse=True,
-        )
-        keep = {self._directory / active_version}
-        for path in candidates:
-            if path not in keep and len(keep) < 2:
-                keep.add(path)
-        for path in candidates:
-            if path not in keep:
-                shutil.rmtree(path, ignore_errors=True)
+
+class CorpusCache(LocalCorpus):
+    """Compatibility name for the local verified corpus loader."""
 
     def open_cached(self) -> CorpusRelease:
-        try:
-            pointer = ActivePointer.model_validate_json(
-                (self._directory / "active.json").read_bytes()
-            )
-            manifest_path = self._directory / pointer.corpus_version / "manifest.json"
-            manifest_bytes = manifest_path.read_bytes()
-            _verify_object(
-                manifest_bytes,
-                byte_size=pointer.manifest_byte_size,
-                sha256=pointer.manifest_sha256,
-                label="cached manifest",
-            )
-            manifest = ReleaseManifest.model_validate_json(manifest_bytes)
-        except (OSError, ValueError) as error:
-            raise CorpusError("no valid cached corpus; run the sync command first") from error
-        for book in manifest.books:
-            path = self._directory / manifest.corpus_version / "books" / f"{book.book_id}.sqlite"
-            if not _matches_file(path, book.byte_size, book.sha256):
-                raise CorpusError(f"cached corpus artifact is missing or corrupt: {book.book_id}")
-            _validate_artifact(path, manifest, book)
-        return CorpusRelease(self._directory / manifest.corpus_version, manifest)
+        return self.load()
+
+
+def load_local_corpus(
+    directory: Path,
+    *,
+    expected_book_ids: frozenset[str] = EXPECTED_BOOK_IDS,
+) -> CorpusRelease:
+    return LocalCorpus(directory, expected_book_ids=expected_book_ids).load()
 
 
 class CorpusRelease:
-    """Search one already-verified immutable release across independently indexed books."""
+    """Search one already-verified immutable release across its indexed books."""
 
     def __init__(self, directory: Path, manifest: ReleaseManifest) -> None:
         self._directory = directory
@@ -389,7 +179,7 @@ class CorpusRelease:
         for book in self._manifest.books:
             if book.book_id not in selected:
                 continue
-            path = self._directory / "books" / f"{book.book_id}.sqlite"
+            path = self._directory / book.filename
             connection = _connect(path)
             try:
                 lexical = _lexical_ranking(connection, lexical_query, candidate_limit)
@@ -420,6 +210,163 @@ class CorpusRelease:
             )
             for key in ordered
         )
+
+
+def _validate_release_artifacts(
+    root: Path, release_directory: Path, manifest: ReleaseManifest
+) -> None:
+    compatibility = manifest.compatibility
+    for book in manifest.books:
+        path = _safe_child(root, f"{manifest.corpus_version}/{book.filename}", book.book_id)
+        if not path.is_file():
+            raise CorpusError(f"local corpus artifact is missing: {book.book_id}")
+        if path.stat().st_size != book.byte_size or _sha256_file(path) != book.sha256:
+            raise CorpusError(f"local corpus artifact is missing or corrupt: {book.book_id}")
+        _validate_artifact(path, manifest, book, compatibility)
+
+
+def _validate_artifact(
+    path: Path,
+    manifest: ReleaseManifest,
+    book: PublishedBook,
+    compatibility: Compatibility,
+) -> None:
+    connection = _connect(path)
+    try:
+        quick_check = connection.execute("PRAGMA quick_check").fetchone()
+        if quick_check is None or quick_check[0] != "ok":
+            raise CorpusError(f"SQLite integrity check failed: {book.book_id}")
+        tables = {
+            str(row[0])
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type IN ('table', 'view')"
+            )
+        }
+        if not {"metadata", "chunks", "chunks_fts", "chunk_vectors"}.issubset(tables):
+            raise CorpusError(f"artifact schema is incomplete: {book.book_id}")
+        runtime_vec_version = str(
+            connection.execute("SELECT vec_version()").fetchone()[0]
+        ).removeprefix("v")
+        if (
+            sqlite3.sqlite_version != compatibility.sqlite_version
+            or runtime_vec_version != compatibility.sqlite_vec_version
+        ):
+            raise CorpusError(f"artifact runtime is incompatible: {book.book_id}")
+        oversized = connection.execute(
+            """
+            SELECT id FROM chunks
+            WHERE length(text) > ? OR length(remedy_name) > ? OR length(section_title) > ?
+            LIMIT 1
+            """,
+            (MAX_SOURCE_TEXT_CHARS, MAX_SOURCE_LABEL_CHARS, MAX_SOURCE_LABEL_CHARS),
+        ).fetchone()
+        if oversized is not None:
+            raise CorpusError(f"corpus source text or label is too large: {book.book_id}")
+        metadata = dict(connection.execute("SELECT key, value FROM metadata"))
+        chunk_count = int(connection.execute("SELECT count(*) FROM chunks").fetchone()[0])
+        vector_count = int(
+            connection.execute("SELECT count(*) FROM chunk_vectors").fetchone()[0]
+        )
+        if (chunk_count, vector_count) != (book.chunk_count, book.chunk_count):
+            raise CorpusError(f"artifact index counts are inconsistent: {book.book_id}")
+        fts_count = int(connection.execute("SELECT count(*) FROM chunks_fts").fetchone()[0])
+        if fts_count != book.chunk_count:
+            raise CorpusError(f"artifact FTS index count is inconsistent: {book.book_id}")
+        vector_schema = connection.execute(
+            "SELECT sql FROM sqlite_master WHERE name = 'chunk_vectors'"
+        ).fetchone()
+        if (
+            vector_schema is None
+            or f"float[{compatibility.embedding_dimensions}]" not in str(vector_schema[0])
+            or "distance_metric=cosine" not in str(vector_schema[0])
+        ):
+            raise CorpusError(f"artifact vector dimensions are incompatible: {book.book_id}")
+        first = connection.execute(
+            "SELECT rowid, text FROM chunks ORDER BY rowid LIMIT 1"
+        ).fetchone()
+        if first is None:
+            raise CorpusError(f"artifact contains no chunks: {book.book_id}")
+        tokens = re.findall(r"\w+", str(first[1]), flags=re.UNICODE)
+        if not tokens:
+            raise CorpusError(f"artifact contains no searchable text: {book.book_id}")
+        fts_match = connection.execute(
+            "SELECT rowid FROM chunks_fts WHERE chunks_fts MATCH ?",
+            (f'"{tokens[0]}"',),
+        ).fetchall()
+        if int(first[0]) not in {int(row[0]) for row in fts_match}:
+            raise CorpusError(f"artifact FTS index is invalid: {book.book_id}")
+        first_vector = connection.execute(
+            "SELECT chunk_rowid, embedding FROM chunk_vectors ORDER BY chunk_rowid LIMIT 1"
+        ).fetchone()
+        if first_vector is None:
+            raise CorpusError(f"artifact vector index is empty: {book.book_id}")
+        nearest = connection.execute(
+            "SELECT chunk_rowid FROM chunk_vectors WHERE embedding MATCH ? AND k = 1",
+            (first_vector[1],),
+        ).fetchone()
+        if nearest != (first_vector[0],):
+            raise CorpusError(f"artifact vector index is invalid: {book.book_id}")
+        expected = {
+            "artifact_schema_version": str(manifest.artifact_schema_version),
+            "book_author": book.author or "",
+            "book_id": book.book_id,
+            "book_title": book.title,
+            "chunk_count": str(book.chunk_count),
+            "corpus_hash": manifest.corpus_hash,
+            "corpus_version": manifest.corpus_version,
+            "distance_function": compatibility.distance_function,
+            "document_task_type": compatibility.document_task_type,
+            "embedding_dimensions": str(compatibility.embedding_dimensions),
+            "embedding_model": compatibility.embedding_model,
+            "embedding_normalization": compatibility.embedding_normalization,
+            "fts_tokenizer": "porter unicode61 remove_diacritics 2",
+            "model_input_limit": str(compatibility.model_input_limit),
+            "passage_count": str(book.passage_count),
+            "query_task_type": compatibility.query_task_type,
+            "source_sha256": book.source_sha256,
+            "sqlite_vec_version": compatibility.sqlite_vec_version,
+            "sqlite_version": compatibility.sqlite_version,
+        }
+        mismatched = sorted(key for key, value in expected.items() if metadata.get(key) != value)
+        if mismatched:
+            raise CorpusError(
+                f"artifact metadata is incompatible ({book.book_id}: {', '.join(mismatched)})"
+            )
+    except sqlite3.Error as error:
+        raise CorpusError(f"could not validate corpus artifact {book.book_id}: {error}") from error
+    finally:
+        connection.close()
+
+
+def _connect(path: Path) -> sqlite3.Connection:
+    connection = sqlite3.connect(f"{path.resolve().as_uri()}?mode=ro&immutable=1", uri=True)
+    connection.enable_load_extension(True)
+    try:
+        sqlite_vec.load(connection)
+    finally:
+        connection.enable_load_extension(False)
+    return connection
+
+
+def _serialize_normalized(values: Sequence[float], dimensions: int) -> bytes:
+    if len(values) != dimensions:
+        raise CorpusError(f"expected {dimensions} query embedding dimensions, got {len(values)}")
+    norm = math.sqrt(math.fsum(float(value) ** 2 for value in values))
+    if norm == 0 or not math.isfinite(norm):
+        raise CorpusError("query embedding is zero or non-finite")
+    return sqlite_vec.serialize_float32([float(value) / norm for value in values])
+
+
+MAX_FTS_TOKENS = 128
+
+
+def _fts_or_query(query: str) -> str:
+    tokens = [
+        token
+        for token in dict.fromkeys(re.findall(r"[^\W_]+", query.casefold(), flags=re.UNICODE))
+        if len(token) >= 2
+    ][:MAX_FTS_TOKENS]
+    return " OR ".join(f'"{token}"' for token in tokens)
 
 
 def _lexical_ranking(connection: sqlite3.Connection, query: str, limit: int) -> tuple[str, ...]:
@@ -501,129 +448,55 @@ def _reciprocal_rank_scores(
     return scores, best_ranks
 
 
-def _validate_artifact(path: Path, manifest: ReleaseManifest, book: PublishedBook) -> None:
-    connection = _connect(path)
+def _safe_child(root: Path, relative: str, label: str) -> Path:
+    candidate = root / relative
     try:
-        quick_check = connection.execute("PRAGMA quick_check").fetchone()
-        if quick_check is None or quick_check[0] != "ok":
-            raise CorpusError(f"SQLite integrity check failed: {book.book_id}")
-        tables = {
-            str(row[0])
-            for row in connection.execute(
-                "SELECT name FROM sqlite_master WHERE type IN ('table', 'view')"
-            )
-        }
-        if not {"metadata", "chunks", "chunks_fts", "chunk_vectors"}.issubset(tables):
-            raise CorpusError(f"artifact schema is incomplete: {book.book_id}")
-        oversized = connection.execute(
-            """
-            SELECT id FROM chunks
-            WHERE length(text) > ? OR length(remedy_name) > ? OR length(section_title) > ?
-            LIMIT 1
-            """,
-            (MAX_SOURCE_TEXT_CHARS, MAX_SOURCE_LABEL_CHARS, MAX_SOURCE_LABEL_CHARS),
-        ).fetchone()
-        if oversized is not None:
-            raise CorpusError(f"corpus source text or label is too large: {book.book_id}")
-        metadata = dict(connection.execute("SELECT key, value FROM metadata"))
-        compatibility = manifest.compatibility
-        expected = {
-            "artifact_schema_version": str(manifest.artifact_schema_version),
-            "book_author": book.author or "",
-            "book_id": book.book_id,
-            "book_title": book.title,
-            "chunk_count": str(book.chunk_count),
-            "corpus_hash": manifest.corpus_hash,
-            "corpus_version": manifest.corpus_version,
-            "distance_function": compatibility.distance_function,
-            "document_task_type": compatibility.document_task_type,
-            "embedding_dimensions": str(compatibility.embedding_dimensions),
-            "embedding_model": compatibility.embedding_model,
-            "embedding_normalization": compatibility.embedding_normalization,
-            "model_input_limit": str(compatibility.model_input_limit),
-            "passage_count": str(book.passage_count),
-            "query_task_type": compatibility.query_task_type,
-            "source_sha256": book.source_sha256,
-            "sqlite_vec_version": compatibility.sqlite_vec_version,
-            "sqlite_version": compatibility.sqlite_version,
-        }
-        mismatched = sorted(key for key, value in expected.items() if metadata.get(key) != value)
-        if mismatched:
-            raise CorpusError(
-                f"artifact metadata is incompatible ({book.book_id}: {', '.join(mismatched)})"
-            )
-    except sqlite3.Error as error:
-        raise CorpusError(f"could not validate corpus artifact {book.book_id}: {error}") from error
-    finally:
-        connection.close()
+        resolved = candidate.resolve(strict=False)
+        root_resolved = root.resolve()
+        if not resolved.is_relative_to(root_resolved):
+            raise CorpusError(f"{label} path escapes the corpus directory")
+    except OSError as error:
+        raise CorpusError(f"could not resolve {label} path") from error
+    if _has_symlink_component(root, candidate):
+        raise CorpusError(f"{label} must not be a symbolic link")
+    return candidate
 
 
-def _connect(path: Path) -> sqlite3.Connection:
-    connection = sqlite3.connect(f"{path.resolve().as_uri()}?mode=ro", uri=True)
-    connection.enable_load_extension(True)
+def _has_symlink_component(root: Path, candidate: Path) -> bool:
     try:
-        sqlite_vec.load(connection)
-    finally:
-        connection.enable_load_extension(False)
-    return connection
+        relative_parts = candidate.relative_to(root).parts
+    except ValueError:
+        return True
+    current = root
+    for part in relative_parts:
+        current /= part
+        if current.is_symlink():
+            return True
+    return False
 
 
-def _serialize_normalized(values: Sequence[float], dimensions: int) -> bytes:
-    if len(values) != dimensions:
-        raise CorpusError(f"expected {dimensions} query embedding dimensions, got {len(values)}")
-    norm = math.sqrt(math.fsum(float(value) ** 2 for value in values))
-    if norm == 0 or not math.isfinite(norm):
-        raise CorpusError("query embedding is zero or non-finite")
-    return sqlite_vec.serialize_float32([float(value) / norm for value in values])
-
-
-MAX_FTS_TOKENS = 128
-
-
-def _fts_or_query(query: str) -> str:
-    # Keep adversarial retrieval text from expanding into an unbounded FTS5
-    # expression. Semantic retrieval still sees the complete bounded query.
-    tokens = [
-        token
-        for token in dict.fromkeys(re.findall(r"[^\W_]+", query.casefold(), flags=re.UNICODE))
-        if len(token) >= 2
-    ][:MAX_FTS_TOKENS]
-    return " OR ".join(f'"{token}"' for token in tokens)
+def _read_bounded(path: Path, max_bytes: int, label: str) -> bytes:
+    try:
+        if path.stat().st_size > max_bytes:
+            raise CorpusError(f"{label} exceeds the size limit")
+        content = path.read_bytes()
+    except CorpusError:
+        raise
+    except OSError as error:
+        raise CorpusError(f"could not read {label}: {path}") from error
+    if len(content) > max_bytes:
+        raise CorpusError(f"{label} exceeds the size limit")
+    return content
 
 
 def _verify_object(content: bytes, *, byte_size: int, sha256: str, label: str) -> None:
     if len(content) != byte_size or hashlib.sha256(content).hexdigest() != sha256:
-        raise CorpusError(f"{label} object failed size or SHA-256 verification")
+        raise CorpusError(f"{label} failed size or SHA-256 verification")
 
 
-def _matches_file(path: Path, byte_size: int, sha256: str) -> bool:
-    try:
-        if path.stat().st_size != byte_size:
-            return False
-        digest = hashlib.sha256()
-        with path.open("rb") as file:
-            for block in iter(lambda: file.read(1024 * 1024), b""):
-                digest.update(block)
-        return digest.hexdigest() == sha256
-    except OSError:
-        return False
-
-
-def _atomic_write(destination: Path, content: bytes) -> None:
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    temporary_path: Path | None = None
-    try:
-        with tempfile.NamedTemporaryFile(dir=destination.parent, delete=False) as temporary:
-            temporary_path = Path(temporary.name)
-            temporary.write(content)
-            temporary.flush()
-            os.fsync(temporary.fileno())
-        temporary_path.replace(destination)
-    finally:
-        if temporary_path is not None:
-            temporary_path.unlink(missing_ok=True)
-
-
-def _require_digest(value: str, label: str) -> None:
-    if not re.fullmatch(r"[0-9a-f]{64}", value):
-        raise ValueError(f"{label} must be a lowercase SHA-256 digest")
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as file:
+        for block in iter(lambda: file.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()

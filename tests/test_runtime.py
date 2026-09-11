@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -29,11 +30,19 @@ class FakeSession:
 
 def test_settings_defaults_to_glm_flash_and_reads_zai_key(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("ZAI_API_KEY", "zai-key")
+    monkeypatch.delenv("RAG_CORPUS_DIR", raising=False)
 
     settings = Settings()
 
     assert settings.model == "glm-5.3-flash"
     assert settings.zai_api_key == "zai-key"
+    assert settings.corpus_dir == Path("artifacts/corpus")
+
+
+def test_settings_reads_the_local_corpus_directory(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("RAG_CORPUS_DIR", "~/homeoremedica-corpus")
+
+    assert Settings().corpus_dir == Path.home() / "homeoremedica-corpus"
 
 
 def test_zai_client_sends_openai_compatible_chat_request() -> None:

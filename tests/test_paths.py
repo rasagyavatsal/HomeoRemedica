@@ -60,4 +60,4 @@ def test_benchmark_cache_directory_stays_in_its_experimental_root(tmp_path: Path
         tmp_path / ".cache/benchmarks/v9"
     )
     with pytest.raises(ValueError, match="inside"):
-        benchmark_cache_directory(Path("output/releases"), tmp_path)
+        benchmark_cache_directory(Path("artifacts/corpus"), tmp_path)

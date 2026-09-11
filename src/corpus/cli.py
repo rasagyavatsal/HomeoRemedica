@@ -9,11 +9,8 @@ from pathlib import Path
 from corpus.builder import build_release
 from corpus.chunking import chunk_book, corpus_hash
 from corpus.config import PipelineConfig, load_pipeline_config
-from corpus.contracts import compatibility_from_artifact_spec
 from corpus.embeddings import OpenRouterEmbeddingProvider
-from corpus.publication import CorpusPublisher
 from corpus.sources import load_combined_books
-from corpus.storage import GoogleCloudObjectStore
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -30,7 +27,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="homeoremedica-corpus",
-        description="Build and publish immutable HomeoRemedica RAG corpus releases.",
+        description="Build and activate local HomeoRemedica RAG corpus releases.",
     )
     parser.add_argument("--config", type=Path, default=Path("corpus.toml"))
     commands = parser.add_subparsers(required=True)
@@ -40,20 +37,12 @@ def _parser() -> argparse.ArgumentParser:
     )
     validate.set_defaults(command=_validate)
 
-    build = commands.add_parser("build", help="build all per-book SQLite artifacts")
+    build = commands.add_parser(
+        "build", help="build, verify, and activate all per-book SQLite artifacts"
+    )
     build.add_argument("corpus_version")
     _worker_argument(build)
     build.set_defaults(command=_build)
-
-    publish = commands.add_parser("publish", help="stage and activate a built release")
-    publish.add_argument("corpus_version")
-    publish.add_argument("--bucket", required=True)
-    publish.set_defaults(command=_publish)
-
-    rollback = commands.add_parser("rollback", help="activate an existing immutable manifest")
-    rollback.add_argument("corpus_version")
-    rollback.add_argument("--bucket", required=True)
-    rollback.set_defaults(command=_rollback)
     return parser
 
 
@@ -94,6 +83,7 @@ def _build(config: PipelineConfig, arguments: argparse.Namespace) -> int:
     )
     _print_json(
         {
+            "active": str(config.output_directory / "active.json"),
             "artifacts": len(release.artifacts),
             "corpusHash": release.corpus_hash,
             "corpusVersion": release.corpus_version,
@@ -101,37 +91,6 @@ def _build(config: PipelineConfig, arguments: argparse.Namespace) -> int:
         }
     )
     return 0
-
-
-def _publish(config: PipelineConfig, arguments: argparse.Namespace) -> int:
-    service = _publisher(config, arguments.bucket)
-    release = service.publish(config.output_directory / arguments.corpus_version)
-    _print_json(
-        {
-            "corpusVersion": release.active.corpus_version,
-            "manifestGeneration": release.manifest.generation,
-            "manifestObject": release.manifest.name,
-            "pointerGeneration": release.pointer.generation,
-        }
-    )
-    return 0
-
-
-def _rollback(config: PipelineConfig, arguments: argparse.Namespace) -> int:
-    active = _publisher(config, arguments.bucket).rollback(arguments.corpus_version)
-    _print_json(active.model_dump(mode="json", by_alias=True))
-    return 0
-
-
-def _publisher(config: PipelineConfig, bucket: str) -> CorpusPublisher:
-    requirements = config.artifact_spec("requirements")
-    return CorpusPublisher(
-        GoogleCloudObjectStore(bucket),
-        expected_book_ids=frozenset(config.books),
-        expected_compatibility=compatibility_from_artifact_spec(requirements),
-        expected_artifact_schema_version=config.artifact_schema_version,
-        expected_manifest_schema_version=config.manifest_schema_version,
-    )
 
 
 def _load_chunks(config: PipelineConfig):

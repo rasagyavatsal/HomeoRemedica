@@ -7,7 +7,6 @@ license = "MIT"
 license-files = ["LICENSE"]
 requires-python = "==3.14.*"
 dependencies = [
-  "google-cloud-storage>=3.13.1,<4",
   "fastapi>=0.115,<1",
   "pydantic>=2.12.5,<3",
   "pydantic-settings>=2.10.1,<3",
