@@ -1,6 +1,6 @@
 # HomeoRemedica
 
-HomeoRemedica is an open-source Python project containing a terminal client and the complete source
+HomeoRemedica is an open-source Python project containing a web client and the complete source
 pipeline for a grounded reference assistant covering four classical homoeopathic materia medica
 books: Clarke, Boericke, Kent, and Allen. Answers are generated from retrieved corpus excerpts and
 include stable source IDs. The output is a study reference, not medical advice.
@@ -12,7 +12,9 @@ remain separate from the repository and require their own credentials where appl
 
 ## Repository layout
 
-- `src/chat/` — terminal `ask`, `chat`, and corpus-cache client.
+- `src/chat/` — chat engine, runtime configuration, and verified corpus-cache client.
+- `src/web/` — FastAPI endpoints and production static-file serving.
+- `frontend/` — React, TypeScript, and Vite browser client.
 - `src/corpus/` — source validation, chunking, release building, and Cloud Storage
   publication pipeline.
 - `src/eval/` — isolated experimental retrieval, embedding, configuration,
@@ -26,8 +28,8 @@ remain separate from the repository and require their own credentials where appl
 - `corpus.toml` — chat release configuration.
 - `evaluation.toml` — experimental evaluation inputs, embeddings, and output locations.
 
-The `chat`, `corpus`, and `eval` Python packages are built and tested together from the repository
-root. The project and CLI remain branded `HomeoRemedica`.
+The `chat`, `corpus`, `eval`, and `web` Python packages are built and tested together from the
+repository root. The project remains branded `HomeoRemedica`.
 
 ## Reproducible environment
 
@@ -39,15 +41,14 @@ uv sync --locked --all-groups
 make check
 ```
 
-`make check` runs the package build, Ruff, Pyright, and the complete test suite. CI runs the same
-gates.
+`make check` runs the package build, frontend build, Ruff, Pyright, and the complete test suite.
 
-## HomeoRemedica client
+## HomeoRemedica web client
 
-The HomeoRemedica client uses verified corpus releases from Google Cloud Storage, local SQLite FTS5 and
-`sqlite-vec` hybrid retrieval, OpenRouter for query embeddings, and Vertex AI for grounded answer
-generation. There is no browser application, account system, payment flow, persistent chat store, or
-HTTP endpoint. Interactive context is discarded when the command exits.
+The HomeoRemedica web client uses verified corpus releases from Google Cloud Storage, local SQLite
+FTS5 and `sqlite-vec` hybrid retrieval, OpenRouter for query embeddings, and Vertex AI for grounded
+answer generation. Chat history lives in the browser and can be cleared at any time; it is sent to
+the API only as context for the current request.
 
 ### Quick start
 
@@ -55,79 +56,44 @@ Requirements:
 
 - Python 3.14.
 - [uv](https://docs.astral.sh/uv/) 0.11.x.
+- Node.js and npm for the browser client.
 - An [OpenRouter](https://openrouter.ai/) API key for query embeddings.
 - Google Cloud Application Default Credentials with permission to call Vertex AI in your selected
   project.
-- Permission to read the configured corpus bucket when using `sync` against a hosted release.
+- Permission to read the configured corpus bucket for the startup corpus sync.
 
 Install dependencies and authenticate:
 
 ```sh
 uv sync --locked
+npm --prefix frontend ci
 gcloud auth application-default login
 ```
 
-Download and verify the active corpus release:
+Build the browser client and start the web server from the repository root:
 
 ```sh
-uv run homeoremedica sync
+npm --prefix frontend run build
+uv run homeoremedica-web
 ```
 
-Ask one question:
+The server listens on port `8000` by default and reads `PORT` when it is set. It initializes and
+verifies the active corpus release during startup, then serves the Vite build and the API from the
+same origin. For local frontend development, run the Python server in one terminal and:
 
 ```sh
-uv run homeoremedica --cached ask "How is Nux vomica described?"
+npm --prefix frontend run dev
 ```
 
-Start a conversation:
+The Vite development server proxies `/api` requests to `http://127.0.0.1:8000`.
 
-```sh
-uv run homeoremedica --cached chat
-```
-
-The sync command checks for a newer release and reuses unchanged artifacts. Use `--cached` before
-the subcommand to skip Cloud Storage and use the last verified local release. This is useful for
-subsequent questions without another corpus download after a successful sync; OpenRouter and Vertex
-AI still need network access for embeddings and generation.
-
-The repository includes the source dataset, but the chat client reads built SQLite release
-artifacts rather than the source JSON directly. You can use an accessible hosted release or run the
-evaluation, build, and publication pipeline against Google Cloud resources you control.
-
-The `homeoremedica` command is the canonical installed entry point.
-
-### Commands
-
-| Command | Purpose |
-| --- | --- |
-| `sync` | Download and verify the active corpus release. |
-| `ask "question"` | Answer one question and exit. |
-| `chat` | Run an interactive multi-turn conversation. |
-
-Common options go before the subcommand:
-
-```sh
-# Override the corpus project or cache location for one invocation.
-uv run homeoremedica --project homeoremedica --cache-dir ~/.cache/homeoremedica/corpus sync
-
-# Restrict retrieval to one or more books.
-uv run homeoremedica --cached ask --book kent-lectures "What is described?"
-uv run homeoremedica --cached chat --book clarke-MM --book boericke-MM
-```
-
-Valid book IDs are:
-
-- `clarke-MM`
-- `boericke-MM`
-- `kent-lectures`
-- `allen-nosodes`
-
-In interactive mode, `/clear` removes the current in-memory conversation context. `/exit`,
-`/quit`, or `Ctrl-D` leave the client.
+The repository includes the source dataset, but the web server reads built SQLite release artifacts
+rather than the source JSON directly. You can use an accessible hosted release or run the build and
+publication pipeline against Google Cloud resources you control.
 
 ### Configuration
 
-The CLI reads `RAG_*` environment variables and optional values from `.env` or `.env.local`.
+The web server reads `RAG_*` environment variables and optional values from `.env` or `.env.local`.
 Copy `.env.example` if you want a starting point:
 
 ```sh
@@ -145,14 +111,21 @@ cp .env.example .env
 | `RAG_MODEL` | `gemini-2.5-flash-lite` | Answer generation model. |
 | `RAG_MAX_OUTPUT_TOKENS` | `700` | Maximum generated answer size. |
 
-The CLI uses Google Application Default Credentials for generation and corpus storage. Do not put
-service-account private keys in `.env` or commit credential files.
+The web server uses Google Application Default Credentials for generation and corpus storage. Do not
+put service-account private keys in `.env` or commit credential files.
+
+The API has two browser-facing endpoints:
+
+| Endpoint | Purpose |
+| --- | --- |
+| `GET /api/books` | Return available book IDs, titles, and authors. |
+| `POST /api/chat` | Generate an answer from a message, optional history, and optional `bookIds`. |
 
 ### Retrieval and answer flow
 
 ```text
-terminal
-  -> chat.cli
+browser
+  -> web.app
       -> CorpusCache (verified local release)
           -> SQLite FTS5 + sqlite-vec hybrid search
       -> HybridChatModel
@@ -160,18 +133,19 @@ terminal
       -> answer and stable source IDs
 ```
 
-For every question:
+At startup, `web.app` builds one chat service and keeps it available for requests. For every
+question:
 
-1. The current message and recent in-process turns form a bounded retrieval query.
+1. The current message and recent browser turns form a bounded retrieval query.
 2. `qwen/qwen3-embedding-8b` embeds that query through OpenRouter using the dimensions declared by
    the corpus release. The client refuses to serve a corpus built with any other embedding model.
 3. FTS5 and vector search run across the selected books, then merge results with reciprocal-rank
    fusion.
 4. The eight highest-ranked excerpts are passed to `gemini-2.5-flash-lite`.
-5. The answer is printed with numbered citations and the corpus version that produced them.
+5. The API returns the answer, numbered citations, and the corpus version that produced them.
 
-`sync` validates the active pointer, manifest, object generations, sizes, SHA-256 digests, schema
-metadata, SQLite integrity, and vector dimensions before activating a release. An interrupted
+`sync_corpus` validates the active pointer, manifest, object generations, sizes, SHA-256 digests,
+schema metadata, SQLite integrity, and vector dimensions before activating a release. An interrupted
 download cannot replace the active cache.
 
 The generation instruction treats retrieved text and conversation turns as untrusted data. It
@@ -182,8 +156,8 @@ advice. For urgent or severe symptoms, consult qualified medical help.
 
 The complete release pipeline and its `dataset/` input are included in every clone. Source
 validation is fully local. Building requires an OpenRouter API key, and publication requires write
-access to the destination Storage bucket. The `sync`, `ask`, and `chat` commands do not read the
-source dataset directly; they use an accessible hosted release or an existing verified cache.
+access to the destination Storage bucket. The web server does not read the source dataset directly;
+it uses an accessible hosted release or an existing verified cache.
 
 The corpus pipeline reads the remedy-merged `dataset/combined.json` file, whose
 `remedy -> book -> section -> passages` structure is validated against the configured book mapping.
@@ -249,7 +223,7 @@ V9 reaches **24.57% Recall@8**, with validation recall increasing to **25.61%** 
 recall increasing from 21.76% to 23.43%. The [v9 comparison](benchmarks/results/v9-comparison.json) preserves
 per-query rankings; [experiment results](benchmarks/results/v9-experiments.json) also record rejected
 scoring and reranking approaches. This remains an exploratory benchmark comparison, and v9 still
-falls below the unchanged 80% experimental threshold. These versions change the evaluator; the terminal
+falls below the unchanged 80% experimental threshold. These versions change the evaluator; the web
 client's existing chunk-level RRF search and raw query embeddings are a separate path.
 
 Versioned benchmark results are immutable; rerunning the evaluator against an existing result
@@ -370,7 +344,7 @@ uv run --locked pytest
 uv run --locked pip-audit --skip-editable
 ```
 
-The test suite covers request bounds, prompt grounding, CLI output, interactive context handling,
+The test suite covers request bounds, prompt grounding, API responses and startup initialization,
 source validation, corpus conservation, chunking, hybrid retrieval, evaluation, artifact
 verification, publication fencing, and cache activation. Tests use fakes and synthetic SQLite
 artifacts; they do not require cloud credentials or a production corpus release.
