@@ -4,7 +4,6 @@ import argparse
 import json
 import sys
 from collections.abc import Sequence
-from dataclasses import replace
 from pathlib import Path
 
 from homeoremedica_corpus.builder import build_release
@@ -12,12 +11,6 @@ from homeoremedica_corpus.chunking import chunk_book, corpus_hash
 from homeoremedica_corpus.config import PipelineConfig, load_pipeline_config
 from homeoremedica_corpus.contracts import compatibility_from_artifact_spec
 from homeoremedica_corpus.embeddings import OpenRouterEmbeddingProvider
-from homeoremedica_corpus.evaluation import (
-    load_evaluation_dataset,
-    load_evaluation_gate,
-    record_evaluation,
-    run_dimension_evaluation,
-)
 from homeoremedica_corpus.publication import CorpusPublisher
 from homeoremedica_corpus.sources import load_combined_books
 from homeoremedica_corpus.storage import GoogleCloudObjectStore
@@ -46,15 +39,6 @@ def _parser() -> argparse.ArgumentParser:
         "validate", help="validate the combined corpus source and chunking"
     )
     validate.set_defaults(command=_validate)
-
-    evaluate = commands.add_parser("evaluate", help="compare configured embedding dimensions")
-    evaluate.add_argument(
-        "--workers",
-        type=_positive_int,
-        default=32,
-        help="maximum concurrent embedding requests (default: 32)",
-    )
-    evaluate.set_defaults(command=_evaluate)
 
     build = commands.add_parser("build", help="build all per-book SQLite artifacts")
     build.add_argument("corpus_version")
@@ -95,41 +79,8 @@ def _validate(config: PipelineConfig, _arguments: argparse.Namespace) -> int:
     return 0
 
 
-def _evaluate(config: PipelineConfig, arguments: argparse.Namespace) -> int:
-    _, chunks = _load_chunks(config)
-    dataset, dataset_digest = load_evaluation_dataset(config.evaluation_dataset)
-
-    def provider_for(dimensions: int) -> OpenRouterEmbeddingProvider:
-        return OpenRouterEmbeddingProvider(replace(config.embedding, dimensions=dimensions))
-
-    result = run_dimension_evaluation(
-        dataset,
-        chunks,
-        provider_for,
-        model=config.embedding.model,
-        model_input_limit=config.embedding.model_input_limit,
-        dimensions=config.evaluation_dimensions,
-        corpus_hash=corpus_hash(chunks),
-        dataset_sha256=dataset_digest,
-        embedding_cache_directory=config.config_path.parent / ".cache" / "evaluation",
-        workers=arguments.workers,
-        progress=lambda message: print(message, file=sys.stderr, flush=True),
-    )
-    gate = record_evaluation(config.evaluation_result, result)
-    _print_json(gate.model_dump(mode="json", by_alias=True))
-    return 0
-
-
 def _build(config: PipelineConfig, arguments: argparse.Namespace) -> int:
     books = load_combined_books(config.combined_dataset, config.books)
-    gate = load_evaluation_gate(config.evaluation_result)
-    _, dataset_digest = load_evaluation_dataset(config.evaluation_dataset)
-    if gate.dataset_sha256 != dataset_digest:
-        raise ValueError("evaluation result does not match the configured versioned dataset")
-    if gate.chosen_dimensions != config.embedding.dimensions:
-        raise ValueError(
-            "configured embedding dimensions do not match the smallest passing evaluation result"
-        )
     provider = OpenRouterEmbeddingProvider(config.embedding)
     release = build_release(
         books,
@@ -137,7 +88,6 @@ def _build(config: PipelineConfig, arguments: argparse.Namespace) -> int:
         output_root=config.output_directory,
         spec=config.artifact_spec(arguments.corpus_version),
         chunking=config.chunking,
-        evaluation=gate,
         manifest_schema_version=config.manifest_schema_version,
         embedding_workers=arguments.workers,
         progress=lambda message: print(message, file=sys.stderr, flush=True),

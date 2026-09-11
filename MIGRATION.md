@@ -34,11 +34,14 @@ On 2026-09-04 the project adopted open distribution for both its software and so
 repository contains the complete client and corpus-pipeline codebase, configuration, source corpus,
 evaluation fixtures, release tooling, and synthetic tests:
 
-- `src/homeoremedica_corpus/` contains source validation, chunking, evaluation, artifact building,
-  publication, and Cloud Storage adapters.
+- `src/homeoremedica_corpus/` contains source validation, chunking, artifact building, publication,
+  and Cloud Storage adapters.
+- `src/homeoremedica_evaluation/` contains isolated experimental retrieval, embeddings, contracts,
+  configuration, and result tooling.
 - `dataset/` contains the raw text and processed, sectioned JSON source data.
 - `evaluation/` contains versioned retrieval queries and immutable results.
-- `corpus.toml` defines the corpus, embedding, compatibility, and release contract.
+- `corpus.toml` defines the chat corpus, embedding, compatibility, and release contract.
+- `evaluation.toml` independently defines experimental inputs, embeddings, caches, and results.
 
 The software is licensed under MIT. The protectable compilation and processing contributions in
 `dataset/` are licensed under CC BY 4.0 with attribution to Rasagya Vatsal; public-domain source

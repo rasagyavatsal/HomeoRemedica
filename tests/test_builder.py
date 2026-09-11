@@ -76,6 +76,7 @@ def test_build_preflights_all_books_before_embedding_and_publishes_complete_dire
     descriptor = json.loads((release.release_directory / "build.json").read_text())
     assert descriptor["corpusVersion"] == "2026-08-14.test"
     assert {item["bookId"] for item in descriptor["books"]} == {"alpha", "beta"}
+    assert "evaluation" not in descriptor
 
 
 def test_failed_preflight_leaves_no_release_and_makes_no_embedding_calls(tmp_path: Path) -> None:

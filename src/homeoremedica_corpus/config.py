@@ -47,7 +47,6 @@ class _EmbeddingSettings(_Settings):
     model: str
     native_dimensions: int = Field(gt=0, le=4096)
     dimensions: int = Field(gt=0, le=4096)
-    evaluation_dimensions: tuple[int, ...]
     document_task_type: str
     query_task_type: str
     normalization: str
@@ -64,27 +63,7 @@ class _EmbeddingSettings(_Settings):
             )
         if self.dimensions > self.native_dimensions:
             raise ValueError("pinned dimensions cannot exceed the model's native dimensions")
-        if (
-            not self.evaluation_dimensions
-            or len(set(self.evaluation_dimensions)) != len(self.evaluation_dimensions)
-            or tuple(sorted(self.evaluation_dimensions)) != self.evaluation_dimensions
-            or any(
-                not 1 <= dimension <= self.native_dimensions
-                for dimension in self.evaluation_dimensions
-            )
-        ):
-            raise ValueError(
-                "evaluation_dimensions must be unique, ascending, and at most "
-                f"{self.native_dimensions}"
-            )
-        if self.dimensions not in self.evaluation_dimensions:
-            raise ValueError("pinned dimensions must be included in evaluation_dimensions")
         return self
-
-
-class _EvaluationSettings(_Settings):
-    dataset: str
-    result: str
 
 
 class _BookSettings(_Settings):
@@ -96,7 +75,6 @@ class _FileSettings(_Settings):
     corpus: _CorpusSettings
     chunking: _ChunkingSettings
     embedding: _EmbeddingSettings
-    evaluation: _EvaluationSettings
     books: dict[str, _BookSettings] = Field(min_length=1)
 
 
@@ -111,9 +89,6 @@ class PipelineConfig:
     sqlite_vec_version: str
     chunking: ChunkingPolicy
     embedding: EmbeddingSpec
-    evaluation_dimensions: tuple[int, ...]
-    evaluation_dataset: Path
-    evaluation_result: Path
     books: dict[str, BookDefinition]
 
     def artifact_spec(self, corpus_version: str, corpus_hash: str | None = None) -> ArtifactSpec:
@@ -163,9 +138,6 @@ def load_pipeline_config(path: Path = Path("corpus.toml")) -> PipelineConfig:
         sqlite_vec_version=settings.corpus.sqlite_vec_version,
         chunking=chunking,
         embedding=embedding,
-        evaluation_dimensions=settings.embedding.evaluation_dimensions,
-        evaluation_dataset=_resolve(root, settings.evaluation.dataset),
-        evaluation_result=_resolve(root, settings.evaluation.result),
         books=books,
     )
 

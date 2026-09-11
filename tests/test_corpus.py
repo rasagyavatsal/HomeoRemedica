@@ -118,7 +118,10 @@ def test_sync_rejects_a_manifest_object_outside_the_active_release(tmp_path: Pat
         cache.sync(source)
 
 
-def test_sync_opens_a_verified_release_and_searches_its_hybrid_index(tmp_path: Path) -> None:
+@pytest.mark.parametrize("manifest_schema_version", [1, 2])
+def test_sync_opens_a_verified_release_and_searches_its_hybrid_index(
+    tmp_path: Path, manifest_schema_version: int
+) -> None:
     books = []
     objects: dict[tuple[str, int | None], ObjectData] = {}
     for index, book_id in enumerate(sorted(EXPECTED_BOOK_IDS), start=1):
@@ -141,7 +144,7 @@ def test_sync_opens_a_verified_release_and_searches_its_hybrid_index(tmp_path: P
             name=object_name, generation=21 + index, content=artifact
         )
 
-    manifest = _json_bytes({
+    manifest_data = {
         "artifactSchemaVersion": 1,
         "books": books,
         "compatibility": {
@@ -157,7 +160,10 @@ def test_sync_opens_a_verified_release_and_searches_its_hybrid_index(tmp_path: P
         },
         "corpusHash": "b" * 64,
         "corpusVersion": "v1",
-        "evaluation": {
+        "manifestSchemaVersion": manifest_schema_version,
+    }
+    if manifest_schema_version == 1:
+        manifest_data["evaluation"] = {
             "chosenDimensions": 3,
             "corpusHash": "b" * 64,
             "datasetSha256": "c" * 64,
@@ -166,9 +172,8 @@ def test_sync_opens_a_verified_release_and_searches_its_hybrid_index(tmp_path: P
             "resultSha256": "d" * 64,
             "threshold": 0.8,
             "value": 1.0,
-        },
-        "manifestSchemaVersion": 1,
-    })
+        }
+    manifest = _json_bytes(manifest_data)
     pointer = _json_bytes({
         "corpusVersion": "v1",
         "manifestByteSize": len(manifest),

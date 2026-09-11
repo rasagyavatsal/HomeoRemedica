@@ -3,7 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from homeoremedica_corpus.chunking import ChunkingPolicy, chunk_book
-from homeoremedica_corpus.retrieval import (
+from homeoremedica_corpus.sources import Book, Remedy, Section
+from homeoremedica_evaluation.retrieval import (
     lexical_content_terms,
     normalized_remedy_name,
     rank_lexical_queries,
@@ -12,7 +13,6 @@ from homeoremedica_corpus.retrieval import (
     score_lexical_queries,
     score_semantic_queries,
 )
-from homeoremedica_corpus.sources import Book, Remedy, Section
 
 
 def test_remedy_identity_unifies_typography_but_not_different_remedies() -> None:

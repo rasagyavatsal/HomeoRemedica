@@ -19,13 +19,12 @@ from homeoremedica_corpus.chunking import (
     chunk_book,
     corpus_hash,
 )
-from homeoremedica_corpus.contracts import EvaluationGate
 from homeoremedica_corpus.embeddings import (
     EmbeddingProvider,
     embed_chunks,
     preflight_embedding_inputs,
 )
-from homeoremedica_corpus.sources import Book, CorpusValidationError
+from homeoremedica_corpus.sources import Book
 
 
 @dataclass(frozen=True, slots=True)
@@ -43,8 +42,7 @@ def build_release(
     output_root: Path,
     spec: ArtifactSpec,
     chunking: ChunkingPolicy = DEFAULT_CHUNKING_POLICY,
-    evaluation: EvaluationGate | None = None,
-    manifest_schema_version: int = 1,
+    manifest_schema_version: int = 2,
     embedding_workers: int = 1,
     progress: Callable[[str], None] | None = None,
 ) -> BuiltRelease:
@@ -60,11 +58,6 @@ def build_release(
     chunks_by_book = tuple((book, chunk_book(book, chunking)) for book in books)
     all_chunks = tuple(chunk for _, chunks in chunks_by_book for chunk in chunks)
     complete_hash = corpus_hash(all_chunks)
-    if evaluation is not None and evaluation.corpus_hash != complete_hash:
-        raise CorpusValidationError(
-            "retrieval evaluation is stale for this corpus "
-            f"(evaluated={evaluation.corpus_hash}, current={complete_hash})"
-        )
     resolved_spec = replace(spec, corpus_hash=complete_hash)
 
     preflight_embedding_inputs(
@@ -100,7 +93,6 @@ def build_release(
             resolved_spec,
             complete_hash,
             tuple(artifacts),
-            evaluation,
             manifest_schema_version,
         )
         (temporary_directory / "build.json").write_text(
@@ -141,7 +133,6 @@ def _build_descriptor(
     spec: ArtifactSpec,
     complete_hash: str,
     artifacts: tuple[BuiltArtifact, ...],
-    evaluation: EvaluationGate | None,
     manifest_schema_version: int,
 ) -> dict[str, object]:
     return {
@@ -173,8 +164,5 @@ def _build_descriptor(
         },
         "corpusHash": complete_hash,
         "corpusVersion": spec.corpus_version,
-        "evaluation": (
-            evaluation.model_dump(mode="json", by_alias=True) if evaluation is not None else None
-        ),
         "manifestSchemaVersion": manifest_schema_version,
     }

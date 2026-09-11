@@ -8,12 +8,12 @@ import json
 import math
 from pathlib import Path
 
-from homeoremedica_corpus import evaluation as evaluation
 from homeoremedica_corpus.chunking import corpus_hash
-from homeoremedica_corpus.cli import _load_chunks
-from homeoremedica_corpus.config import load_pipeline_config
-from homeoremedica_corpus.paths import evaluation_path
-from homeoremedica_corpus.retrieval import (
+from homeoremedica_evaluation import evaluation as evaluation
+from homeoremedica_evaluation.cli import _load_chunks
+from homeoremedica_evaluation.config import load_evaluation_config
+from homeoremedica_evaluation.paths import evaluation_path
+from homeoremedica_evaluation.retrieval import (
     DEFAULT_HYBRID_RETRIEVAL_POLICY,
     lexical_content_terms,
     normalized_remedy_name,
@@ -73,7 +73,7 @@ def main() -> None:
     )
     args = parser.parse_args()
     output = evaluation_path(args.output, ROOT, allow_cache=True)
-    config = load_pipeline_config(ROOT / "corpus.toml")
+    config = load_evaluation_config(ROOT / "evaluation.toml")
     _, chunks = _load_chunks(config)
     before, before_digest = evaluation.load_evaluation_dataset(ROOT / "evaluation/v7/queries.json")
     after, after_digest = evaluation.load_evaluation_dataset(ROOT / "evaluation/v8/queries.json")
