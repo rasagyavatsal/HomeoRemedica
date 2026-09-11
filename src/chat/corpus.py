@@ -17,7 +17,7 @@ import sqlite_vec
 from google.cloud import storage
 from pydantic import Field, model_validator
 
-from chat.chat import Contract, RetrievedSource
+from chat.chat import BookSummary, Contract, RetrievedSource
 
 
 class CorpusError(RuntimeError):
@@ -25,7 +25,7 @@ class CorpusError(RuntimeError):
 
 
 MAX_MANIFEST_BYTES = 1 * 1024 * 1024
-# Keep downloads bounded for a local terminal process. The source adapter
+# Keep downloads bounded for a local serving process. The source adapter
 # materializes one artifact before validation and SQLite may allocate
 # additional pages while opening it.
 MAX_ARTIFACT_BYTES = 128 * 1024 * 1024
@@ -357,6 +357,13 @@ class CorpusRelease:
     @property
     def book_ids(self) -> tuple[str, ...]:
         return tuple(book.book_id for book in self._manifest.books)
+
+    @property
+    def books(self) -> tuple[BookSummary, ...]:
+        return tuple(
+            BookSummary(book_id=book.book_id, title=book.title, author=book.author)
+            for book in self._manifest.books
+        )
 
     def search(
         self,

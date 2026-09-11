@@ -26,11 +26,11 @@ def _default_cache_dir() -> Path:
 
 
 class Settings(BaseSettings):
-    """Configuration for the local terminal client.
+    """Configuration for the local web service.
 
     Values can be passed as ``RAG_*`` environment variables or placed in a
     ``.env``/``.env.local`` file. Generation authentication is intentionally
-    left to Application Default Credentials instead of being stored by the CLI;
+    left to Application Default Credentials instead of being stored in settings;
     query embeddings authenticate with ``OPENROUTER_API_KEY``.
     """
 

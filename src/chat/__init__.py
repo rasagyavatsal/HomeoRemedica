@@ -1,5 +1,5 @@
-"""HomeoRemedica grounded terminal chat."""
+"""HomeoRemedica grounded chat engine."""
 
-from chat.chat import ChatRequest, ChatResponse, ChatService, ChatTurn
+from chat.chat import BookSummary, ChatRequest, ChatResponse, ChatService, ChatTurn
 
-__all__ = ["ChatRequest", "ChatResponse", "ChatService", "ChatTurn"]
+__all__ = ["BookSummary", "ChatRequest", "ChatResponse", "ChatService", "ChatTurn"]

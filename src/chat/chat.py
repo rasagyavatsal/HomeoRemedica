@@ -34,6 +34,12 @@ class ChatTurn(Contract):
         return value.strip()
 
 
+class BookSummary(Contract):
+    book_id: str
+    title: str
+    author: str | None = None
+
+
 MAX_HISTORY_TURNS = 20
 MAX_HISTORY_CHARS = 16_000
 MAX_BOOK_ID_CHARS = 64
@@ -110,6 +116,9 @@ class Corpus(Protocol):
     corpus_version: str
 
     @property
+    def books(self) -> tuple[BookSummary, ...]: ...
+
+    @property
     def model_input_limit(self) -> int: ...
 
     def search(
@@ -181,6 +190,10 @@ class ChatService:
     @property
     def model_name(self) -> str:
         return self._model.model
+
+    @property
+    def books(self) -> tuple[BookSummary, ...]:
+        return self._corpus.books
 
     def chat(self, request: ChatRequest) -> ChatResponse:
         retrieval_query = _retrieval_query(request)
