@@ -107,16 +107,6 @@ def _imports(path: Path) -> tuple[str, ...]:
     return tuple(imported)
 
 
-def main() -> int:
+def test_public_boundary() -> None:
     found = (*violations(), *pipeline_violations())
-    if not found:
-        print("Repository hygiene check is clean.")
-        return 0
-    print("Repository hygiene violations:")
-    for violation in found:
-        print(f"- {violation}")
-    return 1
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+    assert not found, "\n".join(found)

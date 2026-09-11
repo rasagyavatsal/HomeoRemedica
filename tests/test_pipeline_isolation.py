@@ -10,13 +10,8 @@ from eval.config import load_evaluation_config
 from eval.embeddings import (
     OpenRouterEmbeddingProvider as EvaluationEmbeddingProvider,
 )
-from scripts.check_public_boundary import pipeline_violations
 
 ROOT = Path(__file__).resolve().parents[1]
-
-
-def test_evaluation_is_outside_the_chat_release_dependency_graph() -> None:
-    assert pipeline_violations() == ()
 
 
 def test_evaluation_has_a_separate_command_surface() -> None:
