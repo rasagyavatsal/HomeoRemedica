@@ -54,10 +54,10 @@ def test_books_and_chat_endpoints_use_the_existing_service_contract(tmp_path: Pa
 
 def test_app_builds_the_service_during_startup(monkeypatch, tmp_path: Path) -> None:
     service = StubService()
-    calls: list[tuple[object, bool]] = []
+    calls: list[object] = []
 
-    def fake_build_service(settings, *, sync):
-        calls.append((settings, sync))
+    def fake_build_service(settings):
+        calls.append(settings)
         return service
 
     monkeypatch.setattr("web.app.build_service", fake_build_service)
@@ -66,7 +66,7 @@ def test_app_builds_the_service_during_startup(monkeypatch, tmp_path: Path) -> N
         pass
 
     assert len(calls) == 1
-    assert calls[0][1] is True
+    assert calls[0].__class__.__name__ == "Settings"
 
 
 def test_chat_endpoint_returns_a_client_error_for_an_unknown_book(tmp_path: Path) -> None:

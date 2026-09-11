@@ -69,11 +69,11 @@ def test_rejects_duplicate_evaluation_dimensions(tmp_path: Path) -> None:
 
 def test_rejects_evaluation_results_or_caches_in_release_output(tmp_path: Path) -> None:
     path = tmp_path / "evaluation.toml"
-    path.write_text(CONFIG.replace("benchmarks/results/v1.json", "output/releases/result.json"))
+    path.write_text(CONFIG.replace("benchmarks/results/v1.json", "artifacts/corpus/result.json"))
     with pytest.raises(ValueError, match="benchmark directory"):
         load_evaluation_config(path)
 
-    path.write_text(CONFIG.replace(".cache/benchmarks", "output/releases"))
+    path.write_text(CONFIG.replace(".cache/benchmarks", "artifacts/corpus"))
     with pytest.raises(ValueError, match=r"\.cache/benchmarks"):
         load_evaluation_config(path)
 

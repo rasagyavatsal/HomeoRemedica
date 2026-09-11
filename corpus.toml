@@ -1,6 +1,6 @@
 [corpus]
 combined_dataset = "dataset/combined.json"
-output_directory = "output/releases"
+output_directory = "artifacts/corpus"
 artifact_schema_version = 1
 manifest_schema_version = 2
 sqlite_version = "3.53.4"

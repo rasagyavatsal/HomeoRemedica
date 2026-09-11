@@ -55,7 +55,7 @@ def artifact_spec() -> ArtifactSpec:
     )
 
 
-def test_build_preflights_all_books_before_embedding_and_publishes_complete_directory(
+def test_build_preflights_all_books_and_activates_a_complete_local_release(
     tmp_path: Path,
 ) -> None:
     books = (book("alpha", "first"), book("beta", "second"))
@@ -73,10 +73,16 @@ def test_build_preflights_all_books_before_embedding_and_publishes_complete_dire
     assert release.release_directory == tmp_path / "output" / "2026-08-14.test"
     assert [artifact.book_id for artifact in release.artifacts] == ["alpha", "beta"]
     assert all(artifact.path.is_file() for artifact in release.artifacts)
-    descriptor = json.loads((release.release_directory / "build.json").read_text())
-    assert descriptor["corpusVersion"] == "2026-08-14.test"
-    assert {item["bookId"] for item in descriptor["books"]} == {"alpha", "beta"}
-    assert "evaluation" not in descriptor
+    manifest = json.loads((release.release_directory / "manifest.json").read_text())
+    assert manifest["corpusVersion"] == "2026-08-14.test"
+    assert {item["bookId"] for item in manifest["books"]} == {"alpha", "beta"}
+    assert {item["filename"] for item in manifest["books"]} == {
+        "books/alpha.sqlite",
+        "books/beta.sqlite",
+    }
+    active = json.loads((tmp_path / "output" / "active.json").read_text())
+    assert active["corpusVersion"] == "2026-08-14.test"
+    assert active["manifestPath"] == "2026-08-14.test/manifest.json"
 
 
 def test_failed_preflight_leaves_no_release_and_makes_no_embedding_calls(tmp_path: Path) -> None:

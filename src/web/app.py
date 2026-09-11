@@ -28,7 +28,7 @@ def create_app(
         application.state.service = (
             service
             if service is not None
-            else build_service(settings if settings is not None else Settings(), sync=True)
+            else build_service(settings if settings is not None else Settings())
         )
         yield
 
