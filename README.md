@@ -20,7 +20,9 @@ remain separate from the repository and require their own credentials where appl
 - `dataset/raw-text/` — source text for the four books.
 - `dataset/processed/` — validated per-book sectioned JSON sources.
 - `dataset/combined.json` — the remedy-merged corpus file consumed by the pipeline.
-- `evaluation/` — versioned retrieval queries and immutable evaluation results.
+- [`benchmarks/queries/`](benchmarks/README.md) — three independently versioned retrieval-query
+  datasets.
+- `benchmarks/results/` — nine immutable results with their comparison and experiment records.
 - `corpus.toml` — chat release configuration.
 - `evaluation.toml` — experimental evaluation inputs, embeddings, and output locations.
 
@@ -203,10 +205,11 @@ uv run --locked homeoremedica-corpus validate
 
 ## Experimental retrieval evaluation
 
-The isolated evaluator is configured by `evaluation.toml`. It reads
-`evaluation/v9/queries.json` at depth `k = 8` and writes the immutable
-`evaluation/v9/result.json` experiment result. It embeds the 2,117 symptom strings from 500 clinical
-cases separately, with a retrieval instruction prepended to each semantic query. Per-symptom semantic and
+The isolated evaluator is configured by `evaluation.toml`. It combines the query-only
+`benchmarks/queries/v3.json` dataset with the configured v9 retrieval settings at depth `k = 8`,
+and writes the immutable `benchmarks/results/v9.json` experiment result. It embeds the 2,117 symptom
+strings from 500 clinical cases separately, with a retrieval instruction prepended to each semantic
+query. Per-symptom semantic and
 lexical candidates are min-max normalized from their cosine-similarity and BM25 relevance scores.
 The normalized scores are squared to suppress weak tail matches and summed by the corpus-wide
 normalized remedy identity across symptoms and retrieval channels, so strong evidence from different
@@ -214,6 +217,11 @@ chunks and books reinforces one remedy. The cases carry remedy-level relevance t
 `remedyName`): the book validates that the labelled source exists, while the remedy name is the
 scored intent and can be satisfied by evidence from any book. Chunk and book-remedy ranking remain
 available with legacy reciprocal-rank fusion for older evaluation datasets.
+
+The three query datasets are versioned independently from the nine results: query v1 supplies result
+v1–v2, query v2 supplies result v3, and query v3 supplies result v4–v9. Query files contain only
+their version, queries, and relevance labels. Each result records `queryVersion` and `querySha256`,
+plus the SHA-256 of its former combined query/settings file as `historicalDatasetSha256`.
 
 V8 preserves all v7 queries, labels, candidate limits, and the 80% quality threshold. It normalizes
 global remedy identities using Unicode NFKC, case folding, and collapsed whitespace, so names such
@@ -224,27 +232,27 @@ direction words, and modalities such as `not`, `before`, `after`, `down`, `bette
 Semantic queries retain every word. Older datasets default to exact identity and raw lexical input.
 
 V9 retains v8's queries, labels, lexical search, document embeddings, fusion settings, and quality
-threshold. It uses Qwen's documented `Instruct: ...\nQuery:...` query format with the task recorded
-in `semanticQueryInstruction` in both the dataset and result. This conditions the embedding on
+threshold. It uses Qwen's documented `Instruct: ...\nQuery:...` query format with the task configured
+in `evaluation.toml` and recorded as `semanticQueryInstruction` in the result. This conditions the embedding on
 retrieving matching materia medica passages. The original symptom text remains intact after the
-prefix, and lexical queries receive no instruction. Datasets without this field keep raw query
+prefix, and lexical queries receive no instruction. Configurations without this field keep raw query
 embeddings. See the [Qwen model card](https://huggingface.co/Qwen/Qwen3-Embedding-8B#usage).
 
 The recorded v8 Recall@8 is **20.77%**, compared with v7's **14.40%**. Scoring the original v7 results
 with normalized labels alone gives **16.30%**; the remaining gain reflects changed retrieval and
 evidence aggregation. The detailed
-[comparison](evaluation/v8/comparison.json) includes per-query rankings, an identity-only ablation,
+[comparison](benchmarks/results/v8-comparison.json) includes per-query rankings, an identity-only ablation,
 and an exploratory split with no shared exact symptom text between development and validation.
 Validation recall rises from 17.82% (v7 with normalized labels) to 19.86% in v8.
 
 V9 reaches **24.57% Recall@8**, with validation recall increasing to **25.61%** and development
-recall increasing from 21.76% to 23.43%. The [v9 comparison](evaluation/v9/comparison.json) preserves
-per-query rankings; [experiment results](evaluation/v9/experiments.json) also record rejected
+recall increasing from 21.76% to 23.43%. The [v9 comparison](benchmarks/results/v9-comparison.json) preserves
+per-query rankings; [experiment results](benchmarks/results/v9-experiments.json) also record rejected
 scoring and reranking approaches. This remains an exploratory benchmark comparison, and v9 still
 falls below the unchanged 80% experimental threshold. These versions change the evaluator; the terminal
 client's existing chunk-level RRF search and raw query embeddings are a separate path.
 
-Versioned evaluation results are immutable; rerunning the evaluator against an existing result
+Versioned benchmark results are immutable; rerunning the evaluator against an existing result
 refuses to overwrite it.
 
 ```sh
@@ -258,7 +266,7 @@ embeds contextualized symptom chunks and instructed query symptoms, and retrieve
 candidates per symptom from semantic and Porter-stemmed FTS5
 search. The ranked remedy identity does not replace the underlying chunk, book, section, or passage
 metadata used for evidence and citations. Inputs are sent in bounded batches. Native vectors and
-scored candidate rankings are cached under `.cache/evaluation/`, keyed by the corpus, model,
+scored candidate rankings are cached under `.cache/benchmarks/`, keyed by the corpus, model,
 dimensions, retrieval policy, and complete ordered inputs. Later fusion experiments can therefore
 reuse the paid embeddings and skip the exhaustive vector scan.
 
