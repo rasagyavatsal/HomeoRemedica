@@ -7,5 +7,5 @@ Report a suspected exposure privately through GitHub's private vulnerability rep
 repository. Include only the minimum information needed to locate the problem and revoke any
 affected credential immediately.
 
-The source dataset is public. Public access to this repository does not grant access to the
-HomeoRemedica service, Google Cloud project, or any non-public Storage bucket.
+The source dataset is public. Keep `OPENROUTER_API_KEY` and `ZAI_API_KEY` out of commits and use the
+ignored `.env` file or the process environment for local development.

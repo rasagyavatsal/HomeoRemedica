@@ -9,7 +9,7 @@ from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from chat.chat import ChatService
-from chat.corpus import CorpusCache, CorpusRelease, GoogleCloudCorpusSource
+from chat.corpus import CorpusRelease, load_local_corpus
 from corpus.embeddings import (
     QWEN3_EMBEDDING_MODEL,
     EmbeddingSpec,
@@ -21,11 +21,8 @@ ZAI_API_KEY_ENV = "ZAI_API_KEY"
 ZAI_REQUEST_TIMEOUT = 60.0
 
 
-def _default_cache_dir() -> Path:
-    cache_home = os.environ.get("XDG_CACHE_HOME")
-    if cache_home:
-        return Path(cache_home).expanduser() / "homeoremedica" / "corpus"
-    return Path.home() / ".cache" / "homeoremedica" / "corpus"
+def _default_corpus_dir() -> Path:
+    return Path("artifacts/corpus")
 
 
 class Settings(BaseSettings):
@@ -42,18 +39,15 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    project: str = "homeoremedica"
-    bucket: str = "homeoremedica-private-remedies"
-    corpus_prefix: str = "corpora"
-    cache_dir: Path = Field(default_factory=_default_cache_dir)
+    corpus_dir: Path = Field(default_factory=_default_corpus_dir)
     model: str = "glm-5.3-flash"
     max_output_tokens: int = Field(default=700, gt=0, le=4_096)
     zai_api_key: str | None = Field(default=None, validation_alias=ZAI_API_KEY_ENV)
     openrouter_api_key: str | None = Field(default=None, validation_alias="OPENROUTER_API_KEY")
 
-    @field_validator("cache_dir", mode="before")
+    @field_validator("corpus_dir", mode="before")
     @classmethod
-    def expand_cache_dir(cls, value: str | os.PathLike[str]) -> Path:
+    def expand_corpus_dir(cls, value: str | os.PathLike[str]) -> Path:
         return Path(value).expanduser()
 
 
@@ -197,14 +191,13 @@ def _resolve_zai_api_key(api_key: str | None) -> str | None:
     return None
 
 
-def build_service(settings: Settings, *, sync: bool = True) -> ChatService:
-    cache = CorpusCache(settings.cache_dir, prefix=settings.corpus_prefix)
-    corpus = sync_corpus(settings) if sync else cache.open_cached()
+def build_service(settings: Settings) -> ChatService:
+    corpus = load_corpus(settings)
     embedding_model = corpus.embedding_model
     if embedding_model != QWEN3_EMBEDDING_MODEL:
         raise ValueError(
             f"corpus was built with {embedding_model}; this client embeds queries with "
-            f"{QWEN3_EMBEDDING_MODEL}. Sync a corpus release built with the supported model."
+            f"{QWEN3_EMBEDDING_MODEL}. Build or point RAG_CORPUS_DIR at a supported release."
         )
     model = HybridChatModel(
         model=settings.model,
@@ -222,7 +215,6 @@ def build_service(settings: Settings, *, sync: bool = True) -> ChatService:
     )
 
 
-def sync_corpus(settings: Settings) -> CorpusRelease:
-    return CorpusCache(settings.cache_dir, prefix=settings.corpus_prefix).sync(
-        GoogleCloudCorpusSource(settings.bucket, project=settings.project)
-    )
+def load_corpus(settings: Settings) -> CorpusRelease:
+    """Load and verify the active local release used by the web service."""
+    return load_local_corpus(settings.corpus_dir)

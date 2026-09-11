@@ -10,6 +10,7 @@ MAX_TRACKED_FILE_BYTES = 8_000_000
 LARGE_SOURCE_FILES = {PurePosixPath("dataset/combined.json")}
 FORBIDDEN_ROOTS = {
     "build",
+    "artifacts",
     "corpora",
     "dist",
     "output",

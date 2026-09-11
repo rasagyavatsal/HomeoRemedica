@@ -7,16 +7,14 @@ include stable source IDs. The output is a study reference, not medical advice.
 
 The software is available under the MIT License. The raw and processed corpus under `dataset/` is
 included in the repository and its original compilation and processing are available under the
-Creative Commons Attribution 4.0 International License (CC BY 4.0). Hosted Google Cloud resources
-remain separate from the repository and require their own credentials where applicable.
+Creative Commons Attribution 4.0 International License (CC BY 4.0).
 
 ## Repository layout
 
-- `src/chat/` — chat engine, runtime configuration, and verified corpus-cache client.
+- `src/chat/` — chat engine, runtime configuration, and verified local-corpus client.
 - `src/web/` — FastAPI endpoints and production static-file serving.
 - `frontend/` — React, TypeScript, and Vite browser client.
-- `src/corpus/` — source validation, chunking, release building, and Cloud Storage
-  publication pipeline.
+- `src/corpus/` — source validation, chunking, and local SQLite release building.
 - `src/eval/` — isolated experimental retrieval, embedding, configuration,
   contracts, and result tooling.
 - `dataset/raw-text/` — source text for the four books.
@@ -45,10 +43,10 @@ make check
 
 ## HomeoRemedica web client
 
-The HomeoRemedica web client uses verified corpus releases from Google Cloud Storage, local SQLite
-FTS5 and `sqlite-vec` hybrid retrieval, OpenRouter for query embeddings, and Z.AI for grounded
-answer generation. Chat history lives in the browser and can be cleared at any time; it is sent to
-the API only as context for the current request.
+The HomeoRemedica web client uses a verified local SQLite corpus release, SQLite FTS5 and
+`sqlite-vec` hybrid retrieval, OpenRouter for query embeddings, and Z.AI for grounded answer
+generation. Chat history lives in the browser and can be cleared at any time; it is sent to the API
+only as context for the current request.
 
 ### Quick start
 
@@ -59,14 +57,19 @@ Requirements:
 - Node.js and npm for the browser client.
 - An [OpenRouter](https://openrouter.ai/) API key for query embeddings.
 - A [Z.AI](https://z.ai/) API key for grounded answer generation.
-- Google Cloud Application Default Credentials with permission to read the configured corpus bucket.
 
-Install dependencies and authenticate:
+Install dependencies:
 
 ```sh
 uv sync --locked
 npm --prefix frontend ci
-gcloud auth application-default login
+```
+
+Build and activate the local corpus release:
+
+```sh
+export OPENROUTER_API_KEY=... # or put it in .env
+uv run --locked homeoremedica-corpus build 2026-09-11.v1
 ```
 
 Build the browser client and start the web server from the repository root:
@@ -87,8 +90,8 @@ npm --prefix frontend run dev
 The Vite development server proxies `/api` requests to `http://127.0.0.1:8000`.
 
 The repository includes the source dataset, but the web server reads built SQLite release artifacts
-rather than the source JSON directly. You can use an accessible hosted release or run the build and
-publication pipeline against Google Cloud resources you control.
+rather than the source JSON directly. Build a release before starting the server, or point
+`RAG_CORPUS_DIR` at a directory containing an existing local release.
 
 ### Configuration
 
@@ -103,15 +106,13 @@ cp .env.example .env
 | --- | --- | --- |
 | `OPENROUTER_API_KEY` | — | OpenRouter key used for Qwen3 query and corpus embeddings. |
 | `ZAI_API_KEY` | — | Z.AI key used for GLM-5.3-Flash answer generation. |
-| `RAG_PROJECT` | `homeoremedica` | Google Cloud project used for corpus storage. |
-| `RAG_BUCKET` | `homeoremedica-private-remedies` | Corpus artifact bucket. |
-| `RAG_CORPUS_PREFIX` | `corpora` | Release prefix inside the bucket. |
-| `RAG_CACHE_DIR` | `~/.cache/homeoremedica/corpus` | Local verified release cache. |
+| `RAG_CORPUS_DIR` | `artifacts/corpus` | Directory containing `active.json` and local releases. |
 | `RAG_MODEL` | `glm-5.3-flash` | Answer generation model. |
 | `RAG_MAX_OUTPUT_TOKENS` | `700` | Maximum generated answer size. |
 
-The web server uses Google Application Default Credentials for corpus storage and `ZAI_API_KEY` for
-generation. Do not commit service-account private keys, API keys, or credential files.
+The web server verifies `active.json`, its manifest, every artifact digest, SQLite integrity, vector
+dimensions, and release metadata during startup. Keep API keys in the environment or an ignored
+`.env` file.
 
 The API has two browser-facing endpoints:
 
@@ -125,7 +126,7 @@ The API has two browser-facing endpoints:
 ```text
 browser
   -> web.app
-      -> CorpusCache (verified local release)
+      -> LocalCorpus (verified local release from RAG_CORPUS_DIR)
           -> SQLite FTS5 + sqlite-vec hybrid search
       -> HybridChatModel
           -> OpenRouter Qwen3 query embedding + Z.AI GLM-5.3-Flash grounded answer
@@ -144,9 +145,10 @@ question:
    chat completion API.
 5. The API returns the answer, numbered citations, and the corpus version that produced them.
 
-`sync_corpus` validates the active pointer, manifest, object generations, sizes, SHA-256 digests,
-schema metadata, SQLite integrity, and vector dimensions before activating a release. An interrupted
-download cannot replace the active cache.
+The active pointer identifies a versioned manifest by relative path, size, and SHA-256 digest. The
+manifest identifies every local SQLite artifact and records its size, digest, source hash, schema,
+embedding, SQLite, and `sqlite-vec` compatibility fields. A build exposes `active.json` only after
+the complete release has been verified.
 
 The generation instruction treats retrieved text and conversation turns as untrusted data. It
 requires citations, avoids unsupported claims, and refuses diagnosis, prescribing, and dosage
@@ -155,9 +157,8 @@ advice. For urgent or severe symptoms, consult qualified medical help.
 ## Corpus release pipeline
 
 The complete release pipeline and its `dataset/` input are included in every clone. Source
-validation is fully local. Building requires an OpenRouter API key, and publication requires write
-access to the destination Storage bucket. The web server does not read the source dataset directly;
-it uses an accessible hosted release or an existing verified cache.
+validation is fully local. Building requires an OpenRouter API key. The web server does not read the
+source dataset directly; it uses the verified local release selected by `active.json`.
 
 The corpus pipeline reads the remedy-merged `dataset/combined.json` file, whose
 `remedy -> book -> section -> passages` structure is validated against the configured book mapping.
@@ -165,11 +166,11 @@ It validates the complete corpus, conserves every passage, treats each passage a
 chunk, generates OpenRouter Qwen3 embeddings, and writes one independently searchable SQLite
 artifact per book. Each document embedding keeps the current `Book`, `Remedy`, `Section`, and
 `Text` context prefix. A release becomes visible to consumers only after every artifact and its
-immutable manifest have been uploaded and verified.
+immutable manifest have been written and verified.
 
 ### Validate sources locally
 
-This command needs no cloud credentials. It checks that `dataset/combined.json` matches the
+This command needs no API credentials. It checks that `dataset/combined.json` matches the
 configured book mapping, validates the remedy-merged sectioned schema, and reports book, passage,
 chunk, and corpus-hash counts. Symlinked source files are rejected.
 
@@ -269,7 +270,7 @@ It is never overwritten. Evaluation results and caches are not release inputs. S
 [evaluation promotion](docs/evaluation-promotion.md) for the separately tested process that moves a
 successful experiment into chat.
 
-## Build and publish chat releases
+## Build local chat releases
 
 ### Build a complete release
 
@@ -288,44 +289,26 @@ artifact creation. Token counting and embeddings use 32 bounded workers by defau
 `--workers` to lower concurrency for a more restrictive OpenRouter quota. Requests retry
 transient failures with exponential backoff.
 
-The complete local release appears atomically under `output/releases/2026-08-14.v1/` and contains:
+The complete local release appears atomically under `artifacts/corpus/2026-08-14.v1/` and contains:
 
 - `books/<book-id>.sqlite` for every configured processed book;
-- `build.json` with local sizes, SHA-256 digests, source hashes, and compatibility fields.
+- `manifest.json` with local sizes, SHA-256 digests, source hashes, and compatibility fields.
+
+The corpus root also contains `active.json`, which points to the newly built release. The pointer is
+updated atomically after all books and the manifest pass validation.
 
 Each database contains immutable chunk metadata and source text, an FTS5 index, a cosine
 `sqlite-vec` index, and artifact metadata. The builder validates SQLite integrity, FTS lookup,
 vector lookup, counts, versions, dimensions, normalization, and exact source-derived rows.
 
-### Publish and activate
+To activate an existing release after verifying it, use the local release helper:
 
 ```sh
-uv run --locked homeoremedica-corpus publish 2026-08-14.v1 \
-  --bucket YOUR_CORPUS_BUCKET
+uv run --locked python -c \
+  'from pathlib import Path; from corpus.builder import activate_release; activate_release(Path("artifacts/corpus"), "2026-08-14.v1")'
 ```
 
-Artifacts are uploaded to unique `corpora/<corpus-version>/books/` objects with the Cloud Storage
-create-only generation precondition. The publisher downloads and SHA-256-verifies every exact
-object generation, creates an immutable manifest, verifies the complete remote release again, and
-only then replaces `corpora/active.json`. The pointer update uses the generation captured before
-staging, so a concurrent publisher wins at most once; a loser cannot overwrite the newer pointer.
-Failed staging can leave unreachable immutable objects but cannot expose a partial corpus.
-
-The active pointer identifies the manifest by object name, generation, byte size, and digest. The
-manifest identifies every book artifact by object name and generation and records all embedding,
-schema, SQLite, `sqlite-vec`, and source compatibility fields.
-
-### Roll back
-
-Rollback only repoints the active pointer to an already verified immutable manifest:
-
-```sh
-uv run --locked homeoremedica-corpus rollback 2026-08-14.previous \
-  --bucket YOUR_CORPUS_BUCKET
-```
-
-There is intentionally no deletion or overwrite command. Historical manifests and book artifacts
-remain addressable while saved conversations may reference their corpus version.
+Historical releases remain addressable while saved conversations may reference their corpus version.
 
 ## Development
 
@@ -346,16 +329,14 @@ uv run --locked pip-audit --skip-editable
 
 The test suite covers request bounds, prompt grounding, API responses and startup initialization,
 source validation, corpus conservation, chunking, hybrid retrieval, evaluation, artifact
-verification, publication fencing, and cache activation. Tests use fakes and synthetic SQLite
-artifacts; they do not require cloud credentials or a production corpus release.
+verification, local release activation, and active-pointer validation. Tests use fakes and synthetic
+SQLite artifacts; they do not require API credentials or a production corpus release.
 
 ## Data and artifact distribution
 
 The raw text and processed source corpus are included in this repository. Generated SQLite release
-artifacts remain ignored because they are reproducible build outputs and are published separately
-to a configured Storage bucket. A bucket's access policy is independent of the open licenses in
-this repository. Do not commit credentials, service-account keys, signed object URLs, local caches,
-or generated release artifacts.
+artifacts remain ignored because they are reproducible build outputs. Do not commit API keys,
+credential files, local caches, or generated release artifacts.
 
 ## Licensing
 

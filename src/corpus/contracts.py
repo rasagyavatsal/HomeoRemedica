@@ -8,6 +8,9 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from corpus.artifacts import ArtifactSpec
 
+_SAFE_PATH_COMPONENT = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
+_SHA256 = re.compile(r"[0-9a-f]{64}\Z")
+
 
 def _camel_case(value: str) -> str:
     first, *rest = value.split("_")
@@ -24,50 +27,33 @@ class Contract(BaseModel):
 
 
 class Compatibility(Contract):
-    embedding_model: str
+    embedding_model: str = Field(min_length=1, max_length=128)
     embedding_dimensions: int = Field(gt=0, le=4096)
-    document_task_type: str
-    query_task_type: str
-    embedding_normalization: str
-    distance_function: str
-    model_input_limit: int = Field(gt=0)
-    sqlite_version: str
-    sqlite_vec_version: str
+    document_task_type: str = Field(min_length=1, max_length=128)
+    query_task_type: str = Field(min_length=1, max_length=128)
+    embedding_normalization: str = Field(min_length=1, max_length=32)
+    distance_function: str = Field(min_length=1, max_length=32)
+    model_input_limit: int = Field(gt=0, le=100_000)
+    sqlite_version: str = Field(min_length=1, max_length=32)
+    sqlite_vec_version: str = Field(min_length=1, max_length=32)
 
 
-class LegacyEvaluationGate(Contract):
-    dataset_version: str
-    dataset_sha256: str
-    corpus_hash: str
-    result_sha256: str
-    metric: str
-    threshold: float = Field(ge=0)
-    value: float = Field(ge=0)
-    chosen_dimensions: int = Field(gt=0, le=4096)
+class PublishedBook(Contract):
+    """The local file and source metadata for one release book."""
 
-    @model_validator(mode="after")
-    def validate_gate(self) -> LegacyEvaluationGate:
-        _validate_digest(self.dataset_sha256, "evaluation dataset_sha256")
-        _validate_digest(self.corpus_hash, "evaluation corpus_hash")
-        _validate_digest(self.result_sha256, "evaluation result_sha256")
-        if self.value < self.threshold:
-            raise ValueError("evaluation quality result does not meet its threshold")
-        return self
-
-
-class BuildBook(Contract):
-    book_id: str
-    title: str
-    author: str | None
-    filename: str
-    byte_size: int = Field(gt=0)
+    book_id: str = Field(min_length=1, max_length=128)
+    title: str = Field(min_length=1, max_length=512)
+    author: str | None = Field(default=None, max_length=256)
+    filename: str = Field(min_length=1, max_length=256)
+    byte_size: int = Field(gt=0, le=4 * 1024 * 1024 * 1024)
     sha256: str
     source_sha256: str
-    chunk_count: int = Field(gt=0)
-    passage_count: int = Field(gt=0)
+    chunk_count: int = Field(gt=0, le=1_000_000)
+    passage_count: int = Field(gt=0, le=1_000_000)
 
     @model_validator(mode="after")
-    def validate_identity(self) -> BuildBook:
+    def validate_identity(self) -> PublishedBook:
+        _require_safe_path_component(self.book_id, "book ID")
         if self.filename != f"books/{self.book_id}.sqlite":
             raise ValueError("book filename must be derived from its book ID")
         _validate_digest(self.sha256, "book sha256")
@@ -75,75 +61,53 @@ class BuildBook(Contract):
         return self
 
 
-class BuildDescriptor(Contract):
-    manifest_schema_version: int = Field(gt=0)
-    artifact_schema_version: int = Field(gt=0)
-    corpus_version: str
-    corpus_hash: str
-    compatibility: Compatibility
-    legacy_evaluation: LegacyEvaluationGate | None = Field(
-        default=None, alias="evaluation", exclude=True
-    )
-    books: tuple[BuildBook, ...] = Field(min_length=1)
-
-    @model_validator(mode="after")
-    def validate_release(self) -> BuildDescriptor:
-        _validate_digest(self.corpus_hash, "corpus hash")
-        _validate_unique_books(self.books)
-        return self
-
-
-class PublishedBook(Contract):
-    book_id: str
-    title: str
-    author: str | None
-    object: str
-    generation: int = Field(gt=0)
-    byte_size: int = Field(gt=0)
-    sha256: str
-    source_sha256: str
-    chunk_count: int = Field(gt=0)
-    passage_count: int = Field(gt=0)
-
-    @model_validator(mode="after")
-    def validate_digests(self) -> PublishedBook:
-        _validate_digest(self.sha256, "book sha256")
-        _validate_digest(self.source_sha256, "source sha256")
-        return self
-
-
 class ReleaseManifest(Contract):
+    """The immutable compatibility and file inventory for one local release."""
+
     manifest_schema_version: int = Field(gt=0)
     artifact_schema_version: int = Field(gt=0)
-    corpus_version: str
+    corpus_version: str = Field(min_length=1, max_length=128)
     corpus_hash: str
     compatibility: Compatibility
-    legacy_evaluation: LegacyEvaluationGate | None = Field(
-        default=None, alias="evaluation", exclude=True
-    )
-    books: tuple[PublishedBook, ...] = Field(min_length=1)
+    books: tuple[PublishedBook, ...] = Field(min_length=1, max_length=16)
 
     @model_validator(mode="after")
     def validate_release(self) -> ReleaseManifest:
+        _require_safe_path_component(self.corpus_version, "corpus version")
+        if self.manifest_schema_version not in {1, 2}:
+            raise ValueError("unsupported manifest schema version")
+        if self.artifact_schema_version != 1:
+            raise ValueError("unsupported artifact schema version")
         _validate_digest(self.corpus_hash, "corpus hash")
-        _validate_unique_books(self.books)
-        if self.manifest_schema_version == 1 and self.legacy_evaluation is None:
-            raise ValueError("schema 1 release manifest requires legacy evaluation metadata")
+        book_ids = [book.book_id for book in self.books]
+        if len(set(book_ids)) != len(book_ids):
+            raise ValueError("release contains duplicate book IDs")
         return self
 
 
 class ActivePointer(Contract):
+    """The small atomically replaced pointer at the corpus root."""
+
     pointer_schema_version: int = 1
-    corpus_version: str
-    manifest_object: str
-    manifest_generation: int = Field(gt=0)
-    manifest_byte_size: int = Field(gt=0)
+    corpus_version: str = Field(min_length=1, max_length=128)
+    manifest_path: str = Field(min_length=1, max_length=256)
+    manifest_byte_size: int = Field(gt=0, le=1 * 1024 * 1024)
     manifest_sha256: str
 
     @model_validator(mode="after")
-    def validate_digest(self) -> ActivePointer:
+    def validate_pointer(self) -> ActivePointer:
+        _require_safe_path_component(self.corpus_version, "corpus version")
+        if self.pointer_schema_version != 1:
+            raise ValueError("unsupported active pointer schema version")
+        if self.manifest_path != f"{self.corpus_version}/manifest.json":
+            raise ValueError("manifest path must point inside the active release")
         _validate_digest(self.manifest_sha256, "manifest sha256")
         return self
+
+
+# The builder used this name before releases became local. Keep the alias for
+# callers that only need the release-book schema.
+BuildBook = PublishedBook
 
 
 def compatibility_from_artifact_spec(spec: ArtifactSpec) -> Compatibility:
@@ -168,12 +132,11 @@ def canonical_json_bytes(model: BaseModel | dict[str, Any]) -> bytes:
     ).encode("utf-8")
 
 
+def _require_safe_path_component(value: str, label: str) -> None:
+    if not _SAFE_PATH_COMPONENT.fullmatch(value):
+        raise ValueError(f"{label} must be a safe path component")
+
+
 def _validate_digest(value: str, name: str) -> None:
-    if not re.fullmatch(r"[0-9a-f]{64}", value):
+    if not _SHA256.fullmatch(value):
         raise ValueError(f"{name} must be a lowercase SHA-256 digest")
-
-
-def _validate_unique_books(books: tuple[BuildBook, ...] | tuple[PublishedBook, ...]) -> None:
-    book_ids = [book.book_id for book in books]
-    if len(set(book_ids)) != len(book_ids):
-        raise ValueError("release contains duplicate book IDs")

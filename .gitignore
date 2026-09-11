@@ -26,6 +26,7 @@ htmlcov/
 dist/
 build/
 output/
+artifacts/corpus/
 *.egg-info/
 *.tsbuildinfo
 

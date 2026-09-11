@@ -14,15 +14,14 @@ engine and corpus runtime.
 
 ### Kept and promoted
 
-- The verified corpus release format and cache safety checks.
+- The verified corpus release format and local safety checks.
 - SQLite FTS5 and `sqlite-vec` hybrid retrieval.
-- OpenRouter query embeddings and Vertex AI grounded answer generation.
+- OpenRouter query embeddings and Z.AI grounded answer generation.
 - The corpus pipeline and isolated evaluation tools.
 - The React/Vite client, FastAPI API, and same-origin static serving.
 
 Chat turns are held in browser memory only. Clear chat removes that context, and no conversation
-data is written. The web service automatically writes only verified corpus artifacts to the local
-cache.
+data is written. The web service reads only verified corpus artifacts from `RAG_CORPUS_DIR`.
 
 ## Open dataset distribution
 
@@ -30,11 +29,10 @@ On 2026-09-04 the project adopted open distribution for both its software and so
 repository contains the complete client and corpus-pipeline codebase, configuration, source corpus,
 evaluation fixtures, release tooling, and synthetic tests:
 
-- `src/chat/` contains the chat engine, verified release cache, and hybrid retrieval runtime.
+- `src/chat/` contains the chat engine, verified local release loader, and hybrid retrieval runtime.
 - `src/web/` contains the API and production static-file server.
 - `frontend/` contains the React and Vite browser client.
-- `src/corpus/` contains source validation, chunking, artifact building, publication,
-  and Cloud Storage adapters.
+- `src/corpus/` contains source validation, chunking, artifact building, and local release activation.
 - `src/eval/` contains isolated experimental retrieval, embeddings, contracts,
   configuration, and result tooling.
 - `dataset/` contains the raw text and processed, sectioned JSON source data.
@@ -46,5 +44,4 @@ evaluation fixtures, release tooling, and synthetic tests:
 The software is licensed under MIT. The protectable compilation and processing contributions in
 `dataset/` are licensed under CC BY 4.0 with attribution to Rasagya Vatsal; public-domain source
 material remains public domain and third-party rights are unaffected. Generated SQLite releases
-remain ignored as reproducible build artifacts and may be uploaded to a configured Storage bucket.
-Access to hosted Google Cloud resources is managed separately from repository licensing.
+remain ignored as reproducible build artifacts.

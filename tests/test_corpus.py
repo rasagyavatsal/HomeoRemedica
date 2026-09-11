@@ -11,36 +11,17 @@ import sqlite_vec
 from chat.corpus import (
     EXPECTED_BOOK_IDS,
     ActivePointer,
-    CorpusCache,
     CorpusError,
-    ObjectData,
+    LocalCorpus,
     ReleaseManifest,
 )
-
-
-class MemorySource:
-    def __init__(self, objects: dict[tuple[str, int | None], ObjectData]) -> None:
-        self.objects = objects
-
-    def read(
-        self,
-        name: str,
-        *,
-        generation: int | None = None,
-        max_bytes: int | None = None,
-    ) -> ObjectData:
-        object_data = self.objects[name, generation]
-        if max_bytes is not None and len(object_data.content) > max_bytes:
-            raise AssertionError(f"{name} exceeds the requested test limit")
-        return object_data
 
 
 def test_active_pointer_rejects_path_traversal() -> None:
     pointer = {
         "pointerSchemaVersion": 1,
         "corpusVersion": "v1",
-        "manifestObject": "corpora/v1/manifest.json",
-        "manifestGeneration": 1,
+        "manifestPath": "v1/manifest.json",
         "manifestByteSize": 1,
         "manifestSha256": "a" * 64,
     }
@@ -48,162 +29,127 @@ def test_active_pointer_rejects_path_traversal() -> None:
     with pytest.raises(ValueError):
         ActivePointer.model_validate({**pointer, "corpusVersion": "../outside"})
     with pytest.raises(ValueError):
-        ActivePointer.model_validate({**pointer, "manifestObject": "corpora/../secret.json"})
+        ActivePointer.model_validate({**pointer, "manifestPath": "v1/../secret.json"})
 
 
 def test_release_manifest_rejects_path_traversal_in_book_ids() -> None:
-    manifest = {
-        "manifestSchemaVersion": 1,
-        "artifactSchemaVersion": 1,
-        "corpusVersion": "v1",
-        "corpusHash": "b" * 64,
-        "compatibility": {
-            "embeddingModel": "qwen/qwen3-embedding-8b",
-            "embeddingDimensions": 3,
-            "documentTaskType": "RETRIEVAL_DOCUMENT",
-            "queryTaskType": "RETRIEVAL_QUERY",
-            "embeddingNormalization": "l2",
-            "distanceFunction": "cosine",
-            "modelInputLimit": 2048,
-            "sqliteVersion": sqlite3.sqlite_version,
-            "sqliteVecVersion": "0.1.9",
-        },
-        "evaluation": {
-            "datasetVersion": "test",
-            "datasetSha256": "c" * 64,
-            "corpusHash": "b" * 64,
-            "resultSha256": "d" * 64,
-            "metric": "recallAtK",
-            "threshold": 0.8,
-            "value": 1.0,
-            "chosenDimensions": 3,
-        },
-        "books": [
+    manifest = _manifest_data(
+        [
             {
                 "bookId": "../outside",
-                "title": "Book",
-                "author": None,
-                "object": "corpora/v1/books/../outside.sqlite",
-                "generation": 1,
-                "byteSize": 1,
-                "sha256": "e" * 64,
-                "sourceSha256": "f" * 64,
-                "chunkCount": 1,
-                "passageCount": 1,
+                "filename": "books/../outside.sqlite",
             }
-        ],
-    }
+        ]
+    )
 
     with pytest.raises(ValueError):
         ReleaseManifest.model_validate(manifest)
 
 
-def test_sync_rejects_a_manifest_object_outside_the_active_release(tmp_path: Path) -> None:
-    pointer = _json_bytes({
+def test_local_loader_rejects_a_manifest_path_outside_the_active_release(tmp_path: Path) -> None:
+    root = tmp_path / "corpus"
+    root.mkdir()
+    pointer = {
         "corpusVersion": "v1",
         "manifestByteSize": 1,
-        "manifestGeneration": 11,
-        "manifestObject": "corpora/other/manifest.json",
+        "manifestPath": "other/manifest.json",
         "manifestSha256": "a" * 64,
         "pointerSchemaVersion": 1,
-    })
-    source = MemorySource({
-        ("corpora/active.json", None): ObjectData(
-            name="corpora/active.json", generation=10, content=pointer
-        ),
-    })
-
-    cache = CorpusCache(tmp_path / "cache")
-    with pytest.raises(CorpusError, match="unexpected manifest object path"):
-        cache.sync(source)
-
-
-@pytest.mark.parametrize("manifest_schema_version", [1, 2])
-def test_sync_opens_a_verified_release_and_searches_its_hybrid_index(
-    tmp_path: Path, manifest_schema_version: int
-) -> None:
-    books = []
-    objects: dict[tuple[str, int | None], ObjectData] = {}
-    for index, book_id in enumerate(sorted(EXPECTED_BOOK_IDS), start=1):
-        artifact = _artifact_bytes(tmp_path / book_id, book_id=book_id)
-        artifact_digest = hashlib.sha256(artifact).hexdigest()
-        object_name = f"corpora/v1/books/{book_id}.sqlite"
-        books.append({
-            "author": "James Tyler Kent",
-            "bookId": book_id,
-            "byteSize": len(artifact),
-            "chunkCount": 2,
-            "generation": 21 + index,
-            "object": object_name,
-            "passageCount": 2,
-            "sha256": artifact_digest,
-            "sourceSha256": "a" * 64,
-            "title": "Kent's Lectures",
-        })
-        objects[object_name, 21 + index] = ObjectData(
-            name=object_name, generation=21 + index, content=artifact
-        )
-
-    manifest_data = {
-        "artifactSchemaVersion": 1,
-        "books": books,
-        "compatibility": {
-            "distanceFunction": "cosine",
-            "documentTaskType": "RETRIEVAL_DOCUMENT",
-            "embeddingDimensions": 3,
-            "embeddingModel": "qwen/qwen3-embedding-8b",
-            "embeddingNormalization": "l2",
-            "modelInputLimit": 2048,
-            "queryTaskType": "RETRIEVAL_QUERY",
-            "sqliteVecVersion": "0.1.9",
-            "sqliteVersion": sqlite3.sqlite_version,
-        },
-        "corpusHash": "b" * 64,
-        "corpusVersion": "v1",
-        "manifestSchemaVersion": manifest_schema_version,
     }
-    if manifest_schema_version == 1:
-        manifest_data["evaluation"] = {
-            "chosenDimensions": 3,
-            "corpusHash": "b" * 64,
-            "datasetSha256": "c" * 64,
-            "datasetVersion": "test",
-            "metric": "recallAtK",
-            "resultSha256": "d" * 64,
-            "threshold": 0.8,
-            "value": 1.0,
-        }
-    manifest = _json_bytes(manifest_data)
-    pointer = _json_bytes({
-        "corpusVersion": "v1",
-        "manifestByteSize": len(manifest),
-        "manifestGeneration": 11,
-        "manifestObject": "corpora/v1/manifest.json",
-        "manifestSha256": hashlib.sha256(manifest).hexdigest(),
-        "pointerSchemaVersion": 1,
-    })
-    objects.update({
-        ("corpora/active.json", None): ObjectData(
-            name="corpora/active.json", generation=10, content=pointer
-        ),
-        ("corpora/v1/manifest.json", 11): ObjectData(
-            name="corpora/v1/manifest.json", generation=11, content=manifest
-        ),
-    })
-    source = MemorySource(objects)
+    (root / "active.json").write_bytes(_json_bytes(pointer))
 
-    release = CorpusCache(tmp_path / "cache").sync(source)
-    results = release.search("irritability", (1.0, 0.0, 0.0), book_ids=("kent-lectures",), limit=1)
+    with pytest.raises(CorpusError, match="manifest path"):
+        LocalCorpus(root).load()
+
+
+def test_local_loader_opens_a_verified_release_and_searches_its_hybrid_index(
+    tmp_path: Path,
+) -> None:
+    root = _write_local_release(tmp_path)
+
+    release = LocalCorpus(root).load()
+    results = release.search(
+        "irritability", (1.0, 0.0, 0.0), book_ids=("kent-lectures",), limit=1
+    )
 
     assert release.corpus_version == "v1"
     assert results[0].chunk_id == "chunk-irritable"
     assert results[0].remedy_name == "NUX VOMICA"
-    assert (tmp_path / "cache/v1/books/kent-lectures.sqlite").read_bytes() == source.objects[
-        "corpora/v1/books/kent-lectures.sqlite", 25
-    ].content
+    assert (root / "v1/books/kent-lectures.sqlite").is_file()
 
 
-def _artifact_bytes(tmp_path: Path, *, book_id: str = "kent-lectures") -> bytes:
+def test_local_loader_rejects_a_tampered_artifact(tmp_path: Path) -> None:
+    root = _write_local_release(tmp_path)
+    path = root / "v1/books/kent-lectures.sqlite"
+    path.write_bytes(path.read_bytes() + b"tampered")
+
+    with pytest.raises(CorpusError, match="corrupt"):
+        LocalCorpus(root).load()
+
+
+def _write_local_release(tmp_path: Path) -> Path:
+    root = tmp_path / "corpus"
+    release = root / "v1/books"
+    release.mkdir(parents=True)
+    books = []
+    for index, book_id in enumerate(sorted(EXPECTED_BOOK_IDS), start=1):
+        artifact = _artifact_bytes(tmp_path / f"artifact-{index}", book_id=book_id)
+        path = release / f"{book_id}.sqlite"
+        path.write_bytes(artifact)
+        books.append(
+            {
+                "author": "James Tyler Kent",
+                "bookId": book_id,
+                "byteSize": len(artifact),
+                "chunkCount": 2,
+                "filename": f"books/{book_id}.sqlite",
+                "passageCount": 2,
+                "sha256": hashlib.sha256(artifact).hexdigest(),
+                "sourceSha256": "a" * 64,
+                "title": "Kent's Lectures",
+            }
+        )
+
+    manifest = _manifest_data(books)
+    manifest_bytes = _json_bytes(manifest)
+    (root / "v1/manifest.json").write_bytes(manifest_bytes)
+    (root / "active.json").write_bytes(
+        _json_bytes(
+            {
+                "corpusVersion": "v1",
+                "manifestByteSize": len(manifest_bytes),
+                "manifestPath": "v1/manifest.json",
+                "manifestSha256": hashlib.sha256(manifest_bytes).hexdigest(),
+                "pointerSchemaVersion": 1,
+            }
+        )
+    )
+    return root
+
+
+def _manifest_data(books: list[dict[str, object]]) -> dict[str, object]:
+    compatibility = {
+        "distanceFunction": "cosine",
+        "documentTaskType": "RETRIEVAL_DOCUMENT",
+        "embeddingDimensions": 3,
+        "embeddingModel": "qwen/qwen3-embedding-8b",
+        "embeddingNormalization": "l2",
+        "modelInputLimit": 2048,
+        "queryTaskType": "RETRIEVAL_QUERY",
+        "sqliteVecVersion": "0.1.9",
+        "sqliteVersion": sqlite3.sqlite_version,
+    }
+    return {
+        "artifactSchemaVersion": 1,
+        "books": books,
+        "compatibility": compatibility,
+        "corpusHash": "b" * 64,
+        "corpusVersion": "v1",
+        "manifestSchemaVersion": 2,
+    }
+
+
+def _artifact_bytes(tmp_path: Path, *, book_id: str) -> bytes:
     tmp_path.mkdir(parents=True, exist_ok=True)
     path = tmp_path / "book.sqlite"
     connection = sqlite3.connect(path)
