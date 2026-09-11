@@ -7,13 +7,13 @@ from pathlib import Path
 import sqlite_vec
 
 from homeoremedica_corpus.artifacts import (
+    FTS5_TOKENIZER,
     ArtifactSpec,
     create_book_artifact,
     validate_book_artifact,
 )
 from homeoremedica_corpus.chunking import ChunkingPolicy, chunk_book, corpus_hash
 from homeoremedica_corpus.embeddings import EmbeddedChunk, EmbeddingSpec
-from homeoremedica_corpus.retrieval import FTS5_TOKENIZER
 from homeoremedica_corpus.sources import Book, Remedy, Section
 
 

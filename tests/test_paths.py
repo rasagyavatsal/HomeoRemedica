@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from homeoremedica_corpus.paths import evaluation_path
+from homeoremedica_evaluation.paths import evaluation_cache_directory, evaluation_path
 
 
 def test_evaluation_paths_accept_relative_and_absolute_json(tmp_path: Path) -> None:
@@ -37,3 +37,11 @@ def test_evaluation_paths_reject_symlink_escape(tmp_path: Path) -> None:
     candidate = Path("evaluation/report.json")
     with pytest.raises(ValueError, match="inside"):
         evaluation_path(candidate, root)
+
+
+def test_evaluation_cache_directory_stays_in_its_experimental_root(tmp_path: Path) -> None:
+    assert evaluation_cache_directory(Path(".cache/evaluation/v9"), tmp_path) == (
+        tmp_path / ".cache/evaluation/v9"
+    )
+    with pytest.raises(ValueError, match="inside"):
+        evaluation_cache_directory(Path("output/releases"), tmp_path)

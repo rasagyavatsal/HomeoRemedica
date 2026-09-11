@@ -1,10 +1,5 @@
-[corpus]
+[source]
 combined_dataset = "dataset/combined.json"
-output_directory = "output/releases"
-artifact_schema_version = 1
-manifest_schema_version = 2
-sqlite_version = "3.53.4"
-sqlite_vec_version = "0.1.9"
 
 [chunking]
 minimum_tokens = 1
@@ -13,12 +8,13 @@ target_tokens = 1
 [embedding]
 model = "qwen/qwen3-embedding-8b"
 native_dimensions = 4096
-dimensions = 4096
-document_task_type = "RETRIEVAL_DOCUMENT"
-query_task_type = "RETRIEVAL_QUERY"
-normalization = "l2"
-distance_function = "cosine"
+dimensions = [4096]
 model_input_limit = 32768
+
+[output]
+dataset = "evaluation/v9/queries.json"
+result = "evaluation/v9/result.json"
+cache_directory = ".cache/evaluation"
 
 [books."allen-nosodes"]
 title = "Allen's Materia Medica of the Nosodes"

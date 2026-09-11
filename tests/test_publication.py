@@ -10,8 +10,7 @@ import pytest
 
 from homeoremedica_corpus.artifacts import ArtifactSpec
 from homeoremedica_corpus.builder import BuiltRelease, build_release
-from homeoremedica_corpus.chunking import chunk_book, corpus_hash
-from homeoremedica_corpus.contracts import EvaluationGate, compatibility_from_artifact_spec
+from homeoremedica_corpus.contracts import compatibility_from_artifact_spec
 from homeoremedica_corpus.embeddings import EmbeddingSpec
 from homeoremedica_corpus.publication import CorpusPublisher, PublicationError
 from homeoremedica_corpus.sources import Book, Remedy, Section
@@ -130,22 +129,11 @@ def spec(version: str) -> ArtifactSpec:
 
 def build(tmp_path: Path, version: str, book_ids: tuple[str, ...] = ("alpha",)) -> BuiltRelease:
     source_books = tuple(source_book(book_id) for book_id in book_ids)
-    chunks = tuple(chunk for item in source_books for chunk in chunk_book(item))
     return build_release(
         source_books,
         FakeProvider(),
         output_root=tmp_path / "output",
         spec=spec(version),
-        evaluation=EvaluationGate(
-            dataset_version="v1",
-            dataset_sha256="d" * 64,
-            corpus_hash=corpus_hash(chunks),
-            result_sha256="e" * 64,
-            metric="recallAt10",
-            threshold=0.8,
-            value=0.9,
-            chosen_dimensions=2,
-        ),
     )
 
 
@@ -168,6 +156,7 @@ def test_stages_immutable_release_then_conditionally_activates_it(tmp_path: Path
     assert store.snapshot("corpora/active.json") is None
     manifest = json.loads(store.read_bytes(staged.name, staged.generation))
     assert manifest["corpusVersion"] == "2026-08-14.one"
+    assert "evaluation" not in manifest
     assert manifest["books"][0]["object"] == ("corpora/2026-08-14.one/books/alpha.sqlite")
     assert isinstance(manifest["books"][0]["generation"], int)
 

@@ -404,7 +404,7 @@ wheels = [
 
 [[package]]
 name = "homeoremedica"
-version = "2.3.0"
+version = "3.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "google-cloud-storage" },

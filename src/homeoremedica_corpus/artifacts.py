@@ -15,8 +15,9 @@ import sqlite_vec
 
 from homeoremedica_corpus.chunking import Chunk
 from homeoremedica_corpus.embeddings import EmbeddedChunk, EmbeddingSpec
-from homeoremedica_corpus.retrieval import FTS5_TOKENIZER
 from homeoremedica_corpus.sources import Book, CorpusValidationError
+
+FTS5_TOKENIZER = "porter unicode61 remove_diacritics 2"
 
 
 @dataclass(frozen=True, slots=True)

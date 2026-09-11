@@ -40,7 +40,7 @@ class CorpusPublisher:
         expected_book_ids: frozenset[str],
         expected_compatibility: Compatibility,
         expected_artifact_schema_version: int,
-        expected_manifest_schema_version: int = 1,
+        expected_manifest_schema_version: int = 2,
         prefix: str = "corpora",
     ) -> None:
         self._store = store
@@ -64,13 +64,8 @@ class CorpusPublisher:
             descriptor.manifest_schema_version,
             descriptor.artifact_schema_version,
             descriptor.compatibility,
-            descriptor.evaluation.chosen_dimensions if descriptor.evaluation else None,
             {book.book_id for book in descriptor.books},
         )
-        if descriptor.evaluation is None:
-            raise PublicationError("release has no versioned retrieval evaluation result")
-        if descriptor.evaluation.corpus_hash != descriptor.corpus_hash:
-            raise PublicationError("release uses a retrieval evaluation from a different corpus")
 
         spec = _artifact_spec(descriptor)
         local_artifacts = []
@@ -120,7 +115,6 @@ class CorpusPublisher:
             corpus_version=descriptor.corpus_version,
             corpus_hash=descriptor.corpus_hash,
             compatibility=descriptor.compatibility,
-            evaluation=descriptor.evaluation,
             books=tuple(published_books),
         )
         manifest_bytes = canonical_json_bytes(manifest)
@@ -166,7 +160,6 @@ class CorpusPublisher:
             manifest.manifest_schema_version,
             manifest.artifact_schema_version,
             manifest.compatibility,
-            manifest.evaluation.chosen_dimensions,
             {book.book_id for book in manifest.books},
         )
         expected_name = f"{self._prefix}/{manifest.corpus_version}/manifest.json"
@@ -215,14 +208,12 @@ class CorpusPublisher:
         manifest_schema_version: int,
         artifact_schema_version: int,
         compatibility: Compatibility,
-        chosen_dimensions: int | None,
         book_ids: set[str],
     ) -> None:
         if (
             manifest_schema_version != self._expected_manifest_schema_version
             or artifact_schema_version != self._expected_artifact_schema_version
             or compatibility != self._expected_compatibility
-            or chosen_dimensions != compatibility.embedding_dimensions
             or book_ids != self._expected_book_ids
         ):
             raise PublicationError(

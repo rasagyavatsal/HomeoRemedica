@@ -70,7 +70,7 @@ class Compatibility(Contract):
     sqlite_vec_version: str
 
 
-class EvaluationGate(Contract):
+class LegacyEvaluationGate(Contract):
     dataset_version: str
     dataset_sha256: str
     corpus_hash: str
@@ -100,7 +100,9 @@ class ReleaseManifest(Contract):
     corpus_version: str = Field(min_length=1, max_length=128)
     corpus_hash: str
     compatibility: Compatibility
-    evaluation: EvaluationGate
+    legacy_evaluation: LegacyEvaluationGate | None = Field(
+        default=None, alias="evaluation", exclude=True
+    )
     books: tuple[PublishedBook, ...] = Field(min_length=1, max_length=MAX_BOOK_COUNT)
 
     @model_validator(mode="after")
@@ -122,14 +124,18 @@ class ReleaseManifest(Contract):
             )
         if sum(book.byte_size for book in self.books) > MAX_TOTAL_ARTIFACT_BYTES:
             raise ValueError("corpus artifacts exceed the total size limit")
-        if self.manifest_schema_version != 1 or self.artifact_schema_version != 1:
+        if self.manifest_schema_version not in {1, 2} or self.artifact_schema_version != 1:
             raise ValueError("unsupported corpus schema version")
-        if self.evaluation.corpus_hash != self.corpus_hash:
-            raise ValueError("evaluation belongs to a different corpus")
-        if self.evaluation.chosen_dimensions != self.compatibility.embedding_dimensions:
-            raise ValueError("evaluation dimensions do not match the corpus")
-        if self.evaluation.value < self.evaluation.threshold:
-            raise ValueError("corpus retrieval evaluation did not pass")
+        if self.manifest_schema_version == 1:
+            evaluation = self.legacy_evaluation
+            if evaluation is None:
+                raise ValueError("schema 1 corpus requires legacy evaluation metadata")
+            if evaluation.corpus_hash != self.corpus_hash:
+                raise ValueError("evaluation belongs to a different corpus")
+            if evaluation.chosen_dimensions != self.compatibility.embedding_dimensions:
+                raise ValueError("evaluation dimensions do not match the corpus")
+            if evaluation.value < evaluation.threshold:
+                raise ValueError("corpus retrieval evaluation did not pass")
         if len({book.book_id for book in self.books}) != len(self.books):
             raise ValueError("corpus contains duplicate book IDs")
         _require_digest(self.corpus_hash, "corpus hash")

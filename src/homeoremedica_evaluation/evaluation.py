@@ -15,13 +15,14 @@ from typing import BinaryIO, Literal, cast
 from pydantic import Field, model_validator
 
 from homeoremedica_corpus.chunking import Chunk
-from homeoremedica_corpus.contracts import Contract, EvaluationGate, canonical_json_bytes
-from homeoremedica_corpus.embeddings import (
+from homeoremedica_corpus.sources import CorpusValidationError
+from homeoremedica_evaluation.contracts import Contract, EvaluationGate, canonical_json_bytes
+from homeoremedica_evaluation.embeddings import (
     EMBEDDING_BATCH_SIZE,
     EmbeddingProvider,
     preflight_embedding_inputs,
 )
-from homeoremedica_corpus.retrieval import (
+from homeoremedica_evaluation.retrieval import (
     DEFAULT_HYBRID_RETRIEVAL_POLICY,
     FTS5_TOKENIZER,
     HybridRetrievalPolicy,
@@ -35,7 +36,6 @@ from homeoremedica_corpus.retrieval import (
     score_lexical_queries,
     score_semantic_queries,
 )
-from homeoremedica_corpus.sources import CorpusValidationError
 
 QualityMetric = Literal["recallAtK", "mrrAtK"]
 RankingUnit = Literal["chunk", "remedy", "globalRemedy"]
