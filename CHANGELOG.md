@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v3.0.0...HomeoRemedica-v4.0.0) (2026-09-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* **packages:** rename packages to chat corpus and eval ([#19](https://github.com/rasagyavatsal/HomeoRemedica/issues/19))
+* **evaluation:** use homeoremedica-evaluation instead of the homeoremedica-corpus evaluate subcommand; new corpus releases use manifest schema 2 without evaluation metadata.
+
+### Code Refactoring
+
+* **evaluation:** isolate experiments from chat releases ([#17](https://github.com/rasagyavatsal/HomeoRemedica/issues/17)) ([b231ded](https://github.com/rasagyavatsal/HomeoRemedica/commit/b231ded0d9dc074e5988b3b55540a77028960ff4))
+* **packages:** rename packages to chat corpus and eval ([#19](https://github.com/rasagyavatsal/HomeoRemedica/issues/19)) ([b8237d7](https://github.com/rasagyavatsal/HomeoRemedica/commit/b8237d74a5a8b9c4c10225632af0145b6823862d))
+
 ## [3.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v2.3.0...HomeoRemedica-v3.0.0) (2026-09-07)
 
 
