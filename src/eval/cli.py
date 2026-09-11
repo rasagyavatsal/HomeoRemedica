@@ -24,7 +24,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         config = load_evaluation_config(arguments.config)
         _, chunks = _load_chunks(config)
-        dataset, dataset_digest = load_evaluation_dataset(config.dataset)
+        dataset, query_digest = load_evaluation_dataset(config.dataset, config.retrieval)
 
         def provider_for(dimensions: int) -> OpenRouterEmbeddingProvider:
             return OpenRouterEmbeddingProvider(replace(config.embedding, dimensions=dimensions))
@@ -37,7 +37,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             model_input_limit=config.embedding.model_input_limit,
             dimensions=config.dimensions,
             corpus_hash=corpus_hash(chunks),
-            dataset_sha256=dataset_digest,
+            query_sha256=query_digest,
             embedding_cache_directory=config.cache_directory,
             workers=arguments.workers,
             progress=lambda message: print(message, file=sys.stderr, flush=True),

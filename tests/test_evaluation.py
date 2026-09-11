@@ -110,7 +110,7 @@ def test_compares_dimensions_and_selects_the_smallest_passing_result(tmp_path: P
         model_input_limit=2048,
         dimensions=(2, 3),
         corpus_hash=corpus_hash(corpus_chunks),
-        dataset_sha256="d" * 64,
+        query_sha256="d" * 64,
     )
 
     assert result.chosen_dimensions == 3
@@ -147,8 +147,8 @@ def test_compares_dimensions_and_selects_the_smallest_passing_result(tmp_path: P
     gate = record_evaluation(result_path, result)
     recorded = json.loads(result_path.read_text())
     assert recorded["chosenDimensions"] == 3
-    assert gate.dataset_version == "v1"
-    assert gate.dataset_sha256 == "d" * 64
+    assert gate.query_version == "v1"
+    assert gate.query_sha256 == "d" * 64
     assert gate.corpus_hash == corpus_hash(corpus_chunks)
     assert gate.chosen_dimensions == 3
     assert gate.value == 1.0
@@ -174,7 +174,7 @@ def test_unresolved_relevance_target_fails_before_provider_creation() -> None:
             model_input_limit=2048,
             dimensions=(2, 3),
             corpus_hash=corpus_hash(corpus_chunks),
-            dataset_sha256="d" * 64,
+            query_sha256="d" * 64,
         )
 
     assert calls == []
@@ -418,7 +418,7 @@ def test_content_queries_and_cross_book_identity_recover_a_matching_remedy(monke
         model_input_limit=2048,
         dimensions=(3,),
         corpus_hash=corpus_hash(corpus_chunks),
-        dataset_sha256="d" * 64,
+        query_sha256="d" * 64,
     )
     assert semantic_inputs == ["He was not worse after walking."]
     assert lexical_inputs == ["not worse after walking"]
@@ -503,7 +503,7 @@ def test_dimension_evaluation_embeds_each_raw_query_symptom() -> None:
         model_input_limit=2048,
         dimensions=(2, 3),
         corpus_hash=corpus_hash(corpus_chunks),
-        dataset_sha256="d" * 64,
+        query_sha256="d" * 64,
     )
 
     assert query_inputs == ["Head pain.", "Worse from heat."]
@@ -527,7 +527,7 @@ def test_dimension_evaluation_reuses_cached_embeddings(tmp_path: Path) -> None:
             model_input_limit=2048,
             dimensions=(3,),
             corpus_hash=corpus_hash(corpus_chunks),
-            dataset_sha256="d" * 64,
+            query_sha256="d" * 64,
             embedding_cache_directory=tmp_path / "cache",
         )
 
@@ -567,7 +567,7 @@ def test_dimension_evaluation_uses_normalized_global_remedy_score_fusion(
         model_input_limit=2048,
         dimensions=(3,),
         corpus_hash=corpus_hash(corpus_chunks),
-        dataset_sha256="d" * 64,
+        query_sha256="d" * 64,
         embedding_cache_directory=tmp_path / "cache",
     )
 
@@ -595,7 +595,7 @@ def test_dimension_evaluation_uses_normalized_global_remedy_score_fusion(
         model_input_limit=2048,
         dimensions=(3,),
         corpus_hash=corpus_hash(corpus_chunks),
-        dataset_sha256="d" * 64,
+        query_sha256="d" * 64,
         embedding_cache_directory=tmp_path / "cache",
     )
     assert cached_result == result
@@ -616,7 +616,7 @@ def test_dimension_evaluation_uses_normalized_global_remedy_score_fusion(
         model_input_limit=2048,
         dimensions=(3,),
         corpus_hash=corpus_hash(corpus_chunks),
-        dataset_sha256="e" * 64,
+        query_sha256="e" * 64,
         embedding_cache_directory=tmp_path / "cache",
     )
     assert filtered_result.scores[0].recall_at_k == 1.0
@@ -640,7 +640,7 @@ def test_dimension_evaluation_uses_normalized_global_remedy_score_fusion(
         model_input_limit=2048,
         dimensions=(3,),
         corpus_hash=corpus_hash(corpus_chunks),
-        dataset_sha256="f" * 64,
+        query_sha256="f" * 64,
         embedding_cache_directory=tmp_path / "cache",
     )
     assert query_inputs == ["Instruct: Retrieve passages.\nQuery:the raw user symptom"]

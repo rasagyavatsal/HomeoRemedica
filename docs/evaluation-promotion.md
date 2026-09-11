@@ -25,7 +25,7 @@ Those dependencies are now assigned as follows:
 | Query embeddings | `corpus.embeddings`, used by the current chat runtime | `eval.embeddings` | Provider code and constants are independent. |
 | Configuration | `corpus.toml` and `corpus.config` | `evaluation.toml` and `eval.config` | Evaluation settings are rejected by the release config schema. |
 | Contracts and utilities | Chat/release manifest contracts | Evaluation result contracts and path helpers | Evaluation results are not present in new build descriptors or manifests. |
-| Outputs | `output/releases/` and the configured chat cache | `evaluation/` and `.cache/evaluation/` | Experimental files cannot become release artifacts implicitly. |
+| Outputs | `output/releases/` and the configured chat cache | `benchmarks/` and `.cache/benchmarks/` | Experimental files cannot become release artifacts implicitly. |
 | Source data | `dataset/combined.json` through corpus source/chunking modules | The same file through the same deterministic source/chunking modules | Reading the same source does not couple runtime behavior. |
 
 The repository boundary check parses package imports and both TOML files. The `chat` and `eval`
@@ -38,8 +38,8 @@ manifests for backward compatibility, while schema 2 builds and manifests omit i
 A successful evaluation result does not change chat or authorize a release. Promotion is a separate
 implementation change:
 
-1. Record the experiment, its dataset version, settings, caches needed for reproduction, metrics,
-   and limitations under `evaluation/`.
+1. Record the experiment, its query version and hash, settings, caches needed for reproduction,
+   metrics, and limitations under `benchmarks/results/`.
 2. Implement the selected behavior in the chat-owned retrieval or embedding path. Copy the specific
    behavior and its stable parameters; do not add an import from `eval`.
 3. Add focused chat tests for the promoted behavior, including a before/after retrieval fixture and

@@ -14,7 +14,8 @@ from eval.embeddings import (
     QWEN3_NATIVE_DIMENSIONS,
     EmbeddingSpec,
 )
-from eval.paths import evaluation_cache_directory, evaluation_path
+from eval.evaluation import EvaluationSettings
+from eval.paths import benchmark_cache_directory, benchmark_query_path, benchmark_result_path
 
 
 class _Settings(BaseModel):
@@ -71,6 +72,7 @@ class _FileSettings(_Settings):
     source: _SourceSettings
     chunking: _ChunkingSettings
     embedding: _EmbeddingSettings
+    retrieval: EvaluationSettings
     output: _OutputSettings
     books: dict[str, _BookSettings] = Field(min_length=1)
 
@@ -82,6 +84,7 @@ class EvaluationConfig:
     chunking: ChunkingPolicy
     embedding: EmbeddingSpec
     dimensions: tuple[int, ...]
+    retrieval: EvaluationSettings
     dataset: Path
     result: Path
     cache_directory: Path
@@ -114,9 +117,10 @@ def load_evaluation_config(path: Path = Path("evaluation.toml")) -> EvaluationCo
             model_input_limit=settings.embedding.model_input_limit,
         ),
         dimensions=settings.embedding.dimensions,
-        dataset=evaluation_path(Path(settings.output.dataset), root),
-        result=evaluation_path(Path(settings.output.result), root),
-        cache_directory=evaluation_cache_directory(
+        retrieval=settings.retrieval,
+        dataset=benchmark_query_path(Path(settings.output.dataset), root),
+        result=benchmark_result_path(Path(settings.output.result), root),
+        cache_directory=benchmark_cache_directory(
             Path(settings.output.cache_directory), root
         ),
         books=books,

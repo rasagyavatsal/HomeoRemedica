@@ -24,8 +24,8 @@ class Contract(BaseModel):
 class EvaluationGate(Contract):
     """Summary of a passing experimental result; never consumed by chat releases."""
 
-    dataset_version: str
-    dataset_sha256: str
+    query_version: str
+    query_sha256: str
     corpus_hash: str
     result_sha256: str
     metric: str
@@ -35,7 +35,7 @@ class EvaluationGate(Contract):
 
     @model_validator(mode="after")
     def validate_gate(self) -> EvaluationGate:
-        _validate_digest(self.dataset_sha256, "evaluation dataset_sha256")
+        _validate_digest(self.query_sha256, "evaluation query_sha256")
         _validate_digest(self.corpus_hash, "evaluation corpus_hash")
         _validate_digest(self.result_sha256, "evaluation result_sha256")
         if self.value < self.threshold:

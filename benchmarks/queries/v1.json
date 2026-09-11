@@ -1,8 +1,5 @@
 {
   "version": "v1",
-  "k": 10,
-  "qualityMetric": "recallAtK",
-  "minimumQuality": 0.8,
   "queries": [
     {
       "id": "allen-cholesterinum-gallstone-attacks",

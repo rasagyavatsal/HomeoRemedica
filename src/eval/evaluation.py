@@ -16,7 +16,7 @@ from pydantic import Field, model_validator
 
 from corpus.chunking import Chunk
 from corpus.sources import CorpusValidationError
-from eval.contracts import Contract, EvaluationGate, canonical_json_bytes
+from eval.contracts import Contract, EvaluationGate, _validate_digest, canonical_json_bytes
 from eval.embeddings import (
     EMBEDDING_BATCH_SIZE,
     EmbeddingProvider,
@@ -107,8 +107,9 @@ class EvaluationQuery(Contract):
         return self.semantic_inputs
 
 
-class EvaluationDataset(Contract):
-    version: str
+class EvaluationSettings(Contract):
+    """Evaluation protocol and retrieval settings kept outside query datasets."""
+
     k: int = Field(gt=0)
     ranking_unit: RankingUnit = "chunk"
     fusion_strategy: FusionStrategy = "rrf"
@@ -118,6 +119,28 @@ class EvaluationDataset(Contract):
     candidate_pool_size: int = Field(default=100, gt=0)
     quality_metric: QualityMetric
     minimum_quality: float = Field(ge=0, le=1)
+
+
+class EvaluationQueries(Contract):
+    """An independently versioned set of queries and relevance labels."""
+
+    version: str
+    queries: tuple[EvaluationQuery, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_query_ids(self) -> EvaluationQueries:
+        identifiers = [query.id for query in self.queries]
+        if len(set(identifiers)) != len(identifiers):
+            raise ValueError("evaluation query IDs must be unique")
+        if any(not query.id.strip() for query in self.queries):
+            raise ValueError("evaluation query IDs must be non-empty")
+        return self
+
+
+class EvaluationDataset(EvaluationSettings):
+    """Runtime combination of versioned queries and configured settings."""
+
+    version: str
     queries: tuple[EvaluationQuery, ...] = Field(min_length=1)
 
     @property
@@ -139,11 +162,7 @@ class EvaluationDataset(Contract):
             and not self.semantic_query_instruction.strip()
         ):
             raise ValueError("semantic query instruction must be non-empty")
-        identifiers = [query.id for query in self.queries]
-        if len(set(identifiers)) != len(identifiers):
-            raise ValueError("evaluation query IDs must be unique")
-        if any(not query.id.strip() for query in self.queries):
-            raise ValueError("evaluation query IDs must be non-empty")
+        EvaluationQueries(version=self.version, queries=self.queries)
         if self.ranking_unit != "chunk" and any(
             target.section_title is not None for query in self.queries for target in query.relevant
         ):
@@ -184,8 +203,10 @@ class DimensionScore(Contract):
 
 class EvaluationResult(Contract):
     evaluation_schema_version: int = 9
-    dataset_version: str
-    dataset_sha256: str
+    query_version: str
+    query_sha256: str
+    historical_dataset_version: str | None = None
+    historical_dataset_sha256: str | None = None
     corpus_hash: str
     model: str
     document_task_type: str = "RETRIEVAL_DOCUMENT"
@@ -218,6 +239,15 @@ class EvaluationResult(Contract):
 
     @model_validator(mode="after")
     def validate_fusion_metadata(self) -> EvaluationResult:
+        _validate_digest(self.query_sha256, "evaluation query_sha256")
+        if (self.historical_dataset_version is None) != (
+            self.historical_dataset_sha256 is None
+        ):
+            raise ValueError("historical dataset version and SHA-256 must be recorded together")
+        if self.historical_dataset_sha256 is not None:
+            _validate_digest(
+                self.historical_dataset_sha256, "evaluation historical_dataset_sha256"
+            )
         if self.fusion_strategy == "normalizedScore":
             if (
                 self.reciprocal_rank_constant is not None
@@ -234,9 +264,23 @@ class EvaluationResult(Contract):
         return self
 
 
-def load_evaluation_dataset(path: Path) -> tuple[EvaluationDataset, str]:
+def load_evaluation_queries(path: Path) -> tuple[EvaluationQueries, str]:
     contents = path.read_bytes()
-    return EvaluationDataset.model_validate_json(contents), hashlib.sha256(contents).hexdigest()
+    return EvaluationQueries.model_validate_json(contents), hashlib.sha256(contents).hexdigest()
+
+
+def load_evaluation_dataset(
+    path: Path, settings: EvaluationSettings
+) -> tuple[EvaluationDataset, str]:
+    queries, query_sha256 = load_evaluation_queries(path)
+    return (
+        EvaluationDataset(
+            **settings.model_dump(),
+            version=queries.version,
+            queries=queries.queries,
+        ),
+        query_sha256,
+    )
 
 
 def run_dimension_evaluation(
@@ -248,7 +292,7 @@ def run_dimension_evaluation(
     model_input_limit: int,
     dimensions: tuple[int, ...] = (768, 1536, 3072),
     corpus_hash: str,
-    dataset_sha256: str,
+    query_sha256: str,
     retrieval: HybridRetrievalPolicy = DEFAULT_HYBRID_RETRIEVAL_POLICY,
     embedding_cache_directory: Path | None = None,
     workers: int = 1,
@@ -513,8 +557,8 @@ def run_dimension_evaluation(
 
     passing = [score.dimensions for score in scores if score.passed]
     return EvaluationResult(
-        dataset_version=dataset.version,
-        dataset_sha256=dataset_sha256,
+        query_version=dataset.version,
+        query_sha256=query_sha256,
         corpus_hash=corpus_hash,
         model=model,
         k=dataset.k,
@@ -565,8 +609,8 @@ def record_evaluation(path: Path, result: EvaluationResult) -> EvaluationGate:
         )
     chosen = next(score for score in result.scores if score.dimensions == result.chosen_dimensions)
     return EvaluationGate(
-        dataset_version=result.dataset_version,
-        dataset_sha256=result.dataset_sha256,
+        query_version=result.query_version,
+        query_sha256=result.query_sha256,
         corpus_hash=result.corpus_hash,
         result_sha256=hashlib.sha256(contents).hexdigest(),
         metric=result.quality_metric,
@@ -583,8 +627,8 @@ def load_evaluation_gate(path: Path) -> EvaluationGate:
         raise CorpusValidationError(f"evaluation result has no passing dimension: {path}")
     chosen = next(score for score in result.scores if score.dimensions == result.chosen_dimensions)
     return EvaluationGate(
-        dataset_version=result.dataset_version,
-        dataset_sha256=result.dataset_sha256,
+        query_version=result.query_version,
+        query_sha256=result.query_sha256,
         corpus_hash=result.corpus_hash,
         result_sha256=hashlib.sha256(contents).hexdigest(),
         metric=result.quality_metric,

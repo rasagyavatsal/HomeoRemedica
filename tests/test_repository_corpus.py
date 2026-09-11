@@ -39,14 +39,12 @@ def test_repository_combined_corpus_matches_config_and_conserves_every_passage()
         assert all(len(chunk.passages) == 1 for chunk in chunks)
 
 
-def test_repository_v9_preserves_queries_and_adds_only_a_semantic_instruction() -> None:
+def test_repository_v9_settings_apply_to_the_deduplicated_symptom_queries() -> None:
     config = load_evaluation_config(ROOT / "evaluation.toml")
-    dataset, _ = load_evaluation_dataset(config.dataset)
+    dataset, _ = load_evaluation_dataset(config.dataset, config.retrieval)
 
-    previous, _ = load_evaluation_dataset(ROOT / "evaluation/v7/queries.json")
-    assert dataset.version == "v9"
-    assert dataset.queries == previous.queries
-    assert dataset.minimum_quality == previous.minimum_quality == 0.8
+    assert dataset.version == "v3"
+    assert dataset.minimum_quality == 0.8
     assert dataset.remedy_name_normalization == "nfkcCasefoldWhitespace"
     assert dataset.lexical_query_mode == "contentTerms"
     assert dataset.ranking_unit == "globalRemedy"
@@ -71,13 +69,13 @@ def test_repository_evaluation_result_matches_its_isolated_configuration() -> No
         )
     books = repository_books(config)
     chunks = tuple(chunk for book in books for chunk in chunk_book(book, config.chunking))
-    _, dataset_digest = load_evaluation_dataset(config.dataset)
+    _, query_digest = load_evaluation_dataset(config.dataset, config.retrieval)
     try:
         gate = load_evaluation_gate(config.result)
     except CorpusValidationError as error:
         pytest.skip(f"recorded evaluation gate has no passing dimension: {error}")
 
-    assert gate.dataset_sha256 == dataset_digest
+    assert gate.query_sha256 == query_digest
     assert gate.corpus_hash == corpus_hash(chunks)
     assert gate.value >= gate.threshold
     assert gate.chosen_dimensions in config.dimensions

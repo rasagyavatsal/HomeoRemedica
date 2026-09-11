@@ -11,10 +11,21 @@ native_dimensions = 4096
 dimensions = [4096]
 model_input_limit = 32768
 
+[retrieval]
+k = 8
+ranking_unit = "globalRemedy"
+fusion_strategy = "normalizedScore"
+remedy_name_normalization = "nfkcCasefoldWhitespace"
+lexical_query_mode = "contentTerms"
+semantic_query_instruction = "Given a symptom description, retrieve relevant materia medica passages describing matching symptoms, modalities, and locations."
+candidate_pool_size = 640
+quality_metric = "recallAtK"
+minimum_quality = 0.8
+
 [output]
-dataset = "evaluation/v9/queries.json"
-result = "evaluation/v9/result.json"
-cache_directory = ".cache/evaluation"
+dataset = "benchmarks/queries/v3.json"
+result = "benchmarks/results/v9.json"
+cache_directory = ".cache/benchmarks"
 
 [books."allen-nosodes"]
 title = "Allen's Materia Medica of the Nosodes"
