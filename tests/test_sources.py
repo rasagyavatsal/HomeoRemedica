@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from homeoremedica_corpus.sources import (
+from corpus.sources import (
     BookDefinition,
     CorpusValidationError,
     load_combined_books,

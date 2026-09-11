@@ -13,9 +13,9 @@ from pathlib import Path
 
 import sqlite_vec
 
-from homeoremedica_corpus.chunking import Chunk
-from homeoremedica_corpus.embeddings import EmbeddedChunk, EmbeddingSpec
-from homeoremedica_corpus.sources import Book, CorpusValidationError
+from corpus.chunking import Chunk
+from corpus.embeddings import EmbeddedChunk, EmbeddingSpec
+from corpus.sources import Book, CorpusValidationError
 
 FTS5_TOKENIZER = "porter unicode61 remove_diacritics 2"
 

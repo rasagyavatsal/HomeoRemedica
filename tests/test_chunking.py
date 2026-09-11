@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import replace
 from pathlib import Path
 
-from homeoremedica_corpus.chunking import ChunkingPolicy, chunk_book
-from homeoremedica_corpus.sources import Book, Remedy, Section
+from corpus.chunking import ChunkingPolicy, chunk_book
+from corpus.sources import Book, Remedy, Section
 
 
 def passage(words: int, marker: str) -> str:

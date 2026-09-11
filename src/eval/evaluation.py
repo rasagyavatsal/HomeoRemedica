@@ -14,15 +14,15 @@ from typing import BinaryIO, Literal, cast
 
 from pydantic import Field, model_validator
 
-from homeoremedica_corpus.chunking import Chunk
-from homeoremedica_corpus.sources import CorpusValidationError
-from homeoremedica_evaluation.contracts import Contract, EvaluationGate, canonical_json_bytes
-from homeoremedica_evaluation.embeddings import (
+from corpus.chunking import Chunk
+from corpus.sources import CorpusValidationError
+from eval.contracts import Contract, EvaluationGate, canonical_json_bytes
+from eval.embeddings import (
     EMBEDDING_BATCH_SIZE,
     EmbeddingProvider,
     preflight_embedding_inputs,
 )
-from homeoremedica_evaluation.retrieval import (
+from eval.retrieval import (
     DEFAULT_HYBRID_RETRIEVAL_POLICY,
     FTS5_TOKENIZER,
     HybridRetrievalPolicy,

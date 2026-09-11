@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 import sqlite_vec
 
-from homeoremedica_corpus.chunking import Chunk
+from corpus.chunking import Chunk
 
 FTS5_TOKENIZER = "porter unicode61 remove_diacritics 2"
 

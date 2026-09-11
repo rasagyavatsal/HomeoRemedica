@@ -10,12 +10,12 @@ from pathlib import Path
 
 from compare_v8_retrieval import replay
 
-from homeoremedica_corpus.chunking import corpus_hash
-from homeoremedica_evaluation.cli import _load_chunks
-from homeoremedica_evaluation.config import load_evaluation_config
-from homeoremedica_evaluation.evaluation import load_evaluation_dataset
-from homeoremedica_evaluation.paths import evaluation_path
-from homeoremedica_evaluation.retrieval import normalized_remedy_name
+from corpus.chunking import corpus_hash
+from eval.cli import _load_chunks
+from eval.config import load_evaluation_config
+from eval.evaluation import load_evaluation_dataset
+from eval.paths import evaluation_path
+from eval.retrieval import normalized_remedy_name
 
 ROOT = Path(__file__).resolve().parents[1]
 

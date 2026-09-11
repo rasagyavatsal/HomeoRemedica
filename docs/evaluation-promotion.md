@@ -9,8 +9,8 @@ shared inputs.
 
 The audit found four concrete couplings in the previous layout:
 
-- `homeoremedica_corpus.evaluation` imported the release embedding, retrieval, contract, and path
-  modules, while experiment scripts imported private helpers from the corpus CLI.
+- The evaluator lived inside the corpus package and imported release embedding, retrieval,
+  contract, and path modules, while experiment scripts imported private helpers from the corpus CLI.
 - `corpus.toml` mixed release dimensions and paths with evaluation dimensions, datasets, and result
   paths.
 - Local build descriptors, published manifests, the publisher, and the chat cache all required a
@@ -21,17 +21,17 @@ Those dependencies are now assigned as follows:
 
 | Concern | Chat and release owner | Evaluation owner | Boundary |
 | --- | --- | --- | --- |
-| Retrieval | `homeoremedica_chat.corpus` | `homeoremedica_evaluation.retrieval` | Neither imports the other. |
-| Query embeddings | `homeoremedica_corpus.embeddings`, used by the current chat runtime | `homeoremedica_evaluation.embeddings` | Provider code and constants are independent. |
-| Configuration | `corpus.toml` and `homeoremedica_corpus.config` | `evaluation.toml` and `homeoremedica_evaluation.config` | Evaluation settings are rejected by the release config schema. |
+| Retrieval | `chat.corpus` | `eval.retrieval` | Neither imports the other. |
+| Query embeddings | `corpus.embeddings`, used by the current chat runtime | `eval.embeddings` | Provider code and constants are independent. |
+| Configuration | `corpus.toml` and `corpus.config` | `evaluation.toml` and `eval.config` | Evaluation settings are rejected by the release config schema. |
 | Contracts and utilities | Chat/release manifest contracts | Evaluation result contracts and path helpers | Evaluation results are not present in new build descriptors or manifests. |
 | Outputs | `output/releases/` and the configured chat cache | `evaluation/` and `.cache/evaluation/` | Experimental files cannot become release artifacts implicitly. |
 | Source data | `dataset/combined.json` through corpus source/chunking modules | The same file through the same deterministic source/chunking modules | Reading the same source does not couple runtime behavior. |
 
-The repository boundary check parses package imports and both TOML files. It permits evaluation to
-import only the source and chunking modules from `homeoremedica_corpus`; production packages cannot
-import `homeoremedica_evaluation`. Chat validates the `evaluation` field in schema 1 manifests for
-backward compatibility, while schema 2 builds and manifests omit it.
+The repository boundary check parses package imports and both TOML files. The `chat` and `eval`
+packages may import `corpus`; `corpus` imports neither of them, `eval` does not import `chat`, and
+production packages cannot import `eval`. Chat validates the `evaluation` field in schema 1
+manifests for backward compatibility, while schema 2 builds and manifests omit it.
 
 ## Promoting an experiment
 
@@ -41,7 +41,7 @@ implementation change:
 1. Record the experiment, its dataset version, settings, caches needed for reproduction, metrics,
    and limitations under `evaluation/`.
 2. Implement the selected behavior in the chat-owned retrieval or embedding path. Copy the specific
-   behavior and its stable parameters; do not add an import from `homeoremedica_evaluation`.
+   behavior and its stable parameters; do not add an import from `eval`.
 3. Add focused chat tests for the promoted behavior, including a before/after retrieval fixture and
    manifest compatibility checks when embedding or artifact metadata changes. Keep evaluation tests
    as independent evidence for the experiment.

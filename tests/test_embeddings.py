@@ -7,15 +7,15 @@ from time import sleep
 import pytest
 import requests
 
-from homeoremedica_corpus import embeddings as embeddings_module
-from homeoremedica_corpus.chunking import ChunkingPolicy, chunk_book
-from homeoremedica_corpus.embeddings import (
+from corpus import embeddings as embeddings_module
+from corpus.chunking import ChunkingPolicy, chunk_book
+from corpus.embeddings import (
     EmbeddingSpec,
     OpenRouterEmbeddingProvider,
     embed_chunks,
     preflight_embedding_inputs,
 )
-from homeoremedica_corpus.sources import Book, CorpusValidationError, Remedy, Section
+from corpus.sources import Book, CorpusValidationError, Remedy, Section
 
 
 def chunks_with(*passages: str):

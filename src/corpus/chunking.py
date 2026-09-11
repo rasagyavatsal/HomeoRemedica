@@ -7,7 +7,7 @@ import unicodedata
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 
-from homeoremedica_corpus.sources import Book
+from corpus.sources import Book
 
 TokenCounter = Callable[[str], int]
 

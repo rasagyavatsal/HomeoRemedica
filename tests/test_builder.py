@@ -7,11 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from homeoremedica_corpus.artifacts import ArtifactSpec
-from homeoremedica_corpus.builder import build_release
-from homeoremedica_corpus.chunking import ChunkingPolicy
-from homeoremedica_corpus.embeddings import EmbeddingSpec
-from homeoremedica_corpus.sources import Book, CorpusValidationError, Remedy, Section
+from corpus.artifacts import ArtifactSpec
+from corpus.builder import build_release
+from corpus.chunking import ChunkingPolicy
+from corpus.embeddings import EmbeddingSpec
+from corpus.sources import Book, CorpusValidationError, Remedy, Section
 
 
 def book(book_id: str, passage: str) -> Book:

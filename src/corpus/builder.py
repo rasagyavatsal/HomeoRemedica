@@ -8,23 +8,23 @@ from collections.abc import Callable
 from dataclasses import dataclass, replace
 from pathlib import Path
 
-from homeoremedica_corpus.artifacts import (
+from corpus.artifacts import (
     ArtifactSpec,
     BuiltArtifact,
     create_book_artifact,
 )
-from homeoremedica_corpus.chunking import (
+from corpus.chunking import (
     DEFAULT_CHUNKING_POLICY,
     ChunkingPolicy,
     chunk_book,
     corpus_hash,
 )
-from homeoremedica_corpus.embeddings import (
+from corpus.embeddings import (
     EmbeddingProvider,
     embed_chunks,
     preflight_embedding_inputs,
 )
-from homeoremedica_corpus.sources import Book
+from corpus.sources import Book
 
 
 @dataclass(frozen=True, slots=True)

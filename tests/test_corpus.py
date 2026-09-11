@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 import sqlite_vec
 
-from homeoremedica_chat.corpus import (
+from chat.corpus import (
     EXPECTED_BOOK_IDS,
     ActivePointer,
     CorpusCache,

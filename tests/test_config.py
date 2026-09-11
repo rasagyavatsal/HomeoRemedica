@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from homeoremedica_corpus.config import load_pipeline_config
+from corpus.config import load_pipeline_config
 
 CONFIG = """
 [corpus]

@@ -12,10 +12,10 @@ remain separate from the repository and require their own credentials where appl
 
 ## Repository layout
 
-- `src/homeoremedica_chat/` — terminal `ask`, `chat`, and corpus-cache client.
-- `src/homeoremedica_corpus/` — source validation, chunking, release building, and Cloud Storage
+- `src/chat/` — terminal `ask`, `chat`, and corpus-cache client.
+- `src/corpus/` — source validation, chunking, release building, and Cloud Storage
   publication pipeline.
-- `src/homeoremedica_evaluation/` — isolated experimental retrieval, embedding, configuration,
+- `src/eval/` — isolated experimental retrieval, embedding, configuration,
   contracts, and result tooling.
 - `dataset/raw-text/` — source text for the four books.
 - `dataset/processed/` — validated per-book sectioned JSON sources.
@@ -24,9 +24,8 @@ remain separate from the repository and require their own credentials where appl
 - `corpus.toml` — chat release configuration.
 - `evaluation.toml` — experimental evaluation inputs, embeddings, and output locations.
 
-The three Python packages are built and tested together from the repository root.
-The `homeoremedica_chat` import path is retained for Python compatibility. The project and CLI are
-branded `HomeoRemedica`.
+The `chat`, `corpus`, and `eval` Python packages are built and tested together from the repository
+root. The project and CLI remain branded `HomeoRemedica`.
 
 ## Reproducible environment
 
@@ -151,7 +150,7 @@ service-account private keys in `.env` or commit credential files.
 
 ```text
 terminal
-  -> homeoremedica_chat.cli
+  -> chat.cli
       -> CorpusCache (verified local release)
           -> SQLite FTS5 + sqlite-vec hybrid search
       -> HybridChatModel

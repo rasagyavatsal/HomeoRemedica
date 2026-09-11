@@ -13,13 +13,13 @@ from pathlib import Path
 
 import numpy as np
 
-from homeoremedica_corpus.chunking import corpus_hash
-from homeoremedica_evaluation import evaluation
-from homeoremedica_evaluation.cli import _load_chunks
-from homeoremedica_evaluation.config import load_evaluation_config
-from homeoremedica_evaluation.embeddings import OpenRouterEmbeddingProvider
-from homeoremedica_evaluation.paths import evaluation_path
-from homeoremedica_evaluation.retrieval import (
+from corpus.chunking import corpus_hash
+from eval import evaluation
+from eval.cli import _load_chunks
+from eval.config import load_evaluation_config
+from eval.embeddings import OpenRouterEmbeddingProvider
+from eval.paths import evaluation_path
+from eval.retrieval import (
     DEFAULT_HYBRID_RETRIEVAL_POLICY,
     ScoredCandidate,
 )
