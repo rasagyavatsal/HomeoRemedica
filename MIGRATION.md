@@ -40,7 +40,8 @@ evaluation fixtures, release tooling, and synthetic tests:
 - `src/eval/` contains isolated experimental retrieval, embeddings, contracts,
   configuration, and result tooling.
 - `dataset/` contains the raw text and processed, sectioned JSON source data.
-- `evaluation/` contains versioned retrieval queries and immutable results.
+- `benchmarks/queries/` contains independently versioned query data, while
+  `benchmarks/results/` contains immutable evaluation results and their supporting records.
 - `corpus.toml` defines the chat corpus, embedding, compatibility, and release contract.
 - `evaluation.toml` independently defines experimental inputs, embeddings, caches, and results.
 

@@ -1,11 +1,5 @@
 {
-  "version": "v8",
-  "k": 8,
-  "rankingUnit": "globalRemedy",
-  "fusionStrategy": "normalizedScore",
-  "candidatePoolSize": 640,
-  "qualityMetric": "recallAtK",
-  "minimumQuality": 0.8,
+  "version": "v3",
   "queries": [
     {
       "id": "hpathy-191114-single",
@@ -8308,7 +8302,5 @@
         }
       ]
     }
-  ],
-  "remedyNameNormalization": "nfkcCasefoldWhitespace",
-  "lexicalQueryMode": "contentTerms"
+  ]
 }
