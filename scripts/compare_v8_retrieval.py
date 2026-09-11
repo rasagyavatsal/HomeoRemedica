@@ -8,12 +8,12 @@ import json
 import math
 from pathlib import Path
 
-from homeoremedica_corpus.chunking import corpus_hash
-from homeoremedica_evaluation import evaluation as evaluation
-from homeoremedica_evaluation.cli import _load_chunks
-from homeoremedica_evaluation.config import load_evaluation_config
-from homeoremedica_evaluation.paths import evaluation_path
-from homeoremedica_evaluation.retrieval import (
+from corpus.chunking import corpus_hash
+from eval import evaluation as evaluation
+from eval.cli import _load_chunks
+from eval.config import load_evaluation_config
+from eval.paths import evaluation_path
+from eval.retrieval import (
     DEFAULT_HYBRID_RETRIEVAL_POLICY,
     lexical_content_terms,
     normalized_remedy_name,

@@ -63,31 +63,19 @@ def violations() -> tuple[str, ...]:
 def pipeline_violations() -> tuple[str, ...]:
     """Keep experimental code and settings out of the chat release graph."""
     found: list[str] = []
-    production_roots = (ROOT / "src/homeoremedica_chat", ROOT / "src/homeoremedica_corpus")
-    for source_root in production_roots:
+    forbidden_imports = {
+        ROOT / "src/corpus": {"chat", "eval"},
+        ROOT / "src/chat": {"eval"},
+        ROOT / "src/eval": {"chat"},
+    }
+    for source_root, forbidden_roots in forbidden_imports.items():
         for path in source_root.glob("*.py"):
             for imported in _imports(path):
-                if imported == "homeoremedica_evaluation" or imported.startswith(
-                    "homeoremedica_evaluation."
-                ):
-                    found.append(f"production imports evaluation code: {path.relative_to(ROOT)}")
-
-    allowed_corpus_imports = {
-        "homeoremedica_corpus.chunking",
-        "homeoremedica_corpus.sources",
-    }
-    for path in (ROOT / "src/homeoremedica_evaluation").glob("*.py"):
-        for imported in _imports(path):
-            if imported.startswith("homeoremedica_chat"):
-                found.append(f"evaluation imports chat code: {path.relative_to(ROOT)}")
-            if (
-                imported.startswith("homeoremedica_corpus")
-                and imported not in allowed_corpus_imports
-            ):
-                found.append(
-                    f"evaluation imports production implementation: {path.relative_to(ROOT)} "
-                    f"({imported})"
-                )
+                imported_root = imported.partition(".")[0]
+                if imported_root in forbidden_roots:
+                    found.append(
+                        f"invalid package dependency: {path.relative_to(ROOT)} imports {imported}"
+                    )
 
     with (ROOT / "corpus.toml").open("rb") as source:
         corpus_settings = tomllib.load(source)

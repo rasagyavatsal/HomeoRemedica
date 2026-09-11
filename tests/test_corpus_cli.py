@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from homeoremedica_corpus.cli import main
+from corpus.cli import main
 
 from .test_config import CONFIG
 

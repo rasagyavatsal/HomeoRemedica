@@ -6,14 +6,14 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-from homeoremedica_corpus.builder import build_release
-from homeoremedica_corpus.chunking import chunk_book, corpus_hash
-from homeoremedica_corpus.config import PipelineConfig, load_pipeline_config
-from homeoremedica_corpus.contracts import compatibility_from_artifact_spec
-from homeoremedica_corpus.embeddings import OpenRouterEmbeddingProvider
-from homeoremedica_corpus.publication import CorpusPublisher
-from homeoremedica_corpus.sources import load_combined_books
-from homeoremedica_corpus.storage import GoogleCloudObjectStore
+from corpus.builder import build_release
+from corpus.chunking import chunk_book, corpus_hash
+from corpus.config import PipelineConfig, load_pipeline_config
+from corpus.contracts import compatibility_from_artifact_spec
+from corpus.embeddings import OpenRouterEmbeddingProvider
+from corpus.publication import CorpusPublisher
+from corpus.sources import load_combined_books
+from corpus.storage import GoogleCloudObjectStore
 
 
 def main(argv: Sequence[str] | None = None) -> int:

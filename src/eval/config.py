@@ -7,14 +7,14 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from homeoremedica_corpus.chunking import ChunkingPolicy
-from homeoremedica_corpus.sources import BookDefinition
-from homeoremedica_evaluation.embeddings import (
+from corpus.chunking import ChunkingPolicy
+from corpus.sources import BookDefinition
+from eval.embeddings import (
     QWEN3_EMBEDDING_MODEL,
     QWEN3_NATIVE_DIMENSIONS,
     EmbeddingSpec,
 )
-from homeoremedica_evaluation.paths import evaluation_cache_directory, evaluation_path
+from eval.paths import evaluation_cache_directory, evaluation_path
 
 
 class _Settings(BaseModel):

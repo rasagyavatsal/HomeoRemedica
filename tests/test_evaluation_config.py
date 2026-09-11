@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from homeoremedica_evaluation.config import load_evaluation_config
+from eval.config import load_evaluation_config
 
 CONFIG = """
 [source]

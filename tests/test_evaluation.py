@@ -8,9 +8,9 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from homeoremedica_corpus.chunking import chunk_book, corpus_hash
-from homeoremedica_corpus.sources import Book, CorpusValidationError, Remedy, Section
-from homeoremedica_evaluation.evaluation import (
+from corpus.chunking import chunk_book, corpus_hash
+from corpus.sources import Book, CorpusValidationError, Remedy, Section
+from eval.evaluation import (
     EvaluationDataset,
     EvaluationQuery,
     EvaluationTarget,
@@ -25,7 +25,7 @@ from homeoremedica_evaluation.evaluation import (
     record_evaluation,
     run_dimension_evaluation,
 )
-from homeoremedica_evaluation.retrieval import ScoredCandidate
+from eval.retrieval import ScoredCandidate
 
 
 def books() -> tuple[Book, ...]:
@@ -388,9 +388,9 @@ def test_content_queries_and_cross_book_identity_recover_a_matching_remedy(monke
         lexical_inputs.extend(queries)
         return ((),)
 
-    monkeypatch.setattr("homeoremedica_evaluation.evaluation.score_lexical_queries", lexical)
+    monkeypatch.setattr("eval.evaluation.score_lexical_queries", lexical)
     monkeypatch.setattr(
-        "homeoremedica_evaluation.evaluation.score_semantic_queries",
+        "eval.evaluation.score_semantic_queries",
         lambda *_args, **_kwargs: ((ScoredCandidate(beta_id, 0.9),),),
     )
     query_dataset = EvaluationDataset(

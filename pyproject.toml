@@ -16,9 +16,9 @@ dependencies = [
 ]
 
 [project.scripts]
-homeoremedica = "homeoremedica_chat.cli:main"
-homeoremedica-corpus = "homeoremedica_corpus.cli:main"
-homeoremedica-evaluation = "homeoremedica_evaluation.cli:main"
+homeoremedica = "chat.cli:main"
+homeoremedica-corpus = "corpus.cli:main"
+homeoremedica-evaluation = "eval.cli:main"
 
 [build-system]
 requires = ["uv-build>=0.11.23,<0.12"]
@@ -59,4 +59,4 @@ reportMissingTypeStubs = false
 required-version = ">=0.11.23,<0.12"
 
 [tool.uv.build-backend]
-module-name = ["homeoremedica_chat", "homeoremedica_corpus", "homeoremedica_evaluation"]
+module-name = ["chat", "corpus", "eval"]

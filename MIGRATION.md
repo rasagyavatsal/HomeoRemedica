@@ -5,7 +5,7 @@
 This release changes the repository from a browser product into the terminal-first
 HomeoRemedica project.
 The maintained entry point is now `homeoremedica`, the branded HomeoRemedica terminal client.
-The `homeoremedica_chat` Python import path remains available for compatibility.
+The terminal client is provided by the `chat` Python package.
 
 ### Removed
 
@@ -34,9 +34,10 @@ On 2026-09-04 the project adopted open distribution for both its software and so
 repository contains the complete client and corpus-pipeline codebase, configuration, source corpus,
 evaluation fixtures, release tooling, and synthetic tests:
 
-- `src/homeoremedica_corpus/` contains source validation, chunking, artifact building, publication,
+- `src/chat/` contains the terminal client, verified release cache, and hybrid retrieval runtime.
+- `src/corpus/` contains source validation, chunking, artifact building, publication,
   and Cloud Storage adapters.
-- `src/homeoremedica_evaluation/` contains isolated experimental retrieval, embeddings, contracts,
+- `src/eval/` contains isolated experimental retrieval, embeddings, contracts,
   configuration, and result tooling.
 - `dataset/` contains the raw text and processed, sectioned JSON source data.
 - `evaluation/` contains versioned retrieval queries and immutable results.

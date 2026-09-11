@@ -7,11 +7,11 @@ from collections.abc import Sequence
 from dataclasses import replace
 from pathlib import Path
 
-from homeoremedica_corpus.chunking import chunk_book, corpus_hash
-from homeoremedica_corpus.sources import load_combined_books
-from homeoremedica_evaluation.config import EvaluationConfig, load_evaluation_config
-from homeoremedica_evaluation.embeddings import OpenRouterEmbeddingProvider
-from homeoremedica_evaluation.evaluation import (
+from corpus.chunking import chunk_book, corpus_hash
+from corpus.sources import load_combined_books
+from eval.config import EvaluationConfig, load_evaluation_config
+from eval.embeddings import OpenRouterEmbeddingProvider
+from eval.evaluation import (
     load_evaluation_dataset,
     record_evaluation,
     run_dimension_evaluation,

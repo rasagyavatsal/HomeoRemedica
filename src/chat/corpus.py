@@ -17,7 +17,7 @@ import sqlite_vec
 from google.cloud import storage
 from pydantic import Field, model_validator
 
-from homeoremedica_chat.chat import Contract, RetrievedSource
+from chat.chat import Contract, RetrievedSource
 
 
 class CorpusError(RuntimeError):

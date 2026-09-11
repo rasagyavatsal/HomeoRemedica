@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 
-from homeoremedica_chat.chat import (
+from chat.chat import (
     ChatRequest,
     ChatService,
     ChatTurn,

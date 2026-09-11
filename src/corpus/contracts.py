@@ -6,7 +6,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from homeoremedica_corpus.artifacts import ArtifactSpec
+from corpus.artifacts import ArtifactSpec
 
 
 def _camel_case(value: str) -> str:
