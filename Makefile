@@ -1,7 +1,7 @@
 .PHONY: boundary build lint typecheck test check
 
 boundary:
-	python scripts/check_public_boundary.py
+	uv run --locked pytest tests/test_public_boundary.py
 
 build:
 	uv run --locked python -m build
