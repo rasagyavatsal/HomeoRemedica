@@ -244,14 +244,6 @@ scoring and reranking approaches. This remains an exploratory benchmark comparis
 falls below the unchanged 80% experimental threshold. These versions change the evaluator; the terminal
 client's existing chunk-level RRF search and raw query embeddings are a separate path.
 
-To reproduce the comparison after populating both versions' candidate caches, without network calls:
-
-```sh
-uv run --locked python scripts/compare_v8_retrieval.py
-uv run --locked python scripts/compare_v9_retrieval.py
-```
-
-The default comparison outputs are `.cache/evaluation/v8-comparison.json` and `v9-comparison.json`.
 Versioned evaluation results are immutable; rerunning the evaluator against an existing result
 refuses to overwrite it.
 
@@ -269,23 +261,6 @@ metadata used for evidence and citations. Inputs are sent in bounded batches. Na
 scored candidate rankings are cached under `.cache/evaluation/`, keyed by the corpus, model,
 dimensions, retrieval policy, and complete ordered inputs. Later fusion experiments can therefore
 reuse the paid embeddings and skip the exhaustive vector scan.
-
-With the document embedding cache already present, you can prepare semantic candidates using
-NumPy's exhaustive cosine search over document blocks. This optional development tool limits the
-document working set and reuses the same candidate-cache contract as the evaluator. It searches
-every vector; floating-point rounding and ties may differ from sqlite-vec. Its raw-query baseline
-reproduced v8's recorded recall, and synthetic tests compare its scores and rankings with sqlite-vec.
-
-```sh
-# --embed-queries permits OpenRouter calls only if these query embeddings are missing.
-uv run --locked python scripts/prepare_semantic_candidates.py --embed-queries
-uv run --locked homeoremedica-evaluation
-```
-
-Omit `--embed-queries` for cache-only operation. This command preserves existing candidate files;
-changing the instruction generates new query-embedding and semantic-candidate cache keys while
-reusing the document and lexical caches. NumPy is a development dependency, not a runtime dependency
-of the terminal client.
 
 Every ranking strategy (lexical, semantic, and fused) is scored at depth 8 with five metrics:
 
