@@ -46,7 +46,7 @@ make check
 ## HomeoRemedica web client
 
 The HomeoRemedica web client uses verified corpus releases from Google Cloud Storage, local SQLite
-FTS5 and `sqlite-vec` hybrid retrieval, OpenRouter for query embeddings, and Vertex AI for grounded
+FTS5 and `sqlite-vec` hybrid retrieval, OpenRouter for query embeddings, and Z.AI for grounded
 answer generation. Chat history lives in the browser and can be cleared at any time; it is sent to
 the API only as context for the current request.
 
@@ -58,9 +58,8 @@ Requirements:
 - [uv](https://docs.astral.sh/uv/) 0.11.x.
 - Node.js and npm for the browser client.
 - An [OpenRouter](https://openrouter.ai/) API key for query embeddings.
-- Google Cloud Application Default Credentials with permission to call Vertex AI in your selected
-  project.
-- Permission to read the configured corpus bucket for the startup corpus sync.
+- A [Z.AI](https://z.ai/) API key for grounded answer generation.
+- Google Cloud Application Default Credentials with permission to read the configured corpus bucket.
 
 Install dependencies and authenticate:
 
@@ -103,16 +102,16 @@ cp .env.example .env
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `OPENROUTER_API_KEY` | — | OpenRouter key used for Qwen3 query and corpus embeddings. |
-| `RAG_PROJECT` | `homeoremedica` | Google Cloud project used for corpus storage and Vertex AI. |
-| `RAG_LOCATION` | `us-central1` | Vertex AI location. |
+| `ZAI_API_KEY` | — | Z.AI key used for GLM-5.3-Flash answer generation. |
+| `RAG_PROJECT` | `homeoremedica` | Google Cloud project used for corpus storage. |
 | `RAG_BUCKET` | `homeoremedica-private-remedies` | Corpus artifact bucket. |
 | `RAG_CORPUS_PREFIX` | `corpora` | Release prefix inside the bucket. |
 | `RAG_CACHE_DIR` | `~/.cache/homeoremedica/corpus` | Local verified release cache. |
-| `RAG_MODEL` | `gemini-2.5-flash-lite` | Answer generation model. |
+| `RAG_MODEL` | `glm-5.3-flash` | Answer generation model. |
 | `RAG_MAX_OUTPUT_TOKENS` | `700` | Maximum generated answer size. |
 
-The web server uses Google Application Default Credentials for generation and corpus storage. Do not
-put service-account private keys in `.env` or commit credential files.
+The web server uses Google Application Default Credentials for corpus storage and `ZAI_API_KEY` for
+generation. Do not commit service-account private keys, API keys, or credential files.
 
 The API has two browser-facing endpoints:
 
@@ -129,7 +128,7 @@ browser
       -> CorpusCache (verified local release)
           -> SQLite FTS5 + sqlite-vec hybrid search
       -> HybridChatModel
-          -> OpenRouter Qwen3 query embedding + Vertex AI grounded answer
+          -> OpenRouter Qwen3 query embedding + Z.AI GLM-5.3-Flash grounded answer
       -> answer and stable source IDs
 ```
 
@@ -141,7 +140,8 @@ question:
    the corpus release. The client refuses to serve a corpus built with any other embedding model.
 3. FTS5 and vector search run across the selected books, then merge results with reciprocal-rank
    fusion.
-4. The eight highest-ranked excerpts are passed to `gemini-2.5-flash-lite`.
+4. The eight highest-ranked excerpts are passed to `glm-5.3-flash` through Z.AI's OpenAI-compatible
+   chat completion API.
 5. The API returns the answer, numbered citations, and the corpus version that produced them.
 
 `sync_corpus` validates the active pointer, manifest, object generations, sizes, SHA-256 digests,
