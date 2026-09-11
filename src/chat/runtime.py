@@ -4,8 +4,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from google import genai
-from google.genai import types
+import requests
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -16,6 +15,10 @@ from corpus.embeddings import (
     EmbeddingSpec,
     OpenRouterEmbeddingProvider,
 )
+
+DEFAULT_ZAI_BASE_URL = "https://api.z.ai/api/paas/v4"
+ZAI_API_KEY_ENV = "ZAI_API_KEY"
+ZAI_REQUEST_TIMEOUT = 60.0
 
 
 def _default_cache_dir() -> Path:
@@ -29,9 +32,8 @@ class Settings(BaseSettings):
     """Configuration for the local web service.
 
     Values can be passed as ``RAG_*`` environment variables or placed in a
-    ``.env``/``.env.local`` file. Generation authentication is intentionally
-    left to Application Default Credentials instead of being stored in settings;
-    query embeddings authenticate with ``OPENROUTER_API_KEY``.
+    ``.env``/``.env.local`` file. The Z.AI and OpenRouter API keys use their
+    provider-specific environment variable names.
     """
 
     model_config = SettingsConfigDict(
@@ -41,12 +43,12 @@ class Settings(BaseSettings):
     )
 
     project: str = "homeoremedica"
-    location: str = "us-central1"
     bucket: str = "homeoremedica-private-remedies"
     corpus_prefix: str = "corpora"
     cache_dir: Path = Field(default_factory=_default_cache_dir)
-    model: str = "gemini-2.5-flash-lite"
+    model: str = "glm-5.3-flash"
     max_output_tokens: int = Field(default=700, gt=0, le=4_096)
+    zai_api_key: str | None = Field(default=None, validation_alias=ZAI_API_KEY_ENV)
     openrouter_api_key: str | None = Field(default=None, validation_alias="OPENROUTER_API_KEY")
 
     @field_validator("cache_dir", mode="before")
@@ -55,35 +57,28 @@ class Settings(BaseSettings):
         return Path(value).expanduser()
 
 
-VERTEX_REQUEST_TIMEOUT_MS = 30_000
-
-
 class HybridChatModel:
-    """Hide Vertex AI generation and OpenRouter query embeddings behind the chat protocol."""
+    """Hide Z.AI generation and OpenRouter query embeddings behind the chat protocol."""
 
     def __init__(
         self,
         *,
-        project: str,
-        location: str,
         model: str,
         max_output_tokens: int,
         embedding_model: str,
         embedding_dimensions: int,
+        zai_api_key: str | None = None,
         openrouter_api_key: str | None = None,
         client: Any | None = None,
+        generation_session: Any | None = None,
         embedding_session: Any | None = None,
     ) -> None:
         self.model = model
-        self._max_output_tokens = max_output_tokens
-        self._client = client or genai.Client(
-            vertexai=True,
-            project=project,
-            location=location,
-            http_options=types.HttpOptions(
-                timeout=VERTEX_REQUEST_TIMEOUT_MS,
-                retry_options=types.HttpRetryOptions(attempts=1),
-            ),
+        self._client = client or ZaiChatClient(
+            api_key=zai_api_key,
+            model=model,
+            max_output_tokens=max_output_tokens,
+            session=generation_session,
         )
         self._embeddings = OpenRouterEmbeddingProvider(
             EmbeddingSpec(
@@ -105,19 +100,101 @@ class HybridChatModel:
         return self._embeddings.embed_query(text)
 
     def generate(self, prompt: str, *, system_instruction: str) -> str:
-        response = self._client.models.generate_content(
-            model=self.model,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=system_instruction,
-                temperature=0.2,
-                max_output_tokens=self._max_output_tokens,
-                automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
-            ),
-        )
-        if not response.text or not response.text.strip():
-            raise RuntimeError("Vertex AI returned an empty chat response")
-        return response.text
+        return self._client.generate(prompt, system_instruction=system_instruction)
+
+
+class ZaiChatClient:
+    """Call Z.AI's OpenAI-compatible chat completion endpoint."""
+
+    def __init__(
+        self,
+        *,
+        api_key: str | None,
+        model: str,
+        max_output_tokens: int,
+        base_url: str = DEFAULT_ZAI_BASE_URL,
+        session: Any | None = None,
+        timeout: float = ZAI_REQUEST_TIMEOUT,
+    ) -> None:
+        resolved_key = _resolve_zai_api_key(api_key)
+        if not resolved_key:
+            raise ValueError(
+                f"a Z.AI API key is required; set {ZAI_API_KEY_ENV} in the environment or .env"
+            )
+        self._model = model
+        self._max_output_tokens = max_output_tokens
+        self._base_url = base_url.rstrip("/")
+        self._session = session or requests.Session()
+        self._timeout = timeout
+        self._headers = {
+            "Authorization": f"Bearer {resolved_key}",
+            "Content-Type": "application/json",
+        }
+
+    def generate(self, prompt: str, *, system_instruction: str) -> str:
+        payload = {
+            "model": self._model,
+            "messages": [
+                {"role": "system", "content": system_instruction},
+                {"role": "user", "content": prompt},
+            ],
+            "thinking": {"type": "enabled"},
+            "reasoning_effort": "max",
+            "temperature": 1.0,
+            "max_tokens": self._max_output_tokens,
+            "stream": False,
+        }
+        try:
+            response = self._session.post(
+                f"{self._base_url}/chat/completions",
+                headers=self._headers,
+                json=payload,
+                timeout=self._timeout,
+            )
+        except requests.RequestException as error:
+            raise RuntimeError(f"Z.AI chat request failed: {error}") from error
+        if response.status_code != 200:
+            raise RuntimeError(
+                "Z.AI chat request failed with status "
+                f"{response.status_code}: {str(response.text)[:200]}"
+            )
+        try:
+            parsed = response.json()
+        except ValueError as error:
+            raise RuntimeError("Z.AI returned an invalid JSON chat response") from error
+        if not isinstance(parsed, dict):
+            raise RuntimeError("Z.AI returned an unexpected chat response shape")
+        choices = parsed.get("choices")
+        if not isinstance(choices, list) or not choices or not isinstance(choices[0], dict):
+            raise RuntimeError("Z.AI returned no chat choices")
+        message = choices[0].get("message")
+        if not isinstance(message, dict):
+            raise RuntimeError("Z.AI returned an invalid chat message")
+        content = message.get("content")
+        if not isinstance(content, str) or not content.strip():
+            raise RuntimeError("Z.AI returned an empty chat response")
+        return content
+
+
+def _resolve_zai_api_key(api_key: str | None) -> str | None:
+    if api_key:
+        return api_key
+    if key := os.environ.get(ZAI_API_KEY_ENV):
+        return key
+    for name in (".env.local", ".env"):
+        try:
+            lines = Path(name).read_text(encoding="utf-8").splitlines()
+        except OSError:
+            continue
+        for line in reversed(lines):
+            stripped = line.strip()
+            if stripped.startswith("export "):
+                stripped = stripped[len("export ") :].strip()
+            if stripped.startswith(f"{ZAI_API_KEY_ENV}="):
+                value = stripped.split("=", 1)[1].strip().strip('"').strip("'")
+                if value:
+                    return value
+    return None
 
 
 def build_service(settings: Settings, *, sync: bool = True) -> ChatService:
@@ -130,12 +207,11 @@ def build_service(settings: Settings, *, sync: bool = True) -> ChatService:
             f"{QWEN3_EMBEDDING_MODEL}. Sync a corpus release built with the supported model."
         )
     model = HybridChatModel(
-        project=settings.project,
-        location=settings.location,
         model=settings.model,
         max_output_tokens=settings.max_output_tokens,
         embedding_model=embedding_model,
         embedding_dimensions=corpus.embedding_dimensions,
+        zai_api_key=settings.zai_api_key,
         openrouter_api_key=settings.openrouter_api_key,
     )
     return ChatService(

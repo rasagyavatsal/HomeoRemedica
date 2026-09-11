@@ -48,8 +48,8 @@ class StubCorpus:
         )
 
 
-class StubVertexModel:
-    model = "gemini-2.5-flash-lite"
+class StubChatModel:
+    model = "glm-5.3-flash"
 
     def __init__(self) -> None:
         self.embedding_input: str | None = None
@@ -69,7 +69,7 @@ class StubVertexModel:
 
 def test_chat_grounds_a_conversation_aware_answer_in_versioned_sources() -> None:
     corpus = StubCorpus()
-    model = StubVertexModel()
+    model = StubChatModel()
     service = ChatService(corpus=corpus, model=model, embedding_dimensions=1536)
 
     response = service.chat(
@@ -97,7 +97,7 @@ def test_chat_grounds_a_conversation_aware_answer_in_versioned_sources() -> None
         "Kent describes irritability and oversensitivity [1]."
     )
     assert response.corpus_version == "2026-08-15.v1"
-    assert response.model == "gemini-2.5-flash-lite"
+    assert response.model == "glm-5.3-flash"
     assert response.sources[0].id == "2026-08-15.v1/kent-lectures/chk_1"
 
 

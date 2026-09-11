@@ -175,9 +175,9 @@ class ChatService:
         model_input_limit = getattr(corpus, "model_input_limit", DEFAULT_MODEL_INPUT_LIMIT_TOKENS)
         if not isinstance(model_input_limit, int) or model_input_limit <= 0:
             raise ValueError("corpus model input limit must be a positive integer")
-        # Vertex reports its input budget in tokens. Four characters per token
-        # is intentionally conservative and keeps the prompt below that
-        # budget without needing a tokenizer in the serving container.
+        # Four characters per token is intentionally conservative and keeps
+        # the prompt below the model's input budget without needing a tokenizer
+        # in the serving container.
         self._generation_char_limit = min(
             MAX_GENERATION_PROMPT_CHARS,
             max(512, model_input_limit * 4),
