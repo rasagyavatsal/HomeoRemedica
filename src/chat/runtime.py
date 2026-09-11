@@ -9,9 +9,9 @@ from google.genai import types
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from homeoremedica_chat.chat import ChatService
-from homeoremedica_chat.corpus import CorpusCache, CorpusRelease, GoogleCloudCorpusSource
-from homeoremedica_corpus.embeddings import (
+from chat.chat import ChatService
+from chat.corpus import CorpusCache, CorpusRelease, GoogleCloudCorpusSource
+from corpus.embeddings import (
     QWEN3_EMBEDDING_MODEL,
     EmbeddingSpec,
     OpenRouterEmbeddingProvider,

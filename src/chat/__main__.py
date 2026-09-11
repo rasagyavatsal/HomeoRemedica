@@ -1,4 +1,4 @@
-from homeoremedica_chat.cli import main
+from chat.cli import main
 
 if __name__ == "__main__":
     raise SystemExit(main())

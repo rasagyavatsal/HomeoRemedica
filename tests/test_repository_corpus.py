@@ -4,11 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from homeoremedica_corpus.chunking import chunk_book, corpus_hash
-from homeoremedica_corpus.config import load_pipeline_config
-from homeoremedica_corpus.sources import CorpusValidationError, load_combined_books
-from homeoremedica_evaluation.config import load_evaluation_config
-from homeoremedica_evaluation.evaluation import load_evaluation_dataset, load_evaluation_gate
+from corpus.chunking import chunk_book, corpus_hash
+from corpus.config import load_pipeline_config
+from corpus.sources import CorpusValidationError, load_combined_books
+from eval.config import load_evaluation_config
+from eval.evaluation import load_evaluation_dataset, load_evaluation_gate
 
 ROOT = Path(__file__).resolve().parents[1]
 pytestmark = pytest.mark.skipif(

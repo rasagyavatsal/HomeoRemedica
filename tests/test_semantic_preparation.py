@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from homeoremedica_evaluation.retrieval import score_semantic_queries
+from eval.retrieval import score_semantic_queries
 from scripts.prepare_semantic_candidates import _open_vectors, exhaustive_cosine_top_k
 
 

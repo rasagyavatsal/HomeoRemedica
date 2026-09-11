@@ -5,7 +5,7 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-from homeoremedica_chat.chat import (
+from chat.chat import (
     MAX_HISTORY_CHARS,
     MAX_HISTORY_TURNS,
     ChatRequest,
@@ -13,7 +13,7 @@ from homeoremedica_chat.chat import (
     ChatService,
     ChatTurn,
 )
-from homeoremedica_chat.runtime import Settings, build_service, sync_corpus
+from chat.runtime import Settings, build_service, sync_corpus
 
 
 def main(argv: Sequence[str] | None = None) -> int:

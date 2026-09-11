@@ -1,5 +1,5 @@
-from homeoremedica_chat import cli
-from homeoremedica_chat.chat import ChatRequest, ChatResponse, Citation
+from chat import cli
+from chat.chat import ChatRequest, ChatResponse, Citation
 
 
 def test_cli_uses_the_branded_homeoremedica_program_name() -> None:

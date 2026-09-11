@@ -8,13 +8,13 @@ from pathlib import Path
 
 import pytest
 
-from homeoremedica_corpus.artifacts import ArtifactSpec
-from homeoremedica_corpus.builder import BuiltRelease, build_release
-from homeoremedica_corpus.contracts import compatibility_from_artifact_spec
-from homeoremedica_corpus.embeddings import EmbeddingSpec
-from homeoremedica_corpus.publication import CorpusPublisher, PublicationError
-from homeoremedica_corpus.sources import Book, Remedy, Section
-from homeoremedica_corpus.storage import ObjectRef, PublicationConflict
+from corpus.artifacts import ArtifactSpec
+from corpus.builder import BuiltRelease, build_release
+from corpus.contracts import compatibility_from_artifact_spec
+from corpus.embeddings import EmbeddingSpec
+from corpus.publication import CorpusPublisher, PublicationError
+from corpus.sources import Book, Remedy, Section
+from corpus.storage import ObjectRef, PublicationConflict
 
 
 @dataclass

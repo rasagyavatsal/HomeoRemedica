@@ -7,14 +7,14 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from homeoremedica_corpus.artifacts import ArtifactSpec
-from homeoremedica_corpus.chunking import ChunkingPolicy
-from homeoremedica_corpus.embeddings import (
+from corpus.artifacts import ArtifactSpec
+from corpus.chunking import ChunkingPolicy
+from corpus.embeddings import (
     QWEN3_EMBEDDING_MODEL,
     QWEN3_NATIVE_DIMENSIONS,
     EmbeddingSpec,
 )
-from homeoremedica_corpus.sources import BookDefinition
+from corpus.sources import BookDefinition
 
 
 class _Settings(BaseModel):

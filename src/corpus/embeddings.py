@@ -7,23 +7,29 @@ from collections.abc import Callable, Iterable, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Protocol, TypeVar
+from typing import Any, Protocol, TypeVar, cast
 
 import requests
 
-from homeoremedica_corpus.chunking import Chunk
-from homeoremedica_corpus.sources import CorpusValidationError
+from corpus.chunking import Chunk
+from corpus.sources import CorpusValidationError
 
 QWEN3_EMBEDDING_MODEL = "qwen/qwen3-embedding-8b"
 QWEN3_NATIVE_DIMENSIONS = 4096
 DEFAULT_OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 OPENROUTER_API_KEY_ENV = "OPENROUTER_API_KEY"
-EMBEDDING_BATCH_SIZE = 64
 
+# OpenRouter has no token-counting endpoint for embeddings, so preflight uses
+# the same conservative four-characters-per-token bound as the chat client.
 _ESTIMATED_CHARS_PER_TOKEN = 4
+
 _RETRYABLE_STATUS_CODES = frozenset({408, 409, 429, 500, 502, 503, 504})
 _MAX_ATTEMPTS = 3
 _INITIAL_BACKOFF_SECONDS = 1.0
+EMBEDDING_BATCH_SIZE = 64
+
+# Mirrors the chat client's SettingsConfigDict env_file order: the real
+# environment wins, then .env.local overrides .env.
 _DOTENV_FILES = (".env.local", ".env")
 
 
@@ -32,19 +38,24 @@ class EmbeddingSpec:
     model: str = QWEN3_EMBEDDING_MODEL
     dimensions: int = 768
     native_dimensions: int = QWEN3_NATIVE_DIMENSIONS
+    document_task_type: str = "RETRIEVAL_DOCUMENT"
+    query_task_type: str = "RETRIEVAL_QUERY"
+    normalization: str = "l2"
+    distance_function: str = "cosine"
     model_input_limit: int = 32_768
 
     def __post_init__(self) -> None:
-        if self.model != QWEN3_EMBEDDING_MODEL:
-            raise ValueError(f"evaluation embedding model must be {QWEN3_EMBEDDING_MODEL}")
-        if self.native_dimensions != QWEN3_NATIVE_DIMENSIONS:
-            raise ValueError(
-                f"{QWEN3_EMBEDDING_MODEL} returns {QWEN3_NATIVE_DIMENSIONS} native dimensions"
-            )
+        if self.native_dimensions <= 0:
+            raise ValueError("embedding native dimensions must be positive")
         if not 1 <= self.dimensions <= self.native_dimensions:
-            raise ValueError("evaluation embedding dimensions are outside the native vector")
+            raise ValueError(
+                "embedding dimensions must be between 1 and the model's "
+                f"{self.native_dimensions} native dimensions"
+            )
         if self.model_input_limit <= 0:
-            raise ValueError("evaluation embedding model input limit must be positive")
+            raise ValueError("embedding model input limit must be positive")
+        if self.normalization != "l2" or self.distance_function != "cosine":
+            raise ValueError("this artifact schema requires L2 normalization and cosine distance")
 
 
 class EmbeddingProvider(Protocol):
@@ -57,13 +68,26 @@ class EmbeddingProvider(Protocol):
     def embed_query(self, text: str) -> tuple[float, ...]: ...
 
 
+TokenCounter = Callable[[str], int]
 ProgressCallback = Callable[[int, int], None]
 Input = TypeVar("Input")
 Output = TypeVar("Output")
 
 
+@dataclass(frozen=True, slots=True)
+class EmbeddedChunk:
+    chunk: Chunk
+    embedding: tuple[float, ...]
+
+
 class OpenRouterEmbeddingProvider:
-    """Evaluation-owned OpenRouter client for reproducible experimental vectors."""
+    """OpenRouter embedding access with truncation and normalization hidden from callers.
+
+    Qwen3 embeddings are always requested at the model's native dimensionality
+    and reduced to the configured Matryoshka prefix locally, so every OpenRouter
+    upstream provider serves identical vectors whether or not it honors a
+    ``dimensions`` request parameter.
+    """
 
     def __init__(
         self,
@@ -91,6 +115,8 @@ class OpenRouterEmbeddingProvider:
         return math.ceil(len(text) / _ESTIMATED_CHARS_PER_TOKEN)
 
     def embed_document(self, text: str) -> tuple[float, ...]:
+        # OpenRouter's embeddings API has no task conditioning; the configured
+        # task types are compatibility metadata recorded in corpus artifacts.
         return self._embed(text)
 
     def embed_query(self, text: str) -> tuple[float, ...]:
@@ -103,19 +129,24 @@ class OpenRouterEmbeddingProvider:
         return self._embed_batch(texts)
 
     def _embed(self, text: str) -> tuple[float, ...]:
-        response = self._request(
-            {"model": self.spec.model, "input": text, "encoding_format": "float"}
-        )
+        response = self._request({
+            "model": self.spec.model,
+            "input": text,
+            "encoding_format": "float",
+        })
         _reject_oversized_input(response, self.spec.model_input_limit)
-        return self._parse_embeddings(response, 1)[0]
+        embeddings = self._parse_embeddings(response, 1)
+        return embeddings[0]
 
     def _embed_batch(self, texts: Sequence[str]) -> tuple[tuple[float, ...], ...]:
         materialized = tuple(texts)
         if not materialized:
             return ()
-        response = self._request(
-            {"model": self.spec.model, "input": list(materialized), "encoding_format": "float"}
-        )
+        response = self._request({
+            "model": self.spec.model,
+            "input": list(materialized),
+            "encoding_format": "float",
+        })
         return self._parse_embeddings(response, len(materialized))
 
     def _parse_embeddings(
@@ -123,9 +154,11 @@ class OpenRouterEmbeddingProvider:
     ) -> tuple[tuple[float, ...], ...]:
         data = response.get("data")
         if not isinstance(data, list) or len(data) != expected:
+            if expected == 1:
+                raise RuntimeError("OpenRouter did not return exactly one embedding for one input")
             raise RuntimeError(
-                f"OpenRouter returned {len(data) if isinstance(data, list) else 0} "
-                f"embeddings for {expected} inputs"
+                f"OpenRouter returned {len(data) if isinstance(data, list) else 0} embeddings "
+                f"for {expected} inputs"
             )
         indexed = [self._parse_embedding_item(item, index) for index, item in enumerate(data)]
         if sorted(index for index, _ in indexed) != list(range(expected)):
@@ -148,7 +181,9 @@ class OpenRouterEmbeddingProvider:
                 "OpenRouter returned the wrong embedding dimensions "
                 f"(expected {self.spec.native_dimensions}, got {len(embedding)})"
             )
-        return index, _normalize_l2(embedding[: self.spec.dimensions])
+        if self.spec.dimensions < self.spec.native_dimensions:
+            embedding = embedding[: self.spec.dimensions]
+        return index, _normalize_l2(embedding)
 
     def _request(self, payload: dict[str, Any]) -> dict[str, Any]:
         url = f"{self._base_url}/embeddings"
@@ -170,7 +205,7 @@ class OpenRouterEmbeddingProvider:
                     return _parse_embedding_response(response)
                 last_error = RuntimeError(
                     "OpenRouter embeddings request failed with status "
-                    f"{response.status_code}: {str(response.text)[:200]}"
+                    f"{response.status_code}: {_response_snippet(response)}"
                 )
                 if response.status_code not in _RETRYABLE_STATUS_CODES:
                     raise last_error
@@ -181,6 +216,72 @@ class OpenRouterEmbeddingProvider:
         raise RuntimeError(
             f"OpenRouter embeddings request failed after {_MAX_ATTEMPTS} attempts: {last_error}"
         ) from last_error
+
+
+def _resolve_api_key(api_key: str | None) -> str | None:
+    if api_key:
+        return api_key
+    key = os.environ.get(OPENROUTER_API_KEY_ENV)
+    if key:
+        return key
+    for name in _DOTENV_FILES:
+        value = _read_dotenv_key(Path(name), OPENROUTER_API_KEY_ENV)
+        if value:
+            return value
+    return None
+
+
+def _read_dotenv_key(path: Path, name: str) -> str | None:
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return None
+    for line in reversed(lines):
+        stripped = line.strip()
+        if stripped.startswith("export "):
+            stripped = stripped[len("export ") :].strip()
+        if not stripped.startswith(f"{name}="):
+            continue
+        value = stripped.split("=", 1)[1].strip().strip('"').strip("'")
+        if value:
+            return value
+    return None
+
+
+def _parse_embedding_response(response: Any) -> dict[str, Any]:
+    try:
+        parsed = response.json()
+    except ValueError as error:
+        raise RuntimeError("OpenRouter returned an invalid JSON embedding response") from error
+    if not isinstance(parsed, dict):
+        raise RuntimeError("OpenRouter returned an unexpected embedding response shape")
+    return parsed
+
+
+def _reject_oversized_input(response: dict[str, Any], model_input_limit: int) -> None:
+    usage = response.get("usage")
+    if not isinstance(usage, dict):
+        return
+    prompt_tokens = usage.get("prompt_tokens")
+    if isinstance(prompt_tokens, bool) or not isinstance(prompt_tokens, int):
+        return
+    if prompt_tokens > model_input_limit:
+        raise RuntimeError(
+            f"OpenRouter embedded an input of {prompt_tokens} tokens, above the "
+            f"{model_input_limit} token model input limit"
+        )
+
+
+def _retry_after_seconds(response: Any) -> float | None:
+    try:
+        delay = float(response.headers.get("Retry-After"))
+    except (TypeError, ValueError):
+        return None
+    return delay if delay >= 0 else None
+
+
+def _response_snippet(response: Any) -> str:
+    return str(response.text)[:200]
 
 
 def preflight_embedding_inputs(
@@ -199,10 +300,14 @@ def preflight_embedding_inputs(
         start=1,
     ):
         if token_count > model_input_limit:
-            indexes = ",".join(str(index) for index in chunk.passage_indexes)
+            passage_label = (
+                f"passage {chunk.passage_indexes[0]}"
+                if len(chunk.passage_indexes) == 1
+                else "passages " + ",".join(str(index) for index in chunk.passage_indexes)
+            )
             oversized.append(
                 f"{chunk.book_id} / {chunk.remedy_name} / {chunk.section_title} / "
-                f"passage(s) {indexes}: {token_count} tokens exceeds {model_input_limit}"
+                f"{passage_label}: {token_count} tokens exceeds {model_input_limit}"
             )
         if progress is not None:
             progress(completed, len(materialized))
@@ -212,61 +317,77 @@ def preflight_embedding_inputs(
         )
 
 
-def _resolve_api_key(api_key: str | None) -> str | None:
-    if api_key:
-        return api_key
-    if key := os.environ.get(OPENROUTER_API_KEY_ENV):
-        return key
-    for name in _DOTENV_FILES:
-        if value := _read_dotenv_key(Path(name), OPENROUTER_API_KEY_ENV):
-            return value
-    return None
-
-
-def _read_dotenv_key(path: Path, name: str) -> str | None:
-    try:
-        lines = path.read_text(encoding="utf-8").splitlines()
-    except OSError:
-        return None
-    for line in reversed(lines):
-        stripped = line.strip().removeprefix("export ").strip()
-        if stripped.startswith(f"{name}="):
-            value = stripped.split("=", 1)[1].strip().strip('"').strip("'")
-            if value:
-                return value
-    return None
-
-
-def _parse_embedding_response(response: Any) -> dict[str, Any]:
-    try:
-        parsed = response.json()
-    except ValueError as error:
-        raise RuntimeError("OpenRouter returned an invalid JSON embedding response") from error
-    if not isinstance(parsed, dict):
-        raise RuntimeError("OpenRouter returned an unexpected embedding response shape")
-    return parsed
-
-
-def _reject_oversized_input(response: dict[str, Any], model_input_limit: int) -> None:
-    usage = response.get("usage")
-    prompt_tokens = usage.get("prompt_tokens") if isinstance(usage, dict) else None
-    if (
-        isinstance(prompt_tokens, int)
-        and not isinstance(prompt_tokens, bool)
-        and prompt_tokens > model_input_limit
-    ):
-        raise RuntimeError(
-            f"OpenRouter embedded an input of {prompt_tokens} tokens, above the "
-            f"{model_input_limit} token model input limit"
+def embed_chunks(
+    chunks: Iterable[Chunk],
+    provider: EmbeddingProvider,
+    model_input_limit: int,
+    *,
+    preflight: bool = True,
+    workers: int = 1,
+    progress: ProgressCallback | None = None,
+) -> tuple[EmbeddedChunk, ...]:
+    materialized = tuple(chunks)
+    if preflight:
+        preflight_embedding_inputs(
+            materialized,
+            provider,
+            model_input_limit,
+            workers=workers,
         )
 
+    def validate(chunk: Chunk, embedding: Iterable[float]) -> EmbeddedChunk:
+        materialized_embedding = tuple(embedding)
+        if len(materialized_embedding) != provider.dimensions:
+            raise RuntimeError(
+                f"Embedding provider returned {len(materialized_embedding)} dimensions; "
+                f"expected {provider.dimensions}"
+            )
+        return EmbeddedChunk(chunk=chunk, embedding=materialized_embedding)
 
-def _retry_after_seconds(response: Any) -> float | None:
-    try:
-        delay = float(response.headers.get("Retry-After"))
-    except (TypeError, ValueError):
-        return None
-    return delay if delay >= 0 else None
+    embedded = []
+    batch_embed = getattr(provider, "embed_documents", None)
+    if callable(batch_embed):
+        typed_batch_embed = cast(Callable[[Sequence[str]], Iterable[Iterable[float]]], batch_embed)
+        batches = tuple(_batches(materialized, EMBEDDING_BATCH_SIZE))
+        completed = 0
+        for chunk_batch, embeddings in zip(
+            batches,
+            _bounded_map(
+                lambda batch: tuple(
+                    typed_batch_embed(tuple(chunk.embedding_text for chunk in batch))
+                ),
+                batches,
+                workers,
+            ),
+            strict=True,
+        ):
+            if len(embeddings) != len(chunk_batch):
+                raise RuntimeError(
+                    "Embedding provider returned a different number of vectors than inputs"
+                )
+            for chunk, embedding in zip(chunk_batch, embeddings, strict=True):
+                embedded.append(validate(chunk, embedding))
+                completed += 1
+                if progress is not None:
+                    progress(completed, len(materialized))
+    else:
+
+        def embed(chunk: Chunk) -> EmbeddedChunk:
+            return validate(chunk, provider.embed_document(chunk.embedding_text))
+
+        for completed, item in enumerate(
+            _bounded_map(embed, materialized, workers),
+            start=1,
+        ):
+            embedded.append(item)
+            if progress is not None:
+                progress(completed, len(materialized))
+    return tuple(embedded)
+
+
+def _batches[BatchItem](values: Sequence[BatchItem], size: int) -> Iterable[Sequence[BatchItem]]:
+    for start in range(0, len(values), size):
+        yield values[start : start + size]
 
 
 def _normalize_l2(values: Iterable[float]) -> tuple[float, ...]:
@@ -286,7 +407,7 @@ def _bounded_map(
         raise ValueError("embedding workers must be positive")
     if workers == 1:
         return map(function, inputs)
-    executor = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="evaluation-embedding")
+    executor = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="openrouter-embedding")
 
     def results() -> Iterable[Output]:
         try:

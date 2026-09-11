@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from homeoremedica_corpus.cli import _parser as corpus_parser
-from homeoremedica_corpus.config import load_pipeline_config
-from homeoremedica_corpus.embeddings import OpenRouterEmbeddingProvider as ReleaseEmbeddingProvider
-from homeoremedica_evaluation.cli import _parser as evaluation_parser
-from homeoremedica_evaluation.config import load_evaluation_config
-from homeoremedica_evaluation.embeddings import (
+from corpus.cli import _parser as corpus_parser
+from corpus.config import load_pipeline_config
+from corpus.embeddings import OpenRouterEmbeddingProvider as ReleaseEmbeddingProvider
+from eval.cli import _parser as evaluation_parser
+from eval.config import load_evaluation_config
+from eval.embeddings import (
     OpenRouterEmbeddingProvider as EvaluationEmbeddingProvider,
 )
 from scripts.check_public_boundary import pipeline_violations

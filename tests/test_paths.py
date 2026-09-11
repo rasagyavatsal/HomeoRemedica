@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from homeoremedica_evaluation.paths import evaluation_cache_directory, evaluation_path
+from eval.paths import evaluation_cache_directory, evaluation_path
 
 
 def test_evaluation_paths_accept_relative_and_absolute_json(tmp_path: Path) -> None:

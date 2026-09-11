@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from homeoremedica_corpus.chunking import ChunkingPolicy, chunk_book
-from homeoremedica_corpus.sources import Book, Remedy, Section
-from homeoremedica_evaluation.retrieval import (
+from corpus.chunking import ChunkingPolicy, chunk_book
+from corpus.sources import Book, Remedy, Section
+from eval.retrieval import (
     lexical_content_terms,
     normalized_remedy_name,
     rank_lexical_queries,

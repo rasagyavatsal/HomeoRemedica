@@ -6,8 +6,8 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
-from homeoremedica_corpus.artifacts import ArtifactSpec, sha256_file, validate_book_artifact
-from homeoremedica_corpus.contracts import (
+from corpus.artifacts import ArtifactSpec, sha256_file, validate_book_artifact
+from corpus.contracts import (
     ActivePointer,
     BuildDescriptor,
     Compatibility,
@@ -15,8 +15,8 @@ from homeoremedica_corpus.contracts import (
     ReleaseManifest,
     canonical_json_bytes,
 )
-from homeoremedica_corpus.embeddings import EmbeddingSpec
-from homeoremedica_corpus.storage import ObjectRef, ObjectStore
+from corpus.embeddings import EmbeddingSpec
+from corpus.storage import ObjectRef, ObjectStore
 
 
 class PublicationError(RuntimeError):
