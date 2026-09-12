@@ -1,12 +1,6 @@
-import { FormEvent, KeyboardEvent, useEffect, useState } from "react";
+import { FormEvent, KeyboardEvent, useState } from "react";
 
 type Role = "user" | "assistant";
-
-type Book = {
-  bookId: string;
-  title: string;
-  author: string | null;
-};
 
 type Citation = {
   id: string;
@@ -57,22 +51,10 @@ function boundedHistory(messages: Message[]) {
 }
 
 export default function App() {
-  const [books, setBooks] = useState<Book[]>([]);
-  const [selectedBookIds, setSelectedBookIds] = useState<string[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [booksLoading, setBooksLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchJson<{ books: Book[] }>("/api/books")
-      .then((data) => setBooks(data.books))
-      .catch((reason: unknown) => {
-        setError(reason instanceof Error ? reason.message : "Could not load the books.");
-      })
-      .finally(() => setBooksLoading(false));
-  }, []);
 
   async function sendMessage(event?: FormEvent) {
     event?.preventDefault();
@@ -89,8 +71,7 @@ export default function App() {
         method: "POST",
         body: JSON.stringify({
           message,
-          history: boundedHistory(previousMessages),
-          ...(selectedBookIds.length > 0 ? { bookIds: selectedBookIds } : {})
+          history: boundedHistory(previousMessages)
         })
       });
       setMessages((current) => [
@@ -111,131 +92,68 @@ export default function App() {
     }
   }
 
-  function toggleBook(bookId: string) {
-    setSelectedBookIds((current) =>
-      current.includes(bookId)
-        ? current.filter((id) => id !== bookId)
-        : [...current, bookId]
-    );
-  }
-
-  function clearChat() {
-    setMessages([]);
-    setError(null);
-  }
-
   return (
     <div className="app-shell">
-      <header className="topbar">
-        <div>
-          <p className="eyebrow">Historical reference assistant</p>
-          <h1>HomeoRemedica</h1>
-        </div>
-        <button
-          className="secondary-button"
-          type="button"
-          onClick={clearChat}
-          disabled={!messages.length || loading}
-        >
-          Clear chat
-        </button>
-      </header>
-
-      <main className="workspace">
-        <aside className="sidebar">
-          <div>
-            <p className="eyebrow">Source books</p>
-            <h2>Choose your sources</h2>
-            <p className="muted">Leave every book unchecked to search the full corpus.</p>
-          </div>
-          {booksLoading ? (
-            <p className="status">Loading books…</p>
-          ) : (
-            <fieldset className="book-list">
-              <legend className="sr-only">Books to search</legend>
-              {books.map((book) => (
-                <label className="book-option" key={book.bookId}>
-                  <input
-                    type="checkbox"
-                    checked={selectedBookIds.includes(book.bookId)}
-                    onChange={() => toggleBook(book.bookId)}
-                    disabled={loading}
-                  />
-                  <span>
-                    <strong>{book.title}</strong>
-                    {book.author && <small>{book.author}</small>}
-                  </span>
-                </label>
-              ))}
-            </fieldset>
+      <main className="chat-panel" aria-label="Chat">
+        <div className="messages" aria-live="polite">
+          {messages.length === 0 && (
+            <div className="empty-state">
+              <h1>Ask a question</h1>
+              <p>Explore the historical materia medica with the chat assistant.</p>
+            </div>
           )}
-        </aside>
+          {messages.map((message, index) => (
+            <article className={`message ${message.role}`} key={`${message.role}-${index}`}>
+              <p className="message-role">{message.role === "user" ? "You" : "HomeoRemedica"}</p>
+              <div className="message-content">{message.content}</div>
+              {message.sources && message.sources.length > 0 && (
+                <details className="citations">
+                  <summary>Sources ({message.sources.length})</summary>
+                  <ol>
+                    {message.sources.map((source) => (
+                      <li key={source.id}>
+                        <strong>{source.bookTitle}</strong>
+                        <span>
+                          {source.author && `${source.author} · `}
+                          {source.remedyName} · {source.sectionTitle}
+                        </span>
+                        <code>{source.id}</code>
+                        <p>{source.text}</p>
+                      </li>
+                    ))}
+                  </ol>
+                </details>
+              )}
+            </article>
+          ))}
+          {loading && (
+            <article className="message assistant typing" aria-label="Loading answer">
+              <p className="message-role">HomeoRemedica</p>
+              <div className="message-content">Thinking…</div>
+            </article>
+          )}
+        </div>
 
-        <section className="chat-panel" aria-label="Chat">
-          <div className="messages" aria-live="polite">
-            {messages.length === 0 && (
-              <div className="empty-state">
-                <span className="mark">H</span>
-                <h2>Ask the books a question</h2>
-                <p>
-                  Explore historical materia medica with answers grounded in the selected excerpts.
-                </p>
-              </div>
-            )}
-            {messages.map((message, index) => (
-              <article className={`message ${message.role}`} key={`${message.role}-${index}`}>
-                <p className="message-role">{message.role === "user" ? "You" : "HomeoRemedica"}</p>
-                <div className="message-content">{message.content}</div>
-                {message.sources && message.sources.length > 0 && (
-                  <details className="citations">
-                    <summary>Sources ({message.sources.length})</summary>
-                    <ol>
-                      {message.sources.map((source) => (
-                        <li key={source.id}>
-                          <strong>{source.bookTitle}</strong>
-                          <span>
-                            {source.author && `${source.author} · `}
-                            {source.remedyName} · {source.sectionTitle}
-                          </span>
-                          <code>{source.id}</code>
-                          <p>{source.text}</p>
-                        </li>
-                      ))}
-                    </ol>
-                  </details>
-                )}
-              </article>
-            ))}
-            {loading && (
-              <article className="message assistant typing" aria-label="Loading answer">
-                <p className="message-role">HomeoRemedica</p>
-                <div className="message-content">Thinking…</div>
-              </article>
-            )}
-          </div>
-
-          {error && <p className="error" role="alert">{error}</p>}
-          <form className="composer" onSubmit={(event) => void sendMessage(event)}>
-            <textarea
-              value={input}
-              onChange={(event) => setInput(event.target.value)}
-              onKeyDown={handleInputKeyDown}
-              placeholder="Ask about a remedy, symptom, or passage…"
-              rows={3}
-              maxLength={4000}
-              disabled={loading || booksLoading}
-              aria-label="Message"
-            />
-            <button
-              className="send-button"
-              type="submit"
-              disabled={loading || booksLoading || !input.trim()}
-            >
-              {loading ? "Sending…" : "Send"}
-            </button>
-          </form>
-          <p className="disclaimer">Historical materia medica reference only—not medical advice.</p>
-        </section>
+        {error && <p className="error" role="alert">{error}</p>}
+        <form className="composer" onSubmit={(event) => void sendMessage(event)}>
+          <textarea
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            onKeyDown={handleInputKeyDown}
+            placeholder="Ask about a remedy, symptom, or passage…"
+            rows={3}
+            maxLength={4000}
+            disabled={loading}
+            aria-label="Message"
+          />
+          <button
+            className="send-button"
+            type="submit"
+            disabled={loading || !input.trim()}
+          >
+            {loading ? "Sending…" : "Send"}
+          </button>
+        </form>
       </main>
     </div>
   );
