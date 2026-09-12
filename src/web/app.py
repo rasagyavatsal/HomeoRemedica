@@ -18,11 +18,13 @@ logger = logging.getLogger(__name__)
 _FAILURE_STATUS_CODES = {
     "timeout": 504,
     "provider": 502,
+    "token_exhaustion": 502,
     "internal": 500,
 }
 _FAILURE_DETAILS = {
     "timeout": "The request took too long to complete. Please try again.",
     "provider": "The chat service is temporarily unavailable. Please try again shortly.",
+    "token_exhaustion": "Response limit reached. Please try again.",
     "internal": "Something went wrong while preparing the answer. Please try again.",
 }
 

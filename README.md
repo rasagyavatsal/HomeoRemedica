@@ -108,7 +108,7 @@ cp .env.example .env
 | `ZAI_API_KEY` | — | Z.AI key used for GLM-5.3-Flash answer generation. |
 | `RAG_CORPUS_DIR` | `artifacts/corpus` | Directory containing `active.json` and local releases. |
 | `RAG_MODEL` | `glm-5.3-flash` | Answer generation model. |
-| `RAG_MAX_OUTPUT_TOKENS` | `700` | Maximum generated answer size. |
+| `RAG_MAX_OUTPUT_TOKENS` | `4096` | Maximum generated answer size. |
 
 The web server verifies `active.json`, its manifest, the artifact digest, SQLite integrity, vector
 dimensions, and release metadata during startup. Keep API keys in the environment or an ignored
@@ -122,8 +122,10 @@ The API has two browser-facing endpoints:
 | `POST /api/chat` | Generate an answer from a message, optional history, and optional `bookIds`. |
 
 Chat failures return `504` when an upstream request times out, `502` when an embedding or answer
-provider fails, and `500` for an unexpected backend failure. The response contains a generic
-retry message; server logs record only the failed stage, failure category, and exception type.
+provider fails or reaches the response limit, and `500` for an unexpected backend failure. A
+generation with `finish_reason: "length"` is classified as token exhaustion and discarded; it returns
+`Response limit reached. Please try again.` instead of displaying incomplete answer text. Server logs
+record only the failed stage, failure category, and exception type.
 
 ### Retrieval and answer flow
 

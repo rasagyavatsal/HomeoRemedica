@@ -105,6 +105,12 @@ def test_chat_endpoint_returns_a_client_error_for_an_unknown_book(tmp_path: Path
             504,
             "The request took too long to complete. Please try again.",
         ),
+        (
+            "answer_generation",
+            "token_exhaustion",
+            502,
+            "Response limit reached. Please try again.",
+        ),
     ],
 )
 def test_chat_endpoint_maps_failures_and_logs_safe_stage_metadata(

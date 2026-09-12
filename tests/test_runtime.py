@@ -6,6 +6,7 @@ from typing import Any
 import pytest
 import requests
 
+from chat.errors import TokenExhaustionError
 from chat.runtime import DEFAULT_ZAI_BASE_URL, Settings, ZaiChatClient
 
 
@@ -41,6 +42,7 @@ def test_settings_defaults_to_glm_flash_and_reads_zai_key(monkeypatch: pytest.Mo
     settings = Settings()
 
     assert settings.model == "glm-5.3-flash"
+    assert settings.max_output_tokens == 4_096
     assert settings.zai_api_key == "zai-key"
     assert settings.corpus_dir == Path("artifacts/corpus")
 
@@ -58,7 +60,7 @@ def test_zai_client_sends_openai_compatible_chat_request() -> None:
     client = ZaiChatClient(
         api_key="zai-key",
         model="glm-5.3-flash",
-        max_output_tokens=700,
+        max_output_tokens=4_096,
         session=session,
     )
 
@@ -81,12 +83,42 @@ def test_zai_client_sends_openai_compatible_chat_request() -> None:
                 "thinking": {"type": "enabled"},
                 "reasoning_effort": "max",
                 "temperature": 1.0,
-                "max_tokens": 700,
+                "max_tokens": 4_096,
                 "stream": False,
             },
             "timeout": 60.0,
         }
     ]
+
+
+@pytest.mark.parametrize(
+    "content",
+    ["", "The patient is bruised and sore, especially after an injury."],
+    ids=["empty", "partial"],
+)
+def test_zai_client_rejects_empty_and_partial_length_responses(
+    content: str,
+) -> None:
+    client = ZaiChatClient(
+        api_key="zai-key",
+        model="glm-5.3-flash",
+        max_output_tokens=4_096,
+        session=FakeSession(
+            FakeResponse(
+                {
+                    "choices": [
+                        {
+                            "finish_reason": "length",
+                            "message": {"content": content},
+                        }
+                    ]
+                }
+            )
+        ),
+    )
+
+    with pytest.raises(TokenExhaustionError, match="output token limit"):
+        client.generate("prompt", system_instruction="instruction")
 
 
 def test_zai_client_requires_a_key(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
@@ -97,7 +129,7 @@ def test_zai_client_requires_a_key(monkeypatch: pytest.MonkeyPatch, tmp_path) ->
         ZaiChatClient(
             api_key=None,
             model="glm-5.3-flash",
-            max_output_tokens=700,
+            max_output_tokens=4_096,
             session=FakeSession(FakeResponse({})),
         )
 
@@ -106,7 +138,7 @@ def test_zai_client_classifies_timeouts_without_exposing_exception_details() -> 
     client = ZaiChatClient(
         api_key="zai-key",
         model="glm-5.3-flash",
-        max_output_tokens=700,
+        max_output_tokens=4_096,
         session=TimeoutSession(),
     )
 
@@ -120,7 +152,7 @@ def test_zai_client_does_not_include_provider_response_bodies_in_errors() -> Non
     client = ZaiChatClient(
         api_key="zai-key",
         model="glm-5.3-flash",
-        max_output_tokens=700,
+        max_output_tokens=4_096,
         session=FakeSession(
             FakeResponse({}, status_code=502, text="provider secret response")
         ),

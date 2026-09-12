@@ -28,6 +28,8 @@ type ErrorResponse = {
   detail?: unknown;
 };
 
+const RESPONSE_LIMIT_MESSAGE = "Response limit reached. Please try again.";
+
 class ApiRequestError extends Error {
   constructor(
     readonly status: number,
@@ -39,6 +41,9 @@ class ApiRequestError extends Error {
 }
 
 function userFacingError(status: number, detail: unknown): string {
+  if (detail === RESPONSE_LIMIT_MESSAGE) {
+    return RESPONSE_LIMIT_MESSAGE;
+  }
   if (status === 400 && typeof detail === "string") {
     return detail;
   }

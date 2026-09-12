@@ -7,7 +7,7 @@ from typing import Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from chat.errors import ChatFailure
+from chat.errors import ChatFailure, TokenExhaustionError
 
 
 def _camel_case(value: str) -> str:
@@ -261,6 +261,12 @@ class ChatService:
             ).strip()
         except ChatFailure:
             raise
+        except TokenExhaustionError as error:
+            raise ChatFailure(
+                stage="answer_generation",
+                kind="token_exhaustion",
+                error_type=type(error).__name__,
+            ) from error
         except TimeoutError as error:
             raise ChatFailure(
                 stage="answer_generation",
