@@ -24,14 +24,53 @@ type ChatResponse = {
   sources: Citation[];
 };
 
+type ErrorResponse = {
+  detail?: unknown;
+};
+
+class ApiRequestError extends Error {
+  constructor(
+    readonly status: number,
+    message: string
+  ) {
+    super(message);
+    this.name = "ApiRequestError";
+  }
+}
+
+function userFacingError(status: number, detail: unknown): string {
+  if (status === 400 && typeof detail === "string") {
+    return detail;
+  }
+  if (status === 400 || status === 422) {
+    return "Please check your message and try again.";
+  }
+  if (status === 502) {
+    return "The chat service is temporarily unavailable. Please try again shortly.";
+  }
+  if (status === 503) {
+    return "The chat service is still starting. Please try again in a moment.";
+  }
+  if (status === 504) {
+    return "The request took too long to complete. Please try again.";
+  }
+  if (status >= 500) {
+    return "Something went wrong while preparing the answer. Please try again.";
+  }
+  return "We couldn't get an answer. Please try again.";
+}
+
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(url, {
     headers: { "Content-Type": "application/json" },
     ...options
   });
-  const body = (await response.json().catch(() => null)) as { detail?: string } | null;
+  const body = (await response.json().catch(() => null)) as ErrorResponse | null;
   if (!response.ok) {
-    throw new Error(body?.detail || `Request failed (${response.status})`);
+    throw new ApiRequestError(
+      response.status,
+      userFacingError(response.status, body?.detail)
+    );
   }
   return body as T;
 }
@@ -79,7 +118,11 @@ export default function App() {
         { role: "assistant", content: response.answer, sources: response.sources }
       ]);
     } catch (reason: unknown) {
-      setError(reason instanceof Error ? reason.message : "Could not get an answer.");
+      setError(
+        reason instanceof ApiRequestError
+          ? reason.message
+          : "We couldn't reach the chat service. Check your connection and try again."
+      );
     } finally {
       setLoading(false);
     }

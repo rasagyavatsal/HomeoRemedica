@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 from chat.chat import BookSummary, ChatRequest, ChatResponse
+from chat.errors import ChatFailure
 from web.app import create_app
 
 
@@ -79,6 +82,79 @@ def test_chat_endpoint_returns_a_client_error_for_an_unknown_book(tmp_path: Path
 
     assert response.status_code == 400
     assert response.json() == {"detail": "unknown book IDs: missing"}
+
+
+@pytest.mark.parametrize(
+    ("stage", "kind", "status_code", "detail"),
+    [
+        (
+            "embedding",
+            "provider",
+            502,
+            "The chat service is temporarily unavailable. Please try again shortly.",
+        ),
+        (
+            "corpus_search",
+            "internal",
+            500,
+            "Something went wrong while preparing the answer. Please try again.",
+        ),
+        (
+            "answer_generation",
+            "timeout",
+            504,
+            "The request took too long to complete. Please try again.",
+        ),
+    ],
+)
+def test_chat_endpoint_maps_failures_and_logs_safe_stage_metadata(
+    tmp_path: Path,
+    caplog: pytest.LogCaptureFixture,
+    stage: str,
+    kind: str,
+    status_code: int,
+    detail: str,
+) -> None:
+    class FailingService(StubService):
+        def chat(self, request: ChatRequest) -> ChatResponse:
+            raise ChatFailure(
+                stage=stage,  # type: ignore[arg-type]
+                kind=kind,  # type: ignore[arg-type]
+                error_type="RuntimeError",
+            )
+
+    caplog.set_level(logging.ERROR, logger="web.app")
+    with TestClient(create_app(service=FailingService(), frontend_directory=tmp_path)) as client:
+        response = client.post("/api/chat", json={"message": "question"})
+
+    assert response.status_code == status_code
+    assert response.json() == {"detail": detail}
+    assert f"chat {stage.replace('_', ' ')} failed" in caplog.text
+    assert kind in caplog.text
+    assert "question" not in caplog.text
+
+
+def test_chat_endpoint_keeps_unexpected_error_details_out_of_the_response_and_logs(
+    tmp_path: Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    secret = "provider response secret"
+
+    class FailingService(StubService):
+        def chat(self, request: ChatRequest) -> ChatResponse:
+            raise Exception(secret)
+
+    caplog.set_level(logging.ERROR, logger="web.app")
+    with TestClient(create_app(service=FailingService(), frontend_directory=tmp_path)) as client:
+        response = client.post("/api/chat", json={"message": "question"})
+
+    assert response.status_code == 500
+    assert response.json() == {
+        "detail": "Something went wrong while preparing the answer. Please try again."
+    }
+    assert secret not in response.text
+    assert secret not in caplog.text
+    assert "error_type=Exception" in caplog.text
 
 
 def test_built_frontend_is_served_from_the_root(tmp_path: Path) -> None:

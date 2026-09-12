@@ -10,6 +10,7 @@ from chat.chat import (
     ChatTurn,
     RetrievedSource,
 )
+from chat.errors import ChatFailure
 
 
 class StubCorpus:
@@ -99,6 +100,77 @@ def test_chat_grounds_a_conversation_aware_answer_in_versioned_sources() -> None
     assert response.corpus_version == "2026-08-15.v1"
     assert response.model == "glm-5.3-flash"
     assert response.sources[0].id == "2026-08-15.v1/kent-lectures/chk_1"
+
+
+def test_chat_classifies_embedding_timeouts_without_exposing_details() -> None:
+    corpus = StubCorpus()
+    model = StubChatModel()
+
+    def fail_embedding(
+        text: str,
+        *,
+        dimensions: int,
+        task_type: str,
+    ) -> tuple[float, ...]:
+        raise TimeoutError("embedding secret")
+
+    model.embed_query = fail_embedding  # type: ignore[method-assign]
+
+    with pytest.raises(ChatFailure) as error:
+        ChatService(corpus=corpus, model=model, embedding_dimensions=1536).chat(
+            ChatRequest(message="question")
+        )
+
+    assert error.value.stage == "embedding"
+    assert error.value.kind == "timeout"
+    assert error.value.error_type == "TimeoutError"
+    assert "embedding secret" not in str(error.value)
+
+
+def test_chat_classifies_corpus_search_errors() -> None:
+    corpus = StubCorpus()
+    model = StubChatModel()
+
+    def fail_search(
+        query: str,
+        embedding: tuple[float, ...],
+        *,
+        book_ids: tuple[str, ...] | None,
+        limit: int,
+    ) -> tuple[RetrievedSource, ...]:
+        raise RuntimeError("database secret")
+
+    corpus.search = fail_search  # type: ignore[method-assign]
+
+    with pytest.raises(ChatFailure) as error:
+        ChatService(corpus=corpus, model=model, embedding_dimensions=1536).chat(
+            ChatRequest(message="question")
+        )
+
+    assert error.value.stage == "corpus_search"
+    assert error.value.kind == "internal"
+    assert error.value.error_type == "RuntimeError"
+    assert "database secret" not in str(error.value)
+
+
+def test_chat_classifies_answer_provider_errors() -> None:
+    corpus = StubCorpus()
+    model = StubChatModel()
+
+    def fail_generation(prompt: str, *, system_instruction: str) -> str:
+        raise RuntimeError("provider secret")
+
+    model.generate = fail_generation  # type: ignore[method-assign]
+
+    with pytest.raises(ChatFailure) as error:
+        ChatService(corpus=corpus, model=model, embedding_dimensions=1536).chat(
+            ChatRequest(message="question")
+        )
+
+    assert error.value.stage == "answer_generation"
+    assert error.value.kind == "provider"
+    assert error.value.error_type == "RuntimeError"
+    assert "provider secret" not in str(error.value)
 
 
 def test_chat_request_rejects_an_oversized_history_budget() -> None:

@@ -339,12 +339,25 @@ def test_provider_wraps_transport_and_permanent_http_failures() -> None:
         provider(transport).embed_document("text")
 
     forbidden = FakeSession([FakeResponse(status_code=401, text="missing credentials")])
-    with pytest.raises(RuntimeError, match=r"status 401.*missing credentials"):
+    with pytest.raises(RuntimeError, match=r"status 401") as error:
         provider(forbidden).embed_document("text")
+    assert "missing credentials" not in str(error.value)
 
     invalid = FakeSession([FakeResponse(payload="invalid")])
     with pytest.raises(RuntimeError, match="invalid JSON embedding response"):
         provider(invalid).embed_document("text")
+
+
+def test_provider_classifies_request_timeouts_without_exposing_exception_details(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(embeddings_module.time, "sleep", lambda _delay: None)
+    session = FakeSession([requests.Timeout("timeout secret")] * 3)
+
+    with pytest.raises(TimeoutError, match="timed out") as error:
+        provider(session).embed_document("text")
+
+    assert "timeout secret" not in str(error.value)
 
 
 def test_provider_retries_retryable_statuses_and_respects_retry_after(
