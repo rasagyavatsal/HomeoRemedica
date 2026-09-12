@@ -10,6 +10,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from chat.chat import ChatService
 from chat.corpus import CorpusRelease, load_local_corpus
+from chat.errors import TokenExhaustionError
 from corpus.embeddings import (
     QWEN3_EMBEDDING_MODEL,
     EmbeddingSpec,
@@ -41,7 +42,7 @@ class Settings(BaseSettings):
 
     corpus_dir: Path = Field(default_factory=_default_corpus_dir)
     model: str = "glm-5.3-flash"
-    max_output_tokens: int = Field(default=700, gt=0, le=4_096)
+    max_output_tokens: int = Field(default=4_096, gt=0, le=4_096)
     zai_api_key: str | None = Field(default=None, validation_alias=ZAI_API_KEY_ENV)
     openrouter_api_key: str | None = Field(default=None, validation_alias="OPENROUTER_API_KEY")
 
@@ -165,7 +166,10 @@ class ZaiChatClient:
         choices = parsed.get("choices")
         if not isinstance(choices, list) or not choices or not isinstance(choices[0], dict):
             raise RuntimeError("Z.AI returned no chat choices")
-        message = choices[0].get("message")
+        choice = choices[0]
+        if choice.get("finish_reason") == "length":
+            raise TokenExhaustionError
+        message = choice.get("message")
         if not isinstance(message, dict):
             raise RuntimeError("Z.AI returned an invalid chat message")
         content = message.get("content")

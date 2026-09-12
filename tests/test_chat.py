@@ -10,7 +10,7 @@ from chat.chat import (
     ChatTurn,
     RetrievedSource,
 )
-from chat.errors import ChatFailure
+from chat.errors import ChatFailure, TokenExhaustionError
 
 
 class StubCorpus:
@@ -171,6 +171,25 @@ def test_chat_classifies_answer_provider_errors() -> None:
     assert error.value.kind == "provider"
     assert error.value.error_type == "RuntimeError"
     assert "provider secret" not in str(error.value)
+
+
+def test_chat_classifies_token_exhaustion_without_returning_partial_content() -> None:
+    corpus = StubCorpus()
+    model = StubChatModel()
+
+    def fail_generation(prompt: str, *, system_instruction: str) -> str:
+        raise TokenExhaustionError
+
+    model.generate = fail_generation  # type: ignore[method-assign]
+
+    with pytest.raises(ChatFailure) as error:
+        ChatService(corpus=corpus, model=model, embedding_dimensions=1536).chat(
+            ChatRequest(message="question")
+        )
+
+    assert error.value.stage == "answer_generation"
+    assert error.value.kind == "token_exhaustion"
+    assert error.value.error_type == "TokenExhaustionError"
 
 
 def test_chat_request_rejects_an_oversized_history_budget() -> None:
