@@ -1,8 +1,8 @@
 [corpus]
-combined_dataset = "dataset/combined.json"
+corpus_dataset = "dataset/corpus.json"
 output_directory = "artifacts/corpus"
-artifact_schema_version = 1
-manifest_schema_version = 2
+artifact_schema_version = 2
+manifest_schema_version = 3
 sqlite_version = "3.53.4"
 sqlite_vec_version = "0.1.9"
 

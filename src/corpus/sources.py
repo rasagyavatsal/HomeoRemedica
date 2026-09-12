@@ -40,29 +40,29 @@ class Book:
     remedies: tuple[Remedy, ...]
 
 
-COMBINED_SCHEMA_VERSION = 1
+CORPUS_SCHEMA_VERSION = 1
 
 
-def load_combined_books(
+def load_corpus_books(
     path: Path,
     definitions: dict[str, BookDefinition],
 ) -> tuple[Book, ...]:
-    """Load and validate the combined remedy-merged corpus file as the pipeline source.
+    """Load and validate the remedy-merged corpus file as the pipeline source.
 
-    The combined file groups passages by remedy and then by source book, so it is
+    The corpus file groups passages by remedy and then by source book, so it is
     restructured into one validated ``Book`` per configured book ID. Content must be
     conserved exactly; the file supplies every passage consumed by the pipeline.
     """
     if path.is_symlink():
-        raise CorpusValidationError(f"Combined corpus file must not be a symbolic link: {path}")
+        raise CorpusValidationError(f"Corpus file must not be a symbolic link: {path}")
     if not path.is_file():
-        raise CorpusValidationError(f"Combined corpus file does not exist: {path}")
+        raise CorpusValidationError(f"Corpus file does not exist: {path}")
 
     contents = path.read_bytes()
     value = _parse_json(path, contents)
     if not isinstance(value, dict) or set(value) != {"metadata", "remedies"}:
         _invalid(path, "$", "top level must contain exactly 'metadata' and 'remedies' objects")
-    _validate_combined_metadata(path, value["metadata"], definitions)
+    _validate_corpus_metadata(path, value["metadata"], definitions)
 
     remedies_by_book = {book_id: {} for book_id in definitions}
     for remedy_name, books_value in value["remedies"].items():
@@ -100,7 +100,7 @@ def load_combined_books(
     )
 
 
-def _validate_combined_metadata(
+def _validate_corpus_metadata(
     path: Path,
     metadata: Any,
     definitions: dict[str, BookDefinition],
@@ -112,8 +112,8 @@ def _validate_combined_metadata(
             "$.metadata",
             "must contain exactly 'schema_version', 'generated_at', and 'books'",
         )
-    if metadata["schema_version"] != COMBINED_SCHEMA_VERSION:
-        _invalid(path, "$.metadata.schema_version", f"must be {COMBINED_SCHEMA_VERSION}")
+    if metadata["schema_version"] != CORPUS_SCHEMA_VERSION:
+        _invalid(path, "$.metadata.schema_version", f"must be {CORPUS_SCHEMA_VERSION}")
     if not isinstance(metadata["generated_at"], str) or not metadata["generated_at"].strip():
         _invalid(path, "$.metadata.generated_at", "must be a non-empty string")
     books = metadata["books"]

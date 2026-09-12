@@ -25,7 +25,7 @@ def test_pipelines_share_only_the_source_dataset_by_configuration() -> None:
     release = load_pipeline_config(ROOT / "corpus.toml")
     evaluation = load_evaluation_config(ROOT / "evaluation.toml")
 
-    assert release.combined_dataset == evaluation.combined_dataset
+    assert release.corpus_dataset == evaluation.corpus_dataset
     assert ReleaseEmbeddingProvider is not EvaluationEmbeddingProvider
     assert release.output_directory != evaluation.result.parent
     assert not evaluation.cache_directory.is_relative_to(release.output_directory)

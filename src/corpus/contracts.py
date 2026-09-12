@@ -39,14 +39,11 @@ class Compatibility(Contract):
 
 
 class PublishedBook(Contract):
-    """The local file and source metadata for one release book."""
+    """The identity, attribution, and completeness counts for one source book."""
 
     book_id: str = Field(min_length=1, max_length=128)
     title: str = Field(min_length=1, max_length=512)
     author: str | None = Field(default=None, max_length=256)
-    filename: str = Field(min_length=1, max_length=256)
-    byte_size: int = Field(gt=0, le=4 * 1024 * 1024 * 1024)
-    sha256: str
     source_sha256: str
     chunk_count: int = Field(gt=0, le=1_000_000)
     passage_count: int = Field(gt=0, le=1_000_000)
@@ -54,10 +51,25 @@ class PublishedBook(Contract):
     @model_validator(mode="after")
     def validate_identity(self) -> PublishedBook:
         _require_safe_path_component(self.book_id, "book ID")
-        if self.filename != f"books/{self.book_id}.sqlite":
-            raise ValueError("book filename must be derived from its book ID")
-        _validate_digest(self.sha256, "book sha256")
         _validate_digest(self.source_sha256, "source sha256")
+        return self
+
+
+class PublishedArtifact(Contract):
+    """The single SQLite database and its complete corpus counts."""
+
+    filename: str = Field(min_length=1, max_length=256)
+    byte_size: int = Field(gt=0, le=4 * 1024 * 1024 * 1024)
+    sha256: str
+    book_count: int = Field(gt=0, le=16)
+    chunk_count: int = Field(gt=0, le=1_000_000)
+    passage_count: int = Field(gt=0, le=1_000_000)
+
+    @model_validator(mode="after")
+    def validate_artifact(self) -> PublishedArtifact:
+        if self.filename != "corpus.sqlite":
+            raise ValueError("corpus artifact filename must be corpus.sqlite")
+        _validate_digest(self.sha256, "corpus artifact sha256")
         return self
 
 
@@ -69,20 +81,32 @@ class ReleaseManifest(Contract):
     corpus_version: str = Field(min_length=1, max_length=128)
     corpus_hash: str
     compatibility: Compatibility
+    artifact: PublishedArtifact
     books: tuple[PublishedBook, ...] = Field(min_length=1, max_length=16)
 
     @model_validator(mode="after")
     def validate_release(self) -> ReleaseManifest:
         _require_safe_path_component(self.corpus_version, "corpus version")
-        if self.manifest_schema_version not in {1, 2}:
+        if self.manifest_schema_version != 3:
             raise ValueError("unsupported manifest schema version")
-        if self.artifact_schema_version != 1:
+        if self.artifact_schema_version != 2:
             raise ValueError("unsupported artifact schema version")
         _validate_digest(self.corpus_hash, "corpus hash")
         book_ids = [book.book_id for book in self.books]
         if len(set(book_ids)) != len(book_ids):
             raise ValueError("release contains duplicate book IDs")
+        if self.artifact.book_count != len(self.books):
+            raise ValueError("corpus artifact book count does not match the manifest")
+        if self.artifact.chunk_count != sum(book.chunk_count for book in self.books):
+            raise ValueError("corpus artifact chunk count does not match the manifest")
+        if self.artifact.passage_count != sum(book.passage_count for book in self.books):
+            raise ValueError("corpus artifact passage count does not match the manifest")
         return self
+
+    @property
+    def database(self) -> PublishedArtifact:
+        """Readable alias for callers that refer to the artifact as the database."""
+        return self.artifact
 
 
 class ActivePointer(Contract):

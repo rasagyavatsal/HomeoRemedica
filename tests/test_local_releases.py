@@ -46,6 +46,7 @@ def artifact_spec(version: str) -> ArtifactSpec:
         embedding=EmbeddingSpec(dimensions=2),
         sqlite_version=sqlite3.sqlite_version,
         sqlite_vec_version="0.1.9",
+        artifact_schema_version=2,
     )
 
 
@@ -61,7 +62,7 @@ def test_build_creates_a_manifest_and_atomically_activates_the_release(tmp_path:
 
     assert release.release_directory == output / "2026-09-11.test"
     assert (release.release_directory / "manifest.json").is_file()
-    assert (release.release_directory / "books/alpha.sqlite").is_file()
+    assert (release.release_directory / "corpus.sqlite").is_file()
     active = json.loads((output / "active.json").read_text())
     assert active["corpusVersion"] == "2026-09-11.test"
     assert active["manifestPath"] == "2026-09-11.test/manifest.json"
@@ -94,7 +95,7 @@ def test_activate_release_rechecks_existing_files(tmp_path: Path) -> None:
         spec=artifact_spec("2026-09-11.test"),
     )
     (output / "active.json").unlink()
-    artifact = release.release_directory / "books/alpha.sqlite"
+    artifact = release.release_directory / "corpus.sqlite"
     artifact.write_bytes(artifact.read_bytes() + b"tampered")
 
     with pytest.raises(CorpusValidationError, match="digest verification"):

@@ -8,7 +8,7 @@ from dataclasses import replace
 from pathlib import Path
 
 from corpus.chunking import chunk_book, corpus_hash
-from corpus.sources import load_combined_books
+from corpus.sources import load_corpus_books
 from eval.config import EvaluationConfig, load_evaluation_config
 from eval.embeddings import OpenRouterEmbeddingProvider
 from eval.evaluation import (
@@ -66,7 +66,7 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _load_chunks(config: EvaluationConfig):
-    books = load_combined_books(config.combined_dataset, config.books)
+    books = load_corpus_books(config.corpus_dataset, config.books)
     chunks = tuple(chunk for book in books for chunk in chunk_book(book, config.chunking))
     return books, chunks
 

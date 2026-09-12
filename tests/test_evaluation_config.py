@@ -8,7 +8,7 @@ from eval.config import load_evaluation_config
 
 CONFIG = """
 [source]
-combined_dataset = "dataset/combined.json"
+corpus_dataset = "dataset/corpus.json"
 
 [chunking]
 minimum_tokens = 1
@@ -48,7 +48,7 @@ def test_loads_evaluation_owned_configuration_and_output_paths(tmp_path: Path) -
 
     config = load_evaluation_config(path)
 
-    assert config.combined_dataset == tmp_path / "dataset" / "combined.json"
+    assert config.corpus_dataset == tmp_path / "dataset" / "corpus.json"
     assert config.dataset == tmp_path / "benchmarks" / "queries" / "v1.json"
     assert config.result == tmp_path / "benchmarks" / "results" / "v1.json"
     assert config.cache_directory == tmp_path / ".cache" / "benchmarks"

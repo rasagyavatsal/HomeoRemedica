@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from corpus.cli import main
+from corpus.contracts import ActivePointer
 
 from .test_config import CONFIG
 
@@ -11,9 +12,9 @@ from .test_config import CONFIG
 def test_validate_command_reports_source_and_chunk_counts(tmp_path: Path, capsys) -> None:
     config_path = tmp_path / "corpus.toml"
     config_path.write_text(CONFIG)
-    combined = tmp_path / "dataset" / "combined.json"
-    combined.parent.mkdir(parents=True)
-    combined.write_text(
+    corpus = tmp_path / "dataset" / "corpus.json"
+    corpus.parent.mkdir(parents=True)
+    corpus.write_text(
         json.dumps(
             {
                 "metadata": {
@@ -38,3 +39,25 @@ def test_validate_command_reports_source_and_chunk_counts(tmp_path: Path, capsys
         "passages": 2,
     }
     assert len(output["corpusHash"]) == 64
+
+
+def test_activate_command_reports_the_verified_release_pointer(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    config_path = tmp_path / "corpus.toml"
+    config_path.write_text(CONFIG)
+    pointer = ActivePointer(
+        corpus_version="v1",
+        manifest_path="v1/manifest.json",
+        manifest_byte_size=1,
+        manifest_sha256="a" * 64,
+    )
+    monkeypatch.setattr("corpus.cli.activate_release", lambda _root, _version: pointer)
+
+    assert main(["--config", str(config_path), "activate", "v1"]) == 0
+
+    assert json.loads(capsys.readouterr().out) == {
+        "active": str(tmp_path / "artifacts" / "corpus" / "active.json"),
+        "corpusVersion": "v1",
+        "manifest": str(tmp_path / "artifacts" / "corpus" / "v1" / "manifest.json"),
+    }

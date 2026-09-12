@@ -11,9 +11,10 @@ from pathlib import Path
 from corpus.artifacts import (
     ArtifactSpec,
     BuiltArtifact,
-    create_book_artifact,
+    BuiltBook,
+    create_corpus_artifact,
     sha256_file,
-    validate_book_artifact,
+    validate_corpus_artifact,
 )
 from corpus.chunking import (
     DEFAULT_CHUNKING_POLICY,
@@ -23,6 +24,7 @@ from corpus.chunking import (
 )
 from corpus.contracts import (
     ActivePointer,
+    PublishedArtifact,
     PublishedBook,
     ReleaseManifest,
     canonical_json_bytes,
@@ -42,7 +44,12 @@ class BuiltRelease:
     corpus_version: str
     corpus_hash: str
     release_directory: Path
-    artifacts: tuple[BuiltArtifact, ...]
+    artifact: BuiltArtifact
+
+    @property
+    def artifacts(self) -> tuple[BuiltArtifact, ...]:
+        """Compatibility view for callers that previously saw one artifact per book."""
+        return (self.artifact,)
 
 
 def build_release(
@@ -52,7 +59,7 @@ def build_release(
     output_root: Path,
     spec: ArtifactSpec,
     chunking: ChunkingPolicy = DEFAULT_CHUNKING_POLICY,
-    manifest_schema_version: int = 2,
+    manifest_schema_version: int = 3,
     embedding_workers: int = 1,
     progress: Callable[[str], None] | None = None,
 ) -> BuiltRelease:
@@ -63,6 +70,7 @@ def build_release(
         raise ValueError("corpus release contains duplicate book IDs")
     if manifest_schema_version <= 0:
         raise ValueError("manifest schema version must be positive")
+    books = tuple(sorted(books, key=lambda book: book.book_id))
 
     output_root = _resolve_root(output_root)
     _ensure_directory_is_safe(output_root)
@@ -88,29 +96,29 @@ def build_release(
         tempfile.mkdtemp(prefix=f".{spec.corpus_version}.", dir=output_root)
     )
     try:
-        artifacts = []
-        for book, chunks in chunks_by_book:
-            embedded = embed_chunks(
-                chunks,
-                provider,
-                model_input_limit=resolved_spec.embedding.model_input_limit,
-                preflight=False,
-                workers=embedding_workers,
-                progress=_progress_counter(progress, f"embedded {book.book_id} chunks"),
-            )
-            artifacts.append(
-                create_book_artifact(
-                    temporary_directory / "books" / f"{book.book_id}.sqlite",
-                    book,
-                    embedded,
-                    resolved_spec,
+        def embedded_chunks():
+            for book, chunks in chunks_by_book:
+                yield from embed_chunks(
+                    chunks,
+                    provider,
+                    model_input_limit=resolved_spec.embedding.model_input_limit,
+                    preflight=False,
+                    workers=embedding_workers,
+                    progress=_progress_counter(progress, f"embedded {book.book_id} chunks"),
                 )
-            )
+
+        artifact = create_corpus_artifact(
+            temporary_directory / "corpus.sqlite",
+            books,
+            embedded_chunks(),
+            resolved_spec,
+            expected_chunks=all_chunks,
+        )
 
         manifest = _build_manifest(
             resolved_spec,
             complete_hash,
-            tuple(artifacts),
+            artifact,
             manifest_schema_version,
         )
         manifest_bytes = canonical_json_bytes(manifest)
@@ -122,18 +130,15 @@ def build_release(
         temporary_directory = None
         _activate_manifest(output_root, release_directory, manifest, manifest_bytes)
 
-        final_artifacts = tuple(
-            replace(
-                artifact,
-                path=release_directory / artifact.path.relative_to(artifact.path.parents[1]),
-            )
-            for artifact in artifacts
+        final_artifact = replace(
+            artifact,
+            path=release_directory / artifact.path.name,
         )
         return BuiltRelease(
             corpus_version=spec.corpus_version,
             corpus_hash=complete_hash,
             release_directory=release_directory,
-            artifacts=final_artifacts,
+            artifact=final_artifact,
         )
     finally:
         if temporary_directory is not None and temporary_directory.exists():
@@ -184,28 +189,26 @@ def _verify_manifest_files(
 ) -> None:
     if require_version_directory and manifest.corpus_version != release_directory.name:
         raise CorpusValidationError("manifest version does not match its release directory")
-    for book in manifest.books:
-        path = release_directory / book.filename
-        if not path.is_file():
-            raise CorpusValidationError(f"release is incomplete: missing {book.filename}")
-        if path.stat().st_size != book.byte_size or sha256_file(path) != book.sha256:
-            raise CorpusValidationError(f"artifact digest verification failed: {book.filename}")
-        validated = validate_book_artifact(path, spec)
-        if (
-            validated.book_id != book.book_id
-            or validated.title != book.title
-            or validated.author != book.author
-            or validated.source_sha256 != book.source_sha256
-            or validated.chunk_count != book.chunk_count
-            or validated.passage_count != book.passage_count
-        ):
-            raise CorpusValidationError(f"artifact metadata mismatch: {book.filename}")
+    artifact = manifest.artifact
+    path = release_directory / artifact.filename
+    if path.is_symlink() or not path.is_file():
+        raise CorpusValidationError(f"release is incomplete: missing {artifact.filename}")
+    if path.stat().st_size != artifact.byte_size or sha256_file(path) != artifact.sha256:
+        raise CorpusValidationError(f"artifact digest verification failed: {artifact.filename}")
+    validated = validate_corpus_artifact(path, spec)
+    expected_books = tuple(_built_book(book) for book in manifest.books)
+    if (
+        validated.chunk_count != artifact.chunk_count
+        or validated.passage_count != artifact.passage_count
+        or validated.books != expected_books
+    ):
+        raise CorpusValidationError(f"artifact metadata mismatch: {artifact.filename}")
 
 
 def _build_manifest(
     spec: ArtifactSpec,
     complete_hash: str,
-    artifacts: tuple[BuiltArtifact, ...],
+    artifact: BuiltArtifact,
     manifest_schema_version: int,
 ) -> ReleaseManifest:
     return ReleaseManifest(
@@ -214,19 +217,24 @@ def _build_manifest(
         corpus_version=spec.corpus_version,
         corpus_hash=complete_hash,
         compatibility=compatibility_from_artifact_spec(spec),
+        artifact=PublishedArtifact(
+            book_count=len(artifact.books),
+            byte_size=artifact.byte_size,
+            chunk_count=artifact.chunk_count,
+            filename="corpus.sqlite",
+            passage_count=artifact.passage_count,
+            sha256=artifact.sha256,
+        ),
         books=tuple(
             PublishedBook(
-                author=artifact.author,
-                book_id=artifact.book_id,
-                byte_size=artifact.byte_size,
-                chunk_count=artifact.chunk_count,
-                filename=f"books/{artifact.book_id}.sqlite",
-                passage_count=artifact.passage_count,
-                sha256=artifact.sha256,
-                source_sha256=artifact.source_sha256,
-                title=artifact.title,
+                author=book.author,
+                book_id=book.book_id,
+                chunk_count=book.chunk_count,
+                passage_count=book.passage_count,
+                source_sha256=book.source_sha256,
+                title=book.title,
             )
-            for artifact in artifacts
+            for book in artifact.books
         ),
     )
 
@@ -248,6 +256,17 @@ def _artifact_spec(manifest: ReleaseManifest) -> ArtifactSpec:
         ),
         sqlite_version=compatibility.sqlite_version,
         sqlite_vec_version=compatibility.sqlite_vec_version,
+    )
+
+
+def _built_book(book: PublishedBook) -> BuiltBook:
+    return BuiltBook(
+        book_id=book.book_id,
+        title=book.title,
+        author=book.author,
+        source_sha256=book.source_sha256,
+        chunk_count=book.chunk_count,
+        passage_count=book.passage_count,
     )
 
 

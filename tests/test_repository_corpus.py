@@ -6,26 +6,32 @@ import pytest
 
 from corpus.chunking import chunk_book, corpus_hash
 from corpus.config import load_pipeline_config
-from corpus.sources import CorpusValidationError, load_combined_books
+from corpus.sources import CorpusValidationError, load_corpus_books
 from eval.config import load_evaluation_config
 from eval.evaluation import load_evaluation_dataset, load_evaluation_gate
 
 ROOT = Path(__file__).resolve().parents[1]
 pytestmark = pytest.mark.skipif(
-    not (ROOT / "dataset" / "combined.json").is_file(),
+    not (ROOT / "dataset" / "corpus.json").is_file(),
     reason="repository corpus is not present",
 )
 
 
 def repository_books(config):
-    return load_combined_books(config.combined_dataset, config.books)
+    return load_corpus_books(config.corpus_dataset, config.books)
 
 
-def test_repository_combined_corpus_matches_config_and_conserves_every_passage() -> None:
+def test_repository_corpus_matches_config_and_conserves_every_passage() -> None:
     config = load_pipeline_config(ROOT / "corpus.toml")
     books = repository_books(config)
 
     assert {book.book_id for book in books} == set(config.books)
+    assert sum(
+        len(section.passages)
+        for book in books
+        for remedy in book.remedies
+        for section in remedy.sections
+    ) == 118_259
     for book in books:
         source_passages = [
             passage
