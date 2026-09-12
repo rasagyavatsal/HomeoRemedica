@@ -145,17 +145,21 @@ class ZaiChatClient:
                 json=payload,
                 timeout=self._timeout,
             )
-        except requests.RequestException as error:
-            raise RuntimeError(f"Z.AI chat request failed: {error}") from error
+        except (requests.Timeout, TimeoutError):
+            raise TimeoutError("Z.AI chat request timed out") from None
+        except requests.RequestException:
+            raise RuntimeError("Z.AI chat request failed") from None
         if response.status_code != 200:
+            if response.status_code in {408, 504}:
+                raise TimeoutError("Z.AI chat request timed out") from None
             raise RuntimeError(
                 "Z.AI chat request failed with status "
-                f"{response.status_code}: {str(response.text)[:200]}"
-            )
+                f"{response.status_code}"
+            ) from None
         try:
             parsed = response.json()
-        except ValueError as error:
-            raise RuntimeError("Z.AI returned an invalid JSON chat response") from error
+        except ValueError:
+            raise RuntimeError("Z.AI returned an invalid JSON chat response") from None
         if not isinstance(parsed, dict):
             raise RuntimeError("Z.AI returned an unexpected chat response shape")
         choices = parsed.get("choices")

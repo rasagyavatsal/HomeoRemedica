@@ -121,6 +121,10 @@ The API has two browser-facing endpoints:
 | `GET /api/books` | Return available book IDs, titles, and authors. |
 | `POST /api/chat` | Generate an answer from a message, optional history, and optional `bookIds`. |
 
+Chat failures return `504` when an upstream request times out, `502` when an embedding or answer
+provider fails, and `500` for an unexpected backend failure. The response contains a generic
+retry message; server logs record only the failed stage, failure category, and exception type.
+
 ### Retrieval and answer flow
 
 ```text

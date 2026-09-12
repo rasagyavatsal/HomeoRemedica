@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+import requests
 
 from chat.runtime import DEFAULT_ZAI_BASE_URL, Settings, ZaiChatClient
 
@@ -26,6 +27,11 @@ class FakeSession:
     def post(self, url: str, **kwargs: Any) -> FakeResponse:
         self.calls.append({"url": url, **kwargs})
         return self.response
+
+
+class TimeoutSession:
+    def post(self, url: str, **kwargs: Any) -> FakeResponse:
+        raise requests.Timeout("timeout secret")
 
 
 def test_settings_defaults_to_glm_flash_and_reads_zai_key(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -94,3 +100,33 @@ def test_zai_client_requires_a_key(monkeypatch: pytest.MonkeyPatch, tmp_path) ->
             max_output_tokens=700,
             session=FakeSession(FakeResponse({})),
         )
+
+
+def test_zai_client_classifies_timeouts_without_exposing_exception_details() -> None:
+    client = ZaiChatClient(
+        api_key="zai-key",
+        model="glm-5.3-flash",
+        max_output_tokens=700,
+        session=TimeoutSession(),
+    )
+
+    with pytest.raises(TimeoutError, match="timed out") as error:
+        client.generate("prompt", system_instruction="instruction")
+
+    assert "timeout secret" not in str(error.value)
+
+
+def test_zai_client_does_not_include_provider_response_bodies_in_errors() -> None:
+    client = ZaiChatClient(
+        api_key="zai-key",
+        model="glm-5.3-flash",
+        max_output_tokens=700,
+        session=FakeSession(
+            FakeResponse({}, status_code=502, text="provider secret response")
+        ),
+    )
+
+    with pytest.raises(RuntimeError, match=r"status 502") as error:
+        client.generate("prompt", system_instruction="instruction")
+
+    assert "provider secret response" not in str(error.value)

@@ -188,7 +188,7 @@ class OpenRouterEmbeddingProvider:
     def _request(self, payload: dict[str, Any]) -> dict[str, Any]:
         url = f"{self._base_url}/embeddings"
         backoff = _INITIAL_BACKOFF_SECONDS
-        last_error: RuntimeError | None = None
+        last_error: RuntimeError | TimeoutError | None = None
         for attempt in range(1, _MAX_ATTEMPTS + 1):
             try:
                 response = self._session.post(
@@ -197,25 +197,37 @@ class OpenRouterEmbeddingProvider:
                     json=payload,
                     timeout=self._timeout,
                 )
-            except requests.RequestException as error:
-                last_error = RuntimeError(f"OpenRouter embeddings request failed: {error}")
+            except (requests.Timeout, TimeoutError):
+                last_error = TimeoutError("OpenRouter embeddings request timed out")
+                delay = backoff
+            except requests.RequestException:
+                last_error = RuntimeError("OpenRouter embeddings request failed")
                 delay = backoff
             else:
                 if response.status_code == 200:
                     return _parse_embedding_response(response)
-                last_error = RuntimeError(
-                    "OpenRouter embeddings request failed with status "
-                    f"{response.status_code}: {_response_snippet(response)}"
-                )
+                if response.status_code in {408, 504}:
+                    last_error = TimeoutError("OpenRouter embeddings request timed out")
+                else:
+                    last_error = RuntimeError(
+                        "OpenRouter embeddings request failed with status "
+                        f"{response.status_code}"
+                    )
                 if response.status_code not in _RETRYABLE_STATUS_CODES:
-                    raise last_error
+                    raise last_error from None
                 delay = _retry_after_seconds(response) or backoff
             if attempt < _MAX_ATTEMPTS:
                 time.sleep(delay)
                 backoff *= 2
+        if isinstance(last_error, TimeoutError):
+            raise TimeoutError(
+                f"OpenRouter embeddings request timed out after {_MAX_ATTEMPTS} attempts"
+            ) from None
+        if last_error is None:
+            raise RuntimeError("OpenRouter embeddings request failed") from None
         raise RuntimeError(
             f"OpenRouter embeddings request failed after {_MAX_ATTEMPTS} attempts: {last_error}"
-        ) from last_error
+        ) from None
 
 
 def _resolve_api_key(api_key: str | None) -> str | None:
@@ -251,8 +263,8 @@ def _read_dotenv_key(path: Path, name: str) -> str | None:
 def _parse_embedding_response(response: Any) -> dict[str, Any]:
     try:
         parsed = response.json()
-    except ValueError as error:
-        raise RuntimeError("OpenRouter returned an invalid JSON embedding response") from error
+    except ValueError:
+        raise RuntimeError("OpenRouter returned an invalid JSON embedding response") from None
     if not isinstance(parsed, dict):
         raise RuntimeError("OpenRouter returned an unexpected embedding response shape")
     return parsed
@@ -278,10 +290,6 @@ def _retry_after_seconds(response: Any) -> float | None:
     except (TypeError, ValueError):
         return None
     return delay if delay >= 0 else None
-
-
-def _response_snippet(response: Any) -> str:
-    return str(response.text)[:200]
 
 
 def preflight_embedding_inputs(

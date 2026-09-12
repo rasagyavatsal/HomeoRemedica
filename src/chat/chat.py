@@ -7,6 +7,8 @@ from typing import Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from chat.errors import ChatFailure
+
 
 def _camel_case(value: str) -> str:
     first, *rest = value.split("_")
@@ -197,47 +199,117 @@ class ChatService:
 
     def chat(self, request: ChatRequest) -> ChatResponse:
         retrieval_query = _retrieval_query(request)
-        embedding = self._model.embed_query(
-            retrieval_query,
-            dimensions=self._embedding_dimensions,
-            task_type=self._query_task_type,
-        )
-        sources = self._corpus.search(
-            retrieval_query,
-            embedding,
-            book_ids=request.book_ids,
-            limit=self._source_limit,
-        )
-        generated_answer = self._model.generate(
-            _generation_prompt(
-                request,
-                sources,
-                max_chars=self._generation_char_limit,
-            ),
-            system_instruction=SYSTEM_INSTRUCTION,
-        ).strip()
+        try:
+            embedding = self._model.embed_query(
+                retrieval_query,
+                dimensions=self._embedding_dimensions,
+                task_type=self._query_task_type,
+            )
+        except ChatFailure:
+            raise
+        except TimeoutError as error:
+            raise ChatFailure(
+                stage="embedding",
+                kind="timeout",
+                error_type=type(error).__name__,
+            ) from error
+        except (OSError, RuntimeError) as error:
+            raise ChatFailure(
+                stage="embedding",
+                kind="provider",
+                error_type=type(error).__name__,
+            ) from error
+        except Exception as error:
+            raise ChatFailure(
+                stage="embedding",
+                kind="internal",
+                error_type=type(error).__name__,
+            ) from error
+
+        try:
+            sources = self._corpus.search(
+                retrieval_query,
+                embedding,
+                book_ids=request.book_ids,
+                limit=self._source_limit,
+            )
+        except ValueError:
+            raise
+        except ChatFailure:
+            raise
+        except TimeoutError as error:
+            raise ChatFailure(
+                stage="corpus_search",
+                kind="timeout",
+                error_type=type(error).__name__,
+            ) from error
+        except Exception as error:
+            raise ChatFailure(
+                stage="corpus_search",
+                kind="internal",
+                error_type=type(error).__name__,
+            ) from error
+
+        try:
+            generated_answer = self._model.generate(
+                _generation_prompt(
+                    request,
+                    sources,
+                    max_chars=self._generation_char_limit,
+                ),
+                system_instruction=SYSTEM_INSTRUCTION,
+            ).strip()
+        except ChatFailure:
+            raise
+        except TimeoutError as error:
+            raise ChatFailure(
+                stage="answer_generation",
+                kind="timeout",
+                error_type=type(error).__name__,
+            ) from error
+        except (OSError, RuntimeError) as error:
+            raise ChatFailure(
+                stage="answer_generation",
+                kind="provider",
+                error_type=type(error).__name__,
+            ) from error
+        except Exception as error:
+            raise ChatFailure(
+                stage="answer_generation",
+                kind="internal",
+                error_type=type(error).__name__,
+            ) from error
         if len(generated_answer) > MAX_GENERATED_ANSWER_CHARS:
             generated_answer = generated_answer[:MAX_GENERATED_ANSWER_CHARS].rstrip() + "…"
         answer = f"{SAFETY_NOTICE}\n\n{generated_answer}"
-        citations = tuple(
-            Citation(
-                id=f"{self._corpus.corpus_version}/{source.book_id}/{source.chunk_id}",
-                book_id=source.book_id,
-                book_title=source.book_title,
-                author=source.author,
-                remedy_name=source.remedy_name,
-                section_title=source.section_title,
-                passage_indexes=source.passage_indexes,
-                text=source.text,
+        try:
+            citations = tuple(
+                Citation(
+                    id=f"{self._corpus.corpus_version}/{source.book_id}/{source.chunk_id}",
+                    book_id=source.book_id,
+                    book_title=source.book_title,
+                    author=source.author,
+                    remedy_name=source.remedy_name,
+                    section_title=source.section_title,
+                    passage_indexes=source.passage_indexes,
+                    text=source.text,
+                )
+                for source in sources
             )
-            for source in sources
-        )
-        return ChatResponse(
-            answer=answer,
-            corpus_version=self._corpus.corpus_version,
-            model=self._model.model,
-            sources=citations,
-        )
+            return ChatResponse(
+                answer=answer,
+                corpus_version=self._corpus.corpus_version,
+                model=self._model.model,
+                sources=citations,
+            )
+        except ChatFailure:
+            raise
+        except Exception as error:
+            raise ChatFailure(
+                stage="chat",
+                kind="internal",
+                error_type=type(error).__name__,
+            ) from error
 
 
 def _retrieval_query(request: ChatRequest) -> str:
