@@ -7,6 +7,28 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [6.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v5.0.0...HomeoRemedica-v6.0.0) (2026-09-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* **corpus:** corpus configs now use corpus_dataset and release manifests use schema 3 with artifact schema 2 and one corpus.sqlite.
+
+### Features
+
+* **corpus:** consolidate releases into one SQLite database ([#26](https://github.com/rasagyavatsal/HomeoRemedica/issues/26)) ([483df9e](https://github.com/rasagyavatsal/HomeoRemedica/commit/483df9e2efc61ecd9e45c4411bcebac397440ff2))
+
+
+### Bug Fixes
+
+* **chat:** handle backend failures safely ([#29](https://github.com/rasagyavatsal/HomeoRemedica/issues/29)) ([4a692e3](https://github.com/rasagyavatsal/HomeoRemedica/commit/4a692e3917e18041b3eeb41467913ee5dcfb0bb3))
+* **chat:** handle response token exhaustion ([#30](https://github.com/rasagyavatsal/HomeoRemedica/issues/30)) ([e156329](https://github.com/rasagyavatsal/HomeoRemedica/commit/e15632908160dba7d3df94f01da736c9d5257cd7))
+
+
+### Documentation
+
+* simplify README and correct setup instructions ([#31](https://github.com/rasagyavatsal/HomeoRemedica/issues/31)) ([c61be1d](https://github.com/rasagyavatsal/HomeoRemedica/commit/c61be1d3ceb7b156c6ed8c61a7c02243781c367f))
+
 ## [5.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v4.0.0...HomeoRemedica-v5.0.0) (2026-09-11)
 
 
