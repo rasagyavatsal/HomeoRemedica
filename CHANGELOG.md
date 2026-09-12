@@ -1,5 +1,23 @@
 # Changelog
 
+## [5.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v4.0.0...HomeoRemedica-v5.0.0) (2026-09-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* **benchmarks:** benchmark artifacts now live under benchmarks/queries and benchmarks/results, and evaluation results use queryVersion/querySha256 instead of datasetVersion/datasetSha256.
+
+### Features
+
+* **corpus:** migrate releases to local SQLite artifacts ([#25](https://github.com/rasagyavatsal/HomeoRemedica/issues/25)) ([b084c60](https://github.com/rasagyavatsal/HomeoRemedica/commit/b084c60ff72d804c71835c1b5586846a5ce22ff1))
+* **rag:** switch answer generation to Z.AI GLM-5.3 Flash ([#24](https://github.com/rasagyavatsal/HomeoRemedica/issues/24)) ([0094d27](https://github.com/rasagyavatsal/HomeoRemedica/commit/0094d272ccf8a51cc378a6f9dbbbc4967414c670))
+* **web:** add React chat client and Python API ([#23](https://github.com/rasagyavatsal/HomeoRemedica/issues/23)) ([93e57fd](https://github.com/rasagyavatsal/HomeoRemedica/commit/93e57fdc0db52a13725b55ab490b06d7d35191cf))
+
+
+### Code Refactoring
+
+* **benchmarks:** separate queries from results ([#21](https://github.com/rasagyavatsal/HomeoRemedica/issues/21)) ([03d1ac2](https://github.com/rasagyavatsal/HomeoRemedica/commit/03d1ac2bd1c73cfb7b78cdb1cc70a6eb6746f262))
+
 ## [4.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v3.0.0...HomeoRemedica-v4.0.0) (2026-09-11)
 
 
