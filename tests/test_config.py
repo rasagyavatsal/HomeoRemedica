@@ -8,10 +8,10 @@ from corpus.config import load_pipeline_config
 
 CONFIG = """
 [corpus]
-combined_dataset = "dataset/combined.json"
+corpus_dataset = "dataset/corpus.json"
 output_directory = "artifacts/corpus"
-artifact_schema_version = 1
-manifest_schema_version = 1
+artifact_schema_version = 2
+manifest_schema_version = 3
 sqlite_version = "3.53.4"
 sqlite_vec_version = "0.1.9"
 
@@ -41,7 +41,7 @@ def test_loads_and_resolves_the_versioned_pipeline_configuration(tmp_path: Path)
 
     config = load_pipeline_config(path)
 
-    assert config.combined_dataset == tmp_path / "dataset" / "combined.json"
+    assert config.corpus_dataset == tmp_path / "dataset" / "corpus.json"
     assert config.output_directory == tmp_path / "artifacts" / "corpus"
     assert config.books["sample"].title == "Sample Book"
     assert config.chunking.target_tokens == 500
@@ -49,7 +49,7 @@ def test_loads_and_resolves_the_versioned_pipeline_configuration(tmp_path: Path)
     artifact = config.artifact_spec("2026-08-14.test")
     assert artifact.sqlite_version == "3.53.4"
     assert artifact.sqlite_vec_version == "0.1.9"
-    assert artifact.artifact_schema_version == 1
+    assert artifact.artifact_schema_version == 2
 
 
 @pytest.mark.parametrize(

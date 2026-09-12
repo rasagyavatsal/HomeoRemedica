@@ -7,7 +7,7 @@ from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_TRACKED_FILE_BYTES = 8_000_000
-LARGE_SOURCE_FILES = {PurePosixPath("dataset/combined.json")}
+LARGE_SOURCE_FILES = {PurePosixPath("dataset/corpus.json")}
 FORBIDDEN_ROOTS = {
     "build",
     "artifacts",

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### ⚠ BREAKING CHANGES
+
+* **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
+  one `corpus.sqlite` database with book-filtered retrieval.
+
 ## [5.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v4.0.0...HomeoRemedica-v5.0.0) (2026-09-11)
 
 

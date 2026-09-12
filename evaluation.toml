@@ -1,5 +1,5 @@
 [source]
-combined_dataset = "dataset/combined.json"
+corpus_dataset = "dataset/corpus.json"
 
 [chunking]
 minimum_tokens = 1

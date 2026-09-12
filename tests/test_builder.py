@@ -52,6 +52,7 @@ def artifact_spec() -> ArtifactSpec:
         embedding=EmbeddingSpec(dimensions=2, model_input_limit=10),
         sqlite_version=sqlite3.sqlite_version,
         sqlite_vec_version="0.1.9",
+        artifact_schema_version=2,
     )
 
 
@@ -71,15 +72,15 @@ def test_build_preflights_all_books_and_activates_a_complete_local_release(
 
     assert [event for event, _ in provider.events] == ["count", "count", "embed", "embed"]
     assert release.release_directory == tmp_path / "output" / "2026-08-14.test"
-    assert [artifact.book_id for artifact in release.artifacts] == ["alpha", "beta"]
-    assert all(artifact.path.is_file() for artifact in release.artifacts)
+    assert [book.book_id for book in release.artifact.books] == ["alpha", "beta"]
+    assert release.artifact.path == release.release_directory / "corpus.sqlite"
+    assert release.artifact.path.is_file()
     manifest = json.loads((release.release_directory / "manifest.json").read_text())
     assert manifest["corpusVersion"] == "2026-08-14.test"
+    assert manifest["artifact"]["filename"] == "corpus.sqlite"
+    assert manifest["artifact"]["bookCount"] == 2
     assert {item["bookId"] for item in manifest["books"]} == {"alpha", "beta"}
-    assert {item["filename"] for item in manifest["books"]} == {
-        "books/alpha.sqlite",
-        "books/beta.sqlite",
-    }
+    assert all("filename" not in item for item in manifest["books"])
     active = json.loads((tmp_path / "output" / "active.json").read_text())
     assert active["corpusVersion"] == "2026-08-14.test"
     assert active["manifestPath"] == "2026-08-14.test/manifest.json"
