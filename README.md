@@ -19,7 +19,7 @@ Creative Commons Attribution 4.0 International License (CC BY 4.0).
   contracts, and result tooling.
 - `dataset/raw-text/` — source text for the four books.
 - `dataset/processed/` — validated per-book sectioned JSON sources.
-- `dataset/combined.json` — the remedy-merged corpus file consumed by the pipeline.
+- `dataset/corpus.json` — the remedy-merged corpus file consumed by the pipeline.
 - [`benchmarks/queries/`](benchmarks/README.md) — three independently versioned retrieval-query
   datasets.
 - `benchmarks/results/` — nine immutable results with their comparison and experiment records.
@@ -69,7 +69,7 @@ Build and activate the local corpus release:
 
 ```sh
 export OPENROUTER_API_KEY=... # or put it in .env
-uv run --locked homeoremedica-corpus build 2026-09-11.v1
+uv run --locked homeoremedica-corpus build 2026-09-12.v2
 ```
 
 Build the browser client and start the web server from the repository root:
@@ -110,7 +110,7 @@ cp .env.example .env
 | `RAG_MODEL` | `glm-5.3-flash` | Answer generation model. |
 | `RAG_MAX_OUTPUT_TOKENS` | `700` | Maximum generated answer size. |
 
-The web server verifies `active.json`, its manifest, every artifact digest, SQLite integrity, vector
+The web server verifies `active.json`, its manifest, the artifact digest, SQLite integrity, vector
 dimensions, and release metadata during startup. Keep API keys in the environment or an ignored
 `.env` file.
 
@@ -160,17 +160,17 @@ The complete release pipeline and its `dataset/` input are included in every clo
 validation is fully local. Building requires an OpenRouter API key. The web server does not read the
 source dataset directly; it uses the verified local release selected by `active.json`.
 
-The corpus pipeline reads the remedy-merged `dataset/combined.json` file, whose
+The corpus pipeline reads the remedy-merged `dataset/corpus.json` file, whose
 `remedy -> book -> section -> passages` structure is validated against the configured book mapping.
 It validates the complete corpus, conserves every passage, treats each passage as one symptom
-chunk, generates OpenRouter Qwen3 embeddings, and writes one independently searchable SQLite
-artifact per book. Each document embedding keeps the current `Book`, `Remedy`, `Section`, and
-`Text` context prefix. A release becomes visible to consumers only after every artifact and its
-immutable manifest have been written and verified.
+chunk, generates OpenRouter Qwen3 embeddings, and writes one shared searchable SQLite
+database containing every book. Each document embedding keeps the current `Book`, `Remedy`,
+`Section`, and `Text` context prefix. A release becomes visible to consumers only after the database
+and its immutable manifest have been written and verified.
 
 ### Validate sources locally
 
-This command needs no API credentials. It checks that `dataset/combined.json` matches the
+This command needs no API credentials. It checks that `dataset/corpus.json` matches the
 configured book mapping, validates the remedy-merged sectioned schema, and reports book, passage,
 chunk, and corpus-hash counts. Symlinked source files are rejected.
 
@@ -235,7 +235,7 @@ export OPENROUTER_API_KEY=... # or put it in .env
 uv run --locked homeoremedica-evaluation
 ```
 
-The corpus is loaded from the remedy-merged `dataset/combined.json`, which the evaluator validates
+The corpus is loaded from the remedy-merged `dataset/corpus.json`, which the evaluator validates
 against the configured book mapping. V9 evaluates only the model's native 4096 dimensions. It
 embeds contextualized symptom chunks and instructed query symptoms, and retrieves up to 640
 candidates per symptom from semantic and Porter-stemmed FTS5
@@ -278,7 +278,7 @@ Choose a unique corpus version, then run:
 
 ```sh
 export OPENROUTER_API_KEY=... # or put it in .env
-uv run --locked homeoremedica-corpus build 2026-08-14.v1
+uv run --locked homeoremedica-corpus build 2026-09-12.v2
 ```
 
 Before the first embedding call, the builder validates every source and estimates every labelled
@@ -289,23 +289,24 @@ artifact creation. Token counting and embeddings use 32 bounded workers by defau
 `--workers` to lower concurrency for a more restrictive OpenRouter quota. Requests retry
 transient failures with exponential backoff.
 
-The complete local release appears atomically under `artifacts/corpus/2026-08-14.v1/` and contains:
+The complete local release appears atomically under `artifacts/corpus/2026-09-12.v2/` and contains:
 
-- `books/<book-id>.sqlite` for every configured processed book;
+- `corpus.sqlite` containing every configured book, with each chunk retaining its `bookId`;
 - `manifest.json` with local sizes, SHA-256 digests, source hashes, and compatibility fields.
 
 The corpus root also contains `active.json`, which points to the newly built release. The pointer is
-updated atomically after all books and the manifest pass validation.
+updated atomically after the database and manifest pass validation.
 
-Each database contains immutable chunk metadata and source text, an FTS5 index, a cosine
-`sqlite-vec` index, and artifact metadata. The builder validates SQLite integrity, FTS lookup,
-vector lookup, counts, versions, dimensions, normalization, and exact source-derived rows.
+The database contains a `books` table with source attribution, immutable chunk metadata and source
+text, a shared FTS5 index, a shared cosine `sqlite-vec` index, and artifact metadata. The builder
+validates SQLite integrity, FTS lookup, vector lookup, counts, versions, dimensions, normalization,
+book completeness, and exact source-derived rows. Runtime search applies optional `bookIds` filters
+inside this database before ranking results.
 
-To activate an existing release after verifying it, use the local release helper:
+To activate an existing release after verifying it, use the CLI:
 
 ```sh
-uv run --locked python -c \
-  'from pathlib import Path; from corpus.builder import activate_release; activate_release(Path("artifacts/corpus"), "2026-08-14.v1")'
+uv run --locked homeoremedica-corpus activate 2026-09-12.v2
 ```
 
 Historical releases remain addressable while saved conversations may reference their corpus version.

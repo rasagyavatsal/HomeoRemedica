@@ -11,7 +11,7 @@ from pathlib import Path
 import sqlite_vec
 
 from chat.chat import BookSummary, RetrievedSource
-from corpus.contracts import ActivePointer, Compatibility, PublishedBook, ReleaseManifest
+from corpus.contracts import ActivePointer, ReleaseManifest
 
 
 class CorpusError(RuntimeError):
@@ -20,16 +20,18 @@ class CorpusError(RuntimeError):
 
 MAX_MANIFEST_BYTES = 1 * 1024 * 1024
 MAX_ARTIFACT_BYTES = 4 * 1024 * 1024 * 1024
-MAX_TOTAL_ARTIFACT_BYTES = 8 * 1024 * 1024 * 1024
 MAX_SOURCE_TEXT_CHARS = 8_000
 MAX_SOURCE_LABEL_CHARS = 256
 MAX_BOOK_COUNT = 16
-EXPECTED_BOOK_IDS = frozenset({
-    "allen-nosodes",
-    "boericke-MM",
-    "clarke-MM",
-    "kent-lectures",
-})
+MAX_VECTOR_K = 4096
+EXPECTED_BOOK_IDS = frozenset(
+    {
+        "allen-nosodes",
+        "boericke-MM",
+        "clarke-MM",
+        "kent-lectures",
+    }
+)
 _SAFE_PATH_COMPONENT = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 
 
@@ -98,10 +100,10 @@ class LocalCorpus:
             raise CorpusError(
                 "corpus must contain the exact expected book set " + "; ".join(details)
             )
-        if sum(book.byte_size for book in manifest.books) > MAX_TOTAL_ARTIFACT_BYTES:
-            raise CorpusError("corpus artifacts exceed the total size limit")
+        if manifest.artifact.byte_size > MAX_ARTIFACT_BYTES:
+            raise CorpusError("corpus artifact exceeds the size limit")
 
-        _validate_release_artifacts(root, release_directory, manifest)
+        _validate_release_artifact(root, release_directory, manifest)
         return CorpusRelease(release_directory, manifest)
 
 
@@ -121,11 +123,12 @@ def load_local_corpus(
 
 
 class CorpusRelease:
-    """Search one already-verified immutable release across its indexed books."""
+    """Search one already-verified release through its shared corpus database."""
 
     def __init__(self, directory: Path, manifest: ReleaseManifest) -> None:
         self._directory = directory
         self._manifest = manifest
+        self._artifact_path = directory / manifest.artifact.filename
         self.corpus_version = manifest.corpus_version
 
     @property
@@ -173,26 +176,18 @@ class CorpusRelease:
         serialized_embedding = _serialize_normalized(embedding, dimensions)
         lexical_query = _fts_or_query(query)
         candidate_limit = max(25, limit)
-        rankings: list[tuple[str, ...]] = []
-        details: dict[str, RetrievedSource] = {}
 
-        for book in self._manifest.books:
-            if book.book_id not in selected:
-                continue
-            path = self._directory / book.filename
-            connection = _connect(path)
-            try:
-                lexical = _lexical_ranking(connection, lexical_query, candidate_limit)
-                semantic = _semantic_ranking(connection, serialized_embedding, candidate_limit)
-                rankings.extend(
-                    tuple(f"{book.book_id}/{chunk_id}" for chunk_id in ranking)
-                    for ranking in (lexical, semantic)
-                    if ranking
-                )
-                candidate_ids = set(lexical).union(semantic)
-                details.update(_source_details(connection, book, candidate_ids))
-            finally:
-                connection.close()
+        connection = _connect(self._artifact_path)
+        try:
+            lexical = _lexical_ranking(connection, lexical_query, selected, candidate_limit)
+            semantic = _semantic_ranking(
+                connection, serialized_embedding, selected, candidate_limit
+            )
+            rankings = [ranking for ranking in (lexical, semantic) if ranking]
+            candidate_ids = set(lexical).union(semantic)
+            details = _source_details(connection, candidate_ids)
+        finally:
+            connection.close()
 
         scores, best_ranks = _reciprocal_rank_scores(rankings, rank_constant=60)
         ordered = sorted(scores, key=lambda key: (-scores[key], best_ranks[key], key))[:limit]
@@ -212,38 +207,43 @@ class CorpusRelease:
         )
 
 
-def _validate_release_artifacts(
+def _validate_release_artifact(
     root: Path, release_directory: Path, manifest: ReleaseManifest
 ) -> None:
+    artifact = manifest.artifact
+    path = _safe_child(
+        root,
+        f"{manifest.corpus_version}/{artifact.filename}",
+        "corpus artifact",
+    )
+    if not path.is_file():
+        raise CorpusError("local corpus artifact is missing")
+    if path.stat().st_size != artifact.byte_size or _sha256_file(path) != artifact.sha256:
+        raise CorpusError("local corpus artifact is missing or corrupt")
+    _validate_artifact(path, manifest)
+
+
+def _validate_artifact(path: Path, manifest: ReleaseManifest) -> None:
     compatibility = manifest.compatibility
-    for book in manifest.books:
-        path = _safe_child(root, f"{manifest.corpus_version}/{book.filename}", book.book_id)
-        if not path.is_file():
-            raise CorpusError(f"local corpus artifact is missing: {book.book_id}")
-        if path.stat().st_size != book.byte_size or _sha256_file(path) != book.sha256:
-            raise CorpusError(f"local corpus artifact is missing or corrupt: {book.book_id}")
-        _validate_artifact(path, manifest, book, compatibility)
-
-
-def _validate_artifact(
-    path: Path,
-    manifest: ReleaseManifest,
-    book: PublishedBook,
-    compatibility: Compatibility,
-) -> None:
     connection = _connect(path)
     try:
         quick_check = connection.execute("PRAGMA quick_check").fetchone()
         if quick_check is None or quick_check[0] != "ok":
-            raise CorpusError(f"SQLite integrity check failed: {book.book_id}")
+            raise CorpusError("SQLite integrity check failed")
+        foreign_key_errors = connection.execute("PRAGMA foreign_key_check").fetchall()
+        if foreign_key_errors:
+            raise CorpusError("SQLite foreign key check failed")
         tables = {
             str(row[0])
             for row in connection.execute(
                 "SELECT name FROM sqlite_master WHERE type IN ('table', 'view')"
             )
         }
-        if not {"metadata", "chunks", "chunks_fts", "chunk_vectors"}.issubset(tables):
-            raise CorpusError(f"artifact schema is incomplete: {book.book_id}")
+        if not {"metadata", "books", "chunks", "chunks_fts", "chunk_vectors"}.issubset(tables):
+            raise CorpusError("corpus artifact schema is incomplete")
+        user_version = connection.execute("PRAGMA user_version").fetchone()
+        if user_version != (manifest.artifact_schema_version,):
+            raise CorpusError("corpus artifact schema version is incompatible")
         runtime_vec_version = str(
             connection.execute("SELECT vec_version()").fetchone()[0]
         ).removeprefix("v")
@@ -251,7 +251,8 @@ def _validate_artifact(
             sqlite3.sqlite_version != compatibility.sqlite_version
             or runtime_vec_version != compatibility.sqlite_vec_version
         ):
-            raise CorpusError(f"artifact runtime is incompatible: {book.book_id}")
+            raise CorpusError("corpus artifact runtime is incompatible")
+
         oversized = connection.execute(
             """
             SELECT id FROM chunks
@@ -261,57 +262,13 @@ def _validate_artifact(
             (MAX_SOURCE_TEXT_CHARS, MAX_SOURCE_LABEL_CHARS, MAX_SOURCE_LABEL_CHARS),
         ).fetchone()
         if oversized is not None:
-            raise CorpusError(f"corpus source text or label is too large: {book.book_id}")
+            raise CorpusError("corpus source text or label is too large")
+
         metadata = dict(connection.execute("SELECT key, value FROM metadata"))
-        chunk_count = int(connection.execute("SELECT count(*) FROM chunks").fetchone()[0])
-        vector_count = int(
-            connection.execute("SELECT count(*) FROM chunk_vectors").fetchone()[0]
-        )
-        if (chunk_count, vector_count) != (book.chunk_count, book.chunk_count):
-            raise CorpusError(f"artifact index counts are inconsistent: {book.book_id}")
-        fts_count = int(connection.execute("SELECT count(*) FROM chunks_fts").fetchone()[0])
-        if fts_count != book.chunk_count:
-            raise CorpusError(f"artifact FTS index count is inconsistent: {book.book_id}")
-        vector_schema = connection.execute(
-            "SELECT sql FROM sqlite_master WHERE name = 'chunk_vectors'"
-        ).fetchone()
-        if (
-            vector_schema is None
-            or f"float[{compatibility.embedding_dimensions}]" not in str(vector_schema[0])
-            or "distance_metric=cosine" not in str(vector_schema[0])
-        ):
-            raise CorpusError(f"artifact vector dimensions are incompatible: {book.book_id}")
-        first = connection.execute(
-            "SELECT rowid, text FROM chunks ORDER BY rowid LIMIT 1"
-        ).fetchone()
-        if first is None:
-            raise CorpusError(f"artifact contains no chunks: {book.book_id}")
-        tokens = re.findall(r"\w+", str(first[1]), flags=re.UNICODE)
-        if not tokens:
-            raise CorpusError(f"artifact contains no searchable text: {book.book_id}")
-        fts_match = connection.execute(
-            "SELECT rowid FROM chunks_fts WHERE chunks_fts MATCH ?",
-            (f'"{tokens[0]}"',),
-        ).fetchall()
-        if int(first[0]) not in {int(row[0]) for row in fts_match}:
-            raise CorpusError(f"artifact FTS index is invalid: {book.book_id}")
-        first_vector = connection.execute(
-            "SELECT chunk_rowid, embedding FROM chunk_vectors ORDER BY chunk_rowid LIMIT 1"
-        ).fetchone()
-        if first_vector is None:
-            raise CorpusError(f"artifact vector index is empty: {book.book_id}")
-        nearest = connection.execute(
-            "SELECT chunk_rowid FROM chunk_vectors WHERE embedding MATCH ? AND k = 1",
-            (first_vector[1],),
-        ).fetchone()
-        if nearest != (first_vector[0],):
-            raise CorpusError(f"artifact vector index is invalid: {book.book_id}")
-        expected = {
+        expected_metadata = {
             "artifact_schema_version": str(manifest.artifact_schema_version),
-            "book_author": book.author or "",
-            "book_id": book.book_id,
-            "book_title": book.title,
-            "chunk_count": str(book.chunk_count),
+            "book_count": str(manifest.artifact.book_count),
+            "chunk_count": str(manifest.artifact.chunk_count),
             "corpus_hash": manifest.corpus_hash,
             "corpus_version": manifest.corpus_version,
             "distance_function": compatibility.distance_function,
@@ -321,19 +278,139 @@ def _validate_artifact(
             "embedding_normalization": compatibility.embedding_normalization,
             "fts_tokenizer": "porter unicode61 remove_diacritics 2",
             "model_input_limit": str(compatibility.model_input_limit),
-            "passage_count": str(book.passage_count),
+            "passage_count": str(manifest.artifact.passage_count),
             "query_task_type": compatibility.query_task_type,
-            "source_sha256": book.source_sha256,
             "sqlite_vec_version": compatibility.sqlite_vec_version,
             "sqlite_version": compatibility.sqlite_version,
         }
-        mismatched = sorted(key for key, value in expected.items() if metadata.get(key) != value)
+        mismatched = sorted(
+            key for key, value in expected_metadata.items() if metadata.get(key) != value
+        )
         if mismatched:
-            raise CorpusError(
-                f"artifact metadata is incompatible ({book.book_id}: {', '.join(mismatched)})"
+            raise CorpusError(f"corpus metadata is incompatible: {', '.join(mismatched)}")
+
+        actual_books = tuple(
+            connection.execute(
+                """
+                SELECT book_id, title, author, source_sha256, chunk_count, passage_count
+                FROM books ORDER BY book_id
+                """
+            ).fetchall()
+        )
+        expected_books = tuple(
+            (
+                book.book_id,
+                book.title,
+                book.author,
+                book.source_sha256,
+                book.chunk_count,
+                book.passage_count,
             )
+            for book in manifest.books
+        )
+        if actual_books != expected_books:
+            raise CorpusError("corpus book metadata is incomplete or incompatible")
+
+        chunk_count = int(connection.execute("SELECT count(*) FROM chunks").fetchone()[0])
+        vector_count = int(
+            connection.execute("SELECT count(*) FROM chunk_vectors").fetchone()[0]
+        )
+        fts_count = int(connection.execute("SELECT count(*) FROM chunks_fts").fetchone()[0])
+        book_count = int(connection.execute("SELECT count(*) FROM books").fetchone()[0])
+        if (book_count, chunk_count, vector_count, fts_count) != (
+            manifest.artifact.book_count,
+            manifest.artifact.chunk_count,
+            manifest.artifact.chunk_count,
+            manifest.artifact.chunk_count,
+        ):
+            raise CorpusError("corpus index counts are inconsistent")
+        per_book = {
+            str(row[0]): (int(row[1]), int(row[2]))
+            for row in connection.execute(
+                "SELECT book_id, count(*), sum(json_array_length(passage_indexes)) "
+                "FROM chunks GROUP BY book_id"
+            )
+        }
+        expected_per_book = {
+            book.book_id: (book.chunk_count, book.passage_count) for book in manifest.books
+        }
+        if per_book != expected_per_book:
+            raise CorpusError("corpus per-book counts are inconsistent")
+
+        vector_schema = connection.execute(
+            "SELECT sql FROM sqlite_master WHERE name = 'chunk_vectors'"
+        ).fetchone()
+        if (
+            vector_schema is None
+            or f"float[{compatibility.embedding_dimensions}]" not in str(vector_schema[0])
+            or "distance_metric=cosine" not in str(vector_schema[0])
+            or "book_id TEXT partition key" not in str(vector_schema[0])
+        ):
+            raise CorpusError("corpus vector dimensions are incompatible")
+        vector_book_mismatch = connection.execute(
+            """
+            SELECT 1
+            FROM chunk_vectors AS vectors
+            LEFT JOIN chunks ON chunks.rowid = vectors.chunk_rowid
+            WHERE chunks.rowid IS NULL
+               OR vectors.book_id IS NULL
+               OR vectors.book_id <> chunks.book_id
+            LIMIT 1
+            """
+        ).fetchone()
+        if vector_book_mismatch is not None:
+            raise CorpusError("corpus vector book partitions are invalid")
+        vector_per_book = {
+            str(row[0]): int(row[1])
+            for row in connection.execute(
+                "SELECT book_id, count(*) FROM chunk_vectors GROUP BY book_id"
+            )
+        }
+        expected_vector_per_book = {book.book_id: book.chunk_count for book in manifest.books}
+        if vector_per_book != expected_vector_per_book:
+            raise CorpusError("corpus vector book partitions are incomplete")
+        first = connection.execute(
+            "SELECT rowid, text FROM chunks ORDER BY rowid LIMIT 1"
+        ).fetchone()
+        if first is None:
+            raise CorpusError("corpus contains no chunks")
+        tokens = re.findall(r"\w+", str(first[1]), flags=re.UNICODE)
+        if not tokens:
+            raise CorpusError("corpus contains no searchable text")
+        fts_match = connection.execute(
+            "SELECT rowid FROM chunks_fts WHERE chunks_fts MATCH ?",
+            (f'"{tokens[0]}"',),
+        ).fetchall()
+        if int(first[0]) not in {int(row[0]) for row in fts_match}:
+            raise CorpusError("corpus FTS index is invalid")
+        first_vector = connection.execute(
+            "SELECT chunk_rowid, book_id, embedding "
+            "FROM chunk_vectors ORDER BY chunk_rowid LIMIT 1"
+        ).fetchone()
+        if first_vector is None:
+            raise CorpusError("corpus vector index is empty")
+        first_book_count = int(
+            connection.execute(
+                "SELECT count(*) FROM chunk_vectors WHERE book_id = ?",
+                (first_vector[1],),
+            ).fetchone()[0]
+        )
+        nearest = connection.execute(
+            """
+            SELECT chunk_rowid
+            FROM chunk_vectors
+            WHERE embedding MATCH ? AND book_id = ? AND k = ?
+            """,
+            (
+                first_vector[2],
+                first_vector[1],
+                min(10, first_book_count),
+            ),
+        ).fetchall()
+        if int(first_vector[0]) not in {int(row[0]) for row in nearest}:
+            raise CorpusError("corpus vector index is invalid")
     except sqlite3.Error as error:
-        raise CorpusError(f"could not validate corpus artifact {book.book_id}: {error}") from error
+        raise CorpusError(f"could not validate corpus artifact: {error}") from error
     finally:
         connection.close()
 
@@ -369,43 +446,69 @@ def _fts_or_query(query: str) -> str:
     return " OR ".join(f'"{token}"' for token in tokens)
 
 
-def _lexical_ranking(connection: sqlite3.Connection, query: str, limit: int) -> tuple[str, ...]:
+def _book_filter(selected: set[str]) -> tuple[str, tuple[str, ...]]:
+    if not selected:
+        return "1 = 0", ()
+    values = tuple(sorted(selected))
+    placeholders = ",".join("?" for _ in values)
+    return f"chunks.book_id IN ({placeholders})", values
+
+
+def _lexical_ranking(
+    connection: sqlite3.Connection, query: str, selected: set[str], limit: int
+) -> tuple[str, ...]:
     if not query:
         return ()
+    book_filter, book_parameters = _book_filter(selected)
     rows = connection.execute(
-        """
+        f"""
         SELECT chunks.id
         FROM chunks_fts
         JOIN chunks ON chunks.rowid = chunks_fts.rowid
-        WHERE chunks_fts MATCH ?
+        WHERE chunks_fts MATCH ? AND {book_filter}
         ORDER BY bm25(chunks_fts, 3.0, 2.0, 1.0), chunks.id
         LIMIT ?
         """,
-        (query, limit),
+        (query, *book_parameters, limit),
     )
     return tuple(str(row[0]) for row in rows)
 
 
 def _semantic_ranking(
-    connection: sqlite3.Connection, embedding: bytes, limit: int
+    connection: sqlite3.Connection,
+    embedding: bytes,
+    selected: set[str],
+    limit: int,
 ) -> tuple[str, ...]:
-    count = int(connection.execute("SELECT count(*) FROM chunks").fetchone()[0])
-    rows = connection.execute(
-        """
-        SELECT chunks.id
-        FROM chunk_vectors
-        JOIN chunks ON chunks.rowid = chunk_vectors.chunk_rowid
-        WHERE chunk_vectors.embedding MATCH ? AND k = ?
-        ORDER BY chunk_vectors.distance, chunks.id
-        """,
-        (embedding, min(limit, count)),
-    )
-    return tuple(str(row[0]) for row in rows)
+    candidates: list[tuple[float, str]] = []
+    for book_id in sorted(selected):
+        count = int(
+            connection.execute(
+                "SELECT count(*) FROM chunks WHERE book_id = ?", (book_id,)
+            ).fetchone()[0]
+        )
+        if not count:
+            continue
+        rows = connection.execute(
+            """
+            SELECT chunks.id, chunk_vectors.distance
+            FROM chunk_vectors
+            JOIN chunks ON chunks.rowid = chunk_vectors.chunk_rowid
+            WHERE chunk_vectors.embedding MATCH ?
+              AND chunk_vectors.book_id = ?
+              AND k = ?
+            ORDER BY chunk_vectors.distance, chunks.id
+            LIMIT ?
+            """,
+            (embedding, book_id, min(count, limit, MAX_VECTOR_K), limit),
+        )
+        candidates.extend((float(row[1]), str(row[0])) for row in rows)
+    candidates.sort(key=lambda item: (item[0], item[1]))
+    return tuple(chunk_id for _, chunk_id in candidates[:limit])
 
 
 def _source_details(
     connection: sqlite3.Connection,
-    book: PublishedBook,
     chunk_ids: set[str],
 ) -> dict[str, RetrievedSource]:
     if not chunk_ids:
@@ -413,23 +516,25 @@ def _source_details(
     placeholders = ",".join("?" for _ in chunk_ids)
     rows = connection.execute(
         f"""
-        SELECT id, remedy_name, section_title, passage_indexes,
-               substr(text, 1, ?) AS text
+        SELECT chunks.id, chunks.book_id, books.title, books.author,
+               chunks.remedy_name, chunks.section_title, chunks.passage_indexes,
+               substr(chunks.text, 1, ?) AS text
         FROM chunks
-        WHERE id IN ({placeholders})
+        JOIN books ON books.book_id = chunks.book_id
+        WHERE chunks.id IN ({placeholders})
         """,
         (MAX_SOURCE_TEXT_CHARS, *sorted(chunk_ids)),
     )
     return {
-        f"{book.book_id}/{row[0]}": RetrievedSource(
+        str(row[0]): RetrievedSource(
             chunk_id=str(row[0]),
-            book_id=book.book_id,
-            book_title=book.title,
-            author=book.author,
-            remedy_name=str(row[1]),
-            section_title=str(row[2]),
-            passage_indexes=tuple(int(index) for index in json.loads(row[3])),
-            text=str(row[4]),
+            book_id=str(row[1]),
+            book_title=str(row[2]),
+            author=str(row[3]) if row[3] is not None else None,
+            remedy_name=str(row[4]),
+            section_title=str(row[5]),
+            passage_indexes=tuple(int(index) for index in json.loads(row[6])),
+            text=str(row[7]),
             score=0.0,
         )
         for row in rows

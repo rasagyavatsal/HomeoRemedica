@@ -8,7 +8,7 @@ import pytest
 from corpus.sources import (
     BookDefinition,
     CorpusValidationError,
-    load_combined_books,
+    load_corpus_books,
 )
 
 
@@ -28,7 +28,7 @@ def definitions_with_authors(**books: tuple[str, str | None]) -> dict[str, BookD
     }
 
 
-def combined_value(books: dict[str, object], remedies: dict[str, object]) -> dict[str, object]:
+def corpus_value(books: dict[str, object], remedies: dict[str, object]) -> dict[str, object]:
     return {
         "metadata": {
             "schema_version": 1,
@@ -39,13 +39,13 @@ def combined_value(books: dict[str, object], remedies: dict[str, object]) -> dic
     }
 
 
-def test_loads_one_book_per_configured_id_from_the_combined_file(
+def test_loads_one_book_per_configured_id_from_the_corpus_file(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    path = tmp_path / "dataset" / "combined.json"
+    path = tmp_path / "dataset" / "corpus.json"
     write_json(
         path,
-        combined_value(
+        corpus_value(
             books={"sample": {"title": "Sample Book"}},
             remedies={
                 "Original Name": {"sample": {"Mind": ["  Preserve me.  "]}},
@@ -64,7 +64,7 @@ def test_loads_one_book_per_configured_id_from_the_combined_file(
 
     monkeypatch.setattr(Path, "read_bytes", record_read)
 
-    books = load_combined_books(path, definitions(sample="Sample Book"))
+    books = load_corpus_books(path, definitions(sample="Sample Book"))
 
     assert reads == [path]
     assert [book.book_id for book in books] == ["sample"]
@@ -77,10 +77,10 @@ def test_loads_one_book_per_configured_id_from_the_combined_file(
 
 
 def test_splits_remedy_merged_sections_into_per_book_remedies(tmp_path: Path) -> None:
-    path = tmp_path / "dataset" / "combined.json"
+    path = tmp_path / "dataset" / "corpus.json"
     write_json(
         path,
-        combined_value(
+        corpus_value(
             books={
                 "beta": {"title": "Beta Book", "author": "B. Author"},
                 "alpha": {"title": "Alpha Book"},
@@ -95,7 +95,7 @@ def test_splits_remedy_merged_sections_into_per_book_remedies(tmp_path: Path) ->
         ),
     )
 
-    books = load_combined_books(
+    books = load_corpus_books(
         path,
         definitions_with_authors(
             alpha=("Alpha Book", None),
@@ -117,16 +117,16 @@ def test_splits_remedy_merged_sections_into_per_book_remedies(tmp_path: Path) ->
 
 
 def test_rejects_missing_file_and_symbolic_link(tmp_path: Path) -> None:
-    path = tmp_path / "dataset" / "combined.json"
+    path = tmp_path / "dataset" / "corpus.json"
     with pytest.raises(CorpusValidationError, match="does not exist"):
-        load_combined_books(path, definitions(sample="Sample Book"))
+        load_corpus_books(path, definitions(sample="Sample Book"))
 
     outside = tmp_path / "outside.json"
-    write_json(outside, combined_value(books={}, remedies={}))
+    write_json(outside, corpus_value(books={}, remedies={}))
     path.parent.mkdir(parents=True)
     path.symlink_to(outside)
     with pytest.raises(CorpusValidationError, match="symbolic link"):
-        load_combined_books(path, definitions(sample="Sample Book"))
+        load_corpus_books(path, definitions(sample="Sample Book"))
 
 
 @pytest.mark.parametrize(
@@ -266,15 +266,15 @@ def test_rejects_missing_file_and_symbolic_link(tmp_path: Path) -> None:
         ),
     ],
 )
-def test_rejects_invalid_combined_data(
+def test_rejects_invalid_corpus_data(
     tmp_path: Path, value: object, location: str, message: str
 ) -> None:
-    path = tmp_path / "combined.json"
+    path = tmp_path / "corpus.json"
     write_json(path, value)
 
     with pytest.raises(CorpusValidationError) as error:
-        load_combined_books(path, definitions(sample="Sample Book"))
+        load_corpus_books(path, definitions(sample="Sample Book"))
 
-    assert "combined.json" in str(error.value)
+    assert "corpus.json" in str(error.value)
     assert location in str(error.value)
     assert message in str(error.value)

@@ -23,7 +23,7 @@ class _Settings(BaseModel):
 
 
 class _SourceSettings(_Settings):
-    combined_dataset: str
+    corpus_dataset: str
 
 
 class _ChunkingSettings(_Settings):
@@ -80,7 +80,7 @@ class _FileSettings(_Settings):
 @dataclass(frozen=True, slots=True)
 class EvaluationConfig:
     config_path: Path
-    combined_dataset: Path
+    corpus_dataset: Path
     chunking: ChunkingPolicy
     embedding: EmbeddingSpec
     dimensions: tuple[int, ...]
@@ -105,7 +105,7 @@ def load_evaluation_config(path: Path = Path("evaluation.toml")) -> EvaluationCo
             raise ValueError(f"book ID is not filename-safe: {book_id}")
     return EvaluationConfig(
         config_path=resolved_path,
-        combined_dataset=_resolve(root, settings.source.combined_dataset),
+        corpus_dataset=_resolve(root, settings.source.corpus_dataset),
         chunking=ChunkingPolicy(
             target_tokens=settings.chunking.target_tokens,
             minimum_tokens=settings.chunking.minimum_tokens,

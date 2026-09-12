@@ -6,11 +6,11 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-from corpus.builder import build_release
+from corpus.builder import activate_release, build_release
 from corpus.chunking import chunk_book, corpus_hash
 from corpus.config import PipelineConfig, load_pipeline_config
 from corpus.embeddings import OpenRouterEmbeddingProvider
-from corpus.sources import load_combined_books
+from corpus.sources import load_corpus_books
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -33,16 +33,22 @@ def _parser() -> argparse.ArgumentParser:
     commands = parser.add_subparsers(required=True)
 
     validate = commands.add_parser(
-        "validate", help="validate the combined corpus source and chunking"
+        "validate", help="validate the corpus source and chunking"
     )
     validate.set_defaults(command=_validate)
 
     build = commands.add_parser(
-        "build", help="build, verify, and activate all per-book SQLite artifacts"
+        "build", help="build, verify, and activate one SQLite corpus artifact"
     )
     build.add_argument("corpus_version")
     _worker_argument(build)
     build.set_defaults(command=_build)
+
+    activate = commands.add_parser(
+        "activate", help="verify and activate an existing SQLite corpus release"
+    )
+    activate.add_argument("corpus_version")
+    activate.set_defaults(command=_activate)
     return parser
 
 
@@ -69,7 +75,7 @@ def _validate(config: PipelineConfig, _arguments: argparse.Namespace) -> int:
 
 
 def _build(config: PipelineConfig, arguments: argparse.Namespace) -> int:
-    books = load_combined_books(config.combined_dataset, config.books)
+    books = load_corpus_books(config.corpus_dataset, config.books)
     provider = OpenRouterEmbeddingProvider(config.embedding)
     release = build_release(
         books,
@@ -84,7 +90,8 @@ def _build(config: PipelineConfig, arguments: argparse.Namespace) -> int:
     _print_json(
         {
             "active": str(config.output_directory / "active.json"),
-            "artifacts": len(release.artifacts),
+            "artifact": str(release.artifact.path),
+            "books": len(release.artifact.books),
             "corpusHash": release.corpus_hash,
             "corpusVersion": release.corpus_version,
             "directory": str(release.release_directory),
@@ -93,8 +100,20 @@ def _build(config: PipelineConfig, arguments: argparse.Namespace) -> int:
     return 0
 
 
+def _activate(config: PipelineConfig, arguments: argparse.Namespace) -> int:
+    pointer = activate_release(config.output_directory, arguments.corpus_version)
+    _print_json(
+        {
+            "active": str(config.output_directory / "active.json"),
+            "corpusVersion": pointer.corpus_version,
+            "manifest": str(config.output_directory / pointer.manifest_path),
+        }
+    )
+    return 0
+
+
 def _load_chunks(config: PipelineConfig):
-    books = load_combined_books(config.combined_dataset, config.books)
+    books = load_corpus_books(config.corpus_dataset, config.books)
     chunks = tuple(chunk for book in books for chunk in chunk_book(book, config.chunking))
     return books, chunks
 

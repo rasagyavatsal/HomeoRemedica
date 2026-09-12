@@ -2,7 +2,7 @@
 
 Evaluation is an experimental pipeline. Chat and corpus releases must remain usable when evaluation
 code, settings, caches, or recorded results change or are absent. Both pipelines may read
-`dataset/combined.json`; the source schema and deterministic chunking code are the only intentional
+`dataset/corpus.json`; the source schema and deterministic chunking code are the only intentional
 shared inputs.
 
 ## Dependency audit
@@ -25,7 +25,7 @@ Those dependencies are now assigned as follows:
 | Configuration | `corpus.toml` and `corpus.config` | `evaluation.toml` and `eval.config` | Evaluation settings are rejected by the release config schema. |
 | Contracts and utilities | Chat/release manifest contracts | Evaluation result contracts and path helpers | Evaluation results are not present in new build descriptors or manifests. |
 | Outputs | `artifacts/corpus/` | `benchmarks/` and `.cache/benchmarks/` | Experimental files cannot become release artifacts implicitly. |
-| Source data | `dataset/combined.json` through corpus source/chunking modules | The same file through the same deterministic source/chunking modules | Reading the same source does not couple runtime behavior. |
+| Source data | `dataset/corpus.json` through corpus source/chunking modules | The same file through the same deterministic source/chunking modules | Reading the same source does not couple runtime behavior. |
 
 The repository boundary check parses package imports and both TOML files. The `chat` and `eval`
 packages may import `corpus`; `corpus` imports neither of them, `eval` does not import `chat`, and

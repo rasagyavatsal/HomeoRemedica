@@ -22,7 +22,7 @@ class _Settings(BaseModel):
 
 
 class _CorpusSettings(_Settings):
-    combined_dataset: str
+    corpus_dataset: str
     output_directory: str
     artifact_schema_version: int = Field(gt=0)
     manifest_schema_version: int = Field(gt=0)
@@ -81,7 +81,7 @@ class _FileSettings(_Settings):
 @dataclass(frozen=True, slots=True)
 class PipelineConfig:
     config_path: Path
-    combined_dataset: Path
+    corpus_dataset: Path
     output_directory: Path
     artifact_schema_version: int
     manifest_schema_version: int
@@ -130,7 +130,7 @@ def load_pipeline_config(path: Path = Path("corpus.toml")) -> PipelineConfig:
             raise ValueError(f"book ID is not filename-safe: {book_id}")
     return PipelineConfig(
         config_path=resolved_path,
-        combined_dataset=_resolve(root, settings.corpus.combined_dataset),
+        corpus_dataset=_resolve(root, settings.corpus.corpus_dataset),
         output_directory=_resolve(root, settings.corpus.output_directory),
         artifact_schema_version=settings.corpus.artifact_schema_version,
         manifest_schema_version=settings.corpus.manifest_schema_version,

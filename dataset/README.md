@@ -10,11 +10,13 @@ This directory contains the source corpus used by the HomeoRemedica retrieval pi
 | `kent-lectures` | James Tyler Kent, *Lectures on Homoeopathic Materia Medica* | `raw-text/Kent-lectures.txt` | `processed/kent-lectures.json` |
 
 Processed files use the `remedy -> section -> passages` JSON structure. The four per-book files are
-merged losslessly into `combined.json`, a remedy-merged
+merged losslessly into `corpus.json`, a remedy-merged
 `remedy -> book -> section -> passages` structure with 1,250 unique remedies over 1,645
 remedy-book pairs, 18,183 sections, and 118,259 passages. The retrieval pipeline reads
-`combined.json` as its corpus source and treats every passage as one separately embedded symptom;
-run
+`corpus.json` as its corpus source and treats every passage as one separately embedded symptom. A
+release combines all four books in one `corpus.sqlite` database; its `books` table preserves each
+book ID, title, author, source digest, and completeness counts while shared FTS5 and vector indexes
+support filtered retrieval. Run
 `uv run --locked homeoremedica-corpus validate` from the repository root to validate it and
 reproduce its counts and digest.
 
