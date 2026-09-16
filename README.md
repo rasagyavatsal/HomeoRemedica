@@ -93,8 +93,7 @@ uv run --locked homeoremedica-evaluation
 ```
 
 Evaluation requires an OpenRouter key and caches embeddings and rankings in `.cache/benchmarks/`.
-See [benchmark records](benchmarks/README.md) and the
-[evaluation promotion process](docs/evaluation-promotion.md) for details.
+See the [benchmark records](benchmarks/README.md) for details.
 
 ## Development
 
