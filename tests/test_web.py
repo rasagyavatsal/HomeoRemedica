@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
@@ -29,9 +28,9 @@ class StubService:
         )
 
 
-def test_books_and_chat_endpoints_use_the_existing_service_contract(tmp_path: Path) -> None:
+def test_books_and_chat_endpoints_use_the_existing_service_contract() -> None:
     service = StubService()
-    app = create_app(service=service, frontend_directory=tmp_path)
+    app = create_app(service=service)
 
     with TestClient(app) as client:
         books = client.get("/api/books")
@@ -55,7 +54,7 @@ def test_books_and_chat_endpoints_use_the_existing_service_contract(tmp_path: Pa
     assert service.requests[0].book_ids == ("kent-lectures",)
 
 
-def test_app_builds_the_service_during_startup(monkeypatch, tmp_path: Path) -> None:
+def test_app_builds_the_service_during_startup(monkeypatch) -> None:
     service = StubService()
     calls: list[object] = []
 
@@ -65,19 +64,19 @@ def test_app_builds_the_service_during_startup(monkeypatch, tmp_path: Path) -> N
 
     monkeypatch.setattr("web.app.build_service", fake_build_service)
 
-    with TestClient(create_app(frontend_directory=tmp_path)):
+    with TestClient(create_app()):
         pass
 
     assert len(calls) == 1
     assert calls[0].__class__.__name__ == "Settings"
 
 
-def test_chat_endpoint_returns_a_client_error_for_an_unknown_book(tmp_path: Path) -> None:
+def test_chat_endpoint_returns_a_client_error_for_an_unknown_book() -> None:
     class FailingService(StubService):
         def chat(self, request: ChatRequest) -> ChatResponse:
             raise ValueError("unknown book IDs: missing")
 
-    with TestClient(create_app(service=FailingService(), frontend_directory=tmp_path)) as client:
+    with TestClient(create_app(service=FailingService())) as client:
         response = client.post("/api/chat", json={"message": "question"})
 
     assert response.status_code == 400
@@ -114,7 +113,6 @@ def test_chat_endpoint_returns_a_client_error_for_an_unknown_book(tmp_path: Path
     ],
 )
 def test_chat_endpoint_maps_failures_and_logs_safe_stage_metadata(
-    tmp_path: Path,
     caplog: pytest.LogCaptureFixture,
     stage: str,
     kind: str,
@@ -130,7 +128,7 @@ def test_chat_endpoint_maps_failures_and_logs_safe_stage_metadata(
             )
 
     caplog.set_level(logging.ERROR, logger="web.app")
-    with TestClient(create_app(service=FailingService(), frontend_directory=tmp_path)) as client:
+    with TestClient(create_app(service=FailingService())) as client:
         response = client.post("/api/chat", json={"message": "question"})
 
     assert response.status_code == status_code
@@ -141,7 +139,6 @@ def test_chat_endpoint_maps_failures_and_logs_safe_stage_metadata(
 
 
 def test_chat_endpoint_keeps_unexpected_error_details_out_of_the_response_and_logs(
-    tmp_path: Path,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     secret = "provider response secret"
@@ -151,7 +148,7 @@ def test_chat_endpoint_keeps_unexpected_error_details_out_of_the_response_and_lo
             raise Exception(secret)
 
     caplog.set_level(logging.ERROR, logger="web.app")
-    with TestClient(create_app(service=FailingService(), frontend_directory=tmp_path)) as client:
+    with TestClient(create_app(service=FailingService())) as client:
         response = client.post("/api/chat", json={"message": "question"})
 
     assert response.status_code == 500
@@ -163,11 +160,8 @@ def test_chat_endpoint_keeps_unexpected_error_details_out_of_the_response_and_lo
     assert "error_type=Exception" in caplog.text
 
 
-def test_built_frontend_is_served_from_the_root(tmp_path: Path) -> None:
-    (tmp_path / "index.html").write_text("<html>HomeoRemedica</html>", encoding="utf-8")
-
-    with TestClient(create_app(service=StubService(), frontend_directory=tmp_path)) as client:
+def test_root_has_no_browser_client() -> None:
+    with TestClient(create_app(service=StubService())) as client:
         response = client.get("/")
 
-    assert response.status_code == 200
-    assert response.text == "<html>HomeoRemedica</html>"
+    assert response.status_code == 404
