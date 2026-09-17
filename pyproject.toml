@@ -14,8 +14,8 @@ dependencies = [
 ]
 
 [project.scripts]
-homeoremedica-corpus = "corpus.cli:main"
-homeoremedica-evaluation = "eval.cli:main"
+corpus = "corpus.cli:main"
+evaluation = "eval.cli:main"
 chat = "chat.cli:main"
 
 [build-system]

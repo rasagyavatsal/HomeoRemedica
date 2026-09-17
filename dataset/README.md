@@ -17,7 +17,7 @@ remedy-book pairs, 18,183 sections, and 118,259 passages. The retrieval pipeline
 release combines all four books in one `corpus.sqlite` database; its `books` table preserves each
 book ID, title, author, source digest, and completeness counts while shared FTS5 and vector indexes
 support filtered retrieval. Run
-`uv run --locked homeoremedica-corpus validate` from the repository root to validate it and
+`uv run --locked corpus validate` from the repository root to validate it and
 reproduce its counts and digest.
 
 ## License and attribution
