@@ -26,7 +26,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="homeoremedica-corpus",
+        prog="corpus",
         description="Build and activate local HomeoRemedica RAG corpus releases.",
     )
     parser.add_argument("--config", type=Path, default=Path("corpus.toml"))

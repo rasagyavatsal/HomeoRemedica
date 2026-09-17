@@ -18,7 +18,7 @@ def test_evaluation_has_a_separate_command_surface() -> None:
     corpus_commands = corpus_parser()._subparsers._group_actions[0].choices
 
     assert "evaluate" not in corpus_commands
-    assert evaluation_parser().prog == "homeoremedica-evaluation"
+    assert evaluation_parser().prog == "evaluation"
 
 
 def test_pipelines_share_only_the_source_dataset_by_configuration() -> None:

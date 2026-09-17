@@ -24,8 +24,8 @@ cp .env.example .env
 Set `OPENROUTER_API_KEY` and `ZAI_API_KEY` in `.env`, then build the corpus and start chatting:
 
 ```sh
-uv run --locked homeoremedica-corpus validate
-uv run --locked homeoremedica-corpus build local-v1
+uv run --locked corpus validate
+uv run --locked corpus build local-v1
 uv run --locked chat
 ```
 
@@ -70,10 +70,10 @@ SQLite database for all four books.
 
 ```sh
 # Validate sources and chunking locally; no API key needed.
-uv run --locked homeoremedica-corpus validate
+uv run --locked corpus validate
 
 # Verify and activate an existing release.
-uv run --locked homeoremedica-corpus activate local-v1
+uv run --locked corpus activate local-v1
 ```
 
 Builds write `corpus.sqlite` and `manifest.json` under `artifacts/corpus/<version>/`, then update
@@ -90,7 +90,7 @@ Before running, change `output.result` in `evaluation.toml` to an unused version
 and results cannot be overwritten.
 
 ```sh
-uv run --locked homeoremedica-evaluation
+uv run --locked evaluation
 ```
 
 Evaluation requires an OpenRouter key and caches embeddings and rankings in `.cache/benchmarks/`.
