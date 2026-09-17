@@ -52,7 +52,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="homeoremedica-evaluation",
+        prog="evaluation",
         description="Run isolated retrieval experiments against the source dataset.",
     )
     parser.add_argument("--config", type=Path, default=Path("evaluation.toml"))

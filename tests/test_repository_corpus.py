@@ -71,7 +71,7 @@ def test_repository_evaluation_result_matches_its_isolated_configuration() -> No
     if not config.result.exists():
         pytest.skip(
             "pending evaluation for the configured dataset; run "
-            "`homeoremedica-evaluation` once the OpenRouter key is configured"
+            "`uv run --locked evaluation` once the OpenRouter key is configured"
         )
     books = repository_books(config)
     chunks = tuple(chunk for book in books for chunk in chunk_book(book, config.chunking))
