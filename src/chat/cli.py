@@ -31,7 +31,7 @@ _FAILURE_DETAILS = {
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="homeoremedica-chat",
+        prog="chat",
         description="Chat with the active local HomeoRemedica corpus release.",
     )
     parser.add_argument(
