@@ -3,11 +3,11 @@
 ## Open dataset distribution
 
 On 2026-09-04 the project adopted open distribution for both its software and source dataset. This
-repository contains the chat API and corpus-pipeline codebase, configuration, source corpus,
+repository contains the local chat CLI and corpus-pipeline codebase, configuration, source corpus,
 evaluation fixtures, release tooling, and synthetic tests:
 
 - `src/chat/` contains the chat engine, verified local release loader, and hybrid retrieval runtime.
-- `src/web/` contains the API server.
+- `src/chat/cli.py` contains the terminal interface for the local chat service.
 - `src/corpus/` contains source validation, chunking, artifact building, and local release activation.
 - `src/eval/` contains isolated experimental retrieval, embeddings, contracts,
   configuration, and result tooling.
