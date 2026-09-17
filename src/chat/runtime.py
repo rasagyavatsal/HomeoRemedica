@@ -27,7 +27,7 @@ def _default_corpus_dir() -> Path:
 
 
 class Settings(BaseSettings):
-    """Configuration for the local web service.
+    """Configuration for the local chat service.
 
     Values can be passed as ``RAG_*`` environment variables or placed in a
     ``.env``/``.env.local`` file. The Z.AI and OpenRouter API keys use their
@@ -224,5 +224,5 @@ def build_service(settings: Settings) -> ChatService:
 
 
 def load_corpus(settings: Settings) -> CorpusRelease:
-    """Load and verify the active local release used by the web service."""
+    """Load and verify the active local release used by chat."""
     return load_local_corpus(settings.corpus_dir)

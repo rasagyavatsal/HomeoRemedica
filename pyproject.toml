@@ -1,24 +1,22 @@
 [project]
 name = "HomeoRemedica"
 version = "6.0.0"
-description = "HomeoRemedica chat API and RAG corpus release tooling"
+description = "HomeoRemedica local chat CLI and RAG corpus release tooling"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = "==3.14.*"
 dependencies = [
-  "fastapi>=0.115,<1",
   "pydantic>=2.12.5,<3",
   "pydantic-settings>=2.10.1,<3",
   "requests>=2.34.2,<3",
   "sqlite-vec==0.1.9",
-  "uvicorn>=0.34,<1",
 ]
 
 [project.scripts]
 homeoremedica-corpus = "corpus.cli:main"
 homeoremedica-evaluation = "eval.cli:main"
-homeoremedica-web = "web.app:main"
+homeoremedica-chat = "chat.cli:main"
 
 [build-system]
 requires = ["uv-build>=0.11.23,<0.12"]
@@ -55,4 +53,4 @@ reportMissingTypeStubs = false
 required-version = ">=0.11.23,<0.12"
 
 [tool.uv.build-backend]
-module-name = ["chat", "corpus", "eval", "web"]
+module-name = ["chat", "corpus", "eval"]
