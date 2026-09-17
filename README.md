@@ -26,7 +26,7 @@ Set `OPENROUTER_API_KEY` and `ZAI_API_KEY` in `.env`, then build the corpus and 
 ```sh
 uv run --locked homeoremedica-corpus validate
 uv run --locked homeoremedica-corpus build local-v1
-uv run --locked homeoremedica-chat
+uv run --locked chat
 ```
 
 The CLI verifies the active corpus at startup. Type a question, use `/books` to list the
@@ -34,9 +34,9 @@ available books, `/clear` to reset conversation history, or `/quit` to exit. It 
 answer and numbered source references. To ask one question and exit, run:
 
 ```sh
-uv run --locked homeoremedica-chat What does Kent say about Nux vomica?
-uv run --locked homeoremedica-chat --book kent-lectures "What does Kent say about Nux vomica?"
-uv run --locked homeoremedica-chat --list-books
+uv run --locked chat What does Kent say about Nux vomica?
+uv run --locked chat --book kent-lectures "What does Kent say about Nux vomica?"
+uv run --locked chat --list-books
 ```
 
 Repeat `--book` to search up to four selected books. Conversation history stays in memory for
