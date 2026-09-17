@@ -4,7 +4,7 @@ from pathlib import Path
 
 from corpus.chunking import ChunkingPolicy, chunk_book
 from corpus.sources import Book, Remedy, Section
-from eval.retrieval import (
+from eval_chat.retrieval import (
     lexical_content_terms,
     normalized_remedy_name,
     rank_lexical_queries,

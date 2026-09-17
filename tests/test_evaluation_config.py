@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from eval.config import load_evaluation_config
+from eval_chat.config import load_evaluation_config
 
 CONFIG = """
 [source]

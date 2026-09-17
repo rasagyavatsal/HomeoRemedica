@@ -103,9 +103,11 @@ class OpenRouterEmbeddingProvider:
         return self._embed_batch(texts)
 
     def _embed(self, text: str) -> tuple[float, ...]:
-        response = self._request(
-            {"model": self.spec.model, "input": text, "encoding_format": "float"}
-        )
+        response = self._request({
+            "model": self.spec.model,
+            "input": text,
+            "encoding_format": "float",
+        })
         _reject_oversized_input(response, self.spec.model_input_limit)
         return self._parse_embeddings(response, 1)[0]
 
@@ -113,9 +115,11 @@ class OpenRouterEmbeddingProvider:
         materialized = tuple(texts)
         if not materialized:
             return ()
-        response = self._request(
-            {"model": self.spec.model, "input": list(materialized), "encoding_format": "float"}
-        )
+        response = self._request({
+            "model": self.spec.model,
+            "input": list(materialized),
+            "encoding_format": "float",
+        })
         return self._parse_embeddings(response, len(materialized))
 
     def _parse_embeddings(

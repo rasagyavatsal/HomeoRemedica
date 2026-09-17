@@ -15,8 +15,9 @@ dependencies = [
 
 [project.scripts]
 corpus = "corpus.cli:main"
-evaluation = "eval.cli:main"
+evaluation = "eval_chat.evaluation_cli:main"
 chat = "chat.cli:main"
+eval-chat = "eval_chat.chat_cli:main"
 
 [build-system]
 requires = ["uv-build>=0.11.23,<0.12"]
@@ -53,4 +54,4 @@ reportMissingTypeStubs = false
 required-version = ">=0.11.23,<0.12"
 
 [tool.uv.build-backend]
-module-name = ["chat", "corpus", "eval"]
+module-name = ["shared", "chat", "corpus", "eval_chat"]

@@ -10,8 +10,8 @@ from pathlib import Path
 
 import sqlite_vec
 
-from chat.chat import BookSummary, RetrievedSource
 from corpus.contracts import ActivePointer, ReleaseManifest
+from shared.contracts import BookSummary, RetrievedSource
 
 
 class CorpusError(RuntimeError):

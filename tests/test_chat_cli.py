@@ -5,9 +5,9 @@ import sys
 
 import pytest
 
-from chat.chat import BookSummary, ChatRequest, ChatResponse, Citation
 from chat.cli import main
-from chat.errors import ChatFailure
+from shared.contracts import BookSummary, ChatRequest, ChatResponse, Citation
+from shared.errors import ChatFailure
 
 
 class StubService:

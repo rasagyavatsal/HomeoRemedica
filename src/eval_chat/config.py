@@ -9,13 +9,13 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from corpus.chunking import ChunkingPolicy
 from corpus.sources import BookDefinition
-from eval.embeddings import (
+from eval_chat.embeddings import (
     QWEN3_EMBEDDING_MODEL,
     QWEN3_NATIVE_DIMENSIONS,
     EmbeddingSpec,
 )
-from eval.evaluation import EvaluationSettings
-from eval.paths import benchmark_cache_directory, benchmark_query_path, benchmark_result_path
+from eval_chat.evaluation import EvaluationSettings
+from eval_chat.paths import benchmark_cache_directory, benchmark_query_path, benchmark_result_path
 
 
 class _Settings(BaseModel):
@@ -120,9 +120,7 @@ def load_evaluation_config(path: Path = Path("evaluation.toml")) -> EvaluationCo
         retrieval=settings.retrieval,
         dataset=benchmark_query_path(Path(settings.output.dataset), root),
         result=benchmark_result_path(Path(settings.output.result), root),
-        cache_directory=benchmark_cache_directory(
-            Path(settings.output.cache_directory), root
-        ),
+        cache_directory=benchmark_cache_directory(Path(settings.output.cache_directory), root),
         books=books,
     )
 
