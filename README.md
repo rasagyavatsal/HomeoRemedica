@@ -82,8 +82,9 @@ Use `build <version> --workers 8` to reduce the default 32 concurrent embedding 
 
 ## Evaluation
 
-`src/eval/` runs retrieval experiments independently of chat and corpus releases. Settings live
-in `evaluation.toml`; query datasets and recorded results live in `benchmarks/`.
+`src/eval_chat/` owns experimental retrieval, benchmark scoring, and a separate chat CLI.
+Retrieval settings live in `evaluation.toml`; query datasets and recorded results live in
+`benchmarks/`.
 
 Before running, change `output.result` in `evaluation.toml` to an unused versioned path such as
 `benchmarks/results/v10.json`. The checked-in configuration points to the existing v9 result,
@@ -96,6 +97,22 @@ uv run --locked evaluation
 Evaluation requires an OpenRouter key and caches embeddings and rankings in `.cache/benchmarks/`.
 See the [benchmark records](benchmarks/README.md) for details.
 
+To chat with the experimental retriever, set both `OPENROUTER_API_KEY` and `ZAI_API_KEY`, then run:
+
+```sh
+uv run --locked eval-chat
+uv run --locked eval-chat --book kent-lectures "What does Kent say about Nux vomica?"
+uv run --locked eval-chat --list-books
+```
+
+`eval-chat` has the same interactive commands and answer format as `chat`. It reads
+`eval-chat.toml` for the selected embedding dimension and answer model, and reads the referenced
+`evaluation.toml` for corpus and retrieval settings. Its first run prepares document embeddings
+and a disk-backed search index under the evaluation cache directory; later runs reuse them.
+The current dataset has 118,259 chunks, so first-time preparation uses substantial OpenRouter
+requests and several gigabytes of local cache space.
+The experimental CLI reads the source dataset and does not require an active corpus release.
+
 ## Development
 
 ```sh
@@ -106,10 +123,11 @@ make check
 `make check` runs repository boundary checks, a Python build, Ruff, Pyright, and
 pytest. Tests use fakes and synthetic artifacts; they do not require API keys or a built corpus.
 
-- `src/chat/` — chat orchestration, provider integration, and local retrieval.
-- `src/chat/cli.py` — local terminal chat.
+- `src/shared/` — conversation contracts, terminal behavior, answer generation, and prompts.
+- `src/chat/` — production retrieval from an active corpus release.
+- `src/chat/cli.py` — production terminal chat.
+- `src/eval_chat/` — experimental retrieval, scoring, and terminal chat.
 - `src/corpus/` — source validation, chunking, embeddings, and release tooling.
-- `src/eval/` — experimental retrieval and scoring.
 - `dataset/` — raw texts, processed books, and merged corpus; see the [dataset guide](dataset/README.md).
 - `tests/` — Python test suite.
 

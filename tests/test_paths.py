@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from eval.paths import (
+from eval_chat.paths import (
     benchmark_cache_directory,
     benchmark_path,
     benchmark_query_path,

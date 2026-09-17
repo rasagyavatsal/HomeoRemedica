@@ -1,0 +1,4 @@
+evaluation_config = "evaluation.toml"
+dimensions = 4096
+model = "glm-5.3-flash"
+max_output_tokens = 4096
