@@ -6,8 +6,9 @@ from typing import Any
 import pytest
 import requests
 
-from chat.errors import TokenExhaustionError
-from chat.runtime import DEFAULT_ZAI_BASE_URL, Settings, ZaiChatClient
+from chat.runtime import Settings
+from shared.errors import TokenExhaustionError
+from shared.generation import DEFAULT_ZAI_BASE_URL, ZaiChatClient
 
 
 class FakeResponse:

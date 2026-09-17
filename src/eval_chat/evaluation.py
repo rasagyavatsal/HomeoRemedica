@@ -16,13 +16,13 @@ from pydantic import Field, model_validator
 
 from corpus.chunking import Chunk
 from corpus.sources import CorpusValidationError
-from eval.contracts import Contract, EvaluationGate, _validate_digest, canonical_json_bytes
-from eval.embeddings import (
+from eval_chat.contracts import Contract, EvaluationGate, _validate_digest, canonical_json_bytes
+from eval_chat.embeddings import (
     EMBEDDING_BATCH_SIZE,
     EmbeddingProvider,
     preflight_embedding_inputs,
 )
-from eval.retrieval import (
+from eval_chat.retrieval import (
     DEFAULT_HYBRID_RETRIEVAL_POLICY,
     FTS5_TOKENIZER,
     HybridRetrievalPolicy,
@@ -240,14 +240,10 @@ class EvaluationResult(Contract):
     @model_validator(mode="after")
     def validate_fusion_metadata(self) -> EvaluationResult:
         _validate_digest(self.query_sha256, "evaluation query_sha256")
-        if (self.historical_dataset_version is None) != (
-            self.historical_dataset_sha256 is None
-        ):
+        if (self.historical_dataset_version is None) != (self.historical_dataset_sha256 is None):
             raise ValueError("historical dataset version and SHA-256 must be recorded together")
         if self.historical_dataset_sha256 is not None:
-            _validate_digest(
-                self.historical_dataset_sha256, "evaluation historical_dataset_sha256"
-            )
+            _validate_digest(self.historical_dataset_sha256, "evaluation historical_dataset_sha256")
         if self.fusion_strategy == "normalizedScore":
             if (
                 self.reciprocal_rank_constant is not None

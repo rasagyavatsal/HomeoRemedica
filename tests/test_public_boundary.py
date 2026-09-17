@@ -65,9 +65,10 @@ def pipeline_violations() -> tuple[str, ...]:
     """Keep experimental code and settings out of the chat release graph."""
     found: list[str] = []
     forbidden_imports = {
-        ROOT / "src/corpus": {"chat", "eval"},
-        ROOT / "src/chat": {"eval"},
-        ROOT / "src/eval": {"chat"},
+        ROOT / "src/corpus": {"chat", "eval_chat", "shared"},
+        ROOT / "src/shared": {"chat", "eval_chat", "corpus"},
+        ROOT / "src/chat": {"eval_chat"},
+        ROOT / "src/eval_chat": {"chat"},
     }
     for source_root, forbidden_roots in forbidden_imports.items():
         for path in source_root.glob("*.py"):
