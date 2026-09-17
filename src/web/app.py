@@ -3,16 +3,13 @@ from __future__ import annotations
 import logging
 import os
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.staticfiles import StaticFiles
 
 from chat.chat import BookSummary, ChatRequest, ChatResponse, ChatService, Contract
 from chat.errors import ChatFailure
 from chat.runtime import Settings, build_service
 
-FRONTEND_DIRECTORY = Path(__file__).resolve().parents[2] / "frontend" / "dist"
 logger = logging.getLogger(__name__)
 
 _FAILURE_STATUS_CODES = {
@@ -37,7 +34,6 @@ def create_app(
     service: ChatService | None = None,
     *,
     settings: Settings | None = None,
-    frontend_directory: Path = FRONTEND_DIRECTORY,
 ) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI):  # noqa: RUF029 - required by FastAPI.
@@ -104,13 +100,6 @@ def create_app(
                 status_code=500,
                 detail=_FAILURE_DETAILS["internal"],
             ) from None
-
-    if frontend_directory.is_dir():
-        application.mount(
-            "/",
-            StaticFiles(directory=frontend_directory, html=True),
-            name="frontend",
-        )
 
     return application
 

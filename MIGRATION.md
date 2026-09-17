@@ -1,37 +1,13 @@
 # Repository migration
 
-## Web client migration
-
-This release moves the user-facing HomeoRemedica client from the terminal into a small browser
-application. The maintained entry point is now `homeoremedica-web`, which serves the React client
-and Python API from one process. The `chat` Python package continues to provide the grounded chat
-engine and corpus runtime.
-
-### Removed
-
-- The terminal chat CLI and its `homeoremedica` entry point.
-- Interactive terminal context handling.
-
-### Kept and promoted
-
-- The verified corpus release format and local safety checks.
-- SQLite FTS5 and `sqlite-vec` hybrid retrieval.
-- OpenRouter query embeddings and Z.AI grounded answer generation.
-- The corpus pipeline and isolated evaluation tools.
-- The React/Vite client, FastAPI API, and same-origin static serving.
-
-Chat turns are held in browser memory only. Clear chat removes that context, and no conversation
-data is written. The web service reads only verified corpus artifacts from `RAG_CORPUS_DIR`.
-
 ## Open dataset distribution
 
 On 2026-09-04 the project adopted open distribution for both its software and source dataset. This
-repository contains the complete client and corpus-pipeline codebase, configuration, source corpus,
+repository contains the chat API and corpus-pipeline codebase, configuration, source corpus,
 evaluation fixtures, release tooling, and synthetic tests:
 
 - `src/chat/` contains the chat engine, verified local release loader, and hybrid retrieval runtime.
-- `src/web/` contains the API and production static-file server.
-- `frontend/` contains the React and Vite browser client.
+- `src/web/` contains the API server.
 - `src/corpus/` contains source validation, chunking, artifact building, and local release activation.
 - `src/eval/` contains isolated experimental retrieval, embeddings, contracts,
   configuration, and result tooling.

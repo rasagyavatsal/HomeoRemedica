@@ -4,13 +4,13 @@ A reference chat assistant for historical homoeopathic materia medica by Allen, 
 Clarke, and Kent. It retrieves passages from a local corpus and generates answers with source
 citations. Historical reference only; not medical advice.
 
-The app uses React, TypeScript, and Vite with a Python FastAPI backend. Retrieval combines
+The chat API uses Python and FastAPI. Retrieval combines
 SQLite FTS5 and `sqlite-vec` vector search using reciprocal-rank fusion. OpenRouter provides
 `qwen/qwen3-embedding-8b` embeddings; Z.AI generates answers with `glm-5.3-flash` by default.
 
 ## Quick start
 
-Requirements: Python 3.14 (pinned to 3.14.3), uv `>=0.11.23,<0.12`, Node.js and npm,
+Requirements: Python 3.14 (pinned to 3.14.3), uv `>=0.11.23,<0.12`,
 and API keys for OpenRouter and Z.AI. Corpus builds require SQLite 3.53.4 and
 `sqlite-vec` 0.1.9, as configured in `corpus.toml`.
 
@@ -18,29 +18,26 @@ Run from the repository root:
 
 ```sh
 uv sync --locked
-npm --prefix frontend ci
 cp .env.example .env
 ```
 
-Set `OPENROUTER_API_KEY` and `ZAI_API_KEY` in `.env`, then build the corpus and browser client:
+Set `OPENROUTER_API_KEY` and `ZAI_API_KEY` in `.env`, then build the corpus and start the API:
 
 ```sh
 uv run --locked homeoremedica-corpus validate
 uv run --locked homeoremedica-corpus build local-v1
-npm --prefix frontend run build
 uv run --locked homeoremedica-web
 ```
 
-Open <http://localhost:8000>. The server verifies the active corpus at startup and serves both
-the API and built frontend. Set `PORT` to change the port.
+The server verifies the active corpus at startup and serves the API at
+<http://localhost:8000/api/books> and <http://localhost:8000/api/chat>.
+Interactive API documentation is available at <http://localhost:8000/docs>.
+Set `PORT` to change the port.
 
 The source dataset is included; generated SQLite releases are not. Building a release calls
 OpenRouter to embed the corpus. Use a unique version for each build; existing releases cannot
 be overwritten. To use an existing release instead, set `RAG_CORPUS_DIR` to its parent directory
 containing `active.json`.
-
-For frontend development, keep the Python server running and run
-`npm --prefix frontend run dev`. Vite proxies `/api` to `http://127.0.0.1:8000`.
 
 ## Configuration
 
@@ -54,12 +51,11 @@ The web server reads environment variables and optional `.env` and `.env.local` 
 | `RAG_MODEL` | `glm-5.3-flash` | Answer model. |
 | `RAG_MAX_OUTPUT_TOKENS` | `4096` | Output token limit, from 1 to 4096. |
 
-Chat history is held in browser memory and resets on reload. Recent history is sent with each
-question. The backend retrieves up to eight passages and returns the answer, source metadata,
-and corpus version.
+Clients can send recent chat history with each question. The backend retrieves up to eight
+passages and returns the answer, source metadata, and corpus version.
 
 The API exposes `GET /api/books` and `POST /api/chat`. Chat accepts `message`, optional `history`,
-and optional `bookIds`; the current browser client searches all books.
+and optional `bookIds`.
 
 ## Corpus tooling
 
@@ -102,12 +98,11 @@ uv sync --locked --all-groups
 make check
 ```
 
-`make check` runs repository boundary checks, Python and frontend builds, Ruff, Pyright, and
+`make check` runs repository boundary checks, a Python build, Ruff, Pyright, and
 pytest. Tests use fakes and synthetic artifacts; they do not require API keys or a built corpus.
 
 - `src/chat/` — chat orchestration, provider integration, and local retrieval.
-- `src/web/` — FastAPI endpoints and static-file serving.
-- `frontend/` — browser client.
+- `src/web/` — FastAPI endpoints.
 - `src/corpus/` — source validation, chunking, embeddings, and release tooling.
 - `src/eval/` — experimental retrieval and scoring.
 - `dataset/` — raw texts, processed books, and merged corpus; see the [dataset guide](dataset/README.md).
