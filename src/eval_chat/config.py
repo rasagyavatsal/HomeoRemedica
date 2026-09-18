@@ -63,6 +63,12 @@ class _OutputSettings(_Settings):
     cache_directory: str
 
 
+class ChatSettings(_Settings):
+    dimensions: int = Field(gt=0)
+    model: str = Field(min_length=1)
+    max_output_tokens: int = Field(gt=0, le=4_096)
+
+
 class _BookSettings(_Settings):
     title: str = Field(min_length=1)
     author: str | None = None
@@ -74,6 +80,7 @@ class _FileSettings(_Settings):
     embedding: _EmbeddingSettings
     retrieval: EvaluationSettings
     output: _OutputSettings
+    chat: ChatSettings | None = None
     books: dict[str, _BookSettings] = Field(min_length=1)
 
 
@@ -88,6 +95,7 @@ class EvaluationConfig:
     dataset: Path
     result: Path
     cache_directory: Path
+    chat: ChatSettings | None
     books: dict[str, BookDefinition]
 
 
@@ -121,6 +129,7 @@ def load_evaluation_config(path: Path = Path("evaluation.toml")) -> EvaluationCo
         dataset=benchmark_query_path(Path(settings.output.dataset), root),
         result=benchmark_result_path(Path(settings.output.result), root),
         cache_directory=benchmark_cache_directory(Path(settings.output.cache_directory), root),
+        chat=settings.chat,
         books=books,
     )
 

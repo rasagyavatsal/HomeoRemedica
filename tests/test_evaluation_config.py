@@ -36,6 +36,11 @@ dataset = "benchmarks/queries/v1.json"
 result = "benchmarks/results/v1.json"
 cache_directory = ".cache/benchmarks"
 
+[chat]
+dimensions = 1536
+model = "test-model"
+max_output_tokens = 128
+
 [books.sample]
 title = "Sample Book"
 author = "Sample Author"
@@ -56,6 +61,10 @@ def test_loads_evaluation_owned_configuration_and_output_paths(tmp_path: Path) -
     assert config.embedding.dimensions == 4096
     assert config.retrieval.ranking_unit == "globalRemedy"
     assert config.retrieval.candidate_pool_size == 640
+    assert config.chat is not None
+    assert config.chat.dimensions == 1536
+    assert config.chat.model == "test-model"
+    assert config.chat.max_output_tokens == 128
     assert config.books["sample"].title == "Sample Book"
 
 

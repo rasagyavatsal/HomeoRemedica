@@ -10,10 +10,9 @@ import pytest
 from corpus.chunking import ChunkingPolicy, chunk_book
 from corpus.sources import Book, Remedy, Section
 from eval_chat.chat_cli import main
-from eval_chat.chat_config import EvalChatConfig, load_chat_config
 from eval_chat.chat_retrieval import ExperimentalRetriever
 from eval_chat.chat_runtime import build_service
-from eval_chat.config import load_evaluation_config
+from eval_chat.config import ChatSettings, load_evaluation_config
 from eval_chat.evaluation import EvaluationSettings
 from eval_chat.retrieval import (
     PreparedRetrievalIndex,
@@ -149,15 +148,13 @@ def test_eval_chat_runtime_uses_selected_dimension_and_cached_documents(
         retrieval=_settings(),
         cache_directory=tmp_path,
         chunking=ChunkingPolicy(1, 1),
+        chat=ChatSettings(dimensions=2, model="test-model", max_output_tokens=128),
     )
     embedder = FakeEmbedder()
-    monkeypatch.setattr(runtime, "load_evaluation_config", lambda _path: evaluation)
     monkeypatch.setattr(runtime, "load_corpus_books", lambda _path, _definitions: _books())
     monkeypatch.setattr(runtime, "OpenRouterEmbeddingProvider", lambda _spec: embedder)
     monkeypatch.setattr(runtime, "ZaiChatClient", lambda **_kwargs: FakeGenerator())
-    config = EvalChatConfig(ROOT / "evaluation.toml", 2, "test-model", 128)
-
-    service = build_service(config)
+    service = build_service(evaluation)
     response = service.chat(ChatRequest(message="alpha"))
 
     assert response.model == "test-model"
@@ -168,7 +165,7 @@ def test_eval_chat_runtime_uses_selected_dimension_and_cached_documents(
     assert embedder.document_calls == 2
 
     monkeypatch.setattr(runtime, "read_document_vectors", lambda *_args, **_kwargs: iter(()))
-    second = build_service(config)
+    second = build_service(evaluation)
     assert second.chat(ChatRequest(message="alpha")).sources[0].book_id == "alpha"
     assert embedder.document_calls == 2
 
@@ -196,7 +193,7 @@ def test_eval_chat_cli_uses_the_shared_conversation_loop(
             )
 
     service = StubService()
-    monkeypatch.setattr(cli, "load_chat_config", lambda _path: object())
+    monkeypatch.setattr(cli, "load_evaluation_config", lambda _path: object())
     monkeypatch.setattr(cli, "build_service", lambda _config, **_kwargs: service)
     monkeypatch.setattr(sys, "stdin", io.StringIO("First?\nSecond?\n/clear\nThird?\n/quit\n"))
 
@@ -207,8 +204,9 @@ def test_eval_chat_cli_uses_the_shared_conversation_loop(
     assert "Experimental answer." in capsys.readouterr().out
 
 
-def test_eval_chat_config_points_to_evaluation_settings() -> None:
-    config = load_chat_config(ROOT / "eval-chat.toml")
+def test_eval_chat_settings_are_in_evaluation_config() -> None:
+    config = load_evaluation_config(ROOT / "evaluation.toml")
 
-    assert config.evaluation_config == ROOT / "evaluation.toml"
-    assert config.dimensions == 4096
+    assert config.chat is not None
+    assert config.chat.dimensions == 4096
+    assert config.chat.model == "glm-5.3-flash"
