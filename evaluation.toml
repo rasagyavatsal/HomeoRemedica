@@ -27,6 +27,11 @@ dataset = "benchmarks/queries/v3.json"
 result = "benchmarks/results/v9.json"
 cache_directory = ".cache/benchmarks"
 
+[chat]
+dimensions = 4096
+model = "glm-5.3-flash"
+max_output_tokens = 4096
+
 [books."allen-nosodes"]
 title = "Allen's Materia Medica of the Nosodes"
 author = "Henry Clay Allen"

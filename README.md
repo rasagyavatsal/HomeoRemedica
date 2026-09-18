@@ -105,9 +105,9 @@ uv run --locked eval-chat --book kent-lectures "What does Kent say about Nux vom
 uv run --locked eval-chat --list-books
 ```
 
-`eval-chat` has the same interactive commands and answer format as `chat`. It reads
-`eval-chat.toml` for the selected embedding dimension and answer model, and reads the referenced
-`evaluation.toml` for corpus and retrieval settings. Its first run prepares document embeddings
+`eval-chat` has the same interactive commands and answer format as `chat`. It reads the `[chat]`
+section of `evaluation.toml` for the selected embedding dimension and answer model, alongside
+the corpus and retrieval settings. Its first run prepares document embeddings
 and a disk-backed search index under the evaluation cache directory; later runs reuse them.
 The current dataset has 118,259 chunks, so first-time preparation uses substantial OpenRouter
 requests and several gigabytes of local cache space.
