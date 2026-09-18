@@ -7,6 +7,37 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [7.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v6.0.0...HomeoRemedica-v7.0.0) (2026-09-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* **eval-chat:** eval-chat --config now accepts an evaluation TOML file with a [chat] section.
+* **chat:** The eval package has moved to eval_chat, and chat.chat types and service have moved to shared.
+* **cli:** homeoremedica-corpus and homeoremedica-evaluation are no longer installed; use corpus and evaluation.
+* **cli:** The homeoremedica-chat command is replaced by chat.
+* **cli:** homeoremedica-web and the HTTP chat endpoints are removed; use homeoremedica-chat instead.
+* **web:** The server no longer serves a browser client at /.
+
+### Features
+
+* **chat:** add separate evaluation chat CLI ([#39](https://github.com/rasagyavatsal/HomeoRemedica/issues/39)) ([03a420b](https://github.com/rasagyavatsal/HomeoRemedica/commit/03a420b464768764155f9f45a55831cb2b71e43b))
+* **cli:** replace HTTP server with local chat CLI ([#35](https://github.com/rasagyavatsal/HomeoRemedica/issues/35)) ([df4ef4e](https://github.com/rasagyavatsal/HomeoRemedica/commit/df4ef4e50ebf0a1e5e957e93f85988a4867d1269))
+* **cli:** replace prefixed commands with corpus and evaluation ([#38](https://github.com/rasagyavatsal/HomeoRemedica/issues/38)) ([959cd34](https://github.com/rasagyavatsal/HomeoRemedica/commit/959cd347b40867e6e53ef1ad6a697e58f3582d40))
+* **cli:** shorten chat command to chat ([#36](https://github.com/rasagyavatsal/HomeoRemedica/issues/36)) ([260bda8](https://github.com/rasagyavatsal/HomeoRemedica/commit/260bda8ebaa956763cf06315fa70da636070c8e6))
+
+
+### Documentation
+
+* **evaluation:** remove promotion guide ([#32](https://github.com/rasagyavatsal/HomeoRemedica/issues/32)) ([baff884](https://github.com/rasagyavatsal/HomeoRemedica/commit/baff884b7a6842edf55794582d039bee5683d63e))
+* remove obsolete migration record ([#37](https://github.com/rasagyavatsal/HomeoRemedica/issues/37)) ([6fb58f8](https://github.com/rasagyavatsal/HomeoRemedica/commit/6fb58f86f308b8bb9f55f00783f6ecbdfca8bba5))
+
+
+### Code Refactoring
+
+* **eval-chat:** move chat settings into evaluation config ([#40](https://github.com/rasagyavatsal/HomeoRemedica/issues/40)) ([e6ff715](https://github.com/rasagyavatsal/HomeoRemedica/commit/e6ff715f9ec53fd9f58e90d9c38255d73d52994f))
+* **web:** remove browser frontend and static serving ([#34](https://github.com/rasagyavatsal/HomeoRemedica/issues/34)) ([467422e](https://github.com/rasagyavatsal/HomeoRemedica/commit/467422ea7d6d3153325cfd0e3d18620a67675462))
+
 ## [6.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v5.0.0...HomeoRemedica-v6.0.0) (2026-09-12)
 
 
