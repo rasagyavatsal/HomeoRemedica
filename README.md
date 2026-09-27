@@ -1,12 +1,101 @@
 # HomeoRemedica
 
-A reference chat assistant for historical homoeopathic materia medica by Allen, Boericke,
-Clarke, and Kent. It retrieves passages from a local corpus and generates answers with source
-citations. Historical reference only; not medical advice.
+A Python retrieval-augmented generation (RAG) application for searching historical homoeopathic
+literature and generating answers with source citations. It makes **118,259 passages** from
+**four books**, covering **1,250 unique remedies**, searchable through a conversational CLI.
+The source works are by Allen, Boericke, Clarke, and Kent. Historical reference only; not medical
+advice.
 
-The chat CLI runs directly in Python without a server. Retrieval combines
-SQLite FTS5 and `sqlite-vec` vector search using reciprocal-rank fusion. OpenRouter provides
-`qwen/qwen3-embedding-8b` embeddings; Z.AI generates answers with `glm-5.3-flash` by default.
+The project covers corpus preparation, hybrid search, answer generation, and retrieval evaluation.
+Search runs against a local SQLite database; external APIs provide embeddings and generated
+answers. The CLI runs directly in Python without an application server.
+
+**Stack:** Python · SQLite FTS5 · sqlite-vec · Pydantic · OpenRouter · Z.AI · pytest · Ruff · Pyright
+
+## Engineering highlights
+
+- **Hybrid retrieval:** combines keyword and vector search through reciprocal-rank fusion, with
+  optional filtering by book and up to eight retrieved passages per answer.
+- **Structured corpus:** preserves book, remedy, section, and passage metadata across 118,259
+  individually embedded passages. See the [dataset guide](dataset/README.md) for source details.
+- **Verified corpus releases:** builds immutable SQLite artifacts with manifests and SHA-256
+  digests, validates database and index integrity, and verifies releases before activation.
+- **Recorded retrieval experiments:** versions query sets and result records, caches embeddings
+  and rankings, and compares retrieval strategies through a separate evaluation pipeline.
+- **Automated quality checks:** checks package boundaries, builds the Python package, runs linting
+  and type checking, and tests against fakes and synthetic artifacts without API keys.
+
+## Architecture
+
+The main `chat` pipeline builds and searches a versioned local corpus:
+
+```mermaid
+flowchart TD
+    A[Historical source texts] --> B[Structured corpus with source metadata]
+    B --> C[Passage chunks]
+    C --> D[Document embeddings via OpenRouter]
+    C --> E[Verified SQLite release: FTS5 and vector indexes]
+    D --> E
+    Q[CLI question and recent conversation] --> K[Keyword search]
+    Q --> V[Query embedding via OpenRouter]
+    V --> S[Vector search]
+    E --> K
+    E --> S
+    K --> R[Reciprocal-rank fusion]
+    S --> R
+    R --> P[Up to eight passages with source metadata]
+    Q --> G[Answer generation via Z.AI]
+    P --> G
+    G --> O[Terminal answer with numbered source references]
+```
+
+OpenRouter provides `qwen/qwen3-embedding-8b` embeddings; Z.AI generates answers with
+`glm-5.3-flash` by default.
+
+| Design choice | Engineering benefit |
+| --- | --- |
+| SQLite with FTS5 and sqlite-vec | Keeps source metadata, keyword search, and vector search in one local database. |
+| One passage per chunk | Retains the source passage as the retrieval and citation unit. |
+| Reciprocal-rank fusion | Combines keyword and semantic rankings without requiring their raw scores to share a scale. |
+| Immutable, verified corpus releases | Records the corpus and embedding configuration used by each release and checks integrity before use. |
+| Separate `chat` and `eval-chat` retrieval | Supports experiments with ranking and embeddings while sharing conversation and answer-generation code. |
+
+## Retrieval results
+
+The experimental retriever evaluates remedy rankings against labeled symptom queries. In the
+recorded v8–v9 experiment, adding a symptom-focused instruction to the embedding query improved
+validation **Recall@8 by 5.75 percentage points**.
+
+Across all 500 queries, v9 achieved **94.47% candidate recall at a pool size of 640 remedies**.
+Candidate recall measures the fraction of labeled target remedies present in that larger ranked
+pool, averaged across queries; Recall@8 measures how many reach the first eight results.
+
+| Metric across all 500 queries | v8 | v9 |
+| --- | ---: | ---: |
+| Candidate recall @ 640 | 94.67% | 94.47% |
+| Recall@8 | 20.77% | 24.57% |
+
+Source: recorded [v8 results](benchmarks/results/v8.json) and
+[v9 results](benchmarks/results/v9.json), using 4,096-dimensional embeddings.
+
+Recall@8 by query group:
+
+| Query group | Queries | v8 Recall@8 | v9 Recall@8 |
+| --- | ---: | ---: | ---: |
+| Development | 239 | 21.76% | 23.43% |
+| Validation | 261 | 19.86% | 25.61% |
+| All queries | 500 | 20.77% | 24.57% |
+
+Recall@8 measures the fraction of labeled target remedies found in the top eight ranked remedies,
+averaged across queries. These results describe the experimental `eval-chat` retrieval strategy,
+which uses normalized score fusion and aggregates passage evidence into remedy rankings. Answer
+generation and the main `chat` retriever are outside this measurement.
+
+The comparison uses query dataset v3 and a validation subset that shares no exact symptom text
+with the development subset. Validation results were inspected during experimentation, so this is
+an exploratory comparison. See the [comparison record](benchmarks/results/v9-comparison.json),
+[experiment log](benchmarks/results/v9-experiments.json), and
+[benchmark guide](benchmarks/README.md) for settings, scores, and query provenance.
 
 ## Quick start
 
