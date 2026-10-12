@@ -7,8 +7,8 @@ import pytest
 from corpus.chunking import chunk_book, corpus_hash
 from corpus.config import load_pipeline_config
 from corpus.sources import CorpusValidationError, load_corpus_books
-from eval_chat.config import load_evaluation_config
-from eval_chat.evaluation import load_evaluation_dataset, load_evaluation_gate
+from experimental.config import load_evaluation_config
+from experimental.evaluation import load_evaluation_dataset, load_evaluation_gate
 
 ROOT = Path(__file__).resolve().parents[1]
 pytestmark = pytest.mark.skipif(

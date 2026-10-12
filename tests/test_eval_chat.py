@@ -9,12 +9,12 @@ import pytest
 
 from corpus.chunking import ChunkingPolicy, chunk_book
 from corpus.sources import Book, Remedy, Section
-from eval_chat.chat_cli import main
-from eval_chat.chat_retrieval import ExperimentalRetriever
-from eval_chat.chat_runtime import build_service
-from eval_chat.config import ChatSettings, load_evaluation_config
-from eval_chat.evaluation import EvaluationSettings
-from eval_chat.retrieval import (
+from experimental.chat_cli import main
+from experimental.chat_retrieval import ExperimentalRetriever
+from experimental.chat_runtime import build_service
+from experimental.config import ChatSettings, load_evaluation_config
+from experimental.evaluation import EvaluationSettings
+from experimental.retrieval import (
     PreparedRetrievalIndex,
     score_lexical_queries,
     score_semantic_queries,
@@ -139,7 +139,7 @@ def test_eval_chat_uses_experimental_ranking_and_concrete_citations() -> None:
 def test_eval_chat_runtime_uses_selected_dimension_and_cached_documents(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    import eval_chat.chat_runtime as runtime
+    import experimental.chat_runtime as runtime
 
     evaluation = load_evaluation_config(ROOT / "evaluation.toml")
     evaluation = replace(
@@ -173,7 +173,7 @@ def test_eval_chat_runtime_uses_selected_dimension_and_cached_documents(
 def test_eval_chat_cli_uses_the_shared_conversation_loop(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    import eval_chat.chat_cli as cli
+    import experimental.chat_cli as cli
 
     class StubService:
         corpus_version = "eval-test"

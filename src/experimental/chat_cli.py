@@ -7,8 +7,8 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-from eval_chat.chat_runtime import build_service, load_books
-from eval_chat.config import load_evaluation_config
+from experimental.chat_runtime import build_service, load_books
+from experimental.config import load_evaluation_config
 from shared.terminal import run_cli
 
 

@@ -2,15 +2,17 @@
 
 A Python retrieval-augmented generation (RAG) application for searching historical homoeopathic
 literature and generating answers with source citations. It makes **118,259 passages** from
-**four books**, covering **1,250 unique remedies**, searchable through a conversational CLI.
+**four books**, covering **1,250 unique remedies**, searchable through a conversational CLI or web app.
 The source works are by Allen, Boericke, Clarke, and Kent. Historical reference only; not medical
 advice.
 
 The project covers corpus preparation, hybrid search, answer generation, and retrieval evaluation.
 Search runs against a local SQLite database; external APIs provide embeddings and generated
-answers. The CLI runs directly in Python without an application server.
+answers. The CLI runs directly in Python; the web app uses the same production pipeline through
+a FastAPI server.
 
-**Stack:** Python · SQLite FTS5 · sqlite-vec · Pydantic · OpenRouter · Z.AI · pytest · Ruff · Pyright
+**Stack:** Python · FastAPI · Uvicorn · React · Vite · TypeScript · SQLite FTS5 · sqlite-vec ·
+Pydantic · OpenRouter · Z.AI · pytest · Ruff · Pyright
 
 ## Engineering highlights
 
@@ -27,7 +29,7 @@ answers. The CLI runs directly in Python without an application server.
 
 ## Architecture
 
-The main `chat` pipeline builds and searches a versioned local corpus:
+The `production` pipeline builds and searches a versioned local corpus:
 
 ```mermaid
 flowchart TD
@@ -36,7 +38,7 @@ flowchart TD
     C --> D[Document embeddings via OpenRouter]
     C --> E[Verified SQLite release: FTS5 and vector indexes]
     D --> E
-    Q[CLI question and recent conversation] --> K[Keyword search]
+    Q[CLI or web question and recent conversation] --> K[Keyword search]
     Q --> V[Query embedding via OpenRouter]
     V --> S[Vector search]
     E --> K
@@ -46,7 +48,7 @@ flowchart TD
     R --> P[Up to eight passages with source metadata]
     Q --> G[Answer generation via Z.AI]
     P --> G
-    G --> O[Terminal answer with numbered source references]
+    G --> O[Answer with numbered source references]
 ```
 
 OpenRouter provides `qwen/qwen3-embedding-8b` embeddings; Z.AI generates answers with
@@ -58,7 +60,7 @@ OpenRouter provides `qwen/qwen3-embedding-8b` embeddings; Z.AI generates answers
 | One passage per chunk | Retains the source passage as the retrieval and citation unit. |
 | Reciprocal-rank fusion | Combines keyword and semantic rankings without requiring their raw scores to share a scale. |
 | Immutable, verified corpus releases | Records the corpus and embedding configuration used by each release and checks integrity before use. |
-| Separate `chat` and `eval-chat` retrieval | Supports experiments with ranking and embeddings while sharing conversation and answer-generation code. |
+| Separate `production` and `experimental` packages | Supports experiments with ranking and embeddings while sharing conversation and answer-generation code. |
 
 ## Retrieval results
 
@@ -87,9 +89,9 @@ Recall@8 by query group:
 | All queries | 500 | 20.77% | 24.57% |
 
 Recall@8 measures the fraction of labeled target remedies found in the top eight ranked remedies,
-averaged across queries. These results describe the experimental `eval-chat` retrieval strategy,
+averaged across queries. These results describe the `experimental` retrieval strategy,
 which uses normalized score fusion and aggregates passage evidence into remedy rankings. Answer
-generation and the main `chat` retriever are outside this measurement.
+generation and the `production` retriever are outside this measurement.
 
 The comparison uses query dataset v3 and a validation subset that shares no exact symptom text
 with the development subset. Validation results were inspected during experimentation, so this is
@@ -109,6 +111,10 @@ Run from the repository root:
 uv sync --locked
 cp .env.example .env
 ```
+
+If your installed uv is outside the supported range, run the pinned version with
+`uv tool run --from uv==0.11.23 uv sync --locked`. Use the same
+`uv tool run --from uv==0.11.23 uv` prefix in place of `uv` for the commands below.
 
 Set `OPENROUTER_API_KEY` and `ZAI_API_KEY` in `.env`, then build the corpus and start chatting:
 
@@ -136,9 +142,57 @@ OpenRouter to embed the corpus. Use a unique version for each build; existing re
 be overwritten. To use an existing release instead, set `RAG_CORPUS_DIR` to its parent directory
 containing `active.json`.
 
+## Web app
+
+Run the web app from a source checkout; Python distribution artifacts contain the CLI packages.
+The web app connects only to `src/production/`. `src/experimental/` remains a separate CLI and
+evaluation pipeline. It uses the same settings, book filters, retrieval, answer generation, and
+conversation limits as the production CLI. API keys stay on the Python server.
+
+After the Python setup and corpus preparation above, install the frontend with Node.js 22.12+
+on a supported even release (Node.js 24 recommended) and npm:
+
+```sh
+npm --prefix web ci
+```
+
+Run the API from the repository root in one terminal:
+
+```sh
+uv run --locked uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Run Vite in another terminal:
+
+```sh
+npm --prefix web run dev
+```
+
+Open `http://127.0.0.1:5173`. Vite proxies `/api` to Uvicorn on port 8000. Select books to limit
+retrieval, send questions, inspect numbered sources, and clear the conversation. Enter sends;
+Shift+Enter adds a line. `/books`, `/clear`, `/quit`, and `/exit` also work in the message box.
+Conversation history lives in the current browser session's memory and resets on refresh.
+
+To serve the built frontend and API together:
+
+```sh
+npm --prefix web run build
+uv run --locked uvicorn api.main:app --host 127.0.0.1 --port 8000
+```
+
+Open `http://127.0.0.1:8000`. Build the frontend before starting Uvicorn; restart the API after
+activating a new corpus release or changing `.env`. `npm --prefix web run preview` also proxies
+API requests to port 8000.
+
+The API initializes the verified corpus and provider clients lazily, so setup errors appear in
+the app. `GET /api/health` checks the server; `GET /api/books` lists the production books without
+requiring provider keys; `POST /api/chat` accepts `message`, `history`, and optional `bookIds`.
+Responses include the answer, source citations, corpus/model metadata, and the trimmed history
+to send with the next question. Interactive API documentation is at `/docs`.
+
 ## Configuration
 
-The CLI reads environment variables and optional `.env` and `.env.local` files.
+The production CLI and API read environment variables and optional `.env` and `.env.local` files.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
@@ -149,7 +203,7 @@ The CLI reads environment variables and optional `.env` and `.env.local` files.
 | `RAG_MAX_OUTPUT_TOKENS` | `4096` | Output token limit, from 1 to 4096. |
 
 Each question retrieves up to eight passages from the local corpus and sends the grounded prompt
-to Z.AI. OpenRouter supplies query embeddings. No local HTTP server is needed.
+to Z.AI. OpenRouter supplies query embeddings. The CLI does not need an HTTP server.
 
 ## Corpus tooling
 
@@ -171,9 +225,12 @@ Use `build <version> --workers 8` to reduce the default 32 concurrent embedding 
 
 ## Evaluation
 
-`src/eval_chat/` owns experimental retrieval, benchmark scoring, and a separate chat CLI.
+`src/experimental/` owns experimental retrieval, benchmark scoring, and a separate chat CLI.
 Retrieval settings live in `evaluation.toml`; query datasets and recorded results live in
 `benchmarks/`.
+
+The production CLI remains `chat`; the experimental CLI remains `eval-chat`. Their Python
+packages are `production` and `experimental`, respectively.
 
 Before running, change `output.result` in `evaluation.toml` to an unused versioned path such as
 `benchmarks/results/v10.json`. The checked-in configuration points to the existing v9 result,
@@ -207,15 +264,21 @@ The experimental CLI reads the source dataset and does not require an active cor
 ```sh
 uv sync --locked --all-groups
 make check
+npm --prefix web ci
+make web-check
 ```
 
 `make check` runs repository boundary checks, a Python build, Ruff, Pyright, and
 pytest. Tests use fakes and synthetic artifacts; they do not require API keys or a built corpus.
+`make web-check` runs frontend type checking, interaction tests, and the Vite build. `make api`
+and `make web` start the two development servers in separate terminals.
 
 - `src/shared/` — conversation contracts, terminal behavior, answer generation, and prompts.
-- `src/chat/` — production retrieval from an active corpus release.
-- `src/chat/cli.py` — production terminal chat.
-- `src/eval_chat/` — experimental retrieval, scoring, and terminal chat.
+- `src/production/` — production retrieval from an active corpus release.
+- `src/production/cli.py` — production terminal chat.
+- `api/` — FastAPI interface to the production service and optional built frontend hosting.
+- `web/` — minimal React/Vite chat interface.
+- `src/experimental/` — experimental retrieval, scoring, and terminal chat.
 - `src/corpus/` — source validation, chunking, embeddings, and release tooling.
 - `dataset/` — raw texts, processed books, and merged corpus; see the [dataset guide](dataset/README.md).
 - `tests/` — Python test suite.

@@ -16,13 +16,13 @@ from pydantic import Field, model_validator
 
 from corpus.chunking import Chunk
 from corpus.sources import CorpusValidationError
-from eval_chat.contracts import Contract, EvaluationGate, _validate_digest, canonical_json_bytes
-from eval_chat.embeddings import (
+from experimental.contracts import Contract, EvaluationGate, _validate_digest, canonical_json_bytes
+from experimental.embeddings import (
     EMBEDDING_BATCH_SIZE,
     EmbeddingProvider,
     preflight_embedding_inputs,
 )
-from eval_chat.retrieval import (
+from experimental.retrieval import (
     DEFAULT_HYBRID_RETRIEVAL_POLICY,
     FTS5_TOKENIZER,
     HybridRetrievalPolicy,

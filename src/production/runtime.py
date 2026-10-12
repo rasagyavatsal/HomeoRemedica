@@ -8,9 +8,9 @@ from pathlib import Path
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from chat.corpus import CorpusRelease, load_local_corpus
-from chat.retrieval import ProductionRetriever
 from corpus.embeddings import QWEN3_EMBEDDING_MODEL, EmbeddingSpec, OpenRouterEmbeddingProvider
+from production.corpus import CorpusRelease, load_local_corpus
+from production.retrieval import ProductionRetriever
 from shared.generation import ZaiChatClient
 from shared.service import ChatService
 
