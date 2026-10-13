@@ -101,28 +101,42 @@ an exploratory comparison. See the [comparison record](benchmarks/results/v9-com
 
 ## Quick start
 
-Requirements: Python 3.14 (pinned to 3.14.3), uv `>=0.11.23,<0.12`,
-and API keys for OpenRouter and Z.AI. Corpus builds require SQLite 3.53.4 and
-`sqlite-vec` 0.1.9, as configured in `corpus.toml`.
+Requirements: Python 3.14 (pinned to 3.14.3), uv, make, Node.js 22.12+
+on a supported even release (Node.js 24 recommended), npm, and API keys for
+OpenRouter and Z.AI. Corpus builds require SQLite 3.53.4 and `sqlite-vec` 0.1.9,
+as configured in `corpus.toml`.
 
 Run from the repository root:
 
 ```sh
-uv sync --locked
-cp .env.example .env
+make setup
 ```
 
-If your installed uv is outside the supported range, run the pinned version with
-`uv tool run --from uv==0.11.23 uv sync --locked`. Use the same
-`uv tool run --from uv==0.11.23 uv` prefix in place of `uv` for the commands below.
+This installs the locked Python and frontend dependencies and creates `.env` from `.env.example`
+if it does not already exist. Makefile commands use the pinned uv 0.11.23 automatically for
+Python. Direct `uv` commands below require uv `>=0.11.23,<0.12`; if your
+installed version is outside that range, replace `uv` with
+`uv tool run --from uv==0.11.23 uv`.
 
-Set `OPENROUTER_API_KEY` and `ZAI_API_KEY` in `.env`, then build the corpus and start chatting:
+Set `OPENROUTER_API_KEY` and `ZAI_API_KEY` in `.env`. The production CLI and web app need an
+active corpus release. If you do not already have one, build it:
 
 ```sh
 uv run --locked corpus validate
 uv run --locked corpus build local-v1
-uv run --locked chat
 ```
+
+Then choose an interface:
+
+```sh
+make production     # Production CLI using the active corpus release.
+make experimental   # Experimental CLI using evaluation.toml.
+make web            # Web app at http://127.0.0.1:5173, with the API started automatically.
+```
+
+Pass CLI options with `ARGS`, for example `make production ARGS="--list-books"` or
+`make experimental ARGS="--list-books"`. Setup does not build a corpus or prepare experimental
+embeddings; see the corpus and evaluation sections below for those steps.
 
 The CLI verifies the active corpus at startup. Type a question, use `/books` to list the
 available books, `/clear` to reset conversation history, or `/quit` to exit. It prints the
@@ -149,40 +163,31 @@ The web app connects only to `src/production/`. `src/experimental/` remains a se
 evaluation pipeline. It uses the same settings, book filters, retrieval, answer generation, and
 conversation limits as the production CLI. API keys stay on the Python server.
 
-After the Python setup and corpus preparation above, install the frontend with Node.js 22.12+
-on a supported even release (Node.js 24 recommended) and npm:
+After setup and corpus preparation above, start the complete web app in one terminal:
 
 ```sh
-npm --prefix web ci
+make web
 ```
 
-Run the API from the repository root in one terminal:
+Open `http://127.0.0.1:5173`. The command starts Vite and FastAPI together with automatic reload.
+Vite forwards `/api` requests to FastAPI on port 8000. Ctrl+C stops both servers; if either
+server exits, the other is stopped too. Port 5173 must be available; Vite will report an error
+instead of switching to another port. Restart after activating a new corpus release or changing
+`.env`.
+Select books to limit retrieval, send questions, inspect numbered sources, and clear the
+conversation. Enter sends; Shift+Enter adds a line. `/books`, `/clear`, `/quit`, and `/exit` also
+work in the message box. Conversation history lives in the current browser session's memory
+and resets on refresh.
 
-```sh
-uv run --locked uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
-```
-
-Run Vite in another terminal:
-
-```sh
-npm --prefix web run dev
-```
-
-Open `http://127.0.0.1:5173`. Vite proxies `/api` to Uvicorn on port 8000. Select books to limit
-retrieval, send questions, inspect numbered sources, and clear the conversation. Enter sends;
-Shift+Enter adds a line. `/books`, `/clear`, `/quit`, and `/exit` also work in the message box.
-Conversation history lives in the current browser session's memory and resets on refresh.
-
-To serve the built frontend and API together:
+To serve a built frontend and the API from one server:
 
 ```sh
 npm --prefix web run build
 uv run --locked uvicorn api.main:app --host 127.0.0.1 --port 8000
 ```
 
-Open `http://127.0.0.1:8000`. Build the frontend before starting Uvicorn; restart the API after
-activating a new corpus release or changing `.env`. `npm --prefix web run preview` also proxies
-API requests to port 8000.
+Open `http://127.0.0.1:8000`. `make api` remains available for running only the API with automatic
+reload. `npm --prefix web run preview` also proxies API requests to port 8000.
 
 The API initializes the verified corpus and provider clients lazily, so setup errors appear in
 the app. `GET /api/health` checks the server; `GET /api/books` lists the production books without
@@ -246,7 +251,7 @@ See the [benchmark records](benchmarks/README.md) for details.
 To chat with the experimental retriever, set both `OPENROUTER_API_KEY` and `ZAI_API_KEY`, then run:
 
 ```sh
-uv run --locked eval-chat
+make experimental
 uv run --locked eval-chat --book kent-lectures "What does Kent say about Nux vomica?"
 uv run --locked eval-chat --list-books
 ```
@@ -262,16 +267,18 @@ The experimental CLI reads the source dataset and does not require an active cor
 ## Development
 
 ```sh
-uv sync --locked --all-groups
+make setup
 make check
-npm --prefix web ci
 make web-check
 ```
 
-`make check` runs repository boundary checks, a Python build, Ruff, Pyright, and
-pytest. Tests use fakes and synthetic artifacts; they do not require API keys or a built corpus.
-`make web-check` runs frontend type checking, interaction tests, and the Vite build. `make api`
-and `make web` start the two development servers in separate terminals.
+`make check` validates Python: package building, Ruff linting, Pyright type checking, and pytest.
+The test suite includes repository boundary checks, which reject generated artifacts in Git
+and enforce separation between production and experimental packages and output directories.
+Tests use fakes and synthetic artifacts; they do not require API keys or a built corpus.
+`make web-check` validates the frontend: interaction tests followed by a Vite build, which also
+runs TypeScript type checking. `make web` starts Vite and FastAPI together with automatic reload;
+`make api` starts only FastAPI.
 
 - `src/shared/` — conversation contracts, terminal behavior, answer generation, and prompts.
 - `src/production/` — production retrieval from an active corpus release.
