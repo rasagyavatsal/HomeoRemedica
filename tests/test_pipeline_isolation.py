@@ -5,11 +5,11 @@ from pathlib import Path
 from corpus.cli import _parser as corpus_parser
 from corpus.config import load_pipeline_config
 from corpus.embeddings import OpenRouterEmbeddingProvider as ReleaseEmbeddingProvider
-from eval_chat.config import load_evaluation_config
-from eval_chat.embeddings import (
+from experimental.config import load_evaluation_config
+from experimental.embeddings import (
     OpenRouterEmbeddingProvider as EvaluationEmbeddingProvider,
 )
-from eval_chat.evaluation_cli import _parser as evaluation_parser
+from experimental.evaluation_cli import _parser as evaluation_parser
 
 ROOT = Path(__file__).resolve().parents[1]
 

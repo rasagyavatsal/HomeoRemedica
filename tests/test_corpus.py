@@ -7,18 +7,18 @@ from pathlib import Path
 
 import pytest
 
-from chat.corpus import (
+from corpus.artifacts import ArtifactSpec
+from corpus.builder import build_release
+from corpus.chunking import ChunkingPolicy
+from corpus.embeddings import EmbeddingSpec
+from corpus.sources import Book, Remedy, Section
+from production.corpus import (
     EXPECTED_BOOK_IDS,
     ActivePointer,
     CorpusError,
     LocalCorpus,
     ReleaseManifest,
 )
-from corpus.artifacts import ArtifactSpec
-from corpus.builder import build_release
-from corpus.chunking import ChunkingPolicy
-from corpus.embeddings import EmbeddingSpec
-from corpus.sources import Book, Remedy, Section
 
 
 def test_active_pointer_rejects_path_traversal() -> None:

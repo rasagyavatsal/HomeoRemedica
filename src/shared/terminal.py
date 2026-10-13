@@ -10,21 +10,13 @@ from typing import Protocol, TextIO
 from pydantic import ValidationError
 
 from shared.contracts import (
-    MAX_HISTORY_CHARS,
-    MAX_HISTORY_TURNS,
     BookSummary,
     ChatRequest,
     ChatResponse,
     ChatTurn,
 )
-from shared.errors import ChatFailure
-
-_FAILURE_DETAILS = {
-    "timeout": "The request took too long. Please try again.",
-    "provider": "The chat provider is temporarily unavailable. Please try again shortly.",
-    "token_exhaustion": "Response limit reached. Please try again.",
-    "internal": "Something went wrong while preparing the answer. Please try again.",
-}
+from shared.conversation import advance_history
+from shared.errors import FAILURE_DETAILS, ChatFailure
 
 
 class ChatSession(Protocol):
@@ -131,26 +123,14 @@ def _ask(
         print(f"error: {error}", file=errors)
         return 1, history
     except ChatFailure as error:
-        print(f"error: {_FAILURE_DETAILS[error.kind]}", file=errors)
+        print(f"error: {FAILURE_DETAILS[error.kind]}", file=errors)
         return 1, history
     except Exception:
-        print(f"error: {_FAILURE_DETAILS['internal']}", file=errors)
+        print(f"error: {FAILURE_DETAILS['internal']}", file=errors)
         return 1, history
 
     _print_response(response, output)
-    turns = (
-        *history,
-        ChatTurn(role="user", content=request.message),
-        ChatTurn(role="assistant", content=response.answer[:4_000]),
-    )
-    return 0, _trim_history(turns)
-
-
-def _trim_history(turns: tuple[ChatTurn, ...]) -> tuple[ChatTurn, ...]:
-    recent = turns[-MAX_HISTORY_TURNS:]
-    while sum(len(turn.content) for turn in recent) > MAX_HISTORY_CHARS:
-        recent = recent[1:]
-    return recent
+    return 0, advance_history(history, request.message, response.answer)
 
 
 def _print_response(response: ChatResponse, output: TextIO) -> None:

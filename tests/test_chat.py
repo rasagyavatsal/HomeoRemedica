@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 
-from chat.retrieval import ProductionRetriever
+from production.retrieval import ProductionRetriever
 from shared.contracts import ChatRequest, ChatTurn, RetrievedSource
 from shared.errors import ChatFailure, TokenExhaustionError
 from shared.service import ChatService

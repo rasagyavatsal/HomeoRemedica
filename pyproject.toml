@@ -1,23 +1,25 @@
 [project]
 name = "HomeoRemedica"
 version = "6.0.0"
-description = "HomeoRemedica local chat CLI and RAG corpus release tooling"
+description = "HomeoRemedica production chat, web interface, and RAG corpus release tooling"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = "==3.14.*"
 dependencies = [
+  "fastapi>=0.141.1,<1",
   "pydantic>=2.12.5,<3",
   "pydantic-settings>=2.10.1,<3",
   "requests>=2.34.2,<3",
   "sqlite-vec==0.1.9",
+  "uvicorn>=0.52.4,<1",
 ]
 
 [project.scripts]
 corpus = "corpus.cli:main"
-evaluation = "eval_chat.evaluation_cli:main"
-chat = "chat.cli:main"
-eval-chat = "eval_chat.chat_cli:main"
+evaluation = "experimental.evaluation_cli:main"
+chat = "production.cli:main"
+eval-chat = "experimental.chat_cli:main"
 
 [build-system]
 requires = ["uv-build>=0.11.23,<0.12"]
@@ -26,6 +28,7 @@ build-backend = "uv_build"
 [dependency-groups]
 dev = [
   "build>=1.3.0,<2",
+  "httpx>=0.28.1,<1",
   "pip-audit>=2.10.1,<3",
   "pyright>=1.1.405,<2",
   "pytest>=9.0.3,<10",
@@ -45,7 +48,7 @@ preview = true
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 
 [tool.pyright]
-include = ["src"]
+include = ["src", "api"]
 pythonVersion = "3.14"
 typeCheckingMode = "standard"
 reportMissingTypeStubs = false
@@ -54,4 +57,4 @@ reportMissingTypeStubs = false
 required-version = ">=0.11.23,<0.12"
 
 [tool.uv.build-backend]
-module-name = ["shared", "chat", "corpus", "eval_chat"]
+module-name = ["shared", "production", "corpus", "experimental"]

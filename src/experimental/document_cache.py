@@ -11,8 +11,8 @@ from pathlib import Path
 from typing import cast
 
 from corpus.chunking import Chunk
-from eval_chat.embeddings import EMBEDDING_BATCH_SIZE, EmbeddingProvider
-from eval_chat.retrieval import materialize_float32
+from experimental.embeddings import EMBEDDING_BATCH_SIZE, EmbeddingProvider
+from experimental.retrieval import materialize_float32
 
 
 def ensure_document_cache(

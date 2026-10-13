@@ -9,13 +9,17 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from corpus.chunking import ChunkingPolicy
 from corpus.sources import BookDefinition
-from eval_chat.embeddings import (
+from experimental.embeddings import (
     QWEN3_EMBEDDING_MODEL,
     QWEN3_NATIVE_DIMENSIONS,
     EmbeddingSpec,
 )
-from eval_chat.evaluation import EvaluationSettings
-from eval_chat.paths import benchmark_cache_directory, benchmark_query_path, benchmark_result_path
+from experimental.evaluation import EvaluationSettings
+from experimental.paths import (
+    benchmark_cache_directory,
+    benchmark_query_path,
+    benchmark_result_path,
+)
 
 
 class _Settings(BaseModel):

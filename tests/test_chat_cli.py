@@ -5,7 +5,7 @@ import sys
 
 import pytest
 
-from chat.cli import main
+from production.cli import main
 from shared.contracts import BookSummary, ChatRequest, ChatResponse, Citation
 from shared.errors import ChatFailure
 
@@ -46,7 +46,7 @@ def test_one_shot_chat_calls_local_service_and_prints_sources(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     service = StubService()
-    monkeypatch.setattr("chat.cli.build_service", lambda settings: service)
+    monkeypatch.setattr("production.cli.build_service", lambda settings: service)
 
     result = main(["--book", "kent-lectures", "What", "about", "irritability?"])
 
@@ -63,7 +63,7 @@ def test_interactive_chat_keeps_history_and_clear_resets_it(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     service = StubService()
-    monkeypatch.setattr("chat.cli.build_service", lambda settings: service)
+    monkeypatch.setattr("production.cli.build_service", lambda settings: service)
     monkeypatch.setattr(sys, "stdin", io.StringIO("First?\nSecond?\n/clear\nThird?\n/quit\n"))
 
     assert main([]) == 0
@@ -79,7 +79,7 @@ def test_failed_question_does_not_enter_history(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     service = StubService()
-    monkeypatch.setattr("chat.cli.build_service", lambda settings: service)
+    monkeypatch.setattr("production.cli.build_service", lambda settings: service)
     monkeypatch.setattr(sys, "stdin", io.StringIO("First?\nSecond?\n"))
 
     original_chat = service.chat
@@ -101,7 +101,7 @@ def test_unknown_book_fails_before_chat(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     service = StubService()
-    monkeypatch.setattr("chat.cli.build_service", lambda settings: service)
+    monkeypatch.setattr("production.cli.build_service", lambda settings: service)
 
     assert main(["--book", "missing", "question"]) == 1
     assert service.requests == []
@@ -112,12 +112,12 @@ def test_list_books_only_loads_the_local_corpus(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     service = StubService()
-    monkeypatch.setattr("chat.cli.load_corpus", lambda settings: service)
+    monkeypatch.setattr("production.cli.load_corpus", lambda settings: service)
 
     def unexpected_build(settings: object) -> None:
         raise AssertionError("chat model should not be created")
 
-    monkeypatch.setattr("chat.cli.build_service", unexpected_build)
+    monkeypatch.setattr("production.cli.build_service", unexpected_build)
 
     assert main(["--list-books"]) == 0
     assert "kent-lectures: Kent's Lectures — Kent" in capsys.readouterr().out

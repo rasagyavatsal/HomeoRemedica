@@ -1,18 +1,30 @@
-.PHONY: boundary build lint typecheck test check
+UV ?= uv tool run --from uv==0.11.23 uv
 
-boundary:
-	uv run --locked pytest tests/test_public_boundary.py
+.PHONY: check setup production experimental api web web-check
 
-build:
-	uv run --locked python -m build
+check:
+	$(UV) run --locked python -m build
+	$(UV) run --locked ruff check src api tests
+	$(UV) run --locked pyright
+	$(UV) run --locked pytest
 
-lint:
-	uv run --locked ruff check src tests
+setup:
+	$(UV) sync --locked
+	npm --prefix web ci
+	@if [ ! -e .env ]; then cp .env.example .env; fi
 
-typecheck:
-	uv run --locked pyright
+production:
+	$(UV) run --locked chat $(ARGS)
 
-test:
-	uv run --locked pytest
+experimental:
+	$(UV) run --locked eval-chat $(ARGS)
 
-check: boundary build lint typecheck test
+api:
+	$(UV) run --locked uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
+
+web:
+	$(UV) run --locked python -m api.dev
+
+web-check:
+	npm --prefix web test
+	npm --prefix web run build

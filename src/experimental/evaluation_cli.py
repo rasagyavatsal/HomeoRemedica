@@ -9,9 +9,9 @@ from pathlib import Path
 
 from corpus.chunking import chunk_book, corpus_hash
 from corpus.sources import load_corpus_books
-from eval_chat.config import EvaluationConfig, load_evaluation_config
-from eval_chat.embeddings import OpenRouterEmbeddingProvider
-from eval_chat.evaluation import (
+from experimental.config import EvaluationConfig, load_evaluation_config
+from experimental.embeddings import OpenRouterEmbeddingProvider
+from experimental.evaluation import (
     load_evaluation_dataset,
     record_evaluation,
     run_dimension_evaluation,

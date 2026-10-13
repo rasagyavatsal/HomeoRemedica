@@ -7,7 +7,7 @@ from typing import Protocol
 
 from corpus.chunking import Chunk
 from corpus.sources import Book
-from eval_chat.evaluation import (
+from experimental.evaluation import (
     SCORE_FUSION_EXPONENT,
     EvaluationSettings,
     _normalized_score_fusion,
@@ -15,7 +15,7 @@ from eval_chat.evaluation import (
     _rankings_for_unit,
     _scored_rankings_for_unit,
 )
-from eval_chat.retrieval import (
+from experimental.retrieval import (
     PreparedRetrievalIndex,
     ScoredCandidate,
     lexical_content_terms,

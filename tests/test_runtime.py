@@ -6,7 +6,7 @@ from typing import Any
 import pytest
 import requests
 
-from chat.runtime import Settings
+from production.runtime import Settings
 from shared.errors import TokenExhaustionError
 from shared.generation import DEFAULT_ZAI_BASE_URL, ZaiChatClient
 
