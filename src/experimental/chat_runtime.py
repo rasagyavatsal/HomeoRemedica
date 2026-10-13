@@ -8,12 +8,12 @@ from dataclasses import replace
 
 from corpus.chunking import chunk_book, corpus_hash
 from corpus.sources import load_corpus_books
-from eval_chat.chat_retrieval import ExperimentalRetriever
-from eval_chat.config import EvaluationConfig
-from eval_chat.document_cache import ensure_document_cache, read_document_vectors
-from eval_chat.embeddings import OpenRouterEmbeddingProvider, preflight_embedding_inputs
-from eval_chat.evaluation import _embedding_cache_path
-from eval_chat.retrieval import PreparedRetrievalIndex
+from experimental.chat_retrieval import ExperimentalRetriever
+from experimental.config import EvaluationConfig
+from experimental.document_cache import ensure_document_cache, read_document_vectors
+from experimental.embeddings import OpenRouterEmbeddingProvider, preflight_embedding_inputs
+from experimental.evaluation import _embedding_cache_path
+from experimental.retrieval import PreparedRetrievalIndex
 from shared.contracts import BookSummary
 from shared.generation import ZaiChatClient
 from shared.service import ChatService

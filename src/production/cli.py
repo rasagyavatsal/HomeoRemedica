@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from chat.runtime import Settings, build_service, load_corpus
+from production.runtime import Settings, build_service, load_corpus
 from shared.terminal import run_cli
 
 
