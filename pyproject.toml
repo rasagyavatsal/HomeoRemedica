@@ -1,6 +1,6 @@
 [project]
 name = "HomeoRemedica"
-version = "6.0.0"
+version = "7.0.0"
 description = "HomeoRemedica production chat, web interface, and RAG corpus release tooling"
 readme = "README.md"
 license = "MIT"
