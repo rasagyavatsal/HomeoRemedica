@@ -4,7 +4,7 @@ UV ?= uv tool run --from uv==0.11.23 uv
 
 check:
 	$(UV) run --locked python -m build
-	$(UV) run --locked ruff check src api tests
+	$(UV) run --locked ruff check src tests
 	$(UV) run --locked pyright
 	$(UV) run --locked pytest
 

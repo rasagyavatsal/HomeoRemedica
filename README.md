@@ -283,7 +283,7 @@ runs TypeScript type checking. `make web` starts Vite and FastAPI together with 
 - `src/shared/` — conversation contracts, terminal behavior, answer generation, and prompts.
 - `src/production/` — production retrieval from an active corpus release.
 - `src/production/cli.py` — production terminal chat.
-- `api/` — FastAPI interface to the production service and optional built frontend hosting.
+- `src/api/` — FastAPI interface to the production service and optional built frontend hosting.
 - `web/` — minimal React/Vite chat interface.
 - `src/experimental/` — experimental retrieval, scoring, and terminal chat.
 - `src/corpus/` — source validation, chunking, embeddings, and release tooling.
