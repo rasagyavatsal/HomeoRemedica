@@ -14,7 +14,7 @@ I am aware that there is a difference of opinion about the advisability of furth
 
 Our Materia Medica must include all substances which have been proved and which have been used with apparent efficacy. It rests with the individual student to judge for himself the accuracy and reliability of such observation. In this connection, I cannot forego to avail myself of the high authority of that master of Homoeopathy, Dr. Constantine Hering, favoring the introduction of all remedies capable of producing reactions in the body that may guide to their medicinal employment. "Homeopathy is essentially not only many-sided but all-sided. She investigates the action of all substances, whether articles of diet, beverages, condiments, drugs or poisons. She investigates their action on the healthy, the sick, animals and plants. She gives a new interpretation to that ancient, oft quoted saying of Paul, Prove all things--a new meaning, a new application that acts universally. Elimination of the useless may gradually take place with the growth of accurate physiological and pathological knowledge."
 
-Again, imperfectly proved remedies necessitate the use of names of diseases at times instead of the component symptoms that alone are the legitimate guide to the choice of the curative remedy. Here, too, I have Hering as pioneer guide for the ligitimacy of this method, which he also followed in his great work, the Guiding Symptoms. He said that he used the disease designations not for the purpose of recommending the particular remedy for that disease, but to show the great variety of remedies that may be used for any form of disease when otherwise indicated. For the same reason I have included nosological terms in the symptomatology and Therapeutic Index, as this is a practical handbook for every-day service, and any aid for finding the curative remedy ought to be utilized. As Dr. J. Compton Burnett expresses it:
+Again, imperfectly proved remedies necessitate the use of names of diseases at times instead of the component symptoms that alone are the legitimate guide to the choice of the curative remedy. Here, too, I have Hering as pioneer guide for the legitimacy of this method, which he also followed in his great work, the Guiding Symptoms. He said that he used the disease designations not for the purpose of recommending the particular remedy for that disease, but to show the great variety of remedies that may be used for any form of disease when otherwise indicated. For the same reason I have included nosological terms in the symptomatology and Therapeutic Index, as this is a practical handbook for every-day service, and any aid for finding the curative remedy ought to be utilized. As Dr. J. Compton Burnett expresses it:
 
 "The fact is we need any and every way of finding the right remedy; the simple simile, the simple symptomatic similimum and the farthest reach of all--the pathologic similimum, and I maintain that we are still well within the line of Homoeopathy that is expansive, progressive, science fostered and science fostering."
 
@@ -24,11 +24,15 @@ The book is in no sense a treatise, and must not be considered or judged as such
 
 I have been aided in seeing this edition through the press by the efficient help of Mr. F. O. Ernesty, who has lightened the labor of making the manuscript more acceptable to the printers, and I desire to express my hearty appreciation of this kind and helpful service.
 
+WILLIAM BOERICKE, M.D.
+
+San Francisco, June, 1927.
+
 ## INDEX and ABBREVIATIONS
 
 - ABIES-C ------&gt; ABIES CANADENSIS-PINUS CANADENSIS
 - ABIES-N ------&gt; ABIES NIGRA
-- ABR ------&gt; ABRUS PRECATORIUS - JEQUIRITY (JEQUIRITY - ARBRUS PRECATORIUS)
+- ABR ------&gt; ABRUS PRECATORIUS - JEQUIRITY (JEQUIRITY - ABRUS PRECATORIUS)
 - ABROT ------&gt; ABROTANUM
 - ABSIN ------&gt; ABSINTHIUM
 - ACAL ------&gt; ACALYPHA INDICA
@@ -269,7 +273,7 @@ I have been aided in seeing this edition through the press by the efficient help
 - DAPH ------&gt; DAPHNE INDICA
 - DIG ------&gt; DIGITALIS PURPUREA (DIGITALIS)
 - DIOS ------&gt; DIOSCOREA VILLOSA
-- DIOSM ------&gt; DIOSMA LINCARIS
+- DIOSM ------&gt; DIOSMA LINEARIS
 - DIPH ------&gt; DIPHTHERINUM
 - DOL ------&gt; DOLICHOS PRURIENS (DOLICHOS PURIENS - MUCUNA)
 - DOR ------&gt; DORYPHORA DECEMLINEATA (DORYPHORA)
@@ -285,7 +289,7 @@ I have been aided in seeing this edition through the press by the efficient help
 - EQUIS-H ------&gt; EQUISETUM HYEMALE (EQUISETUM)
 - ERECH ------&gt; ERECHTHITES HIERACIFOLIA (ERECHTHITES)
 - ERIG ------&gt; ERIGERON CANADENSE (ERIGERON - LEPTILON CANADENSE)
-- ERIO ------&gt; ERIODYCTION CALIFORNICUM (ERIODICTYON)
+- ERIO ------&gt; ERIODICTYON CALIFORNICUM (ERIODICTYON)
 - ERY-A ------&gt; ERYNGIUM AQUATICUM
 - ESCH ------&gt; ESCHSCHOLTZIA CALIFORNICA
 - EUCAL ------&gt; EUCALYPTUS GLOBULUS
@@ -313,7 +317,7 @@ I have been aided in seeing this edition through the press by the efficient help
 - FORM ------&gt; FORMICA RUFA (MYRMEXINE)
 - FORMAL ------&gt; FORMALINUM (FORMALIN)
 - FRAG ------&gt; FRAGARIA VESCA (FRAGARIA)
-- FRANC ------&gt; FRANCISCEA UNIFLORA (FRACISCEA)
+- FRANC ------&gt; FRANCISCEA UNIFLORA (FRANCISCEA)
 - FRAX ------&gt; FRAXINUS AMERICANA
 - FUC ------&gt; FUCUS VESICULOSUS
 - FUCH ------&gt; FUCHSINUM (FUCHSINA - MAGENTA)
@@ -427,7 +431,7 @@ I have been aided in seeing this edition through the press by the efficient help
 - LITH-C ------&gt; LITHIUM CARBONICUM
 - LOB ------&gt; LOBELIA INFLATA
 - LOB-P ------&gt; LOBELIA PURPURASCENS
-- LOL ------&gt; LOLEUM TEMULENTUM (LOLIUM TUMULENTUM)
+- LOL ------&gt; LOLIUM TEMULENTUM (LOLIUM TEMULENTUM)
 - LON-X ------&gt; LONICERA XYLOSTEUM
 - LUP ------&gt; LUPULUS HUMULUS
 - LYC ------&gt; LYCOPODIUM CLAVATUM (LYCOPODIUM)
@@ -499,7 +503,7 @@ I have been aided in seeing this edition through the press by the efficient help
 - ONIS ------&gt; ONISCUS ASELLUS (MILLEPEDES)
 - ONOS ------&gt; ONOSMODIUM VIRGINIANUM (ONOSMODIUM)
 - OP ------&gt; OPIUM (PAPAVER SOMNIFERUM)
-- OPER ------&gt; OPERCULINA TURPENTHUM (OPERCULINA TURPETHUM)
+- OPER ------&gt; OPERCULINA TURPETHUM (OPERCULINA TURPETHUM)
 - OPUN-F ------&gt; OPUNTIA FICUS (OPUNTIA-FICUS INDICA)
 - OREO ------&gt; OREODAPHNE CALIFORNICA (OREODAPHNE)
 - ORIG ------&gt; ORIGANUM MAJORANA (ORIGANUM)
@@ -649,7 +653,7 @@ I have been aided in seeing this edition through the press by the efficient help
 - THYR ------&gt; THYROIDINUM
 - TIL ------&gt; TILIA EUROPAEA (TILIA EUROPA)
 - TITAN ------&gt; TITANIUM METALLICUM (TITANIUM)
-- TONG ------&gt; TONGO-DIPTERIX ODORATA (TONGO - DIPTRIX ODORATA)
+- TONG ------&gt; TONGO-DIPTERIX ODORATA (TONGO - DIPTERIX ODORATA)
 - TOR ------&gt; TORULA CEREVISIAE
 - TRIB ------&gt; TRIBULUS TERRESTRIS
 - TRIF-P ------&gt; TRIFOLIUM PRATENSE
@@ -737,7 +741,7 @@ A powerful and long-acting remedy, in various forms of disease, whenever the cha
 
 Crab's Eye Vine
 
-(JEQUIRITY - ARBRUS PRECATORIUS)
+(JEQUIRITY - ABRUS PRECATORIUS)
 
 Epithelioma, lupus, ulcers, granular lids.
 
@@ -1133,7 +1137,7 @@ Jerking, twitching, trembling, and itching are strong indications. Incipient pht
 
 The provings bring out four phases of cerebral excitement. 1. Slight stimulation-shown by increased cheerfulness, courage, loquacity, exalted fancy.
 
-2\. More decided intoxication-great mental excitement and incoherent talking, immoderate gaity alternates with melancholy. Perception of relative size of objects is lost, takes long steps and jumps over small objects as if they were trunks of trees-a small hole appears as a frightful chasm, a spoonful of water an immense lake. Physical strength is increased, can lift heavy loads. With it much twitching.
+2\. More decided intoxication-great mental excitement and incoherent talking, immoderate gaiety alternates with melancholy. Perception of relative size of objects is lost, takes long steps and jumps over small objects as if they were trunks of trees-a small hole appears as a frightful chasm, a spoonful of water an immense lake. Physical strength is increased, can lift heavy loads. With it much twitching.
 
 3\. Third stage produces a condition of furious or raging delirium, screaming, raving, wants to injure himself, etc.
 
@@ -1357,7 +1361,7 @@ Pulmonary tuberculosis. Cough and expectoration diminishes, temperature becomes 
 
 **Antidote:** Lycopod.
 
-**Dose.--** Third to sixth potency. In tuberculosis, dose, four to six grammes in moderate state of dessication daily, in divided doses.
+**Dose.--** Third to sixth potency. In tuberculosis, dose, four to six grammes in moderate state of desiccation daily, in divided doses.
 
 ## ALNUS RUBRA
 
@@ -1485,7 +1489,7 @@ A very general condition corresponding to this drug is dryness of mucous membran
 
 ## ALUMINA SILICATA
 
-Andalasite rock-Alumina 63, Silica 37 parts
+Andalusite rock-Alumina 63, Silica 37 parts
 
 Deep acting remedy for chronic complaints of brain, spine and nerves. Constriction is a marked general symptom, also constriction of orifices. Venous distention. Weakness, especially spinal. Aching and burning in spine. Formication, numbness, pain in all limbs. Epileptiform convulsion. Coldness during pains.
 
@@ -1891,7 +1895,7 @@ The Anacardium patient is found mostly among the neurasthenics; such have a type
 
 **Modalities.--** Worse, on application of hot water. Better, from eating. When lying on side, from rubbing.
 
-**Relationship.--** Antidote: Grindeleia; Coffea; Juglans; Rhus; Eucalyptus.
+**Relationship.--** Antidote: Grindelia; Coffea; Juglans; Rhus; Eucalyptus.
 
 **Compare:** Anacard occidentale (cashew nut) (erysipelas, vesicular facial eruptions), (anaesthetic variety of leprosy; warts, corns, ulcers, cracking of the skin on soles of feet). Rhus; Cypriped; Chelidon; Xerophyl.
 
@@ -2253,7 +2257,7 @@ The Honey-Bee
 
 Acts on cellular tissues causing oedema of skin and mucous membranes.
 
-The very characteristic effects of the sting of the bee furnish unerring indications for its employment in disease. Swelling or puffing up of various parts, oedema, red rosy hue, stinging pains, soreness, intolerance of heat, and slightest touch, and afternoon aggravation are some of the general guiding symptoms. Erysipelatous inflammations, dropsical effusions and anasarca, acute, inflammation of kidneys, and other perenchymatous tissues are characteristic pathological states corresponding to Apis. Apis acts especially on outer parts, skin, coatings of inner organs, serous membranes. It produces serous inflammation with effusion, membranes of brain, heart, pleuritic effusion, etc. Extreme sensitiveness to touch and general soreness is marked. Constricted sensations. Sensation of stiffness and as of something torn off in the interior of the body. Much prostration.
+The very characteristic effects of the sting of the bee furnish unerring indications for its employment in disease. Swelling or puffing up of various parts, oedema, red rosy hue, stinging pains, soreness, intolerance of heat, and slightest touch, and afternoon aggravation are some of the general guiding symptoms. Erysipelatous inflammations, dropsical effusions and anasarca, acute, inflammation of kidneys, and other parenchymatous tissues are characteristic pathological states corresponding to Apis. Apis acts especially on outer parts, skin, coatings of inner organs, serous membranes. It produces serous inflammation with effusion, membranes of brain, heart, pleuritic effusion, etc. Extreme sensitiveness to touch and general soreness is marked. Constricted sensations. Sensation of stiffness and as of something torn off in the interior of the body. Much prostration.
 
 **Mind.--** Apathy, indifference, and unconsciousness. Awkward; drops things readily. Stupor, with sudden sharp cries and startings. Stupor alternating with erotic mania. Sensation of dying. Listless; cannot think clearly. Jealous, fidgety, hard to please. Sudden shrill, piercing screams. Whining. Tearfulness. Jealously, fright, rage, vexation, grief. Cannot concentrate mind when attempting to read or study.
 
@@ -2381,7 +2385,7 @@ Acts principally on nervous system, producing a bewildered, confused state. Symp
 
 **Extremities.--** Weakness of limbs. Pain in left sciatic nerve. Cramps of muscles on front of leg while walking.
 
-**Relationship.--** Compare: Astragallus and Oxytropis, two varieties of Loco Weed; also Baryta.
+**Relationship.--** Compare: Astragalus and Oxytropis, two varieties of Loco Weed; also Baryta.
 
 **Dose.--** Sixth and two hundredth potencies.
 
@@ -2479,9 +2483,9 @@ Emaciation, a gradual drying up, desire for fresh air, dyspnoea, sensation of ex
 
 **Extremities.--** Rheumatic affections of joints, especially elbow and knee. Legs weak and trembling, worse descending stairs. Involuntary contractions of fingers, partial paralysis of forearm; writer's cramp. Swelling of ankles.
 
-**Male.--** Crushed pain in testicles. Seminal emissions, without sexual excitement. Frequent micturation with burning.
+**Male.--** Crushed pain in testicles. Seminal emissions, without sexual excitement. Frequent micturition with burning.
 
-**Female.--** Ovaries feel too large. Bearing-down pain. Prolapse of womb. Eroded spongy cervix. Leucorrhea foul, excoriating. Palliative in scirrhus of uterus. Pain in left ovary. Climateric hemorrhage. Sore feeling; throughout abdomen; worse by jarring. Uterine disease with pain in joints and limbs.
+**Female.--** Ovaries feel too large. Bearing-down pain. Prolapse of womb. Eroded spongy cervix. Leucorrhea foul, excoriating. Palliative in scirrhus of uterus. Pain in left ovary. Climacteric hemorrhage. Sore feeling; throughout abdomen; worse by jarring. Uterine disease with pain in joints and limbs.
 
 **Modalities.--** Worse from touch, toward noon. Better in open air; cough at night when lying down (opposite Hyoscy).
 
@@ -2587,7 +2591,7 @@ Leopard's Bane
 
 Produces conditions upon the system quite similar to those resulting from injuries, falls, blows, contusions. Tinnitus aurium. Putrid phenomena. Septic conditions; prophylactic of pus infection. Apoplexy, red, full face.
 
-It is especially suited to cases when any injury, however remote, seems to have caused the present trouble. After traumatic injuries, overuse of any organ, strains. Arnica is disposed to cerebral congestion. Acts best in plethoric, feebly in debilitated with impoverished blood, cardiac dropsy with dyspnoea. A muscular tonic. Traumatism of grief, remorse or sudden realization of financial loss. Limbs and body ache as if beaten; joints as if sprained. Bed feels too hard. Marked effect on the blood. Affects the venous system inducing stasis. Echymosis and hemorrhages. Relaxed blood vessels, black and blue spots. Tendency to hemorrhage and low-fever states. Tendency to tissue degeneration, septic conditions, abscesses that do not mature. Sore, lame, bruised feeling. Neuralgias originating in disturbances of pneumo-gastric. Rheumatism of muscular and tendinous tissue, especially of back and shoulders. Aversion to tobacco. Influenza. Thrombosis. Hematocele.
+It is especially suited to cases when any injury, however remote, seems to have caused the present trouble. After traumatic injuries, overuse of any organ, strains. Arnica is disposed to cerebral congestion. Acts best in plethoric, feebly in debilitated with impoverished blood, cardiac dropsy with dyspnoea. A muscular tonic. Traumatism of grief, remorse or sudden realization of financial loss. Limbs and body ache as if beaten; joints as if sprained. Bed feels too hard. Marked effect on the blood. Affects the venous system inducing stasis. Ecchymosis and hemorrhages. Relaxed blood vessels, black and blue spots. Tendency to hemorrhage and low-fever states. Tendency to tissue degeneration, septic conditions, abscesses that do not mature. Sore, lame, bruised feeling. Neuralgias originating in disturbances of pneumo-gastric. Rheumatism of muscular and tendinous tissue, especially of back and shoulders. Aversion to tobacco. Influenza. Thrombosis. Hematocele.
 
 **Mind.--** Fears touch, or the approach of anyone. Unconscious; when spoken to answers correctly, but relapses. Indifference; inability to perform continuous active work; morose, delirious. Nervous; cannot bear pain; whole body oversensitive. Says there is nothing the matter with him. Wants to be let alone. Agoraphobia (fear of space). After mental strain or shock.
 
@@ -2645,7 +2649,7 @@ Ars should be thought of in ailments from alcoholism, ptomaine poisoning, stings
 
 **Mind.--** Great anguish and restlessness. Changes place continually. Fears, of death, of being left alone. Great fear, with cold sweat. Thinks it useless to take medicine. Suicidal. Hallucinations of smell and sight. Despair drives him from place to place. Miserly, malicious, selfish, lacks courage. General sensibility increased (Hep). Sensitive to disorder and confusion.
 
-**Head.--** Headaches relieves by cold, other symptoms worse. Periodical burning pains, with restlessness; with cold skin. Hemicrania, with icy feeling of scalp and great weakness. Sensitive head in open air. Delirium tremens; cursing and raving; vicious. Head is in constant motion. Scalp itches intolerably; circular patches of bare spots; rough, dirty, sensitive, and covered with dry scales; nightly burning and itching; dandruff. Scalp very sensitive; cannot brush hair.
+**Head.--** Headaches relieved by cold, other symptoms worse. Periodical burning pains, with restlessness; with cold skin. Hemicrania, with icy feeling of scalp and great weakness. Sensitive head in open air. Delirium tremens; cursing and raving; vicious. Head is in constant motion. Scalp itches intolerably; circular patches of bare spots; rough, dirty, sensitive, and covered with dry scales; nightly burning and itching; dandruff. Scalp very sensitive; cannot brush hair.
 
 **Eyes.--** Burning in eyes, with acrid lachrymation. Lids red, ulcerated, scabby, scaly, granulated. Oedema around eyes. External inflammation, with extreme painfulness; burning, hot, and excoriating lachrymation. Corneal ulceration. Intense photophobia; better external warmth. Ciliary neuralgia, with fine burning pain.
 
@@ -2871,7 +2875,7 @@ A remedy for catarrhal states. Hay-fever.
 
 **Skin.--** Eczema; itching and crawling, especially of chest, upper extremities. Fissures in fingers and heels.
 
-**Relationship.--** Compare: Anthoxantum-sweet vernal grass (a popular medicine for hay-fever and coryza). Lolium; Cepa; Sabad; Silica.
+**Relationship.--** Compare: Anthoxanthum-sweet vernal grass (a popular medicine for hay-fever and coryza). Lolium; Cepa; Sabad; Silica.
 
 **Dose.--** Third to sixth potency.
 
@@ -2991,7 +2995,7 @@ Common Garden Asparagus
 
 Its marked and immediate action on the urinary secretion is well known. It causes weakness and cardiac depression with dropsy. Rheumatic pains. Especially about left shoulder and heart.
 
-**Head.--** Confused. Coryza, with profuse, thin fluid. Aching in forehead and root of nose. Migrainious morning headache with scotoma. Throat feels rough, with hawking copious tenacious mucus throat.
+**Head.--** Confused. Coryza, with profuse, thin fluid. Aching in forehead and root of nose. Migrainous morning headache with scotoma. Throat feels rough, with hawking copious tenacious mucus throat.
 
 **Urine.--** Frequent, with fine stitches in orifice of urethra; burning; of peculiar odor. Cystitis, with pus, mucus and tenesmus. Lithiasis.
 
@@ -3459,7 +3463,7 @@ Belladonna acts upon every part of the nervous system, producing active congesti
 
 **Modalities.--** Worse, touch, jar, noise, draught, after noon, lying down. Better, semi-erect.
 
-**Relationship.--** Compare: Sanguisorba officinals 2x-6x, a member of the Rosaceae family, (Profuse, long-lasting menses, especially in nervous patients with congestive symptoms to head and limbs. Passive hemorrhages at climacteric. Chronic metritis. Hemorrhage from lungs. Varices and ulcers). Mandragora--(Mandrake). A narcotic of the ancients-Restless excitability and bodily weakness. Desire for sleep. Has antiperiodic properties like China and Aranea. Useful in epilepsy and hydrophobia, also Cetonia (A. E. Lavine). Hyos (less fever, more agitation); Stram (more sensorial excitement, frenzy); Hoitzia-A Mexican drug, similar in action to Bellad (Useful in fever, scarlatinal eruption, measles, urticaria, etc. High fever with eruptive fevers. Dry mouth and throat, red face, injected eyes, delirium). Calcar is often required after Bell; Atropia. Alkaloid of Belladonna covers more the neurotic sphere of the Belladonna action (Great dryness of throat, almost impossible to swallow. Chronic stomach affections, with great pain and vomiting of all food. Peritonitis. All kind of illusions of sight. Everything appears large. Platina opposite). Hypochlorhydria; pyrosis. Motes over everything. On reading, words run together; double vision, all objects seem to be elongated. Eustachian tube and tympanic congestion. Affinity for the pancreas. Hyperacidity of stomach. Paroxysms of gastric pain; ovarian neuralgia.
+**Relationship.--** Compare: Sanguisorba officinalis 2x-6x, a member of the Rosaceae family, (Profuse, long-lasting menses, especially in nervous patients with congestive symptoms to head and limbs. Passive hemorrhages at climacteric. Chronic metritis. Hemorrhage from lungs. Varices and ulcers). Mandragora--(Mandrake). A narcotic of the ancients-Restless excitability and bodily weakness. Desire for sleep. Has antiperiodic properties like China and Aranea. Useful in epilepsy and hydrophobia, also Cetonia (A. E. Lavine). Hyos (less fever, more agitation); Stram (more sensorial excitement, frenzy); Hoitzia-A Mexican drug, similar in action to Bellad (Useful in fever, scarlatinal eruption, measles, urticaria, etc. High fever with eruptive fevers. Dry mouth and throat, red face, injected eyes, delirium). Calcar is often required after Bell; Atropia. Alkaloid of Belladonna covers more the neurotic sphere of the Belladonna action (Great dryness of throat, almost impossible to swallow. Chronic stomach affections, with great pain and vomiting of all food. Peritonitis. All kind of illusions of sight. Everything appears large. Platina opposite). Hypochlorhydria; pyrosis. Motes over everything. On reading, words run together; double vision, all objects seem to be elongated. Eustachian tube and tympanic congestion. Affinity for the pancreas. Hyperacidity of stomach. Paroxysms of gastric pain; ovarian neuralgia.
 
 **Non-Homeopathic Uses.--** Atropia and its salts are used for ophthalmic purposes, to dilate the pupil and paralyze the accommodation.
 
@@ -3799,7 +3803,7 @@ Its venom is most coagulating, (also Lachesis). We should expect to find under t
 
 Broken-down, hemorrhagic constitutions; septic states. Great lassitude and sluggishness; hemorrhages from every orifice of the body; black spots. Hemiplegia with aphasia. Inability to articulate, without any affection of the tongue. Nervous trembling. Pain in right big toe. Diagonal course of symptoms. Pulmonary congestion.
 
-**Eyes.--** Amaurosis; blindness from hemorrhage into retina. Hemoralopia, day blindness, can hardly see her way after sunrise; conjunctivial hemorrhage.
+**Eyes.--** Amaurosis; blindness from hemorrhage into retina. Hemoralopia, day blindness, can hardly see her way after sunrise; conjunctival hemorrhage.
 
 **Face.--** Swollen and puffy. Besotted expression.
 
@@ -4407,7 +4411,7 @@ One of the most important tissue remedies, and while it has many symptoms in com
 
 **Relationship.--** Complementary: Ruta; Hepar.
 
-**Compare:** Calcar hypophosphorosa (is to be preferred when it seems necessary to furnish the organism with liberal doses of phosphorus in consequence of continued abscesses having reduced the vitality. Give first and second decimal trits. Loss of appetite, rapid debility, night sweats; Acne pustulosa.--Pallor of skin, habitually cold extremities. Phthisis-diarrhoea and cough; acute pains in chest. Mesenteric tuberculosis. Bleeding from lungs; angina pectoris; asthma; affection of arteries. Veins stand out like whipcords. Attacks of pain occurring two hours after meals (relieved by a cup of milk or light food). Cheiranthus (effects of cutting wisdom teeth). Calcarea renalis-Lapis renalis--(arthritic nodosities. Rigg's disease; lessens tendency to accumulation of tartar on teeth; gravel and renal calculi). Conchilion.--Mater perlarum.--Mother of pearl (Osteitis.--Has a wide range of action in bone affections, especially when the growing ends are affected. Petechiae). Silica; Psorin; Sulph.
+**Compare:** Calcar hypophosphorosa (is to be preferred when it seems necessary to furnish the organism with liberal doses of phosphorus in consequence of continued abscesses having reduced the vitality. Give first and second decimal trits. Loss of appetite, rapid debility, night sweats; Acne pustulosa.--Pallor of skin, habitually cold extremities. Phthisis-diarrhoea and cough; acute pains in chest. Mesenteric tuberculosis. Bleeding from lungs; angina pectoris; asthma; affection of arteries. Veins stand out like whipcords. Attacks of pain occurring two hours after meals (relieved by a cup of milk or light food)). Cheiranthus (effects of cutting wisdom teeth). Calcarea renalis-Lapis renalis--(arthritic nodosities. Rigg's disease; lessens tendency to accumulation of tartar on teeth; gravel and renal calculi). Conchilion.--Mater perlarum.--Mother of pearl (Osteitis.--Has a wide range of action in bone affections, especially when the growing ends are affected. Petechiae). Silica; Psorin; Sulph.
 
 **Modalities.--** Worse, exposure to damp, cold weather, melting snow. Better, in summer; warm, dry atmosphere.
 
@@ -4901,7 +4905,7 @@ A lowered vital power from loss of fluids, after drugging; after other diseases;
 
 Carburetted Hydrogen
 
-Symptoms resemble an apopletic attack. Spasm as in lockjaw. Trismus. Involuntary stools and urine.
+Symptoms resemble an apoplectic attack. Spasm as in lockjaw. Trismus. Involuntary stools and urine.
 
 **Mind.--** Stupefaction. Extraordinary sensation of contentment. All thoughts appear in a moment as if seen in an inner mirror.
 
@@ -5893,7 +5897,7 @@ Scrofulous, rheumatic, gonorrhoeal, and syphilitic patients. Acts especially on 
 
 **Head.--** Boring pain in temples. Confused feeling; better in open air. Eruption on occiput at base of hair, moist, pustular sensitive, itching.
 
-**Eyes.--** Heat in eyes and sensitive to air; must close them. Chronic blepharitis, with sore and swollen meibomain glands. Iritis, great sensitiveness to cold. Flickering before eyes. Pustular conjunctivitis, with tinea capitis; eyes inflamed and protruding.
+**Eyes.--** Heat in eyes and sensitive to air; must close them. Chronic blepharitis, with sore and swollen meibomian glands. Iritis, great sensitiveness to cold. Flickering before eyes. Pustular conjunctivitis, with tinea capitis; eyes inflamed and protruding.
 
 **Face.--** White blisters on face and nose, as if burned by sun. Swelling of submaxillary glands, with hard tubercles, throbbing, aggravated on being touched. Pain in right side of face to eye, ear and temple; better, holding cold water in mouth.
 
@@ -6411,7 +6415,7 @@ The provings of coral develop much coryza and epistaxis, and even ulceration wit
 
 **Skin.--** Red, flat ulcers. Coral-colored, then dark red spots, changing to copper-colored spots. Psoriasis of palms and soles.
 
-**Modalities.--** Worse in open air, changing from a warm too cold room.
+**Modalities.--** Worse in open air, changing from a warm to cold room.
 
 **Relationship.--** Complementary: Sulph. Compare: Bellad; Droser; Mephit; Caust.
 
@@ -6933,7 +6937,7 @@ Comes into play in all diseases where the heart is primarily involved, where the
 
 **Modalities.--** Worse, when sitting erect, after meals and music. Better, when stomach is empty; in open air.
 
-**Relationship.--** Antidotes: Camph; Serpentaria. Incompatible: China. Compare: Nerium odorum (resembles in heart effects Digitalis, but also has an action like Strychnia on spinal cord. Spasms appear more in upper part of body. Palpitation; weak heart will be strengthened by it. Lock-jaw). Adonia; Crataegus (a true heart tonic); Kalmia; Spigel; Liatris; Compare also; Digitoxinum (Digitalis dissolved in Chloroform; which has yellow vision very marked, and distressing nausea, aggravated by champagne and aerated waters). Nitri spir dulc increases action of Digit. Ichthyotoxin. Eel Serum (Experiments show great analogy between the serum and the venom of vipera. Indicated whenever the systole of the heart is insufficient, decompensated valvular disease, irregular pulse due to fibrillation of the auricle. Assytole, feeble, frequent, irregular pulse, dyspnoea and scanty urine. Liver enlarged, dyspnoea, albuminuria. No oedema). Convallaria (heart disease with vertigo and digestive disturbances). Quinidin-Isomeric methoxyl compound.--(Restores normal rhythm in auricular fibrillation, often supplements the action of Digitalis. Two doses of 3 grains each, three hours apart-if no symptoms of cinchonism develop, 4 doses 6 grs each daily (C. Harlan Wells). Paroxysmal tachycardia. Establishes normal heart rhythm at least temporarily, less in valvular lesions).
+**Relationship.--** Antidotes: Camph; Serpentaria. Incompatible: China. Compare: Nerium odorum (resembles in heart effects Digitalis, but also has an action like Strychnia on spinal cord. Spasms appear more in upper part of body. Palpitation; weak heart will be strengthened by it. Lock-jaw). Adonia; Crataegus (a true heart tonic); Kalmia; Spigel; Liatris; Compare also; Digitoxinum (Digitalis dissolved in Chloroform; which has yellow vision very marked, and distressing nausea, aggravated by champagne and aerated waters). Nitri spir dulc increases action of Digit. Ichthyotoxin. Eel Serum (Experiments show great analogy between the serum and the venom of vipera. Indicated whenever the systole of the heart is insufficient, decompensated valvular disease, irregular pulse due to fibrillation of the auricle. Asystole, feeble, frequent, irregular pulse, dyspnoea and scanty urine. Liver enlarged, dyspnoea, albuminuria. No oedema). Convallaria (heart disease with vertigo and digestive disturbances). Quinidin-Isomeric methoxyl compound.--(Restores normal rhythm in auricular fibrillation, often supplements the action of Digitalis. Two doses of 3 grains each, three hours apart-if no symptoms of cinchonism develop, 4 doses 6 grs each daily (C. Harlan Wells). Paroxysmal tachycardia. Establishes normal heart rhythm at least temporarily, less in valvular lesions).
 
 **Dose.--** The third to thirtieth attenuation will bring about reaction when the drug is homeopathically indicated; but for palliative purposes the physiological dosage is required. For this purpose, the tincture made from the fresh plant, in doses of five to twenty drops, when the cardiac stimulation is desired, or the infusion of 1 1/2 per cent. Dose, one-half to one ounce if the diuretic action is wanted. The tincture may be given on sugar or bread, and nothing liquid be taken for twenty minutes before or after its administration. Of the powdered leaves, 1/2 to 2 grains in capsules. Digitoxin 1-250 grain. No matter what form of digitalis is given the dose should be reduced as soon as the pulse rate has been lowered to 80 beats a minute and the normal rhythm has been partially or completely restored. Under such conditions a good rule is to cut the dose in half and still more if there be a sudden falling off of the urinary output.
 
@@ -6969,7 +6973,7 @@ As a remedy for many kinds of pain, especially colic, and in severe, painful aff
 
 **Dose.--** Tincture, to third potency.
 
-## DIOSMA LINCARIS
+## DIOSMA LINEARIS
 
 Buku-from Cape of Good Hope
 
@@ -7301,7 +7305,7 @@ Haemorrhages are caused and cured by this remedy. Persistent hemorrhage from the
 
 **Dose.--** Tincture, to third potency. Oil of Erigeron 1x internally for tympanites. An enema of one dram of the oil with the yolk of an egg and pint of milk will reduce the most enormous tympanites.
 
-## ERIODYCTION CALIFORNICUM
+## ERIODICTYON CALIFORNICUM
 
 Yerba Santa
 
@@ -7617,7 +7621,7 @@ Marked female symptoms, and backache. A remedy for uterine displacements. Pain i
 
 Pichi
 
-A South American shrub cultivated in Southern California. It is a terebrinthine diuretic. It has also tonic and chologogue properties, used in the treatment of nasal catarrh, jaundice, dyspepsia and to increase the secretion of bile (Albert Schneider). Useful in the uric acid diathesis, cystitis, gonorrhea, prostatitis, dysuria, vesical catarrh with suppurative prostatic conditions; post-gonorrhoeal urinary conditions; cholethiasis and liver affections. Vesical tenesmus and burning after urination. Excoriating urine and calculi.
+A South American shrub cultivated in Southern California. It is a terebrinthine diuretic. It has also tonic and cholagogue properties, used in the treatment of nasal catarrh, jaundice, dyspepsia and to increase the secretion of bile (Albert Schneider). Useful in the uric acid diathesis, cystitis, gonorrhea, prostatitis, dysuria, vesical catarrh with suppurative prostatic conditions; post-gonorrhoeal urinary conditions; cholelithiasis and liver affections. Vesical tenesmus and burning after urination. Excoriating urine and calculi.
 
 **Dose.--** Ten to twenty drops of the tincture.
 
@@ -7657,7 +7661,7 @@ Its action on the skin, producing pruritus, is very marked. Visible pulsation of
 
 Ox-gall
 
-Increases the duodenal secretion, emulsifies fats and increases the peristaltic action of the intestines. Liquefies bile and acts as a purgative and chologogue. Disordered digestion, diarrhea, and pain in nape of neck are among its chief symptoms. Obstruction of gall ducts. Biliary calculi. Jaundice.
+Increases the duodenal secretion, emulsifies fats and increases the peristaltic action of the intestines. Liquefies bile and acts as a purgative and cholagogue. Disordered digestion, diarrhea, and pain in nape of neck are among its chief symptoms. Obstruction of gall ducts. Biliary calculi. Jaundice.
 
 **Stomach.--** Eructations, gurgling in stomach and epigastric region. Violent peristaltic movements. Tendency to sleep after eating.
 
@@ -7921,7 +7925,7 @@ An arthritic medicine. Gout and articular rheumatism; pains worse, motion; bette
 
 Dr. Sylwestrowicz of the Hering Research Laboratory of Hahnemann College, Philadelphia contributes his experience with Formic Acid, as follows:
 
-"The best field for the formic acid treatment are cases of atypical gout. Under this classification are to be mentioned disturbances in the muscles such as myositis, periostitic processes of the bones in form of doughy swellings, changes of the fascias such as Dupyutren's contraction, skin troubles such as chronic eczema, psoriasis and loss of hair, kidney disturbances such as subacute and chronic nephritis. In these cases formic acid in 12x and 30x, hypodermically 1 cc is indicated at intervals of 2-4 weeks. Eight till twelve days after the first injection an aggravation is often noticed.
+"The best field for the formic acid treatment are cases of atypical gout. Under this classification are to be mentioned disturbances in the muscles such as myositis, periostitic processes of the bones in form of doughy swellings, changes of the fascias such as Dupuytren's contraction, skin troubles such as chronic eczema, psoriasis and loss of hair, kidney disturbances such as subacute and chronic nephritis. In these cases formic acid in 12x and 30x, hypodermically 1 cc is indicated at intervals of 2-4 weeks. Eight till twelve days after the first injection an aggravation is often noticed.
 
 In acute rheumatic fever and acute gonorrhoeic arthritis formic acid 6x, every six days 1 cc, sometimes 12x in sensitive patients shows often splendid results abolishing the pains and preventing reoccurrence.
 
@@ -7983,7 +7987,7 @@ Acts on digestion and mesenteric glands. Prevents formation of calculi, removes 
 
 Manaca
 
-(FRACISCEA)
+(FRANCISCEA)
 
 Chronic stiffness of the muscles. Gonorrhoeal rheumatism. Syphilis and rheumatism, great heat over body, much aching, better sweat. Pain in back of head and spine; band-like feeling around head. Pericarditis with rheumatism. Rheumatic pains in feet and lower part of legs. Urine contains uric acid.
 
@@ -8072,6 +8076,42 @@ Goose-Grass
 Galium acts on the urinary organs, is a diuretic and of use in dropsies, gravel and calculi. Dysuria and cystitis. Has power of suspending or modifying cancerous action. Has clinical confirmation of its use in cancerous ulcers and nodulated tumors of the tongue. Inveterate skin affections and scurvy. Favors healthy granulations on ulcerated surfaces.
 
 **Dose.--** Fluid extract; half-dram doses, in cup of water or milk, three times a day.
+
+## GAMBOGIA
+
+Gummi Gutti
+
+(GAMBOGIA - GARCINIA MORELLA)
+
+The use of this drug in Homeopathy has been confined to its action on the alimentary tract. It produces a diarrhoea very similar to Croton. From its pathogenesis, it is very evident that it has very intense and definite action especially on the gastro-enteric tract.
+
+**Head.--** Heavy, with inertia, and drowsiness. Itching and burning in eyes; lids stick together, with sneezing.
+
+**Gastro-enteric Symptoms.--** Feeling of coldness at edge of teeth. Great irritability of the stomach; burning, smarting, and dryness of the tongue and throat. Pain in the stomach after food. Tenderness in epigastrium. Pain and distention of abdomen from flatulence, after stool. Rumbling and rolling. Dysentery, with retained scybala, with pain in sacral region. Diarrhoea, with sudden and forcible ejection of bilious stools. Tenesmus after, with burning at anus. Ileo-caecal region sensitive to pressure. Profuse, watery diarrhoea in hot weather, particularly old people. Pain in coccyx.
+
+**Modalities.--** Worse, towards evening and at night.
+
+**Relationship.--** Compare: Croton; Aloes; Pod.
+
+**Dose.--** Third to thirtieth potency. Gamboge painted on the chest in lung tuberculosis is considered by Abrams specific and incipient cases are symptomatically cured in several weeks.
+
+## GAULTHERIA PROCUMBENS
+
+Wintergreen
+
+(GAULTHERIA)
+
+Inflammatory rheumatism, pleurodynia, sciatica, and other neuralgias, come within, the sphere of this remedy. Cystic and prostatic irritation, undue sexual excitement, and renal inflammation.
+
+**Head.--** Neuralgia of head and face.
+
+**Stomach.--** Acute gastritis, severe pain in epigastrium; prolonged vomiting. Uncontrollable appetite, notwithstanding irritable stomach. Gastralgia from nervous depression (Give five drops of 1x of Oil).
+
+**Skin.--** Smarting and burning. Intense erythema, worse, cold bathing; better, olive oil and cool air blowing on part.
+
+**Relationship.--** Compare: Spiraea. Gaultheria contains Arbutin. Salycyl acid. Methylium salicylicum (an artificial Gaultheria oil for rheumatism, especially when the salicylates cannot be used. Pruritus and epididymitis, locally). After Cantharis in burns.
+
+**Dose.--** Tincture and lower potencies.
 
 ## GELSEMIUM SEMPERVIRENS
 
@@ -8165,7 +8205,7 @@ Habitual sick headaches. Profuse, hemorrhages, pulmonary and from different orga
 
 ## GETTYSBURG WATER
 
-Stringy mucus from throat and posterior nares. Rawness. Neck muscles rigid. Joints weak. Cannot lift things. Ligaments rigid. Subacute gouty state. Evaporated and residium triturated to 6x. Of use in sub-acute and chronic rheumatism. White coated tongue. High colored urine with red sandy sediment. Sensation of rigidity worse moving. Especially in lumbar region and joints of hips, shoulders and wrists. Not perceived when quiet. More in morning. Cannot remain long in one position. Stiffness of muscles on moving. Pain in ligaments relieved by rest.
+Stringy mucus from throat and posterior nares. Rawness. Neck muscles rigid. Joints weak. Cannot lift things. Ligaments rigid. Subacute gouty state. Evaporated and residuum triturated to 6x. Of use in sub-acute and chronic rheumatism. White coated tongue. High colored urine with red sandy sediment. Sensation of rigidity worse moving. Especially in lumbar region and joints of hips, shoulders and wrists. Not perceived when quiet. More in morning. Cannot remain long in one position. Stiffness of muscles on moving. Pain in ligaments relieved by rest.
 
 **Relationship.--** Lycopodium, Phosphor. Rhus Pulsat, but modalities differ.
 
@@ -8317,7 +8357,7 @@ As a vermifuge for the expulsion of tapeworm, and homeopathically for the follow
 
 **Extremities.--** Pain around shoulders, as if heavy load had been carried. Pain in all finger-joints. Tearing in knee-joint. Convulsive movements.
 
-**Relationship.--** Compare: Pelletierine (one of its constituents -an anthelminitic, especially for tapeworm); Cina; Kousso.
+**Relationship.--** Compare: Pelletierine (one of its constituents -an anthelmintic, especially for tapeworm); Cina; Kousso.
 
 **Dose.--** First to third potency.
 
@@ -8809,7 +8849,7 @@ Recommended as a spinal stimulant; in epilepsy with flatulency, gouty and skin s
 
 **Head.--** Aches, with drowsiness, worse moving in open air, better tying up head with cloth. Much fatty perspiration on head and violent itching. Seborrhoea capitis. Sick headache.
 
-**Stomach.--** Pain with inclination to vomit. Bitter risings and taste. Hungry but unable to eat. Abdominal and spleenic pain.
+**Stomach.--** Pain with inclination to vomit. Bitter risings and taste. Hungry but unable to eat. Abdominal and splenic pain.
 
 **Dose.--** Third potency.
 
@@ -8973,7 +9013,7 @@ A remedy for gravel, profuse deposit of white amorphous salts in urine. Calculus
 
 **Urine.--** Burning in urethra and frequent desire. Urine hard to start. Heavy deposit of mucus. Sharp pain in loins, especially left. Great thirst, with abdominal symptoms and enlarged prostate (Ferr pic; Sabal). Gravelly deposits. Spasmodic stricture. Profuse deposit of white amorphous salts.
 
-**Relationship.--** Compare: Lycopod; Chimaphil; Berberis; Pareira; Uva; Sabal; Oxydendron; Geum-Water Avens--(Severe jerking pains from deep in the abdomen to end of urethra; affections of bladder, with pains in penis; worse, eating; relaxed mucous membranes, with excessive and depraved secretions; imperfect digestion and assimilation). Polyctrichum-Haircap moss--(according to Dr. A. M. Cushing in mother tincture or infusion for enlarged prostate-prostatitis).
+**Relationship.--** Compare: Lycopod; Chimaphil; Berberis; Pareira; Uva; Sabal; Oxydendron; Geum-Water Avens--(Severe jerking pains from deep in the abdomen to end of urethra; affections of bladder, with pains in penis; worse, eating; relaxed mucous membranes, with excessive and depraved secretions; imperfect digestion and assimilation). Polytrichum-Haircap moss--(according to Dr. A. M. Cushing in mother tincture or infusion for enlarged prostate-prostatitis).
 
 **Dose.--** Tincture.
 
@@ -8991,7 +9031,7 @@ Curative in disorders that exhibit interstitial inflammation and cellular prolif
 
 **Skin.--** Dry eruptions. Great thickening of epidermoid layer and exfoliation of scales. Psoriasis gyrate, on trunk and extremities, palms and soles. Pustules on chest. Circular spots, with scaly edges. Intolerable itching, especially of soles. Profuse sweat. Syphilitic affections. Acne. Leprosy. Elephantiasis (Ars). Lupus non-exedens.
 
-**Relationship.--** Compare: Elaeis-South American Palm--(scleroderma, elephantiasis, leprosy, skin thickened, itching and hardened. Anesthesia). Hura; Trychnos Gaultheriana (bites of serpents, ulcers and cutaneous affections generally); Hoang-Nan. Chaulomoogra oil from seed of Taraktogenos; Hydrast; Arsenic; Aurum, Sepia.
+**Relationship.--** Compare: Elaeis-South American Palm--(scleroderma, elephantiasis, leprosy, skin thickened, itching and hardened. Anesthesia). Hura; Strychnos Gaultheriana (bites of serpents, ulcers and cutaneous affections generally); Hoang-Nan. Chaulomoogra oil from seed of Taraktogenos; Hydrast; Arsenic; Aurum, Sepia.
 
 **Dose.--** First to sixth potency.
 
@@ -9169,7 +9209,7 @@ Produces a marked hyperaesthesia of all the senses, and a tendency to clonic spa
 
 **Mouth.--** Sour taste. Easily bites inside of cheeks. Constantly full of saliva. Toothache; worse after drinking coffee and smoking.
 
-**Throat.--** Feeling of a lump in throat that cannot be swallowed. Tendency to choke, globus hystericus. Sore throat; stitches when not swallowing; better, eating something solid. Stitches between acts of swallowing. Stitches extend to ear (Hep). Tonsils inflamed, swollen, with small ulcers. Follicular tonsillitus.
+**Throat.--** Feeling of a lump in throat that cannot be swallowed. Tendency to choke, globus hystericus. Sore throat; stitches when not swallowing; better, eating something solid. Stitches between acts of swallowing. Stitches extend to ear (Hep). Tonsils inflamed, swollen, with small ulcers. Follicular tonsillitis.
 
 **Stomach.--** Sour eructation. All-gone feeling in stomach; much flatulence; hiccough. Cramps in stomach; worse slightest contact. Averse to ordinary diet; longs for great variety of indigestible articles. Craving for acid things. Sinking in stomach, relieved by taking a deep breath.
 
@@ -9927,7 +9967,7 @@ Iodide of Potass in material doses acts in the different forms of Fungoid diseas
 
 ## KALIUM MURIATICUM
 
-Cloride of Potassium-KCl
+Chloride of Potassium-KCl
 
 (KALI MURIATICUM)
 
@@ -10229,7 +10269,7 @@ Tumefaction, puffiness, gangrene. Ailings of teething children.
 
 **Female.--** Corrosive itching within vulva, burning and swelling of labia; violent itching between labia and thighs. During menses, difficult hearing; buzzing and roaring; eruption after. Burning and soreness in external and internal parts. Leucorrhoea, yellow, acrid; odor of green corn; worse between periods. Hemorrhage after coition. Menses too early, prolonged. Vomiting of pregnancy, with ptyalism. Menstrual flow intermits (Puls); ceases on sitting or walking; reappears on lying down. Pain worse after menses. Lochia offensive; intermits.
 
-**Respiratory.--** Hoarse, with pain in larynx. Cough; worse evening, with efforts to vomit, with pain in chest. Raw burning in chest; pains and oppression. Cough after influenza (Eriodyction). Winter coughs of old people, with heavy pressure on sternum. Gangrene of lungs. After every cough, copious, purulent expectoration. Hemoptysis; periodic attacks. Sternum feels pressed in.
+**Respiratory.--** Hoarse, with pain in larynx. Cough; worse evening, with efforts to vomit, with pain in chest. Raw burning in chest; pains and oppression. Cough after influenza (Eriodictyon). Winter coughs of old people, with heavy pressure on sternum. Gangrene of lungs. After every cough, copious, purulent expectoration. Hemoptysis; periodic attacks. Sternum feels pressed in.
 
 **Back.--** Dragging backache, extending to genitals and down thighs. Great debility.
 
@@ -10753,7 +10793,7 @@ Chronic rheumatism connected with heart lesions and asthenopia offer a field for
 
 **Modalities.--** Worse, in morning, right side. Better, rising and moving about.
 
-**Relationship.--** Compare: Lyc; Ammon phos; Benz ac; Calc; Lithium chlor (symptoms of cinchonism, viz.: Dizzy head, full, bluring of vision Ringing in ears; marked tremors; general weakness; marked muscular and general prostration; no gastro-intestinal effects. Nose sore, heartburn, pain in teeth). Lithium lacticum (rheumatism of shoulder, and small joints relieved by moving about; worse, resting). Lithium benzoicum (deep-seated pains in loins; in small of back; uneasiness in bladder. Cystic irritation. Gallstones. Frequent desire. Diminishing uric acid deposit). Lithium bromatum (cerebral congestion, threatened apoplexy, insomnia and epilepsy).
+**Relationship.--** Compare: Lyc; Ammon phos; Benz ac; Calc; Lithium chlor (symptoms of cinchonism, viz.: Dizzy head, full, blurring of vision. Ringing in ears; marked tremors; general weakness; marked muscular and general prostration; no gastro-intestinal effects. Nose sore, heartburn, pain in teeth). Lithium lacticum (rheumatism of shoulder, and small joints relieved by moving about; worse, resting). Lithium benzoicum (deep-seated pains in loins; in small of back; uneasiness in bladder. Cystic irritation. Gallstones. Frequent desire. Diminishing uric acid deposit). Lithium bromatum (cerebral congestion, threatened apoplexy, insomnia and epilepsy).
 
 **Dose.--** First to third trituration.
 
@@ -10809,11 +10849,11 @@ Profound prostration of all the vital forces and of the nervous system; respirat
 
 **Dose.--** Third potency.
 
-## LOLEUM TEMULENTUM
+## LOLIUM TEMULENTUM
 
 Darnel
 
-(LOLIUM TUMULENTUM)
+(LOLIUM TEMULENTUM)
 
 Has been made use of in cephalalgia, sciatica, paralysis. Prostration and restlessness.
 
@@ -10837,7 +10877,7 @@ Convulsive symptoms. Uremic convulsions. Albuminuria. Syphilis.
 
 **Extremities.--** Jerking of limbs. Trembling of whole body. Violent convulsions. Limbs and head fall over as if paralyzed. Extremities cold. Cold perspiration.
 
-**Relationship.--** Compare: Lonicera pericylmenum-Honeysuckle --(irritability of temper, with violent outburst (Crocus)).
+**Relationship.--** Compare: Lonicera periclymenum-Honeysuckle --(irritability of temper, with violent outburst (Crocus)).
 
 **Dose.--** Third to sixth potency.
 
@@ -11021,7 +11061,7 @@ Gastro-intestinal catarrh, with marked acidity. Often used with advantage for co
 
 **Stomach.--** Desire for fruit, acids, and vegetables. Eructations sour, and vomiting of bitter water. Craving for meat.
 
-**Abdomen.--** Rumbling, gurgling. Dragging towards pelvis. Very heavy; contractive, pinching, pain in right illiac region.
+**Abdomen.--** Rumbling, gurgling. Dragging towards pelvis. Very heavy; contractive, pinching, pain in right iliac region.
 
 **Stool.--** Preceded by griping, colicky pain. Green, watery, frothy, like a frog-pond's scum. Bloody mucous stools. Milk passes undigested in nursing children. Sour, with tenesmus (Rheum). Constipation after mental shock or severe nervous strain.
 
@@ -11153,7 +11193,7 @@ The skin, urinary, and female symptoms are most marked. The purgative action of 
 
 **Physiologic Dosage.--** Magnes. Sulph is of diagnostic and therapeutic value in Gallstone colic. From 2 to 4 teaspoonfuls in glass hot water taken at onset of a colicky attack may abort or stop the colic.
 
-Epsom salt is one of the most active saline cathertics, operating with little pain or nausea, especially if pure. It has but little if any effect on intestinal peristalsis, its action causing a rush of fluid into the intestine, which by producing a distention of the bowel produces evacuation. It causes little or no irritation in the intestine. In common with the other salines, it is the classical evacuant to be employed in connection with mercurials and anthelmintics and in cases of poisoning. Epsom salt usually acts within from one to two hours, more quickly if taken in hot water and in the morning before breakfast. The ordinary dose as a mild laxative is a heaping teaspoonful; as a cathartic, two to four teaspoonfuls. The taste may be improved, if necessary, by the addition of a little lemon juice and sugar.
+Epsom salt is one of the most active saline cathartics, operating with little pain or nausea, especially if pure. It has but little if any effect on intestinal peristalsis, its action causing a rush of fluid into the intestine, which by producing a distention of the bowel produces evacuation. It causes little or no irritation in the intestine. In common with the other salines, it is the classical evacuant to be employed in connection with mercurials and anthelmintics and in cases of poisoning. Epsom salt usually acts within from one to two hours, more quickly if taken in hot water and in the morning before breakfast. The ordinary dose as a mild laxative is a heaping teaspoonful; as a cathartic, two to four teaspoonfuls. The taste may be improved, if necessary, by the addition of a little lemon juice and sugar.
 
 Besides its chief use as a saline cathartic, magnesium sulphate is used to a considerable extent externally in saturated solution as an antiphlogistic and antipruritic in erysipelas, ivy poisoning, cellulitis and other local inflammations. Use on compresses saturated with solution.
 
@@ -11219,7 +11259,7 @@ Symptoms of chronic poisoning, according to Professor von Jaksch, were involunta
 
 Inflammation of bones or joints, with nightly digging pains Asthmatic persons who cannot lie on a feather pillow. Syphilitic and chlorotic patients with general anaemia and paralytic symptoms often are benefited by this drug. Gout. Chronic arthritis. For speakers and singers. Great accumulation of mucus. Growing pains and weak ankles. General soreness and aching; every part of the body feels sore when touched; early tuberculosis.
 
-**Head.--** Anxiety and fear; better lying down. Feels large and heavy, with rush of blood; pain from above downward. Field of vision contracted. Stolidy mask-like face.
+**Head.--** Anxiety and fear; better lying down. Feels large and heavy, with rush of blood; pain from above downward. Field of vision contracted. Stolid, mask-like face.
 
 **Mouth.--** Nodes on palate. Toothache; worse, anything cold (Coff opposite). Hemming all the time. Low, monotonous voice.
 
@@ -11393,7 +11433,7 @@ Stimulates the cold-perceiving nerves, so just after taking it, a current of air
 
 (MENTHOL)
 
-The stearopten from the essential oil of Mentha. Mucous membrane of naso-pharynx and spinal nerve plexus, producing neuritic pains and parethesias. Menthol has proved curative in acute nasal catarrh; in acute eustachian catarrh; pharyngitis; laryngitis; neuralgias, etc (Wm. B. Griggs, M. D). Itching, especially pruritus vulvae.
+The stearopten from the essential oil of Mentha. Mucous membrane of naso-pharynx and spinal nerve plexus, producing neuritic pains and paresthesias. Menthol has proved curative in acute nasal catarrh; in acute eustachian catarrh; pharyngitis; laryngitis; neuralgias, etc (Wm. B. Griggs, M. D). Itching, especially pruritus vulvae.
 
 **Head.--** Frontal headache, pain over frontal sinus, descends to eyeballs. Mental confusion. Supra orbital pain over left eye. Pain in face above zygoma with numbness. Pain in eyeballs. Coryza with post-nasal dripping. Cold sensation in nose. Eustachian tubes feel blocked and some deafness.
 
@@ -11501,7 +11541,7 @@ Every organ and tissue of the body is more or less affected by this powerful dru
 
 **Modalities.--** Worse, at night, wet, damp weather, lying on right side, perspiring; warm room and warm bed.
 
-**Relationship.--** Compare: Capparis coriacea (polyuria, glandular affections, mucous diarrhea; influenza); Epilobium--Willow herb--(chronic diarrhoea with tenesmus and mucous discharges; ptyalism, dysphagia; wasting of body and much debility; cholera infantum); Kali hyd (in hard chancre); Mercur acet (Congestion with stiffness, dryness and heat of parts affected. Eyes inflamed, burn and itch. Lack of moisture. Throat dry, talking difficult. Pressure in lower sternum; chancre in urethra; tenia capitis favosa margin of ulcers painful): Mercurius auratus (psoriasis and syphilitic catarrh; brain tumors; lues of nose and bones; ozaena; swelling of testicles); Mercurius bromatus (secondary syphilitic skin affection); Mercurius nitrosus-Nitrate of Mercury--(especially in postular conjunctivitis and keratitis; gonorrhoea and mucous patches, with sticking pains; syphilides); Mercurius phosphoricus (nervous diseases from syphilis; exostoses); Mercurius precipitatus ruber (suffocative attacks at night on lying down while on the point of falling asleep, obliged to jump up suddenly which relieves; gonorrhoea; urethra felt as a hard string; chancroid; phagedenic ulcer and bubo; pemphigus, mucous patches, eczema with rhagades and fissures, barber's itch; blepharitis, internally and externally; leaden heaviness in occiput, with otorrhoea); Mercurius tannicus (syphilides in patients with gastro-intestinal diseases, or, if very sensitive, to ordinary mercurial preparations); Erythrinus-South American Red Mullet Fish--(in pityriasis rubra and syphilis; red rash on chest; pityriasis); Lolium temulentum (in trembling of hands and legs); Mercur cum kali (inveterate colds, acute facial paralysis). Heuchera- Alum root--(Gastro-enteritis nausea, vomiting of bile and frothy mucus; stools watery, profuse, slimy, tenesmus, never-get-done feeling. Dose, 2 to 10 drops of tincture).
+**Relationship.--** Compare: Capparis coriacea (polyuria, glandular affections, mucous diarrhea; influenza); Epilobium--Willow herb--(chronic diarrhoea with tenesmus and mucous discharges; ptyalism, dysphagia; wasting of body and much debility; cholera infantum); Kali hyd (in hard chancre); Mercur acet (Congestion with stiffness, dryness and heat of parts affected. Eyes inflamed, burn and itch. Lack of moisture. Throat dry, talking difficult. Pressure in lower sternum; chancre in urethra; tenia capitis favosa margin of ulcers painful): Mercurius auratus (psoriasis and syphilitic catarrh; brain tumors; lues of nose and bones; ozaena; swelling of testicles); Mercurius bromatus (secondary syphilitic skin affection); Mercurius nitrosus-Nitrate of Mercury--(especially in pustular conjunctivitis and keratitis; gonorrhoea and mucous patches, with sticking pains; syphilides); Mercurius phosphoricus (nervous diseases from syphilis; exostoses); Mercurius precipitatus ruber (suffocative attacks at night on lying down while on the point of falling asleep, obliged to jump up suddenly which relieves; gonorrhoea; urethra felt as a hard string; chancroid; phagedenic ulcer and bubo; pemphigus, mucous patches, eczema with rhagades and fissures, barber's itch; blepharitis, internally and externally; leaden heaviness in occiput, with otorrhoea); Mercurius tannicus (syphilides in patients with gastro-intestinal diseases, or, if very sensitive, to ordinary mercurial preparations); Erythrinus-South American Red Mullet Fish--(in pityriasis rubra and syphilis; red rash on chest; pityriasis); Lolium temulentum (in trembling of hands and legs); Mercur cum kali (inveterate colds, acute facial paralysis). Heuchera- Alum root--(Gastro-enteritis nausea, vomiting of bile and frothy mucus; stools watery, profuse, slimy, tenesmus, never-get-done feeling. Dose, 2 to 10 drops of tincture).
 
 **Compare:** Mez; Phos; Syph; Kali mur; Aethiops. Antidote: Hep; Aur; Mez.
 
@@ -11549,7 +11589,7 @@ This salt leads all other remedies in tenesmus of the rectum, which is incessant
 
 **Antidote:** Calcium sulphide is antidotal to Bichloride poisoning. Use intravenous injection of 7 1/2 grains in 7 1/2 ozs boiled water.
 
-**Dose.--** Sixth potency. In solution 1:1000, hypodermically injected under conjunctiva in choroditis with progressive myopia. Stops immediately the severe aching pain behind eye-balls (Dr. G. D. Hallet).
+**Dose.--** Sixth potency. In solution 1:1000, hypodermically injected under conjunctiva in choroiditis with progressive myopia. Stops immediately the severe aching pain behind eye-balls (Dr. G. D. Hallet).
 
 ## MERCURIUS CYANATUS
 
@@ -11623,7 +11663,7 @@ Diphtheria and ulcerated sore throats, especially on left side, with much glandu
 
 **Mouth.--** Gums swollen; toothache; glands swollen. Scalded feeling on tongue. Aphthae. Profuse saliva. Tongue feels stiff at base, and pains on moving.
 
-**Throat.--** Diphtheria; submaxillary glands painfully engorged, fauces dark red; worse on left tonsil. Parenchymatous tonsillitis. Will often abort peritonsillitis if given frequently. Cough form elongated uvula, with sore throat. Laryngeal troubles with aphonia.
+**Throat.--** Diphtheria; submaxillary glands painfully engorged, fauces dark red; worse on left tonsil. Parenchymatous tonsillitis. Will often abort peritonsillitis if given frequently. Cough from elongated uvula, with sore throat. Laryngeal troubles with aphonia.
 
 **Skin.--** Small fissures and cracks; hard papules; Hunterian chancre; syphilitic ulcers. Bubo. Sarcocele.
 
@@ -11717,7 +11757,7 @@ Yerba Buena
 
 (MICROMERIA)
 
-A California mint-like plant acting on stomach and bowels. Used as a tea to cure colic and relieve flatulence. Is a pleasant beverage and febrifuge, blood purifyer and tonic.
+A California mint-like plant acting on stomach and bowels. Used as a tea to cure colic and relieve flatulence. Is a pleasant beverage and febrifuge, blood purifier and tonic.
 
 **Stomach.--** Nausea; pain in stomach and bowels; flatulence.
 
@@ -11817,7 +11857,7 @@ Morphine bears the same relation to Opium as Atropine to Belladonna-i.e, represe
 
 **Skin.--** Livid; purple spots; zoster-like herpes. Itching. Skin lost its elasticity. Urticaria appearing at climaxis.
 
-**Nervous.--** Restlessness and hyperethesia; trembling, twitching, jerking, convulsions. Extremely susceptible to pain. Pain causes twitching and jerking of limbs. Violent and sudden neuralgic pains and sudden fainting. Delirium, melancholic in character. Neuralgias intensely painful, left supraorbital; right intercostal, better from heat; multiple neuritis. Sore feeling all over. Bed feels too hard. Aggravation after sleep (Lach). Neuralgia after zoster (Vezer).
+**Nervous.--** Restlessness and hyperesthesia; trembling, twitching, jerking, convulsions. Extremely susceptible to pain. Pain causes twitching and jerking of limbs. Violent and sudden neuralgic pains and sudden fainting. Delirium, melancholic in character. Neuralgias intensely painful, left supraorbital; right intercostal, better from heat; multiple neuritis. Sore feeling all over. Bed feels too hard. Aggravation after sleep (Lach). Neuralgia after zoster (Vezer).
 
 **Sleep.--** Yawning, drowsy; prolonged, deep sleep. Sleepless; restless sleep, with frequent startings. Sleepy, but cannot sleep.
 
@@ -12561,7 +12601,7 @@ Nux is pre-eminently the remedy for many of the conditions incident to modern li
 
 **Modalities.--** Worse, morning, mental exertion, after eating, touch, spices, stimulants, narcotics, dry weather, cold. Better, from a nap, if allowed to finish it; in evening, while at rest, in damp, wet weather (Caust), strong pressure.
 
-**Relationship.--** Nux seeds contain copper, notice the cramp-causing proclivites of both. Complementary; Sulphur; Sepia.
+**Relationship.--** Nux seeds contain copper, notice the cramp-causing proclivities of both. Complementary; Sulphur; Sepia.
 
 **Inimical:** Zinc.
 
@@ -12837,7 +12877,7 @@ Codein-1/2 to 1 grain.
 
 Apomorphia-1/20 to 1/10 grain hypodermically.
 
-## OPERCULINA TURPENTHUM
+## OPERCULINA TURPETHUM
 
 Nish
 
@@ -13459,7 +13499,7 @@ This remedy and its active principle, Eserine, form a valuable addition to Mater
 
 Eserin Salicylate (post-operative intestinal paralysis; meteorism. Hypodermically 1/60-1/40 gr).
 
-**Compare also:** Muscarin; Conium, Curare; Gels; Thebainum (tetanus); Piperazinum--(Uric acid conditions. Pruritus. Gout and urinary calculi. Constant backache. Skin dry, urine scanty. Rheumatic urthritis. Give one grain daily in carbonated water. First and second decimal trituration three times a day).
+**Compare also:** Muscarin; Conium, Curare; Gels; Thebainum (tetanus); Piperazinum--(Uric acid conditions. Pruritus. Gout and urinary calculi. Constant backache. Skin dry, urine scanty. Rheumatic arthritis. Give one grain daily in carbonated water. First and second decimal trituration three times a day).
 
 **Antidote:** Atropia. In full medicinal doses will relieve most of the effects of physostigmine.
 
@@ -13577,7 +13617,7 @@ Has been found of real use in the treatment of weak ankles and tardiness in walk
 
 **Skin.--** Nettle-rash. Itching all over, especially about joints and on abdomen. Nose itches.
 
-**Relationship.--** Compare: Pinus Lambertina-Sugar Pine--(constipation, amenorrhoea, abortion). Pinus Lambertina sap is a decided carthartic. Delayed and painful menstruation.
+**Relationship.--** Compare: Pinus Lambertina-Sugar Pine--(constipation, amenorrhoea, abortion). Pinus Lambertina sap is a decided cathartic. Delayed and painful menstruation.
 
 Also, Abies can; Abies nig.
 
@@ -14773,7 +14813,7 @@ Controls excessive sweating when circulation is enfeebled; of less use in phthis
 
 **Skin.--** Soft, relaxed, with enfeebled circulation and cold extremities. Colliquative perspiration.
 
-**Relationship.--** Compare: Chrysanhemum Leucanthemum--Ox-eye Daisy. Has specific action on sudoriparous glands. Quiets nervous system like Cypripedium. Right sided tearing pain in bones of jaw and temple. Pain in teeth and gums, worse touch, better warmth. Irritable and tearful. Here use 12x. Insomnia and night-sweats. For colliquative sweating and hyperaesthesia of nervous system. Material doses of tincture. Phelland; Tuberc; Salvia sclerata (tonic influence on nervous system; dose, teaspoonful to one pint hot water, as inhalent for sponging). Rubia tinctorum-Madder-A remedy for the spleen (Ceanothus). Chlorosis and amenorrhoea; tuberculosis. Anaemia; undernourished conditions; splenic anaemia. Dose, 10 drops of tincture.
+**Relationship.--** Compare: Chrysanthemum Leucanthemum--Ox-eye Daisy. Has specific action on sudoriparous glands. Quiets nervous system like Cypripedium. Right sided tearing pain in bones of jaw and temple. Pain in teeth and gums, worse touch, better warmth. Irritable and tearful. Here use 12x. Insomnia and night-sweats. For colliquative sweating and hyperaesthesia of nervous system. Material doses of tincture. Phelland; Tuberc; Salvia sclerata (tonic influence on nervous system; dose, teaspoonful to one pint hot water, as inhalent for sponging). Rubia tinctorum-Madder-A remedy for the spleen (Ceanothus). Chlorosis and amenorrhoea; tuberculosis. Anaemia; undernourished conditions; splenic anaemia. Dose, 10 drops of tincture.
 
 **Dose.--** Tincture, in twenty-drop doses, in a little water. The effects manifest themselves quickly two hours after taking a dose, and they persist for from two to six days.
 
@@ -15313,7 +15353,7 @@ Acts specially on the portal system, with venous congestion. Stasis and thereby 
 
 **Back.--** Weakness in small of back. Pains extend into back. Coldness between shoulders.
 
-**Extremities.--** Lower extremities lame and stiff, tension as if too short. Heaviness and bruised feeling. Restleness in all limbs, twitching and jerkings night and day. Pain in heel. Coldness of legs and feet.
+**Extremities.--** Lower extremities lame and stiff, tension as if too short. Heaviness and bruised feeling. Restlessness in all limbs, twitching and jerkings night and day. Pain in heel. Coldness of legs and feet.
 
 **Fever.--** Frequent flushes of heat; sweat from least motion. General lack of warmth of body. Feet cold and wet. Shivering, with thirst; worse, towards evening.
 
@@ -15325,7 +15365,7 @@ Acts specially on the portal system, with venous congestion. Stasis and thereby 
 
 **Inimical:** Lach; Puls.
 
-**Compare:** Lil; Murex; Silica; Sulph; Asperula-Nacent oxygen. Distilled water charged with the gas--(leucorrhoea of young girls and uterine catarrh); Ozonum (sacral pain; tired feeling through pelvic viscera and perineum); Dictamnus--Burning Bush--(Soothes labor pains); (metrorrhagia, leucorrhoea, and constipation; also somnambulism). Lapathum (Leucorrhoea with constriction and expulsive effort through womb and pain in kidneys).
+**Compare:** Lil; Murex; Silica; Sulph; Asperula-Nascent oxygen. Distilled water charged with the gas--(leucorrhoea of young girls and uterine catarrh); Ozonum (sacral pain; tired feeling through pelvic viscera and perineum); Dictamnus--Burning Bush--(Soothes labor pains); (metrorrhagia, leucorrhoea, and constipation; also somnambulism). Lapathum (Leucorrhoea with constriction and expulsive effort through womb and pain in kidneys).
 
 **Dose.--** Twelfth, 30th and 200th potency. Should not be used too low or be repeated too frequently. On the other hand Dr. Jousset's unique experience is that is should be continued for some time in strong doses. 1x twice a day.
 
@@ -15339,7 +15379,7 @@ The serum of the eel has a toxic action on the blood, rapidly destroying its glo
 
 From all these facts it is easy to infer, a priori, the therapeutical indications of the serum of the eel. Whenever the kidney becomes acutely affected, either from cold or infection or intoxication, and the attack is characterized by oliguria, anuria and albuminuria, we will find the eel's serum eminently efficacious to re-establish diuresis, and in rapidly arresting albuminuria. When during the course of heart-disease, the kidney, previously working well, should suddenly become affected and its function inhibited; and when besides we observe cardiac irregularities and a marked state of asystolia, we may yet expect good results from this serum. But to determine here the choice of this remedy is not an easy matter. While digitalis presents in its indications, the well-known symptomatic trilogy: arterial hypertension oliguria and edema; the serum of the eel seems better adapted to cases of hypertension and oliguria, without edema. We should bear in mind that the elective action of the eel's serum is on the kidney, and I believe we can well assert that if digitalis is a cardiac, the eel's serum is a renal remedy. So far, at least, the clinical observations published seem to confirm this distinction. The serum of the eel has given very small results in attacks of asystolia; but it has been very efficacious in cardiac uraemia. There, where digitalis is powerless, the serum of the eel has put an end to the renal obstruction and produced an abundant diuresis. But its really specific indication seems to be for acute nephritis a frigori (Jousset)
 
-Subacute nephritis. Heart diseases, in cases of failure of compensation and impending asytole. The experiments of Dr. Jousset have amply demonstrated the rapid haematuria, albuminuria and oliguria caused by it. In the presence of acute nephritis with threatening uraemia we should always think of this serum. Very efficacious in functional heart diseases. Mitral insufficiency, asystolia with or without oedema, dyspnoea and difficult urinary secretion.
+Subacute nephritis. Heart diseases, in cases of failure of compensation and impending asystole. The experiments of Dr. Jousset have amply demonstrated the rapid haematuria, albuminuria and oliguria caused by it. In the presence of acute nephritis with threatening uraemia we should always think of this serum. Very efficacious in functional heart diseases. Mitral insufficiency, asystolia with or without oedema, dyspnoea and difficult urinary secretion.
 
 **Relationship.--** Great analogy exists between eel serum and the venom of the Vipera. Compare also: Pelias; Lachesis.
 
@@ -15949,7 +15989,7 @@ Its primary function is to stimulate the motor centers and the reflex action of 
 
 **Respiratory.--** Spasm of muscles about larynx. Excessive dyspnoea. Sharp, contractive pains in muscles of chest. Persistent cough, recurring after influenza.
 
-**Back.--** Rigitidy of cervical muscles. Sharp pain in nape and down spine. Back stiff; violent jerks in spinal column. Icy sensation down spine.
+**Back.--** Rigidity of cervical muscles. Sharp pain in nape and down spine. Back stiff; violent jerks in spinal column. Icy sensation down spine.
 
 **Extremities.--** Limbs stiff. Rheumatism with stiff joints. Violent jerking, twitching, and trembling. Tetanic convulsions and opisthotonos; spasms provoked by slightest touch and attempt to move. Shocks in the muscles. Cramp-like pains.
 
@@ -16001,7 +16041,7 @@ Nervous and hysterical symptoms. Asthma. Affections of spleen.
 
 Sulphuric Acid
 
-The "debility" common to acids shows itself here, especially in the digestive tract, giving a very relaxed feeling in the stomach, with craving for stimulants. Tremor and weakness; everything must be done in a hurry. Hot flushes, followed by perspiration, with trembling. Tendency to gangrene following mechanical injuries. Writer's cramp. Lead poisoning. Gastralgia and hypochlorrhydria. Purpura hemorrhagia.
+The "debility" common to acids shows itself here, especially in the digestive tract, giving a very relaxed feeling in the stomach, with craving for stimulants. Tremor and weakness; everything must be done in a hurry. Hot flushes, followed by perspiration, with trembling. Tendency to gangrene following mechanical injuries. Writer's cramp. Lead poisoning. Gastralgia and hypochlorhydria. Purpura hemorrhagia.
 
 **Mind.--** Fretful, impatient. Unwilling to answer questions; hurried.
 
@@ -16157,7 +16197,7 @@ Has many hysterical and nervous symptoms, and is of use in neuralgic affections 
 
 **Head.--** Emotional and fidgety. Dull in morning, clear in evening. Mistakes in writing and adding. Comedones. Tenacious, yellow, mucus in nose.
 
-**Throat.--** Chocking constriction; constant swallowing. Belching of gas from stomach. Spasm of pharyngeal muscles. Tenacious mucus in throat.
+**Throat.--** Choking constriction; constant swallowing. Belching of gas from stomach. Spasm of pharyngeal muscles. Tenacious mucus in throat.
 
 **Heart.--** Nervous palpitation. Neuralgia around left breast and left hypochondriac region. Cardiac asthma. Aching in left arm, heavy, numb an weary. Loses breath on any exertion. Pulse irregular.
 
@@ -16521,7 +16561,7 @@ Nasal and rectal symptoms marked. Polypi. Affections of children. Suitable after
 
 **Skin.--** Itching causes tossing about all night. Very dry skin. Suppurating grooves in the nails.
 
-**Relationship.--** Compare: Teucrium scorodonia-Wood-sage (in tuberculosis with muco-purulent expectoration; dropsy; orchitis and tuberculous epidymitis; especially in young, thin individuals with tuberculosis of lungs, glands; bones and urogenitals, 3x). Cina; Ignat; Sang; Sil.
+**Relationship.--** Compare: Teucrium scorodonia-Wood-sage (in tuberculosis with muco-purulent expectoration; dropsy; orchitis and tuberculous epididymitis; especially in young, thin individuals with tuberculosis of lungs, glands; bones and urogenitals, 3x). Cina; Ignat; Sang; Sil.
 
 **Dose.--** First to sixth potency. Locally for polypi, dry powder.
 
@@ -16721,9 +16761,9 @@ Ringing in ears with feeling of pressure in head. Burning in pharynx, sore, thro
 
 Dried Thyroid Gland of the Sheep
 
-Thyroid produces anaemia, emaciation, muscular weakness, sweating, headache, nervous tremor of face and limbs, tingling sensations, paralysis. Heart rate increased, exophthalmus and dilation of pupils. In myxaedema and cretinism its effects are striking. Rheumatoid arthritis. Infantile wasting. Rickets. Delayed union of fractures. In half grain doses twice a day over a considerable period said to be effective in undescended testicle in boys. Thyroid exercises a general regulating influence over the mechanism of the organs of nutrition, growth and development. Thyroid weakness causes decided craving for large amount of sweets.
+Thyroid produces anaemia, emaciation, muscular weakness, sweating, headache, nervous tremor of face and limbs, tingling sensations, paralysis. Heart rate increased, exophthalmus and dilation of pupils. In myxoedema and cretinism its effects are striking. Rheumatoid arthritis. Infantile wasting. Rickets. Delayed union of fractures. In half grain doses twice a day over a considerable period said to be effective in undescended testicle in boys. Thyroid exercises a general regulating influence over the mechanism of the organs of nutrition, growth and development. Thyroid weakness causes decided craving for large amount of sweets.
 
-Of use in psoriasis; and tachycardia. Arrested development in children. Improves the memory. Goitre. Excessive obesity. Acts better with pale patients, rather than those of high color. Amblyopia. Mammary tumor. Uterine fibroid. Great weakness and hunger, yet loses flesh. Nocturnal enuresis. Agalactea. Begin treatment early in pregnancy. Dose 1 1/2 gr. 2 to 3 times daily. Vomiting of pregnancy (give early in morning before patient gets up). Fibroid tumors of the breast, 2x trit. Dilates arterioles (Adrenaline contracts them). Sensation of faintness and nausea. Marked sensitiveness to cold Hypothyroidism after acute diseases, i.e, weakness. Easy fatigue, weak pulse, tendency to fainting, palpitation, cold hands and feet, low blood pressure, chilliness and sensitive to cold (Thyroid 1x3 times daily). Has a powerful diuretic action in myxodema and various types of oedema.
+Of use in psoriasis; and tachycardia. Arrested development in children. Improves the memory. Goitre. Excessive obesity. Acts better with pale patients, rather than those of high color. Amblyopia. Mammary tumor. Uterine fibroid. Great weakness and hunger, yet loses flesh. Nocturnal enuresis. Agalactea. Begin treatment early in pregnancy. Dose 1 1/2 gr. 2 to 3 times daily. Vomiting of pregnancy (give early in morning before patient gets up). Fibroid tumors of the breast, 2x trit. Dilates arterioles (Adrenaline contracts them). Sensation of faintness and nausea. Marked sensitiveness to cold Hypothyroidism after acute diseases, i.e, weakness. Easy fatigue, weak pulse, tendency to fainting, palpitation, cold hands and feet, low blood pressure, chilliness and sensitive to cold (Thyroid 1x3 times daily). Has a powerful diuretic action in myxoedema and various types of oedema.
 
 **Mind.--** Stupor, alternating with restless melancholy. Irritable, worse least opposition; goes into a rage over trifles.
 
@@ -16785,7 +16825,7 @@ Is found in the bones and muscles. Has been used in lupus and tuberculosis proce
 
 Seeds of Coumarouna-a tree in Guiana
 
-(TONGO - DIPTRIX ODORATA)
+(TONGO - DIPTERIX ODORATA)
 
 Useful in neuralgia; pertussis.
 
@@ -16973,7 +17013,7 @@ Of undoubted value in the treatment of incipient tuberculosis. Especially adapte
 
 **Modalities.--** Worse, motion, music; before a storm; standing; dampness; from draught; early morning, and after sleep. Better, open air.
 
-**Relationship.--** Compare: Koch's lymph (acute and chronic parenchymatous nephritis; produces pneumonia, broncho-pneumonia, and congestion of the lungs in tuberculous patients, and is a remarkably efficacious remedy in lobular pneumonia-broncho-pneumonia); Aviare-Tuberculin from birds--(acts on the apices of the lungs; has proved an excellent remedy in influenzal bronchitis; symptoms similar to tuberculosis; relieves the debility, diminishes the cough, improves the appetite, and braces up the whole organism; acute broncho-pulmonary diseases of children; itching of palms and ears; cough, acute, inflammatory, irritating, incessant, and tickling; loss of strength and appetite); Hydrast (to fatten patients after Tuberc); Formic acid (tuberculosis, chronic nephritis, malignant tumors; pulmonary tuberculosis, not in third stage, however; lupus; carcinoma of breast and stomach; Dr. Krull uses injections of solutions corresponding to the third centesimal potency; these must not be repeated before six months). Compare: Bacil; Psorin; Lach. Kalagua (tuberculosis; garlicky odor of all secretions and breath). Teucrium scoradonia. Compare: Thuja (Vaccinosis may block the way of action of Tuberculin-until Thuja has been given and then acts brilliantly (Burnett).
+**Relationship.--** Compare: Koch's lymph (acute and chronic parenchymatous nephritis; produces pneumonia, broncho-pneumonia, and congestion of the lungs in tuberculous patients, and is a remarkably efficacious remedy in lobular pneumonia-broncho-pneumonia); Aviare-Tuberculin from birds--(acts on the apices of the lungs; has proved an excellent remedy in influenzal bronchitis; symptoms similar to tuberculosis; relieves the debility, diminishes the cough, improves the appetite, and braces up the whole organism; acute broncho-pulmonary diseases of children; itching of palms and ears; cough, acute, inflammatory, irritating, incessant, and tickling; loss of strength and appetite); Hydrast (to fatten patients after Tuberc); Formic acid (tuberculosis, chronic nephritis, malignant tumors; pulmonary tuberculosis, not in third stage, however; lupus; carcinoma of breast and stomach; Dr. Krull uses injections of solutions corresponding to the third centesimal potency; these must not be repeated before six months). Compare: Bacil; Psorin; Lach. Kalagua (tuberculosis; garlicky odor of all secretions and breath). Teucrium scorodonia. Compare: Thuja (Vaccinosis may block the way of action of Tuberculin-until Thuja has been given and then acts brilliantly (Burnett)).
 
 **Complementary:** Calcarea; China; Bryon.
 
@@ -17123,7 +17163,7 @@ Urinary symptoms most important. Cystitis, with bloody urine. Uterine hemorrhage
 
 **Urinary.--** Frequent urging, with severe spasms of bladder; burning and tearing pain. Urine contains blood, pus, and much tenacious mucus, with clots in large masses. Involuntary; green urine. Painful dysuria.
 
-**Relationship.--** Compare: Arbutin (a crystallized glucoside of Uva; found also in Kalmia, Gaultheria and other genera of the family of Eriacec; given in doses of 3 to 8 grains with sugar three times a day. Used as an urinary antiseptic and diuretic). Arctosphylos manzanita (acts on renal and reproductive organs. Gonorrhoea, vesical catarrh, diabetes menorrhagia. Tincture of leaves). Vaccinum myrtillus-Huckleberries--(dysentery; typhoid, keeps intestines aseptic and prevents absorption and reinfection).
+**Relationship.--** Compare: Arbutin (a crystallized glucoside of Uva; found also in Kalmia, Gaultheria and other genera of the family of Eriacec; given in doses of 3 to 8 grains with sugar three times a day. Used as an urinary antiseptic and diuretic). Arctostaphylos manzanita (acts on renal and reproductive organs. Gonorrhoea, vesical catarrh, diabetes menorrhagia. Tincture of leaves). Vaccinum myrtillus-Huckleberries--(dysentery; typhoid, keeps intestines aseptic and prevents absorption and reinfection).
 
 **Dose.--** Tincture, five to thirty drops. In pyelitis a trituration of the leaves.
 
@@ -17191,7 +17231,7 @@ Vanilla
 
 (VANILLA - PLANIFOLIA)
 
-Marked skin irritation resembling milk Poison-oak; is sometimes produced by handling the beans, also by local use of vanilla essence in a hair wash. Vanilla is supposed to stimulate the brain and sexual propensities. Do not use the synthetic Vanilla extract. Various disorders of the nervous system and circulation are produced in workers with Vanilla. Is an emmagogue and aphrodisiac. Menses prolonged.
+Marked skin irritation resembling milk Poison-oak; is sometimes produced by handling the beans, also by local use of vanilla essence in a hair wash. Vanilla is supposed to stimulate the brain and sexual propensities. Do not use the synthetic Vanilla extract. Various disorders of the nervous system and circulation are produced in workers with Vanilla. Is an emmenagogue and aphrodisiac. Menses prolonged.
 
 **Dose.--** Vanilla, 6th to 30th, has been found effective in curing the skin affection.
 
@@ -17259,7 +17299,7 @@ A perfect picture of collapse, with extreme coldness, blueness, and weakness, is
 
 White American Hellebore
 
-Paroxysms of auricular fibrillation. Induces fall of both systolic and diastolic blood pressure. Congestions, especially to lungs, base of brain, with nausea and vomiting. Twitchings and convulsions. Especially adapted to full-blooded, plethoric persons. Great prostration. Rheumatism of heart. Bloated, livid face. Furious delirium. Effects of sunstroke. Esophagitis. (Farrington). Verat vir, will raise the opsonic index against the diploccus pneumonia, 70 to 109 per cent. Congestive stage and early manifestations of hepatization in pneumonia. Zigzag temperature. Clinically, it is known that such diseases as Tiegel's contracture, Thompson's Disease, athetosis and pseudo-hypertrophic muscular paralysis present a symptomatology quite like that produced by Veratrum vir upon muscular tissue (A. E. Hinsdale, M. D).
+Paroxysms of auricular fibrillation. Induces fall of both systolic and diastolic blood pressure. Congestions, especially to lungs, base of brain, with nausea and vomiting. Twitchings and convulsions. Especially adapted to full-blooded, plethoric persons. Great prostration. Rheumatism of heart. Bloated, livid face. Furious delirium. Effects of sunstroke. Esophagitis. (Farrington). Verat vir, will raise the opsonic index against the diplococcus pneumonia, 70 to 109 per cent. Congestive stage and early manifestations of hepatization in pneumonia. Zigzag temperature. Clinically, it is known that such diseases as Tiegel's contracture, Thompson's Disease, athetosis and pseudo-hypertrophic muscular paralysis present a symptomatology quite like that produced by Veratrum vir upon muscular tissue (A. E. Hinsdale, M. D).
 
 **Mind.--** Quarrelsome and delirious.
 
@@ -17373,7 +17413,7 @@ Spasmodic and congestive affections, dependent upon ovarian or uterine origin.
 
 **Modalities.--** Worse, lying on affected side, in warm room, evening and night. Better, in open air and resting.
 
-**Relationship.--** Compare: Virburnum prunifolium-Black Haw--(habitual miscarriage; after-pains; cancer of the tongue; obstinate hiccough; supposed to be a uterine tonic. Morning sickness; menstrual irregularities of sterile females with uterine displacements). Cimicif; Cauloph; Sep; Xanthox.
+**Relationship.--** Compare: Viburnum prunifolium-Black Haw--(habitual miscarriage; after-pains; cancer of the tongue; obstinate hiccough; supposed to be a uterine tonic. Morning sickness; menstrual irregularities of sterile females with uterine displacements). Cimicif; Cauloph; Sep; Xanthox.
 
 **Dose.--** Tincture, and lower potencies.
 
@@ -17721,7 +17761,7 @@ A remedy for neuralgia, hysteria, angina pectoris, and other painful affections,
 
 **Head.--** Violent, neuralgic, intermittent headaches. Becomes almost insane with pain, which is piercing and stabbing. Uncontrollable sleeplessness from pain in head with melancholy.
 
-**Female.--** Ovaralgia; pain shoots down limbs, even too foot.
+**Female.--** Ovaralgia; pain shoots down limbs, even to foot.
 
 **Extremities.--** Severe pain in neck and spine. Cannot sit still; must keep legs in constant motion. Sciatic neuralgia.
 
@@ -17783,32 +17823,6 @@ Hysteria, epilepsy, chorea, hypochondriasis, come within the sphere of this reme
 
 **Dose.--** Tincture, to third potency.
 
-## Preface to the Ninth Edition (Boericke)
-
-In preparing the ninth edition of this work, I have followed the lines laid out for all the previous editions, namely, to present in a condensed form the homoeopathic Materia Medica for practical use.
-
-The book contains the well known verified characteristic symptoms of all our medicines besides other less important symptoms aiding the selection of the curative remedy. All the new medicines and essentials of the published clinical experience of the school have been added. In its present compact form it contains the maximum number of reliable Materia Medica facts in the minimum space.
-
-I have tried to give a succinct resume of the symptomatology of every medicine used in Homeopathy, including also clinical suggestions of many drugs so far not yet based on provings, thus offering the opportunity to experiment with these and by future provings discover their distinctive use and so enlarging our armamentarium.
-
-I am aware that there is a difference of opinion about the advisability of further introduction of remedies, especially of such as seem obsolete or to some minds illusory. But it is not for the compiler to leave out information about any substance that has received the clinical endorsement from a reliable source.
-
-Our Materia Medica must include all substances which have been proved and which have been used with apparent efficacy. It rests with the individual student to judge for himself the accuracy and reliability of such observation. In this connection, I cannot forego to avail myself of the high authority of that master of Homoeopathy, Dr. Constantine Hering, favoring the introduction of all remedies capable of producing reactions in the body that may guide to their medicinal employment. "Homeopathy is essentially not only many-sided but all-sided. She investigates the action of all substances, whether articles of diet, beverages, condiments, drugs or poisons. She investigates their action on the healthy, the sick, animals and plants. She gives a new interpretation to that ancient, oft quoted saying of Paul, Prove all things--a new meaning, a new application that acts universally. Elimination of the useless may gradually take place with the growth of accurate physiological and pathological knowledge."
-
-Again, imperfectly proved remedies necessitate the use of names of diseases at times instead of the component symptoms that alone are the legitimate guide to the choice of the curative remedy. Here, too, I have Hering as pioneer guide for the ligitimacy of this method, which he also followed in his great work, the Guiding Symptoms. He said that he used the disease designations not for the purpose of recommending the particular remedy for that disease, but to show the great variety of remedies that may be used for any form of disease when otherwise indicated. For the same reason I have included nosological terms in the symptomatology and Therapeutic Index, as this is a practical handbook for every-day service, and any aid for finding the curative remedy ought to be utilized. As Dr. J. Compton Burnett expresses it:
-
-"The fact is we need any and every way of finding the right remedy; the simple simile, the simple symptomatic similimum and the farthest reach of all--the pathologic similimum, and I maintain that we are still well within the line of Homoeopathy that is expansive, progressive, science fostered and science fostering."
-
-The dosage needs some apology. It is, of course, suggestive only; more often to be wholly disregarded. I have followed the lines of the earlier Homoeopathists in this regard, and given what was then considered the usual range of potency, to which I have added my own experience and that of many observing practitioners. Every teacher of Materia Medica is constantly importuned by students to suggest the potency--something to start with at least.
-
-The book is in no sense a treatise, and must not be considered or judged as such. It is as accurate and reliable a compilation and the fullest collection of verified Materia Medica facts and clinical suggestions as it is possible to obtain within the compass of the volume. It supplements every other work on Materia Medica, and if used as a ready reminder of the essential facts of our vast symptomatology and as an introduction to the larger books of reference and record of provings, it will fulfill its purpose and prove a useful aid to the student and general practitioner. As such it is again offered with much appreciation of past endorsement to his professional brethren.
-
-I have been aided in seeing this edition through the press by the efficient help of Mr. F. O. Ernesty, who has lightened the labor of making the manuscript more acceptable to the printers, and I desire to express my hearty appreciation of this kind and helpful service.
-
-WILLIAM BOERICKE, M.D.
-
-San Francisco, June, 1927.
-
 ## Prefatory Note to the Repertory (Boericke)
 
 With the advent of the incomparable Ninth Edition of the progressive pocket Materia Medica, its modest companion, the Repertory, has been completely remodelled and brought up to date, by embodying much of the newly incorporated material. Many of the Sections have been carefully rewritten, and, with appropriate expansion, offer a more trustworthy guide for the selection of the homoeopathic remedy. A few prefatory remarks, pertaining to the practical and expeditious use of the repertorial contents, may assist in clarifying a certain inevitable obscurity of plan.
@@ -17831,13 +17845,12 @@ Oscar E. Boericke, M.D. Philadelphia, Pa., June, 1927.
 
 ## Boericke - Remedies and their Abbreviations
 
-ABCDEFGHIJKLMN
 
 ### A
 
 - ABIES-C ---------------- ABIES CANADENSIS-PINUS CANADENSIS
 - ABIES-N ---------------- ABIES NIGRA
-- ABR ---------------- ABRUS PRECATORIUS - JEQUIRITY (JEQUIRITY - ARBRUS PRECATORIUS)
+- ABR ---------------- ABRUS PRECATORIUS - JEQUIRITY (JEQUIRITY - ABRUS PRECATORIUS)
 - ABROT ---------------- ABROTANUM
 - ABSIN ---------------- ABSINTHIUM
 - ACAL ---------------- ACALYPHA INDICA
@@ -18087,7 +18100,7 @@ ABCDEFGHIJKLMN
 - DAPH ---------------- DAPHNE INDICA
 - DIG ---------------- DIGITALIS PURPUREA (DIGITALIS)
 - DIOS ---------------- DIOSCOREA VILLOSA
-- DIOSM ---------------- DIOSMA LINCARIS
+- DIOSM ---------------- DIOSMA LINEARIS
 - DIPH ---------------- DIPHTHERINUM
 - DOL ---------------- DOLICHOS PRURIENS (DOLICHOS PURIENS - MUCUNA)
 - DOR ---------------- DORYPHORA DECEMLINEATA (DORYPHORA)
@@ -18103,7 +18116,7 @@ ABCDEFGHIJKLMN
 - EQUIS-H ---------------- EQUISETUM HYEMALE (EQUISETUM)
 - ERECH ---------------- ERECHTHITES HIERACIFOLIA (ERECHTHITES)
 - ERIG ---------------- ERIGERON CANADENSE (ERIGERON - LEPTILON CANADENSE)
-- ERIO ---------------- ERIODYCTION CALIFORNICUM (ERIODICTYON)
+- ERIO ---------------- ERIODICTYON CALIFORNICUM (ERIODICTYON)
 - ERY-A ---------------- ERYNGIUM AQUATICUM
 - ESCH ---------------- ESCHSCHOLTZIA CALIFORNICA
 - EUCAL ---------------- EUCALYPTUS GLOBULUS
@@ -18134,7 +18147,7 @@ ABCDEFGHIJKLMN
 - FORM ---------------- FORMICA RUFA (MYRMEXINE)
 - FORMAL ---------------- FORMALINUM (FORMALIN)
 - FRAG ---------------- FRAGARIA VESCA (FRAGARIA)
-- FRANC ---------------- FRANCISCEA UNIFLORA (FRACISCEA)
+- FRANC ---------------- FRANCISCEA UNIFLORA (FRANCISCEA)
 - FRAX ---------------- FRAXINUS AMERICANA
 - FUC ---------------- FUCUS VESICULOSUS
 - FUCH ---------------- FUCHSINUM (FUCHSINA - MAGENTA)
@@ -18263,7 +18276,7 @@ ABCDEFGHIJKLMN
 - LITH-C ---------------- LITHIUM CARBONICUM
 - LOB ---------------- LOBELIA INFLATA
 - LOB-P ---------------- LOBELIA PURPURASCENS
-- LOL ---------------- LOLEUM TEMULENTUM (LOLIUM TUMULENTUM)
+- LOL ---------------- LOLIUM TEMULENTUM (LOLIUM TEMULENTUM)
 - LON-X ---------------- LONICERA XYLOSTEUM
 - LUP ---------------- LUPULUS HUMULUS
 - LYC ---------------- LYCOPODIUM CLAVATUM (LYCOPODIUM)
@@ -18344,7 +18357,7 @@ ABCDEFGHIJKLMN
 - ONIS ---------------- ONISCUS ASELLUS (MILLEPEDES)
 - ONOS ---------------- ONOSMODIUM VIRGINIANUM (ONOSMODIUM)
 - OP ---------------- OPIUM (PAPAVER SOMNIFERUM)
-- OPER ---------------- OPERCULINA TURPENTHUM (OPERCULINA TURPETHUM)
+- OPER ---------------- OPERCULINA TURPETHUM (OPERCULINA TURPETHUM)
 - OPUN-F ---------------- OPUNTIA FICUS (OPUNTIA-FICUS INDICA)
 - OREO ---------------- OREODAPHNE CALIFORNICA (OREODAPHNE)
 - ORIG ---------------- ORIGANUM MAJORANA (ORIGANUM)
@@ -18506,7 +18519,7 @@ ABCDEFGHIJKLMN
 - THYR ---------------- THYROIDINUM
 - TIL ---------------- TILIA EUROPAEA (TILIA EUROPA)
 - TITAN ---------------- TITANIUM METALLICUM (TITANIUM)
-- TONG ---------------- TONGO-DIPTERIX ODORATA (TONGO - DIPTRIX ODORATA)
+- TONG ---------------- TONGO-DIPTERIX ODORATA (TONGO - DIPTERIX ODORATA)
 - TOR ---------------- TORULA CEREVISIAE
 - TRIB ---------------- TRIBULUS TERRESTRIS
 - TRIF-P ---------------- TRIFOLIUM PRATENSE
@@ -20346,7 +20359,7 @@ Pulsation of superciliary muscle -- Cina.
 
 Rawness and soreness (See Blepharitis.) -- Ant. c., Arg. n., Ars., Bor., Euphras., Graph., Hep., Merc. c., Petrol., Sul., Zinc.
 
-Spasms of eyelids, twitching, (blepharospasm, nictitation -- Agar., Ars., Atrop., Bell., Calc. c., Cham., Cic., Cod., Croc., Eser., Gels., Guaiac., Hyos., Ign., Lob. purp., Mag. p., Nat. m., Nicot., Nux v., Physost., Puls., Ruta, Strych., Sul. ac.
+Spasms of eyelids, twitching, (blepharospasm, nictitation) -- Agar., Ars., Atrop., Bell., Calc. c., Cham., Cic., Cod., Croc., Eser., Gels., Guaiac., Hyos., Ign., Lob. purp., Mag. p., Nat. m., Nicot., Nux v., Physost., Puls., Ruta, Strych., Sul. ac.
 
 Stiffness -- Caust., Gels., Kal., Rhus t.
 
@@ -20712,7 +20725,7 @@ Divergent -- Morph., Nat. sal.
 
 ### VISION
 
-Amaurosis (blindness) -- Acon., Apis., Aur. m., Bell., Calc. c., Caust., Chin. s., Cinch., Con., Cycl., Dulc., Gels., Hep., Hyos., Mancin., Merc., Mormord., Naph., Nat. m., Nux m., Nux v., Phos., Plumb. ac., Plumb. m., Santon., Sep., Sil., Stram., Strych., Tab., Vanad., Zinc. m.
+Amaurosis (blindness) -- Acon., Apis., Aur. m., Bell., Calc. c., Caust., Chin. s., Cinch., Con., Cycl., Dulc., Gels., Hep., Hyos., Mancin., Merc., Momord., Naph., Nat. m., Nux m., Nux v., Phos., Plumb. ac., Plumb. m., Santon., Sep., Sil., Stram., Strych., Tab., Vanad., Zinc. m.
 
 Colors -- Benz. dinit., Carbon s., Physost., Santon.
 
@@ -20730,7 +20743,7 @@ Amblyopia (blurred, weak vision) -- Acon., Agar., Anac., Arn., Aur., Bapt., Benz
 
 Objects appear
 
-As looking through mist or veil -- Agar., Calc. c., Caust., Cina, Croc., Cycl., Gels., Kali c., Lil. t., Mormord., Nat. m., Phos., Physost., Plumb., Puls., Ruta, Sep., Tab.
+As looking through mist or veil -- Agar., Calc. c., Caust., Cina, Croc., Cycl., Gels., Kali c., Lil. t., Momord., Nat. m., Phos., Physost., Plumb., Puls., Ruta, Sep., Tab.
 
 Elongated -- Bell.
 
@@ -23048,7 +23061,7 @@ Worms \[From\] -- Artem., Bism., Cina, Filix m., Granat., Indigo, Merc. s., Nat.
 
 ### NATURE
 
-Babies'colic -- Aeth., Asaf., Bell., Calc. p., Cataria, Cepa, Cham., Cina, Col., Illic., Jal., Kali br., Lyc., Mag. p., Mentha pip., Nepeta, Rheum, Senna, Staph.
+Babies' colic -- Aeth., Asaf., Bell., Calc. p., Cataria, Cepa, Cham., Cina, Col., Illic., Jal., Kali br., Lyc., Mag. p., Mentha pip., Nepeta, Rheum, Senna, Staph.
 
 Biliary, gallstone colic (See Gall Bladder.) -- Atrop., Bell., Berb. v., Bry., Calc. c., Card. m., Cham., Chionanth., Cinch., Col., Diosc., Ipec., Iris, Lyc., Mentha, Morph. acet., Pod., Ricin., Tereb., Triost.
 
@@ -23952,7 +23965,7 @@ Worse in autumn (See Diarrhoea.) -- Acon., Colch., Dulc., Ipec., Merc. c., Merc.
 
 **BILIARY CALCULI** (cholelithiasis) -- Aur., Bapt., Berb. v., Boldo, Bry., Calc. c., Card. m., Chel., Chionanth., Cholest., Cinch., Diosc., Fel tauri, Ferr. s., Gels., Hydr., Jugl. c., Lach., Lept., Myr., Nux v., Pichi, Pod., Ptel., Tarax.
 
-Billiary Colic -- Ars., Atrop. sul., Bell., Berb. v., Calc. c., Card. m., Cham., Chel., Chionanth., Cinch., Col., Dig., Diosc., Gels., Hydr., Ipec., Lyc., Morph. acet., Nux v., Op., Tereb.
+Biliary Colic -- Ars., Atrop. sul., Bell., Berb. v., Calc. c., Card. m., Cham., Chel., Chionanth., Cinch., Col., Dig., Diosc., Gels., Hydr., Ipec., Lyc., Morph. acet., Nux v., Op., Tereb.
 
 **HEMORRHOIDS** (piles) -- Abrot., Acon., Aesc. gl., Aesc., Aloe, Am. c., Am. m., Apis, Ars., Aur. m., Bar. c., Bell., Brom., Calc. fl., Caps., Carbo an., Carbo v., Card. m., Caust., Cham., Chrom. ac., Collins., Cop., Diosc., Ferr. p., Fluor. ac., Grat., Ham., Hep., Hydr., Hyper., Ign., Kali m., Kali s., Lach., Lyc., Mag. m., Millef., Mucuna, Mur. ac., Negundo, Nit. ac., Nux v., Paeonia, Pinus sylv., Pod., Polyg., Puls., Radium, Ratanh., Sab., Scrophul., Sedum, Sep., Semperv. t., Sul., Sul. ac., Thuya, Verbasc., Wyeth., Zing.
 
@@ -24186,7 +24199,7 @@ Pain -- Agar., Agn., Am. m., Arn., Ars., Ars. m., Caps., Ceanoth., Cim., Cinch.,
 
 Stitching -- Agar., Alston., Am. m., Bellis, Berb. v., Carbo v., Ceanoth., Chel., Cinch., Con., Kali bich., Nat. m., Ran. b., Rhod., Sul., Tarax., Ther.
 
-TYPHILITIS, appendicitis -- Acon., Arn., Ars., Bapt., Bell., Bry., Canth., Card. m., Colch., Collins., Col., Crot., Diosc., Echin., Ferr. p., Gins., Hep., Iris ten., Kali m., Lach., Lyc., Merc. c., Merc., Nux v., Op., Plumb., Rhamnus, Rhus t., Sil., Sul., Ver. a.
+TYPHLITIS, appendicitis -- Acon., Arn., Ars., Bapt., Bell., Bry., Canth., Card. m., Colch., Collins., Col., Crot., Diosc., Echin., Ferr. p., Gins., Hep., Iris ten., Kali m., Lach., Lyc., Merc. c., Merc., Nux v., Op., Plumb., Rhamnus, Rhus t., Sil., Sul., Ver. a.
 
 ### UMBILICUS, NAVEL
 
@@ -25172,7 +25185,7 @@ Hypertrophy, concentric -- Pichi.
 
 **INFLAMMATION** (cystitis)
 
-Acute -- Acon., Ant. t., Apis, Ars., Aspar., Bell., Benz. ac., Berb. v., Camph., Camphror. ac., Can. s., Canth., Caps., Chimaph., Con., Cop., Cub., Dig., Dulc., Elat., Equis., Erig., Eucal., Eup. purp., Ferr. ac., Ferr. p., Gels., Helleb., Hydrang., Hyos., Lach., Merc. c., Methyl. bl., Nit. ac., Nux v., Ol. sant., Pareira, Petros., Pichi, Pip. m., Pop. tr., Prun. sp., Puls., Sabal, Sab., Sars., Saurur., Sep., Stigm., Sul., Tereb., Tritic., Uva, Vesic.
+Acute -- Acon., Ant. t., Apis, Ars., Aspar., Bell., Benz. ac., Berb. v., Camph., Camphor. ac., Can. s., Canth., Caps., Chimaph., Con., Cop., Cub., Dig., Dulc., Elat., Equis., Erig., Eucal., Eup. purp., Ferr. ac., Ferr. p., Gels., Helleb., Hydrang., Hyos., Lach., Merc. c., Methyl. bl., Nit. ac., Nux v., Ol. sant., Pareira, Petros., Pichi, Pip. m., Pop. tr., Prun. sp., Puls., Sabal, Sab., Sars., Saurur., Sep., Stigm., Sul., Tereb., Tritic., Uva, Vesic.
 
 Cause
 
@@ -25282,7 +25295,7 @@ Acute, amyloid, fatty (See Nephritis.) -- Apis, Ars., Aur. mur., Bell., Cic., Cu
 
 **INFLAMMATION** (nephritis) Bright's disease
 
-**ACUTE AND SUBACUTE PARENCHYMATOUS NEPHRITIS** -- Acon., Ant. t., Apis, Apoc., Ars., Aur. mur., Bell., Berb. v., Can. s., Canth., Chel., Chimaph., Chin. s., Colch., Conv., Cupr. ars., Dig., Dulc., Eucal., Eup. perf., Ferr. iod., Fuschina, Glon., Helleb., Helon., Hep., Hydrocot., Irid., Junip., Kali bich., Kali chlor., Kali citr., Kal., Koch's lymph., Lach., Merc. s., Methyl. bl., Nit. ac., Ol. Sant., Phos. ac., Phos., Pichi., Picr. ac., Plumb. ac., Ploygon., Rhus t., Sab., Samb., Scilla., Sec., Senec., Serum ang., Tereb., Ver. a., Ver. v., Zing.
+**ACUTE AND SUBACUTE PARENCHYMATOUS NEPHRITIS** -- Acon., Ant. t., Apis, Apoc., Ars., Aur. mur., Bell., Berb. v., Can. s., Canth., Chel., Chimaph., Chin. s., Colch., Conv., Cupr. ars., Dig., Dulc., Eucal., Eup. perf., Ferr. iod., Fuschina, Glon., Helleb., Helon., Hep., Hydrocot., Irid., Junip., Kali bich., Kali chlor., Kali citr., Kal., Koch's lymph., Lach., Merc. s., Methyl. bl., Nit. ac., Ol. Sant., Phos. ac., Phos., Pichi., Picr. ac., Plumb. ac., Polygon., Rhus t., Sab., Samb., Scilla., Sec., Senec., Serum ang., Tereb., Ver. a., Ver. v., Zing.
 
 ### CAUSE
 
@@ -27424,7 +27437,7 @@ Causes
 
 Chlorosis; climacteric; cancer uteri \[from\] -- Med., Phos., Thlaspi, Ust.
 
-Currettage \[From\] -- Nit. ac.
+Curettage \[From\] -- Nit. ac.
 
 Fibroids \[from\] -- Calc. c., Nit. ac., Phos., Sab., Sec., Sul ac., Thlaspi, Trill., Vinca.
 
@@ -27550,7 +27563,7 @@ Colicky, cramps, labor-like, bearing down (See Labor.) -- Agar., Apis, Arg. m., 
 
 Constricting, squeezing -- Bellis, Cact., Cham., Cinch., Gels., Mag. p., Nux v., Polygon., Sep., Ustil.
 
-Neuralgic Lancinating, spasmodic, tearing, shooting, cutting, stiching (See Dysmenorrhoea.) -- Acon., Agar., Apis., Aran., Bell., Bry., Bufo, Calc. c., Cim., Cinch., Col., Con., Crot. casc., Cupr. ars., Diosc., Ferr., Graph., Kali p., Lach., Lil. t., Mag. m., Mag. p., Merc., Murex, Op., Plat., Puls., Sec., Tar. h., Vib. op., Viscum.
+Neuralgic Lancinating, spasmodic, tearing, shooting, cutting, stitching (See Dysmenorrhoea.) -- Acon., Agar., Apis., Aran., Bell., Bry., Bufo, Calc. c., Cim., Cinch., Col., Con., Crot. casc., Cupr. ars., Diosc., Ferr., Graph., Kali p., Lach., Lil. t., Mag. m., Mag. p., Merc., Murex, Op., Plat., Puls., Sec., Tar. h., Vib. op., Viscum.
 
 Back \[from\]
 
@@ -27976,7 +27989,7 @@ Alternating with rapid -- Cinch., Dig., Gels., Iod., Morph.
 
 Soft, compressible (See Weak.) -- Acal., Ars., Bapt., Caffeine, Conv., Ferr. m., Ferr. p., Gels., Kali c., Phos., Plumb., Ver. a., Ver. v.
 
-Weak, fluttering, almost imperceptible -- Acetan., Acon., Adon. v., Adren., Aeth., Agarcine, Ail., Am. m., Ant. ars., Ant. t., Apis, Arn., Ars., Ars. iod., Aur., Aspar., Bar. m., Cact., Caffeine, Camph., Carb. ac., Carbo v., Cim., Colch., Collins., Conv., Crat., Crot., Dig., Diph., Eel serum, Ferr. m., Gels., Hydroc. ac., Hysocin. hydrobr., Iod., Kali c., Kali chlor., Kali n., Kal., Lach., Latrod., Laur., Lycop., Merc. c., Merc. cy., Morph., Mur. ac., Naja, Op., Ox. ac., Phaseol., Phos. ac., Phos., Physost., Plumb., Pyr., Rhus t., Sang., Sapon., Sec., Spart., Spig., Sul., Tab., Tereb., Thyr., Ver. a., Ver. v., Viscum, Zinc. m.
+Weak, fluttering, almost imperceptible -- Acetan., Acon., Adon. v., Adren., Aeth., Agarcine, Ail., Am. m., Ant. ars., Ant. t., Apis, Arn., Ars., Ars. iod., Aur., Aspar., Bar. m., Cact., Caffeine, Camph., Carb. ac., Carbo v., Cim., Colch., Collins., Conv., Crat., Crot., Dig., Diph., Eel serum, Ferr. m., Gels., Hydroc. ac., Hyoscin. hydrobr., Iod., Kali c., Kali chlor., Kali n., Kal., Lach., Latrod., Laur., Lycop., Merc. c., Merc. cy., Morph., Mur. ac., Naja, Op., Ox. ac., Phaseol., Phos. ac., Phos., Physost., Plumb., Pyr., Rhus t., Sang., Sapon., Sec., Spart., Spig., Sul., Tab., Tereb., Thyr., Ver. a., Ver. v., Viscum, Zinc. m.
 
 ### SENSATIONS
 
@@ -29204,7 +29217,7 @@ Lameness, stiffness -- Abrot., Acon., AEsc., Agar., Am. m., Bell., Berb. v., Bry
 
 Numbness -- Acon., Berb. v., Calc. p., Ox. ac., Oxytr., Sec., Sil.
 
-**PAIN** -- Abrot., Acon., Aesc., Agar., Alum., Am. c., Angust., Ant. t., Apis, Arg. m., Arg. n., Arn., Bar. c., Bell., Berb. v., Bry., Calc. c., Calc. p., Can. ind., Carb. ac., Caul., Caust., Cham., Chin. s., Cic., Cim., Cinch., Cob., Cocc., Colch., Col., Dulc., Eup. perf., Graph., Guaco, Ham., Helon., Homar., Kali bich., Kali c., Kali m., Lach., Lil. t., Lyc., Mag. m., Mag. s., Med., Merc., Mez., Mormord., Nat. c., Nat. m., Nit. ac., Nux v., Ox. ac., Paraf., Petrol., Phos. ac., Picr. ac., Puls., Radium, Ran. ac., Rhod., Rhus t., Ruta, Sab., Sang., Sarrac., Scolop., Sec., Selen., Sep., Sil., Staph., Stellar., Strych., Sul., Tar. h., Tellur., Ther., Triost., Upas, Variol., Wyeth., Xerophyl., Zinc. m.
+**PAIN** -- Abrot., Acon., Aesc., Agar., Alum., Am. c., Angust., Ant. t., Apis, Arg. m., Arg. n., Arn., Bar. c., Bell., Berb. v., Bry., Calc. c., Calc. p., Can. ind., Carb. ac., Caul., Caust., Cham., Chin. s., Cic., Cim., Cinch., Cob., Cocc., Colch., Col., Dulc., Eup. perf., Graph., Guaco, Ham., Helon., Homar., Kali bich., Kali c., Kali m., Lach., Lil. t., Lyc., Mag. m., Mag. s., Med., Merc., Mez., Momord., Nat. c., Nat. m., Nit. ac., Nux v., Ox. ac., Paraf., Petrol., Phos. ac., Picr. ac., Puls., Radium, Ran. ac., Rhod., Rhus t., Ruta, Sab., Sang., Sarrac., Scolop., Sec., Selen., Sep., Sil., Staph., Stellar., Strych., Sul., Tar. h., Tellur., Ther., Triost., Upas, Variol., Wyeth., Xerophyl., Zinc. m.
 
 Aching as if it would break and give out -- Aesc., Aeth., Am. m., Bell., Can. ind., Cham., Chel., Dulc., Eup. perf, Eupion, Graph., Ham., Kali bich., Kal., Kreos., Nat. m., Ol. an., Ova t., Phos., Plat., Puls., Rhus t., Sarcol. ac., Sanic., Senega, Sil., Trill.
 
@@ -30160,7 +30173,7 @@ Herpes -- Carbo v., Graph., Petrol.
 
 Hygroma patella -- Arn., Calc. p., Iod.
 
-Inflammation (synovitis, borsitis; housemaid's knee)
+Inflammation (synovitis, bursitis; housemaid's knee)
 
 Acute (See Swelling.) -- Acon., Apis., Arn., Bell., Bry., Canth., Cistus, Helleb., Hep., Iod., Kali c., Kali iod., Phos., Puls., Rhus t., Ruta, Sil., Slag., Sticta, Sul.
 
@@ -30448,7 +30461,7 @@ Syphilitic (See Periosteal.)
 
 ## Skin (Boericke)
 
-ACNE \* ACTINOMYCOSIS \* ALOPECIA \* ANIDROSIS \* ANTHRAX \* ATROPHY \* BLISTERS \* BLOOD BOILS \* BLUENESS \* BROMIDROSIS \* BURNING \* CALLOSITIES \* CHILBLAINS \* CHLOASMA \* CICATRICES \* COLDNESS \* COMEDO \* DECUBITUS \* DERMAL \* DERMATALGIA \* DRYNESS \* ECCHYMOSES \* ECTHYMA \* ECZEMA \* ELEPHANTIASIS \* EPHELIS \* EPITHELIOMA \* ERUPTIONS \* ERYSIPELAS \* ERYTHEMA \* FIBROMA \* FISSURES \* FLABBINESS \* FOREIGN BODIES \* FORMICATION \* FUNGUS HEMATODES \* FURUNCLE \* GANGRENE \* HERPES \* HYDROA \* HYPERIDROSIS \* ICHTHYOSIS \* IMPETIGO \* KELOID \* LENTIGO \* LEPRA \* LEUCODERMA \* LICHEN \* LUPUS \* MILIARIA \* MILIUM \* MOLLUSCUM \* MORBUS SUDATORIUS \* MORPHEA \* NAEVUS \* NAILS \* OEDEMA \* OILY \* PELLAGRA \* PEMPHIGUS \* PETICHIAE \* PHTHIRIASIS \* PITYRIASIS \* PRAIRIE ITCH \* PRURIGO \* PRURITUS \* PSORIASIS \* PURPURA \* RAYNAUD'S DISEASE \* RHINOSCLEROMA \* ROSEOLA \* RUPIA \* SARCOMA CUTIS \* SCABIES \* SCLERODERMA \* SCROFULODERMA \* SEBACEOUS CYSTS \* SEBORRHEA \* SENSIBILITY \* SPOTS \* STROPHULUS \* SUDAMINAE \* SYCOSIS \* SYPHILIDAE \* TINEA \* ULCERS \* UNHEALTHY SKIN \* URTICARIA \* VACCINIA \* VERUCCA \* WHITLOW
+ACNE \* ACTINOMYCOSIS \* ALOPECIA \* ANIDROSIS \* ANTHRAX \* ATROPHY \* BLISTERS \* BLOOD BOILS \* BLUENESS \* BROMIDROSIS \* BURNING \* CALLOSITIES \* CHILBLAINS \* CHLOASMA \* CICATRICES \* COLDNESS \* COMEDO \* DECUBITUS \* DERMAL \* DERMATALGIA \* DRYNESS \* ECCHYMOSES \* ECTHYMA \* ECZEMA \* ELEPHANTIASIS \* EPHELIS \* EPITHELIOMA \* ERUPTIONS \* ERYSIPELAS \* ERYTHEMA \* FIBROMA \* FISSURES \* FLABBINESS \* FOREIGN BODIES \* FORMICATION \* FUNGUS HEMATODES \* FURUNCLE \* GANGRENE \* HERPES \* HYDROA \* HYPERIDROSIS \* ICHTHYOSIS \* IMPETIGO \* KELOID \* LENTIGO \* LEPRA \* LEUCODERMA \* LICHEN \* LUPUS \* MILIARIA \* MILIUM \* MOLLUSCUM \* MORBUS SUDATORIUS \* MORPHEA \* NAEVUS \* NAILS \* OEDEMA \* OILY \* PELLAGRA \* PEMPHIGUS \* PETECHIAE \* PHTHIRIASIS \* PITYRIASIS \* PRAIRIE ITCH \* PRURIGO \* PRURITUS \* PSORIASIS \* PURPURA \* RAYNAUD'S DISEASE \* RHINOSCLEROMA \* ROSEOLA \* RUPIA \* SARCOMA CUTIS \* SCABIES \* SCLERODERMA \* SCROFULODERMA \* SEBACEOUS CYSTS \* SEBORRHEA \* SENSIBILITY \* SPOTS \* STROPHULUS \* SUDAMINAE \* SYCOSIS \* SYPHILIDAE \* TINEA \* ULCERS \* UNHEALTHY SKIN \* URTICARIA \* VACCINIA \* VERRUCA \* WHITLOW
 
 ### ACNE
 
@@ -30500,7 +30513,7 @@ Symmetrical distribution \[with\] -- Arn.
 
 **ALOPECIA** (See Scalp - Head.) -- Alum., Anthrok., Ars., Calc. s., Fluor. ac., Mancin., Nat. m., Phos. ac., Phos., Piloc., Pix l., Selen., Sep., Tub., Vinca.
 
-**ANIDROSIS** (defiecent sweat, dry skin) -- Acet. ac., Acon., Aeth., Alum., Apoc., Arg. n., Ars., Bell., Berb. aq., Crot. r., Graph., Iod., Kali ars., Kali c., Kali iod., Lach., Mag. c., Malandr., Nat. c., Nux m., Op., Petrol., Phos., Plumb. m., Psor., Sanic., Sars., Sec., Sul., Thyr.
+**ANIDROSIS** (deficient sweat, dry skin) -- Acet. ac., Acon., Aeth., Alum., Apoc., Arg. n., Ars., Bell., Berb. aq., Crot. r., Graph., Iod., Kali ars., Kali c., Kali iod., Lach., Mag. c., Malandr., Nat. c., Nux m., Op., Petrol., Phos., Plumb. m., Psor., Sanic., Sars., Sec., Sul., Thyr.
 
 ANTHRAX-Carbuncle
 
@@ -30764,7 +30777,7 @@ LEPRA, leprosy -- Anac., Ars., Bad., Calopt., Carb. ac., Chaulmugra, Commocl., C
 
 **LUPUS VULGARIS** -- Apis, Ars., Ars. iod., Aur. ars., Aur. iod., Aur. mur., Calc. c., Calc. iod., Calc. s., Cistus, Condur., Ferr. picr., Form. ac., Formica, Graph., Guarana, Hep., Hydr., Hydrocot., Irid., Jequir., Kali bich., Kali iod., Lyc., Nit. ac., Phyt., Staph., Sul., Thiosin, Thuya, Tub., Urea, X-ray.
 
-**MILIARIA** (prickly heat) -- Acon., Am. m., Ars., Bry., Cact., Centaurea, Hura, Jabor., Led., Raph., Syzigium, Urt.
+**MILIARIA** (prickly heat) -- Acon., Am. m., Ars., Bry., Cact., Centaurea, Hura, Jabor., Led., Raph., Syzygium, Urt.
 
 **MILIUM** (See Acne.) -- Calc. iod., Staph., Tab.
 
@@ -30862,7 +30875,7 @@ Fissures, desquamation, skin eruptions -- Graph., Hep., Ign., Phos., Puls., Sep.
 
 **PEMPHIGUS** -- Anac., Antipyr., Ars., Arum tr., Bufo, Caltha., Canth., Carbon. ox., Caust., Dulc., Jugl. c., Lach., Mancin., Merc. c., Merc. pr. rub., Merc. s., Nat. sal., Phos. ac., Phos., Ran. b., Ran. sc., Raph., Rhus t., Sep., Thuya.
 
-**PETICHIAE** (See Ecchymosis.) -- Arn., Ars., Calc. c., Cur., Mur. ac., Phos., Sec., Sul ac.
+**PETECHIAE** (See Ecchymosis.) -- Arn., Ars., Calc. c., Cur., Mur. ac., Phos., Sec., Sul ac.
 
 **PHTHIRIASIS** -- Bac., Cocc., Merc., Nat. m., Oleand., Psor., Sabad., Staph.
 
@@ -30872,7 +30885,7 @@ Fissures, desquamation, skin eruptions -- Graph., Hep., Ign., Phos., Puls., Sep.
 
 **PRURIGO** -- Acon., Alnus, Ambra, Anthrok., Ars., Ars. iod., Ars. sul., Carb. ac., Chloral., Dolich., Diosc., Kali bich., Lyc., Merc., Mez., Nit. ac., Oleand., Oophor., Pedic., Rhus t., Rhus v., Rumex, Sil., Sul., Tereb.
 
-**PRURITUS** (itching of skin) -- Acon., Agar., Alum., Ambra, Anac. oc., Anac., Anag., Antipyr., Apis, Ars., Calad., Calc. c., Canth., Carb. ac., Chloral., Chrysar., Clem., Crot. t., Dolich., Dulc., Eleis, Fagop., Fluor. ac., Formica, Glon., Graph., Granat., Grind., Guano, Hep., Hydrocot., Hyper., Ichth., Ign., Lyc., Kreos., Mag. c., Malandr., Mang. ac., Med., Merc., Mez., Morph., Niccol., Nux v., Oleand., Op., Petrol., Pix l., Prim. ob., Psor., Pulex., Radium, Ran. b., Rhus t., Rhus v., Rumex, Sep., Staph., Sul., Sul. ac., Syzgium, Tar. c., Urt., Vespa, Xerophyl.
+**PRURITUS** (itching of skin) -- Acon., Agar., Alum., Ambra, Anac. oc., Anac., Anag., Antipyr., Apis, Ars., Calad., Calc. c., Canth., Carb. ac., Chloral., Chrysar., Clem., Crot. t., Dolich., Dulc., Eleis, Fagop., Fluor. ac., Formica, Glon., Graph., Granat., Grind., Guano, Hep., Hydrocot., Hyper., Ichth., Ign., Lyc., Kreos., Mag. c., Malandr., Mang. ac., Med., Merc., Mez., Morph., Niccol., Nux v., Oleand., Op., Petrol., Pix l., Prim. ob., Psor., Pulex., Radium, Ran. b., Rhus t., Rhus v., Rumex, Sep., Staph., Sul., Sul. ac., Syzygium, Tar. c., Urt., Vespa, Xerophyl.
 
 Aged \[of\] -- Bar ac.
 
@@ -31028,7 +31041,7 @@ Intersecting rings \[in\] over great portion of body; fever; great Constitutiona
 
 Isolated spots \[in\] on upper part of body -- Sep.
 
-**ULCERS** -- Anac. oc., Ananth., Anthrac., Arn., Ars., Aster., Bals. per., Bell., Calc. c., Calc p., Calc. sil., Calc. s., Calend., Carb. ac., Carbo an., Carbo v., Carbon s., Caust., Cistus, Clem., Commocl., Con., Crot., Cupr. ars., Echin., Fluor. ac., Galium ap., Geran., Graph., Ham., Hep., Hippoz., Hydr., Iod., Jugl. r., Kali ars., Kali bich., Kali iod., Lach., Merc. c., Merc. s., Mez., Nat. s., Nit. ac., Paeonia, Petrol., Phos. ac., Phos., Phyt., Psor., Radium, Ran. ac., Scrophul., Sep., Sil., Sul. ac., Sul., Syph., Tar. c., Thuya, Trychnos.
+**ULCERS** -- Anac. oc., Ananth., Anthrac., Arn., Ars., Aster., Bals. per., Bell., Calc. c., Calc p., Calc. sil., Calc. s., Calend., Carb. ac., Carbo an., Carbo v., Carbon s., Caust., Cistus, Clem., Commocl., Con., Crot., Cupr. ars., Echin., Fluor. ac., Galium ap., Geran., Graph., Ham., Hep., Hippoz., Hydr., Iod., Jugl. r., Kali ars., Kali bich., Kali iod., Lach., Merc. c., Merc. s., Mez., Nat. s., Nit. ac., Paeonia, Petrol., Phos. ac., Phos., Phyt., Psor., Radium, Ran. ac., Scrophul., Sep., Sil., Sul. ac., Sul., Syph., Tar. c., Thuya, Strychnos.
 
 Bleeding, easily, when touched -- Ars., Carbo v., Dulc., Hep., Kreos., Lach., Merc., Mez., Nit. ac., Petrol., Phos.
 
@@ -31240,7 +31253,7 @@ Warmth \[from\] -- Ars., Chloral, Sep.
 
 **VACCINIA** -- Acon., Ant. t., Apis, Bell., Merc. s., Phos., Sil., Sul., Thuya, Vac.
 
-**VERUCCA** (warts) -- Acet. ac., Am. c., Anac. oc., Anag., Ant. c., Ant. t., Ars. br., Aur. m. n., Bar. c., Calc. c., Castorea, Cast. eq., Caust., Chrom. oxy., Cinnab., Dulc., Ferr. picr., Kali m., Kali perm., Lyc., Mag. s., Nat. c., Nat. m., Nat. s., Nit. ac., Ran. b., Semperv. t., Sep., Sil., Staph., Sul., Sul. ac., Thuya, X-ray.
+**VERRUCA** (warts) -- Acet. ac., Am. c., Anac. oc., Anag., Ant. c., Ant. t., Ars. br., Aur. m. n., Bar. c., Calc. c., Castorea, Cast. eq., Caust., Chrom. oxy., Cinnab., Dulc., Ferr. picr., Kali m., Kali perm., Lyc., Mag. s., Nat. c., Nat. m., Nat. s., Nit. ac., Ran. b., Semperv. t., Sep., Sil., Staph., Sul., Sul. ac., Thuya, X-ray.
 
 Bleed easily -- Cinnab.
 
@@ -31942,7 +31955,7 @@ Dumb ague -- Ars., Ced., Chelone, Chin. s., Gels., Ipec., Malland., Nux v.
 
 Impure cases, in non-malarial regions -- Ipec., Nux v.
 
-Nervo-hysteriacal persons -- Aran., Cocc., Ign., Tar. h.
+Nervo-hysterical persons -- Aran., Cocc., Ign., Tar. h.
 
 Pernicious cases -- Ars., Camph., Chin. hydrobr., Chin. s., Crot., Ver. a.
 
@@ -32876,7 +32889,7 @@ Anger affects mother's milk -- Cham., Nux v.
 
 Apoplectic; in inebriates; hemorrhagic or broken down systems -- Crot.
 
-Carphopedal -- Cupr. ac., Ign.
+Carpopedal -- Cupr. ac., Ign.
 
 Cataleptic -- Cic., Mosch.
 
@@ -32946,7 +32959,7 @@ Face \[in\]; unilateral; shallow breathing -- Cina.
 
 Fingers \[in\], toes, radiates all over -- Cupr. m.
 
-Bladder, chest, intestines, striated muscles, cheifly involved; drowsiness rigid limbs; sudden onset; head hot, feet cold -- Bell.
+Bladder, chest, intestines, striated muscles, chiefly involved; drowsiness rigid limbs; sudden onset; head hot, feet cold -- Bell.
 
 Calves of legs; clenched thumbs; cyanosis -- Cupr. m.
 
@@ -33742,7 +33755,7 @@ Anesthetic vapors, antidote -- Acet. ac., Am. caust., Amyl, Hep., Phos.
 
 ### BITES
 
-Insects, snakes, dogs -- Acet. ac., Am. c., Am. caust., Anthrac., Apis, Arn., Ars., Bell., Calad., Camph., Ced., Crot., Echin., Golond., Grind., Guaco, Gymnen., Hydroc. ac., Hyper., Kali perm., Lach., Led., Mosch., Pyr., Salag., Sisyr., Spirea, Trychnos.
+Insects, snakes, dogs -- Acet. ac., Am. c., Am. caust., Anthrac., Apis, Arn., Ars., Bell., Calad., Camph., Ced., Crot., Echin., Golond., Grind., Guaco, Gymnen., Hydroc. ac., Hyper., Kali perm., Lach., Led., Mosch., Pyr., Salag., Sisyr., Spirea, Strychnos.
 
 Charcoal fumes, illuminating gas, ill effects -- Acet. ac., Am. c., Arn., Bell., Bov., Coff., Op.
 
