@@ -382,7 +382,7 @@ def test_unexpected_setup_errors_do_not_leak_details(
 
 def test_api_has_no_experimental_imports() -> None:
     imports: list[str] = []
-    for path in (ROOT / "api").rglob("*.py"):
+    for path in (ROOT / "src/api").rglob("*.py"):
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom) and node.module:

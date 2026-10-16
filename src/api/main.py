@@ -121,6 +121,6 @@ def chat(request: ChatRequest) -> WebChatResponse:
 
 
 # A built frontend can be served by Uvicorn alone. During development Vite proxies /api.
-web_dist = Path(__file__).resolve().parents[1] / "web" / "dist"
+web_dist = Path(__file__).resolve().parents[2] / "web" / "dist"
 if (web_dist / "index.html").is_file():
     app.mount("/", StaticFiles(directory=web_dist, html=True), name="web")
