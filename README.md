@@ -19,7 +19,7 @@ Pydantic · OpenRouter · Z.AI · pytest · Ruff · Pyright
 - **Hybrid retrieval:** combines keyword and vector search through reciprocal-rank fusion, with
   optional filtering by book and up to eight retrieved passages per answer.
 - **Structured corpus:** preserves book, remedy, section, and passage metadata across 118,259
-  individually embedded passages. See the [dataset guide](dataset/README.md) for source details.
+  individually embedded passages. Source details are in `corpus.toml`.
 - **Verified corpus releases:** builds immutable SQLite artifacts with manifests and SHA-256
   digests, validates database and index integrity, and verifies releases before activation.
 - **Recorded retrieval experiments:** versions query sets and result records, caches embeddings
@@ -287,11 +287,10 @@ runs TypeScript type checking. `make web` starts Vite and FastAPI together with 
 - `web/` — minimal React/Vite chat interface.
 - `src/experimental/` — experimental retrieval, scoring, and terminal chat.
 - `src/corpus/` — source validation, chunking, embeddings, and release tooling.
-- `dataset/` — raw texts, processed books, and merged corpus; see the [dataset guide](dataset/README.md).
+- `dataset/` — raw texts, processed books, and merged corpus.
 - `tests/` — Python test suite.
 
 ## License
 
-Software and documentation: [MIT](LICENSE). Dataset compilation and processing:
-[CC BY 4.0](dataset/LICENSE.md). Underlying historical works retain their applicable rights
-and source notices.
+Software and documentation: [MIT](LICENSE). Underlying historical works in `dataset/` retain
+their applicable rights and source notices.
