@@ -458,7 +458,7 @@ Aconite produces a very rapid inflammation of the viscera of the chest, of the p
 
 Inflammation runs so high that the mucous membrane oozes blood, cherry red, or the mucus that comes up is white and heavily streaked with bright red blood.
 
-You go to the bedside of broncho-pneumonia and you will find in the pan mucus streaked with bright red blood. Now, take the violence with which that comes on, the restlessness and anxiety of the individual - he predicts the hour of his death - that would be the case with the Aconite patient.
+You go to the bedside of broncho-pneumonia and you will find in the pan mucus streaked with bright red blood. Now, take the violence with which that comes on the restlessness and anxiety of the individual - he predicts the hour of his death - that would be the case with the Aconite patient.
 
 In the case of pneumonia where the lung is involved, it is likely to be the upper half of the left lung when Aconite is indicated.
 
@@ -516,7 +516,7 @@ Excessive restlessness."
 
 **Relations:** Sulphur has a strong relation to Aconite. It has many Aconite symptoms. In many of the old chronic cases where Sulphur would be used in strong, vigorous constitutions Aconite will be suitable for a sudden attack, and Sulphur for the chronic.
 
-In sudden attacks that Aconite conforms to, that is the whole attack, there may be left in that constitution a tendency to return of a similar attack.
+In sudden attacks that Aconite conforms to that is the whole attack, there may be left in that constitution a tendency to return of a similar attack.
 
 Aconite has no power over that tendency, but Sulphur has. Of course, most of the symptoms must agree but it will seem to you frequently where Aconite has been suitable in the acute disease that Sulphur symptoms will follow, and many times a very violent attack leaves a weakness in the constitution which Aconite has no power to contend with. It has no power to keep off recurrent attacks. It does all that it is capable of doing, and that is the end of it. But it is not so with Sulphur.
 
@@ -744,7 +744,7 @@ A patient may state that when walking in the street he is dizzy or that it appea
 
 If we ourselves are perfectly clear as to the meaning of these expressions, we will commonly glean the meaning of the patient. It is important to record the language of the patient, yet often a patient will say something which you can see he does not mean at all, and it then becomes necessary to put in a parenthesis what he really means. For instance, a patient says:
 
-"I have such a pain in my chest," with the band on the abdomen, or a woman when menstruating will say the pain is in the stomach when you know it is in the uterus.
+"I have such a pain in my chest," with the hand on the abdomen, or a woman when menstruating will say the pain is in the stomach when you know it is in the uterus.
 
 Patients must be questioned oftentimes as to their statements, or requested to place the hand upon the painful part. In the same way, therefore, patients talk about dizziness when they are not dizzy at all, but feel a confusion of mind, or they speak of confusion of mind when they mean that they stagger in the street.
 
@@ -782,7 +782,7 @@ The symptoms of Aesculus are often brought out, by temperature, especially the l
 
 Now, in Pulsatilla, the stinging pains of the scalp and those over the body, here and there, are often ameliorated by the local application of heat, while the patient himself wants to, be in the cold; in the same way Aesculus stinging pains are better from heat, while the patient is often better from cold, although at times he is aggravated from cold, damp weather in rheumatic and venous conditions.
 
-Again, in Secale, we see that the little sharp pains that follow the course of the nerves are better from beat, but the patient himself wants to be in the cold air, or to be uncovered, except the spot of pain, which he wants kept warm.
+Again, in Secale, we see that the little sharp pains that follow the course of the nerves are better from heat, but the patient himself wants to be in the cold air, or to be uncovered, except the spot of pain, which he wants kept warm.
 
 We notice the same thing running through Camphor; during the twinges of pain he wants the windows closed and wants hot applications; but as soon as the pain is over he wants the windows up and desires to be uncovered so that he can breathe. These are general things, things that are to be observed in analyzing symptoms.
 
@@ -900,9 +900,9 @@ Sometimes the brain trouble does not affect the stomach, but the child goes into
 
 In the Aethusa patient there is much in the face and aspect to indicate a remedy; so much can be seen and comes within the observation, and so little questioning is necessary, that a sort of snap-shot prescribing can be done, but it is not to be recommended.
 
-A busy physician, one who really and truly studies his Materia Medica, learned the principles, will in time do a great deal of what seems to be snap-shot prescribing, but he really does not do so, because he puts together many things that outsiders would not think of.
+A busy physician, one who really and truly studies his Materia Medica, and has learned the principles, will in time do a great deal of what seems to be snap-shot prescribing, but he really does not do so, because he puts together many things that outsiders would not think of.
 
-Aethusa then shows itself upon the surface, whereas in many remedies there is nothing seen upon the surface because they manifest themselves in any or deeper sensations.
+Aethusa then shows itself upon the surface, whereas in many remedies there is nothing seen upon the surface because they manifest themselves in inner or deeper sensations.
 
 Let me lay a case before you to illustrate this. For instance, take a robust looking fellow, who declares himself fairly well, out to lunch with you.
 
@@ -1082,7 +1082,7 @@ These shocks come from sudden noise; from eructations; on coughing; when lying o
 
 **Back:** The back has many peculiar and general guiding symptoms. Stiffness of the whole spine. Feeling as if it would break when he attempts to bend. Feels as if something is so tight that it will break when he stoops. Tightness in the muscles of the back. Tingling deep in the spine.
 
-Violent, shooting, burning pains. Pain along the spine, worse by stooping. Pains of all sorts in the spine. Pains go up the back and down the back. Sensitiveness of the spine to touch, especially in the back of the peck and dorsal region between the scapulae.
+Violent, shooting, burning pains. Pain along the spine, worse by stooping. Pains of all sorts in the spine. Pains go up the back and down the back. Sensitiveness of the spine to touch, especially in the back of the neck and dorsal region between the scapulae.
 
 Sensitive to a hot sponge in the lumbar region in spinal irritation. Sensation as if cold air were spreading along the back like an aura epileptica.
 
@@ -1258,7 +1258,7 @@ Cold, damp, penetrating winds, in any climate, are likely to bring on Allium cep
 
 **Coryza:** Rawness in the nose, copious flow of water from the eyes, which is always bland; copious watery discharge from the nose, which is always excoriating.
 
-Rawness in the larynx and throat, extending down into the chest. Raw in the nose. In twenty-four hours it reaches the larynx.
+Rawness in the larynx and throat, extending down into the chest. Rawness in the nose. In twenty-four hours it reaches the larynx.
 
 Cough, excited by tickling in the larynx and when lying down at night in a warm room. On going to bed in the evening Allium has its most troublesome aggravation.
 
@@ -1520,11 +1520,11 @@ She wants the cloth changed and made cold every few minutes. It is a queer thing
 
 The rubric of remedies with that symptom is very small, and hence this remedy fills a place.
 
-There are some strange, rare and peculiar symptoms for which paucity of remedies, and we have to work in other channels and along sidetracks in getting the constitutional state of the patient.
+There are some strange, rare and peculiar symptoms for which we have a paucity of remedies, and we have to work in other channels and along sidetracks in getting the constitutional state of the patient.
 
 Alumen cured the pressing pain on the vertex in one patient in whom it alternated with the most troublesome chronic, irritable bladder.
 
-"Vertigo: lying on his back, with weakness in pit of stomach; &gt; opening eyes; &gt; turning on right side."
+"Vertigo: lying on his back, with weakness in pit of stomach; > opening eyes; > turning on right side."
 
 **Heart:** There is another feature, however, in this remedy, the palpitation is brought on from lying on the right side.
 
@@ -1594,7 +1594,7 @@ W '4 . . . . . weight of uterus presses down collum; granulations of vagina; leu
 
 Sometimes you get evidence of this vaginal state by the woman saying that coition is so painful that it becomes impossible; it is not to be wondered at that the natural act cannot be performed when so much trouble is present.
 
-Larynx and Chest "Voice entirely lost."
+**Larynx and chest:** "Voice entirely lost."
 
 Chronic loss of the voice from a low state of the economy and from always taking fresh colds. Expectoration of much yellow mucus; scraping of the throat all the time to get rid of a little accumulation of yellow mucus.
 
@@ -1602,7 +1602,7 @@ Chronic loss of the voice from a low state of the economy and from always taking
 
 Cough is not a very important thing in this remedy; it is the general state of the economy that is to be looked at. The cough will not interpret the nature of the disease to the physician, because when these little ulcers are present they must cause some kind of a cough. This patient may go into phthisis or be affected with any of the ultimates of disease.
 
-Alumen has been very useful in the treatment of old people who morning expectoration, catarrh of the chest, suffer from copious, ropy, haemoptysis and great weakness of the chest, so that it is difficult to expel the mucus. In this it is similar to Antimonium tartaricum.
+Alumen has been very useful in the treatment of old people who suffer from copious, ropy, morning expectoration, catarrh of the chest, haemoptysis and great weakness of the chest, so that it is difficult to expel the mucus. In this it is similar to Antimonium tartaricum.
 
 **Alumen and Alumina:** Because of its relation to Alumina further provings; will undoubtedly develop the fact that it has many spinal symptoms. It is well known that it has a weak spine, with coldness of the spine, a feeling as if cold water were poured down the back.
 
@@ -1712,7 +1712,7 @@ It is true that in an early stage of locomotor ataxia Alumina will check the dis
 
 With Aluminum metallicum I have, stopped fulgurating pains in old incurable cases, and improved the reflexes wonderfully, thus showing the general improvement of the patient.
 
-**Modalities:** Most of the symptoms are &lt; on rising in the morning. In the morning as I have mentioned it, the urine is slower to pass than after, he has moved about and warmed up a little. His limbs are stiffer in the morning and in the morning he has to whip up his mental state. He wakes up confused and wonders where he is.
+**Modalities:** Most of the symptoms are < on rising in the morning. In the morning as I have mentioned it, the urine is slower to pass than after, he has moved about and warmed up a little. His limbs are stiffer in the morning and in the morning he has to whip up his mental state. He wakes up confused and wonders where he is.
 
 You will see that in children especially-they wake up in the morning in a bewildered state, such as you will find in Alumina, Aesculus, Lycopod.
 
@@ -1726,7 +1726,7 @@ Nose feels full of sticks, dry membranes or crusts, old atrophic catarrh crusts 
 
 Large green, offensive crusts all through the nose. Now comes the relation to the headache. Every time he catches cold the thick yellow discharge slacks up and gives way to a watery discharge and he has pain in the forehead over the eyes, going through the head, with nausea and vomiting.
 
-So when it says headache from chronic catarrh that is what it means. The headache &gt; lying down. He has sick headaches and periodical headaches.
+So when it says headache from chronic catarrh that is what it means. The headache > lying down. He has sick headaches and periodical headaches.
 
 You will see that Alumina corresponds to a constitution that may be called psoric-old, broken-down, feeble constitutions, scrofulous constitutions, such as are inclined to tubercles and catarrhal affections.
 
@@ -1740,9 +1740,9 @@ There is also disturbance of the muscles of the eye, of the muscles of the ball 
 
 **Naso pharynx:** The catarrhal state extends over into the back of the nose and the posterior nares are filled up with tough mucus and crusts, and on looking into the throat you will see that the soft palate and the mucous membrane of the tonsils and pharynx and all parts that can be seen are in a state of granulation, are swollen, congested and inflamed.
 
-The pharynx feels dry and there is a chronic sensitiveness and soreness. When swallowing food there is stinging and sensation as if the throat were full of little sticks, especially after a moment's rest, better by moistening and swallowing. In the night air, after keeping still a while, there in an accumulation of ropy mucus.
+The pharynx feels dry and there is a chronic sensitiveness and soreness. When swallowing food there is stinging and sensation as if the throat were full of little sticks, especially after a moment's rest, better by moistening and swallowing. In the night air, after keeping still a while, there is an accumulation of ropy mucus.
 
-This extends into the larynx with soreness in the larynx and chest and chronic dry, backing cough. The same catarrhal state proceeds down into the oesophagus, so that it becomes sensitive and clumsy. He swallows with difficulty.
+This extends into the larynx with soreness in the larynx and chest and chronic dry, hacking cough. The same catarrhal state proceeds down into the oesophagus, so that it becomes sensitive and clumsy. He swallows with difficulty.
 
 The bolus goes down with an effort and he feels it all the way down. There is soreness and clumsiness, paresis and difficulty of swallowing.
 
@@ -1764,13 +1764,13 @@ Now in Alumina it is very important to find out whether these crusts were produc
 
 You must here prescribe not for the eruption, but for the itching of the skin without eruption. Now in Mezereum, Arsenicum, Dolichos and Alumina the skin itches and he scratches until it bleeds, and then he gets relief.
 
-Of course after this there is an apparent eruption because crusts form. As soon as the healing begins the itching begins, and he is only relieved when the skin is raw. With the bleeding moisture of the skin there is relief of the itching.
+Of course after this there is an apparent eruption because crusts form. As soon as the healing begins the itching begins, and he is only relieved when the skin is raw and with the bleeding moisture of the skin there is relief of the itching.
 
 Now some of the books do not make the distinction between itching without eruption and itching with eruption, and hence mostly all young, doctors get to thinking that itching of the skin must always be associated with eruption, and make a mistake in figuring out what kind of an eruption it is.
 
 The skin thickens and indurates and ulcerates, and there are indurations under the ulcers. There is a very sluggish condition of both mucous membrane and skin with a tendency to induration.
 
-Thickening of the mucous membrane will be found anywhere; after the thickening come little ulcerations, and in the course of time indurations are formed at the base of the ulcers. The same thing is true of the skin. Dryness and burning through everything and may be said of all the mucous membranes and the skin in general.
+Thickening of the mucous membrane will be found anywhere; after the thickening come little ulcerations, and in the course of time indurations are formed at the base of the ulcers. The same thing is true of the skin. Dryness and burning run through everything and may be said of all the mucous membranes and the skin in general.
 
 Chronic granular lids. If we turn the eyelids down we will see that the mucous membrane is thickened. Sometimes this thickening or hypertrophy causes a turning out of the lids like ectropion.
 
@@ -1848,7 +1848,7 @@ Not many years ago the acetate of lead was commonly used by women for leucorrhoe
 
 When you see a remedy manufacturing and producing such a state upon the economy, growing that kind of mucous membrane that would favour fissures, you do not have to wait until you have cured a fissure with that remedy to find out if it will suit the case.
 
-You do not have to resort to the repertory to see what this remedy has done in fissure. From your general knowledge of the medicine, you will see that it ought to cure the patient, as it produces such a condition of the mucus membrane and skin as would be naturally found in one who has a fissure.
+You do not have to resort to the repertory to see what this remedy has done in fissure. From your general knowledge of the medicine, you will see that it ought to cure the patient, as it produces such a condition of the mucous membrane and skin as would be naturally found in one who has a fissure.
 
 The skin indurates and ulcerates and becomes clumsy and unhealthy and constipation is produced, and so, after studying the remedy in that way, you are not surprised if it cures a fissure.
 
@@ -2018,7 +2018,7 @@ This is not especially suitable for this copious, exhaustive sweats. It is the v
 
 Pile on the covers to make him sweat if you will, but he only gets hot and itching and does not sweat.
 
-Scanty sweat. Entire inability to sweat. Chronic dryness of skin with fissures. The skin becomes worn and ragged and fissured from its dryness. Great dryness of the thick skin over the back of the hands, and in cold weather the hands become cold and discolored.
+Scanty sweat. Entire inability to sweat. Chronic dryness of the skin with fissures. The skin becomes worn and ragged and fissured from its dryness. Great dryness of the thick skin over the back of the hands, and in cold weather the hands become cold and discolored.
 
 ## Ambra Grisea
 
@@ -2070,7 +2070,7 @@ A woman, when attended by a nurse, is unable to have a stool without sending the
 
 It is said in Natr. mur. that the patient cannot urinate in the presence of other persons.
 
-The urine will not start when anyone is around. That is a port of general feature of this remedy. Confusion of mind and embarrassment in the presence of other persons. Embarrassment in company. As soon as he goes into company there is flushing, trembling, nervous excitement and the thoughts vanish.
+The urine will not start when anyone is around. That is a sort of general feature of this remedy. Confusion of mind and embarrassment in the presence of other persons. Embarrassment in company. As soon as he goes into company there is flushing, trembling, nervous excitement and the thoughts vanish.
 
 With these symptoms the patient imagines that he is going out of his mind, and finally he settles down into a state of melancholy, sadness and despair, and does not want to live. He loathes his life and wants to die.
 
@@ -2080,7 +2080,7 @@ Such is the mental state of this prematurely old patient with broken down consti
 
 You readily see you have before you one who is going down hill and going into insanity of one form or another. A physician sees the forerunner of a great breakdown when he sees an Ambra grisea patient with the nervous mental state, the quivering, trembling and excitement in one who was once a strong, vigorous man.
 
-Some great business or domestic shock has come upon this patient. It is not the aspect you see when phthisis is coming on; you do not we the cachectic condition, but it is a prostration of the nervous system, a mental prostration.
+Some great business or domestic shock has come upon this patient. It is not the aspect you see when phthisis is coming on; you do not see the cachectic condition, but it is a prostration of the nervous system, a mental prostration.
 
 A man goes through the trial of one death after another in the family and there seems to be nothing remaining; he cannot look at it philosophically; he has lost his business and his friends and then he takes on dreaminess and wonders whether life is worth living.
 
@@ -2264,7 +2264,7 @@ He said it was true the heart was not vigorous, but there was no organic affecti
 
 Then a lung specialist was brought in, and later she was examined by all kinds of specialists. All of her organs were fully investigated, and it was announced that nothing was the matter with them; but the poor woman could not walk because of her sufferings and palpitating heart.
 
-She had a little dry, backing cough that did not amount to anything, but her chest was examined and there was nothing wrong with it.
+She had a little dry, hacking cough that did not amount to anything, but her chest was examined and there was nothing wrong with it.
 
 But after she had been in this continual fire for about three months, and was steadily failing, the side of the family that were my adherents prevailed against the others and I went to see her again.
 
@@ -2550,7 +2550,7 @@ Eruptions all over. Yellow vesicles are common. Intense itching of eruptions. Wa
 
 **Generalities:** You will be surprised, when studying full provings of this substance, to notice that all the symptoms seem to centre about the stomach; it does not matter much what kind of complaints he suffers from the stomach takes part in it.
 
-The pains disturb his stomach and bring, on nausea; with his headache he is sick at the stomach; with all complaints his stomach is out of order, and, on the other band, whenever he disorders his stomach he is sick all over. Complaints that manifest themselves through the stomach very frequently need this medicine.
+The pains disturb his stomach and bring on nausea; with his headache he is sick at the stomach; with all complaints his stomach is out of order, and, on the other hand, whenever he disorders his stomach he is sick all over. Complaints that manifest themselves through the stomach very frequently need this medicine.
 
 First in importance are the mental symptoms showing the type of constitution likely to need this remedy. It produces a very serious state in the mind, an absence of the desire to live. It is well known to physicians that the case is a serious one if the patient has no desire to live; life is a burden. When I hear a patient say:
 
@@ -2588,7 +2588,7 @@ A child with whooping cough will cough more after looking into the fire. Such th
 
 **Gout:** The whole gouty nature of the case seems to change so suddenly that you wonder where the more exterior symptoms have gone to, for all at once in a night or a day the patient commences to vomit and you have persistent vomiting, lasting days and weeks, until the gouty symptoms come back into the extremities.
 
-It is wonderful how quickly this old-fashioned metastasis will come on, this changing from one place to another. The gout suddenly ceases in the extremities and stomach symptoms come on, and you may call it gout in the stomach if you will.
+It is wonderful how quickly this old-fashioned metastasis will come on this changing from one place to another. The gout suddenly ceases in the extremities and stomach symptoms come on, and you may call it gout in the stomach if you will.
 
 **Catarrhal symptoms:** There are catarrhal symptoms in this remedy; catarrh of the nose, stomach, rectum, etc., and an increased flow of mucus from any of these localities from drinking sour wine and from taking cold.
 
@@ -3028,7 +3028,7 @@ Hypersensitive state of the liver; inflammation of the liver and spleen. Pain un
 
 All the complaints are likely to make the patient bend forward and flex the limbs, because the state of tension is painful.
 
-Sensitiveness of the stomach to touch. Over the whole abdomen she is so sore that touch is extremely painful; in all the inflammatory complaints of women the abdomen is very sore and painful. Soreness, distension and stinging burning pains through the abdomen. Burning beat in the stomach.
+Sensitiveness of the stomach to touch. Over the whole abdomen she is so sore that touch is extremely painful; in all the inflammatory complaints of women the abdomen is very sore and painful. Soreness, distension and stinging burning pains through the abdomen. Burning heat in the stomach.
 
 In the external abdomen there is an oedematous state. Dropsy, sometimes alone, sometimes with anasarca. Limbs swollen to the full extent, pitting upon pressure, the feet and limbs swollen, with burning, stinging and numbness in the limbs.
 
@@ -3070,7 +3070,7 @@ That is to say, it produces inflammation of the uterus and ovaries and dreadful 
 
 It even stops abortion. It will stop abortion after some miserable scoundrel has attempted to get rid of the offspring, and she has taken drugs and brought on pains, pains strong enough to expel the contents of the uterus, especially in the first, second and third months.
 
-A little haemorrhage has come on, a mere threatening, the membranes are not yet ruptured, but they soon will be, and she has stinging, burning pains, and lies uncovered and suffers from the heat, probably from the overdose of Ergot.
+A little haemorrhage has come on a mere threatening, the membranes are not yet ruptured, but they soon will be, and she has stinging, burning pains, and lies uncovered and suffers from the heat, probably from the overdose of Ergot.
 
 Apis will overcome this greatly to her regret. This kind of villainy prevails. But women have accidents and weakness whereby, in spite of the fact that they desire to hold their offspring, they are threatened with abortion, and Apis is a great friend to the prospective mother.
 
@@ -3096,7 +3096,7 @@ He has a pain in the stomach, and even vomits, from cold drinks. Pain in the abd
 
 Anyone who follows symptom hunting and does not distinguish between circumstances that relate to the patient and modalities that relate to symptoms cannot appreciate these two grand distinctions, where the one patient is aggravated from heat and the other one ameliorated by heat, in all complaints.
 
-The excretions are all diminished. The urine is scanty. The skin is dry. No matter what his complaints are, he cannot sweat. He feels if he could only perspire he would get well. There is no out throw of water. He drinks plentifully, and it goes in-to the cellular tissues to distend them, and he becomes dropsical.
+The excretions are all diminished. The urine is scanty. The skin is dry. No matter what his complaints are, he cannot sweat. He feels if he could only perspire he would get well. There is no out throw of water. He drinks plentifully, and it goes into the cellular tissues to distend them, and he becomes dropsical.
 
 He has a water constitution, one that takes in water and lets out none. He passes little water, and he perspires scantily or none at all; his skin is dry, sometimes hot, yet he is chilly.
 
@@ -3148,7 +3148,7 @@ What, when and how much, are left out. The modalities are left out, The finer se
 
 "Low-spirited and bewildered. Feels as if she could do nothing but cry."
 
-We do not know the affections of either the male or the female. We do not know the desires or aversions, mental or physical; and hence it may that this is only, a partial proving and suitable only for those complaints that show themselves upon the surface.
+We do not know the affections of either the male or the female. We do not know the desires or aversions, mental or physical; and hence it may be said that this is only, a partial proving and suitable only for those complaints that show themselves upon the surface.
 
 "Hydrocephalus, with great stupor."
 
@@ -3250,7 +3250,7 @@ Pulse small and irregular; almost pulseless. Disposed to faint whenever she atte
 
 No wonder that this remedy is a very deep acting remedy, for it has been used symbolically, and medically throughout all history.
 
-It has been a valuable substance throughout all history. It is an anti psoric and from its symptoms. I believe it to be an anti-sycotic. It goes into the life. Especially affects the nerves, nerves sheaths. Has complaints along the nerves.
+It has been a valuable substance throughout all history. It is an anti psoric and from its symptoms. I believe it to be an anti-sycotic. It goes deep into the life. Especially affects the nerves, nerve sheaths. Has complaints along the nerves.
 
 All cartilages in the body are affected by it. It produces a hypertrophy of cartilages, a thickening of the cartilaginous portions of joints, of the cartilage of the ears, and of the nose.
 
@@ -3296,7 +3296,7 @@ In the ear and nose the cartilage is thickened. The infiltration that belongs to
 
 It is on record as curing an epithelioma of the cervix uteri.
 
-Ulceration everywhere; but ulcers that have their beginning in the cartilaginous tissue and. break out through the cellular tissue, and copiously discharge. The ulcers infiltrate at. their base, and become hard.
+Ulceration everywhere; but ulcers that have their beginning in the cartilaginous tissue and break out through the cellular tissue, and copiously discharge. The ulcers infiltrate at their base, and become hard.
 
 Another marked feature is that it affects both testes, but it has a predominant action in the right. The left ovary and the right testis.
 
@@ -3330,7 +3330,7 @@ His limbs jerks up, his lower limbs twitch and jerk, then he gets out of bed and
 
 But it is an electric shock that causes the whole body to jerk. Anxious about the health. Thinks he is certainly breaking down, for he is growing weaker. He cannot walk, though he is growing increasingly restless. He cannot exercise mentally or physically without distress. From meditation or as soon as he enters a warm room he becomes dizzy and that is an exception belonging to a few of the head troubles and the sensorium; he usually is sensitive to cold. In the house when the room is close he becomes dizzy.
 
-It has been an astonishing feature in this remedy that precisely at the hour of noon a great many troubles come on, and the pains and Hess Chills. Pains in the ovary at noon. Dizziness with vertigo as if intoxicated.
+It has been an astonishing feature in this remedy that precisely at the hour of noon a great many troubles come on, and the pains and aches. Chills. Headaches. Pains in the ovary at noon. Dizziness with vertigo as if intoxicated.
 
 The headaches are frontal and occipital. One-sided brain affection. One-sided headaches. Violent neuralgia in the head upon one side at a time, as if deep in the brain, as if involving one-half of the brain, Mostly the headaches have been on the right side-the one-sided headaches.
 
@@ -3366,7 +3366,7 @@ Argentum met. is often indicated in such cases. This remedy has a very decided a
 
 But with it must go such nervous and mental symptoms as the remedy has, such as I have described. The patient looks sickly, pale, careworn, tired. A broken down patient. An Argentum met. patient is a sickly one who should have had a homoeopathic doctor years ago, but one who can, be patched up and benefited now if he has not gone too far.
 
-"Painful tension and drawing in the throat. Throat feels raw and Painful sore during expiration. This is extended into the larynx. soreness from breathing. Rawness from coughing in the larynx. Great quantities of gray mucus expectorated easily. Tension in the fauces on the right side."
+"Painful tension and drawing in the throat. Throat feels raw and sore during expiration. This is extended into the larynx. Painful soreness from breathing. Rawness from coughing in the larynx. Great quantities of gray mucus expectorated easily. Tension in the fauces on the right side."
 
 **Abdomen:** Argentum met. has abdominal troubles. Bruised, sore feelings in the abdomen. If these progress from a catarrhal inflammation of the mucous membranes to a general congestion of all the tissues in the abdomen, diarrhea comes on, or constipation of the most inveterate character, tuberculosis of the mesenteric glands, emaciation, weakness, trembling.
 
@@ -3384,7 +3384,7 @@ Another symptom here is of great importance: "Yellowish-greenish gonorrhea of an
 
 Now, it is a natural feature of gonorrhoea for the discharge to be yellow, or yellowish-green, and thick in the early stage, for it then to become lighter and lighter until it is whitish thick or thin, growing lighter in character until it becomes white and gleety. Argentum met. is the remedy when the discharge remains yellow.
 
-The pain has all ceased, and generally when the pain ceases the discharge soon begins to be lighter, but in the Argentum met. cases pain ceases, it becomes a passive discharge, the urethra loses its sensitiveness to pain, and the mucous membrane loses its sensation to a great extent, but the thick greenish or yellowish discharge remains. Now, in these thick passive discharges that are long-standing, old cases, we are very much troubled to find remedies.
+The pain has all ceased, and generally when the pain ceases the discharge soon begins to be lighter, but in the Argentum met. cases the pain ceases, it becomes a passive discharge, the urethra loses its sensitiveness to pain, and the mucous membrane loses its sensation to a great extent, but the thick greenish or yellowish discharge remains. Now, in these thick passive discharges that are long-standing, old cases, we are very much troubled to find remedies.
 
 These old stubborn cases that still remain yellow, and still remain thick. They will not yield to ordinary remedies-they come under a peculiar class of remedies. Argentum met., Alumina, Alumen, Sulphur. Ones not usually thought of in the early period, but the general constitutional state of the patient forms the character of his symptoms.
 
@@ -3524,7 +3524,7 @@ He suffocates from warm clothing, wants the door and windows open; cannot breath
 
 He dreads a crowd, dreads certain places.
 
-**Ulcerations:** Everywhere we find ulceration, but particularly upon the mucous membrane. The throat has ulcers in it, the eyelids, and of the cornea; ulceration of the bladder.
+**Ulcerations:** Everywhere we find ulceration, but particularly upon the mucous membrane. The throat has ulcers in it, ulceration of the eyelids, and of the cornea; ulceration of the bladder.
 
 Ulcers of the uterus, of the vagina and of the external soft parts. This tendency of ulcerate seems rather strange, peculiar that it should have in its pathogenesis such a tendency, when the old school has been using it to cauterize ulcers, and yet it heals them up.
 
@@ -3756,7 +3756,7 @@ A horror in the night when there is nothing to come upon the patient; a horrible
 
 There symptoms come in the low forms of disease, in the typhoid type of disease. Many of the remittent fevers, if badly treated, or permitted to run their course under bad nursing, will turn into a continued fever.
 
-While the true idiopathic typhoid comes on after many weeks of gradual decline, a symptomatic typhoid may come on suddenly, and it has symptoms of graver form than ordinary typhoid. The idiopathic typhoid will seldom kill and will generally run to a favourable termination, if the doctor stays at home.
+While the true idiopathic typhoid comes on after many weeks of gradual decline, a symptomatic typhoid may come on suddenly, and it has symptoms of graver form than the ordinary typhoid. The idiopathic typhoid will seldom kill and will generally run to a favourable termination, if the doctor stays at home.
 
 This remedy is full of delirium in these low types of fever, even delirium like delirium tremens. "Hopelessness; indifference."
 
@@ -3798,9 +3798,7 @@ With Rhus tox. the uneasiness passes off after moving, and with Arnica the soren
 
 The Arnica patient bleeds easily; his blood vessels seem to be relaxed, and extravasation is easy. Blue spots come easily upon the skin, and internally the mucous membranes bleed easily.
 
-The parts that are inflamed bleed. He is subject to catarrhal conditions, and if he has a cough he bleeds easily. The mucus that is hawked out of the chest and throat is streaked with blood, or dotted with tiny pin-
-
-head blood clots. His urine contains blood and there is bleeding from the various orifices of the body. There is not sufficient tone in the fibres of the vessel to hold the blood within the vessel walls and they ooze.
+The parts that are inflamed bleed. He is subject to catarrhal conditions, and if he has a cough he bleeds easily. The mucus that is hawked out of the chest and throat is streaked with blood, or dotted with tiny pin-head blood clots. His urine contains blood and there is bleeding from the various orifices of the body. There is not sufficient tone in the fibres of the vessel to hold the blood within the vessel walls and they ooze.
 
 All over the body there is a lameness, and soreness, and a feeling as if bruised; a rheumatic lameness; the joints are swollen, sore and lame. If an acute disease becomes more severe, we shall find the mental symptoms as described, and there will be an increasing soreness in the muscles. Arnica is very suitable for that sore, bruised condition of the body, therefore Arnica is a very important remedy in injuries, bruises and shocks, injuries of joints, injury of the back with lameness and soreness.
 
@@ -3824,7 +3822,7 @@ You will see the old grandfather sit off in a corner of the room, and if he sees
 
 Give him a dose of Arnica and he will let Johnnie run all over him. He does not want to be touched or approached; he feels that anything that is coming towards him is going to hurt him. He is extremely sensitive, his joints are sore and tender, and he is afraid they will be hurt.
 
-This medicine has erysipelatous inflammation. If you have an erysipelas of the face with the mental state described, with soreness, and sort bruised feeling all-over the body, you need not wait longer before prescribing Arnica.
+This medicine has erysipelatous inflammation. If you have an erysipelas of the face with the mental state described, with soreness, and sore bruised feeling all-over the body, you need not wait longer before prescribing Arnica.
 
 The sore, bruised feeling all over the body, and the mental state, would decide in favor of Arnica against any medicine.
 
@@ -4064,7 +4062,7 @@ That would go away in the night and she would wake up the next morning with cons
 
 Alumen cured. In many of these anti-psoric remedies we have an alternation of states. This illustrates the necessity for getting the symptoms of all the states that present themselves for cure, otherwise you will many times prescribe in a chronic case of psoric character and temporarily relieve it, when back comes another aspect of it.
 
-You have only hastened the disease a little faster than it would go if let alone. But that is not homoeopathic prescribing. Be sure, when a remedy presents one state, that it is a clearly indicated in the other state, otherwise that remedy is not the similimum.
+You have only hastened the disease a little faster than it would go if let alone. But that is not homoeopathic prescribing. Be sure, when a remedy presents one state, that it is as clearly indicated in the other state, otherwise that remedy is not the similimum.
 
 You must hunt until you find the remedy that has both states, or you will be disappointed. We sometimes do not discover this alternation of states until we have brought it back two or three times by incorrect prescribing.
 
@@ -4078,7 +4076,7 @@ You will find running through certain remedies, as a part of their nature, that 
 
 We find in Podophyllum the peculiar feature that the headaches alternate with diarrhea; he is subject to sick headaches and to diarrhea, and one or other will be present.
 
-In Arnica the mental symptoms alternate with uterine symptoms. The uterine symptoms, when observed, look like Arnica, but these go away in the night and mental symptoms come on, the mind being heavy, gloomy and cloudy.
+In Arnica the mental symptoms alternate with uterine symptoms. The uterine symptoms, when observed, look like Arnica, but these go away in the night and mental symptoms come on the mind being heavy, gloomy and cloudy.
 
 When you have remedies that have these manifestations it requires a greater depth of vision to see the alternation of states, because these things are not always brought out in the proving, for the reason that one prover had one group of symptoms, and another.
 
@@ -4100,7 +4098,7 @@ They are often attended with great pallor, nausea, prostration, deathly weakness
 
 A peculiar feature of the thirst is that there is no thirst during the chill except for hot drinks; during the heat there is thirst little and often for water enough to moisten the mouth, which is almost no thirst, and during the sweat there is thirst for large drinks.
 
-Thirst begins with the beginning of the heat and increases as the dryness of the mouth; he desires only to moisten the mouth until he breaks out in a sweat, and then the thirst becomes a desire for large quantities very often, and the more he sweats the more desire he has for water.
+Thirst begins with the beginning of the heat and increases as the dryness of the mouth; increases he desires only to moisten the mouth until he breaks out in a sweat, and then the thirst becomes a desire for large quantities very often, and the more he sweats the more desire he has for water.
 
 The headache is during the chill; it increases, so that it becomes a congestive, throbbing headache during the chill and heat; this grows better towards the end of the heat as the sweat breaks out, it is ameliorated by the sweat.
 
@@ -4530,7 +4528,7 @@ This is one of the most striking medicines as an illustration of the keynote sys
 
 Cina has more of the congestive and nerve symptoms. The nostrils are really so sore from the acridity of the fluids inside of the nose that it feels as if the nostrils were filled with fire. This is the language of the patients who narrate their symptoms in an Arum triphyllum case.
 
-They come into the office with a sore, raw nose, and it tingles and tickles and he cannot let it alone. Fluids run down over the lip and excoriate. The glands of the neck are often enlarged. When he takes cold in one nose there is soreness of the neck and parotid gland.
+They come into the office with a sore, raw nose, and it tingles and tickles and he cannot let it alone. Fluids run down over the lip and excoriate. The glands of the neck are often enlarged. When he takes cold in the nose there is soreness of the neck and parotid gland.
 
 Desire to bore into the nose. This boring into the side of the nose is another symptom and differs from the one "boring the nose."
 
@@ -4568,7 +4566,7 @@ There are other times that the stool is dark brown, watery, thin. As is usual, t
 
 Again, we notice rawness over the coccyx. A moisture and rawness from acrid fluid in the posterior part of the fissure back of the anus so that over the coccyx and back of the anus there is rawness and acrid moisture.
 
-**Voice:** The voice comes in for art extensive part of the trouble. It has been found especially to relate to singers and public speakers.
+**Voice:** The voice comes in for an extensive part of the trouble. It has been found especially to relate to singers and public speakers.
 
 At times when a lawyer has had a long case and he is making a final effort, and has been speaking three or four hours, and while in a sweat has got into a draft or gone out, he finds himself hoarse and cannot finish his speech, a dose of Arum triph. will enable him to go on with his speech in a clear voice.
 
@@ -4740,7 +4738,7 @@ It has also deficiency of milk.
 
 "Asthmatic attacks at least once a day all her life, brought on by every bodily exertion, coition, especially by every satisfying meal."
 
-Attacks of dyspnoea after coition, like Ambra. "Obstinate titillating cough &lt; at night."
+Attacks of dyspnoea after coition, like Ambra. "Obstinate titillating cough < at night."
 
 Many of these complaints are worse at night; nightly aggravations. Syphilitic complaints are commonly worse at night and such anti syphilitic remedies as Mercurius, Staphysagria, Hepar, Nitric acid, etc. are all worse at night.
 
@@ -4868,11 +4866,11 @@ There is one grand feature running through the Aurum state; it is the manner in 
 
 This patient ranks along with Pulsatilla as to temperature; but Aurum is not mild, gentle and yielding, he is obstinate, irascible, the very opposite of the Pulsatilla patient.
 
-"Generally &gt; growing warm." This is in connection with the headaches. "Cold water ameliorates pain in eyes."
+"Generally > growing warm." This is in connection with the headaches. "Cold water ameliorates pain in eyes."
 
 "Averse to uncover," but he desires open air like Pulsatilla.
 
-"Warm air, asthma &lt;."
+"Warm air, asthma <."
 
 Many symptoms disappear after washing, especially cold washing; but whenever the patient is suffering from great excitement, turmoil and vascularity, constitutional orgasm, pulsations, he wants the doors and windows open, wants to get out in the cool air; wants the clothing thrown off.
 
@@ -4932,7 +4930,7 @@ Pains round about the eye; the thin plate bones, and the skull bones are all sen
 
 "Caries of mastoid process, obstinate otorrhoea."
 
-"Caries of the bones of the ear. ' "Parotids swollen, painful to touch, very sensitiveness to noises but music relieves". Humming, buzzing and rushing in ears. Rushing like the rushing of wind and falling water. "Annoying dryness in ears and nose."
+"Caries of the bones of the ear. ' "Parotids swollen, painful to touch, oversensitiveness to noises but music relieves". Humming, buzzing and rushing in ears. Rushing like the rushing of wind and falling water. "Annoying dryness in ears and nose."
 
 This is all like the complaints to of syphilis, which are cured by Aurum, but Aurum also corresponds to and has cured many times otorrhoea following scarlet fever where there is even entire loss of the drum of the ear and loss of the bones.
 
@@ -4946,7 +4944,7 @@ They would examine the ear to see whether it is intact or not; and if it is not,
 
 Homoeopathy teaches that the patient should be treated and the patient only, after which the organs and tissues become normal. The whole duty of the physician is to restore health to the patient. We have the nose specialists with their local applications.
 
-These things will only bring on bone disease, and tubercular troubles; they stop the discharge from the nose, and of nature must have a vent somewhere and so she establishes a discharge in the chest; the trouble progresses from the mucous membranes into the lung, into the parenchyma of the lungs, and is often of a tubercular character, and then these men tell you the bacilli have come.
+These things will only bring on bone disease, and tubercular troubles; they stop the discharge from the nose, and of course nature must have a vent somewhere and so she establishes a discharge in the chest; the trouble progresses from the mucous membranes into the lung, into the parenchyma of the lungs, and is often of a tubercular character, and then these men tell you the bacilli have come.
 
 This is spurious science. Clean, healthy tissues are the only safeguard.
 
@@ -5208,7 +5206,7 @@ Pains in the eyes, and back of the eyes. So it has with hearing. So it has with 
 
 The countenance shows that. The eyes show it, the face shows it. And these are the symptoms: "Dark red with besotted appearance. Hot and perceptibly flushed; dusky."
 
-That tells the whole story. Burning; beat in the face.
+That tells the whole story. Burning; heat in the face.
 
 "Critical sweat on forehead and face. Anxious, frightened look."
 
@@ -5614,7 +5612,7 @@ Painful swelling of glands. Dropsical swelling after scarlet fever; tension, tre
 
 Complaints and symptoms grow worse in wet weather. It is the natural complement of Conium in glandular affections and it is very similar, but much deeper acting.
 
-**Mind:** Easily angered. Anxiety in the evening; about the future; with nausea; retching and pressure in the stomach. It is useful ill children who are slow to learn or understand; children do not desire to play like other children.
+**Mind:** Easily angered. Anxiety in the evening; about the future; with nausea; retching and pressure in the stomach. It is useful in children who are slow to learn or understand; children do not desire to play like other children.
 
 Concentration impossible. The locality around him seems strange, transformed; timid and cowardly; delusion that he walks on his knees. Dullness of mind.
 
@@ -5696,7 +5694,7 @@ Enlarged testes. Induration of testes Inflammation of testes from suppressed gon
 
 Voice is hoarse, husky and weak. Respiration is fact, anxious, asthmatic, deep, difficult, with cough, and she must sit up; rattling, short.
 
-Cough in daytime, morning, evening, night, before midnight; asthmatic, dry, chronic dry cough of scrofulous children; front irritation in larynx and trachea; rattling, whooping cough.
+Cough in daytime, morning, evening, night, before midnight; asthmatic, dry, chronic dry cough of scrofulous children; from irritation in larynx and trachea; rattling, whooping cough.
 
 Expectoration in the morning; mucous; copious; muco-purulent expectoration from bronchial tubes; yellow.
 
@@ -5726,7 +5724,7 @@ Inflammation of skin. Itching. Swelling and tension. Whole body covered with sma
 
 The complaints of Belladonna come on suddenly, run a regular course, and subside suddenly. The pains and suffering come on suddenly and with great violence, and subside suddenly.
 
-Colds ultimate rapidly, run a sharp course, a course of great violence, and subside sudden. Belladonna especially affects the whole vascular system, the heart, lungs, brain and nervous system.
+Colds ultimate rapidly, run a sharp course, a course of great violence, and subside suddenly. Belladonna especially affects the whole vascular system, the heart, lungs, brain and nervous system.
 
 Among the earliest conditions to examine is the heat. It has inflammations of all the organs, especially the brain, lungs, and liver.
 
@@ -5798,19 +5796,19 @@ But then we will notice the throbbing. The temporal arteries and the carotids pu
 
 It is one of the most painful of remedies. It is so sensitive to pain. So sensitive that he suffers more than ordinary people do from the pain.
 
-And, remember, the pains comes suddenly, they remain longer or shorter, and they go suddenly. They do this in neuralgia; they do this in inflammatory conditions, they do it in inflamed organs; they do it wherever they come.
+And, remember, the pains come suddenly, they remain longer or shorter, and they go suddenly. They do this in neuralgia; they do this in inflammatory conditions, they do it in inflamed organs; they do it wherever they come.
 
 Pains, tear, shoot, burn, and sting, and press, and smart, all at once. All of these characteristics are bundled up into one bundle, so that he suffers.
 
 All of his pains are worse from motion, worse from light, worse from a jar, worse from cold. He wants to be wrapped up warmly, and is worse from any exposure or a draft.
 
-The headaches are like many of the other pains; it feels as if the brain was going up and down, tearing and burning at every step he takes, and from every motion of the eyes, or turning the eyeballs, or going up stairs, rising from, his seat, or sitting down; all motion creates violent pains; feels as if the head would burst, as if the eyes would be pressed out. If he moves he starts the heart to pulsate on his sore parts and he calls them "hammering pains."
+The headaches are like many of the other pains; it feels as if the brain was going up and down, tearing and burning at every step he takes, and from every motion of the eyes, or turning the eyeballs, or going up stairs, rising from his seat, or sitting down; all motion creates violent pains; feels as if the head would burst, as if the eyes would be pressed out. If he moves he starts the heart to pulsate on his sore parts and he calls them "hammering pains."
 
 Wherever that pain is he cannot have it touched. If it is touched it will throb. If uncovered it will become worse. If some one walks across the floor, the jar makes him worse.
 
 The jar of the bed, if he is in bed, is a common aggravation of Bell. If he is so sick that he is in bed, the jar of the bed makes all of his complaints worse.
 
-You go to the bedside of a patient suffering from, an inflamed liver, and he will not let you put your hand on the bed, for the jar makes him worse. If the pain is in the abdomen; if it is an inflamed uterus; if it is in confinement, it is the same.
+You go to the bedside of a patient suffering from an inflamed liver, and he will not let you put your hand on the bed, for the jar makes him worse. If the pain is in the abdomen; if it is an inflamed uterus; if it is in confinement, it is the same.
 
 This aggravation from the jar is such a marked feature that it is not always confined to inflammations. It is often a modified in a state of nervous hyperesthesia.
 
@@ -5924,7 +5922,7 @@ This increase sensitiveness especially applies to the scalp. We notice it partic
 
 There are some remedies that correspond to extreme irritation in very sensitive natures; like Hepar, where she faints with the pain; like Nitric acid, when cannot bear the noise of vehicles going along the street, because it creates such violent sufferings; like Coffea, where footsteps aggravate all the complaints; he was so sensitive to pain that the noise of one entering the door when he was on the third floor aggravated his sufferings intensely, though no one else could hear it.
 
-In Nux vomica, even the sound of footsteps increases the pain all over the body. Bell. has in its nature all this sensitiveness to pain. It is a part of the general sensorium; the who bodily state is intensified.
+In Nux vomica, even the sound of footsteps increases the pain all over the body. Bell. has in its nature all this sensitiveness to pain. It is a part of the general sensorium; the whole bodily state is intensified.
 
 The Chamomilla patient is oversensitive to pain, but we do not need to sympathize with the Chamomilla patient, he will fight it out himself. But you will pity the Belladonna patient, you will pity the Pulsatilla patient, and the Nitric acid patient.
 
@@ -6190,7 +6188,7 @@ The urine is diminished, bloody, sometimes pure blood, or little blood clots. A 
 
 "The urine looks as if mixed with brick dust, or streaks. Strongly acid."
 
-There is a spasmodic retention of urine and. there is involuntary passing of urine. Dribbling of urine in brain troubles. During sleep, dribbling of urine.
+There is a spasmodic retention of urine and there is involuntary passing of urine. Dribbling of urine in brain troubles. During sleep, dribbling of urine.
 
 Dreams that he is passing urine, and involuntarily passed it. Retention of urine after shock, or from congestion of the brain, or after confinement. Bladder full; great pain; great sensitiveness.
 
@@ -6204,7 +6202,7 @@ Dreams of a fright, which causes a starting, and she wets the bed. On going to s
 
 Bell. is rich with such strange little peculiarities; but it only shows the general spasmodic condition and the general irritability of the whole Belladonna constitution.
 
-We see those strange conditions and states, the irritability in all parts of the body, especially where there are sphincters, where there are circular fibres clutching in thy neck of the bladder; clutching at the mouth of the vagina; constriction of tubes. Constriction of the uterus.
+We see those strange conditions and states, the irritability in all parts of the body, especially where there are sphincters, where there are circular fibres clutching in the neck of the bladder; clutching at the mouth of the vagina; constriction of tubes. Constriction of the uterus.
 
 Here we see a special marked feature of it, in the neck of the bladder. It has more troubles in the woman than in the man; that is in the symptoms and conditions in relation to the female sexual organs, and to parturition, and to the breasts, and during the period of gestation there are many conditions where Belladonna will be needed. It is really an important remedy for the nervous sensitive woman, the woman of irritable fiber.
 
@@ -6302,7 +6300,7 @@ It is simply a dry, denuded larynx, with rawness and scraping; an inflamed condi
 
 **Chest:** Asthmatic condition, with spasmodic breathing. And again, these symptoms seem to involve the whole chest. Oppression of the chest. Asthma in hot damp weather.
 
-The Belladonna cough comes on from clutching in the larynx. As it a little speck of something had crept into the larynx; a little dust, or a little food, or a drop of water had gotten into the larynx, and he coughs.
+The Belladonna cough comes on from clutching in the larynx. As if a little speck of something had crept into the larynx; a little dust, or a little food, or a drop of water had gotten into the larynx, and he coughs.
 
 "Dry, spasmodic cough."
 
@@ -6340,7 +6338,7 @@ He wants to lie perfectly still is very much worse from motion and has considera
 
 It is especially suitable to those that are very sensitive to cold, who cannot bear the least uncovering, cannot bear a draft, very sensitive to the motion, of the covers, and ameliorated by heat.
 
-The very stamp and character of Bell. is in its rheumatic state, like it is in all of its other complaints. It is the patient that has given Bell. that character in provings; it is the patient that gives disease that character when he had it, and it is only the fulfillment of the Law of Similars when these come, together, and the remedy annihilates the sickness.
+The very stamp and character of Bell. is in its rheumatic state, like it is in all of its other complaints. It is the patient that has given Bell. that character in the provings; it is the patient that gives disease that character when he has it, and it is only the fulfillment of the Law of Similars when these come, together, and the remedy annihilates the sickness.
 
 Inflammation of the joints, coming on from sudden exposure of that particular joint. Or from a severe attack of cold one joint becomes inflamed. A trouble that is localizing itself. It may be any joint of the body, for Bell, affects all the joints.
 
@@ -6474,7 +6472,7 @@ In boys that are big-headed, plump, plethoric, precocious, that take cold easily
 
 At first helped; very commonly if you look carefully into the case it will turn out to be a Calc. case. It is so common for Calc. to relate in this way to Bell.
 
-Now-a-days we frequently find the dry, backing cough in the hands of doctors who have given too much Lachesis.
+Now-a-days we frequently find the dry, hacking cough in the hands of doctors who have given too much Lachesis.
 
 Lachesis is commonly given to over-sensitive women, and it produces many of those conditions; it sometimes cures great troubles, but it leaves behind for weeks a dry, hacking cough that keeps her from sleeping.
 
@@ -6488,7 +6486,7 @@ After the abuse of Bell., Calc. comes in as one of the natural antidotes.
 
 ## Benzoicum Acidum
 
-C6H5\_CO2H.
+C6H5-CO2H.
 
 Whenever we see in the nature of a remedy a well-defined state and condition of the human system pointed out by certain distinctive groups of symptoms we may know that there is such a diseased state in the human family.
 
@@ -6498,11 +6496,9 @@ They simply call up in a single individual something that the individual has, an
 
 Things are so adjusted that everything is for use. There may be conditions in the human race that we, as yet, know no remedy for.
 
-We see certain groups of peculiar symptoms frequently repeat themselves and we know they are representatives of a state of the economy, but up to this day we may not have seen in the Materia
+We see certain groups of peculiar symptoms frequently repeat themselves and we know they are representatives of a state of the economy, but up to this day we may not have seen in the Materia Medica their counterpart.
 
-Medica their counterpart.
-
-In medicines we have the exact counterpart the diseases of the human race.
+In medicines we have the exact counterpart of the diseases of the human race.
 
 **Gouty constitution:** Now this remedy has a state and condition that is sometimes called the gouty constitution, the uraemic or the lithaemic constitution, and, these cases are very difficult to manage, as the state is so persistent. It is one of the manifestations of Psora.
 
@@ -6612,7 +6608,7 @@ The urinary symptoms are too numerous to read.
 
 "Foetid urine."
 
-"Urine of a very repulsive odor." "Effervescing with hydrochloric acids." The odor is sometimes like hartshorn; it is pungent; these are only efforts to describe the strong smell.
+"Urine of a very repulsive odor." "Effervescing with hydrochloric acid." The odor is sometimes like hartshorn; it is pungent; these are only efforts to describe the strong smell.
 
 "Urine dark brown."
 
@@ -6750,11 +6746,11 @@ As to the heart, the pulse becomes slow. Very often it is slowed down astonishin
 
 It is not a strange thing for a child in the dark to imagine all sorts of things, because they have heard graveyard stories from old people; but with this remedy between the daylight and darkness he sees ghosts, imaginary forms - coming round him. It has melancholy, apathy, prostration of mind.
 
-**Head:** Some dizziness. The headaches are of the game character as the general pains in uraemic subjects, where there is plenty of sand in the urine, red pepper deposit.
+**Head:** Some dizziness. The headaches are of the same character as the general pains in uraemic subjects, where there is plenty of sand in the urine, red pepper deposit.
 
 The head comes in for its share of these wandering, pains. Stitching, tearing, twinging in the scalp; in the skull; in the eyes, ears, back of the head. Burning pains.
 
-"A feeling in the head, as if it was becoming large," is a peculiar symptom; a puffy sensation.
+"A feeling in the head, as if it was becoming larger," is a peculiar symptom; a puffy sensation.
 
 Always putting the hand to the head; it feels as if he had on a skull-cap. It fits down over the brow, and it is not an uncommon thing with such patients to put the hand to the head to take off the cap.
 
@@ -6776,7 +6772,7 @@ That is a description of a sick face. Berberis has been very useful in phthisica
 
 When the fistula has been closed, these pains will come if it is a Berberis case. The kidney manifestations will come on, or the liver manifestations, or the enfeebled heart, or these wandering pains.
 
-At one time feverish, full of pains, with violent thirst; alternating with the very opposite state. Prostration land - aversion to water. Want of appetite at one time; canine hunger at another.
+At one time feverish, full of pains, with violent thirst; alternating with the very opposite state. Prostration and aversion to water. Want of appetite at one time; canine hunger at another.
 
 The stomach is disordered, digestion is slow and feeble, and we have manifestations usually known to patients as "bilious."
 
@@ -6900,7 +6896,7 @@ So it is in Borax that a great change may occur at 11 P.M.; this state of anxiet
 
 "Fretful, ill-humored, indolent" state increased until there is a stool and relieved by stool.
 
-"He starts on hearing an anxious cry;" on hearing an unexpected noise, on bearing something drop from a chair to the floor, or if a door opens unexpectedly.
+"He starts on hearing an anxious cry;" on hearing an unexpected noise, on hearing something drop from a chair to the floor, or if a door opens unexpectedly.
 
 This is all in keeping with the nature of Borax. If you compare Borax with other Natrums you will find an astonishing likeness in the nervous excitability; Natrum carb. and Natrum mur.
 
@@ -6916,7 +6912,7 @@ A further examination of the sensorium shows: "Vertigo and fullness in head on d
 
 This is a form of the same anxious feeling. This remedy has a good deal of vertigo, sometimes constant vertigo, which is made so intense on downward motion that he must sit still, and do nothing.
 
-It has many congestive headaches, pressive headaches and much beat in the head.
+It has many congestive headaches, pressive headaches and much heat in the head.
 
 **Eyes:** There are many eye symptoms.
 
@@ -7108,7 +7104,7 @@ It has febrile conditions along with these catarrhal states. Great nervous excit
 
 Croupy manifestations. Running through most of the complaints there is palpitation.
 
-**Mind:** Palpitation with nausea, palpitation with headache, palpitation with various kinds of nervous excitement. So weak is be gradually becoming that he has an "aversion to every kind of work; to reading.
+**Mind:** Palpitation with nausea, palpitation with headache, palpitation with various kinds of nervous excitement. So weak is he gradually becoming that he has an "aversion to every kind of work; to reading.
 
 Takes no interest in household duties."
 
@@ -7224,7 +7220,7 @@ Each one is accompanied with its own sound, and the instant you hear it you real
 
 If you allow the patient to describe it he always calls it by the wrong name. The patient knows very little about this part except that it is the throat, and if he is drawing mucus from the throat, or scraping it from the larynx, he always calls it the throat.
 
-But the physician must waive all that and observe as to sound. So let each one go alone by himself and make all these noises that he bears people make, and then realize for himself what part it is he is scraping.
+But the physician must waive all that and observe as to sound. So let each one go alone by himself and make all these noises that he hears people make, and then realize for himself what part it is he is scraping.
 
 It may seem ludicrous, but how else will you learn about it? It is just as important to figure out these sounds as it is to figure out what a child needs by its sounds and motions. It is impossible to get the symptoms and wants of a child except by interpreting its motions.
 
@@ -7336,7 +7332,7 @@ The effort to talk will be attended with horror. At the beginning of complaints 
 
 "The patient is almost unconscious;"
 
-you look at him, the face is puffed and purplish, he seems to be dazed, there appears to be a short of venous stasis all over the body, but especially about the face; his countenance is almost that of an imbecile, yet he is perfectly capable of talking, although he has an aversion to it and appears to outsiders to ignore everything that is said.
+you look at him, the face is puffed and purplish, he seems to be dazed, there appears to be a sort of venous stasis all over the body, but especially about the face; his countenance is almost that of an imbecile, yet he is perfectly capable of talking, although he has an aversion to it and appears to outsiders to ignore everything that is said.
 
 This sometimes comes on apparently in a short time; the patient awakens in the morning with a dull, congestive headache and a stupid feeling in the head; dulness of mind so that he cannot work, and this feeling gradually increases; such a state is sometimes the forerunner of a serious illness.
 
@@ -7446,7 +7442,7 @@ you do not have to work long upon that case, because more than likely Staph. wil
 
 Bryonia has dizziness; the dizziness is worse in a warm room. You will notice, as I go through, that in everything of a nervous nature, nervous excitement, and commonly the bodily state, the patient is worse from a warm room, worse from too much clothing, worse from the warmth of the bed, wants the windows open, wants to breathe fresh, cool air.
 
-He suffers more than ordinary persons, from a stuffy room. Persons who are subject to Bryonia conditions in church, at the opera, in close warm rooms, like Lycopodium. Girls that faint every time they go to church are relieved by Ignatia.
+He suffers more than ordinary persons, from a stuffy room. Persons who are subject to Bryonia conditions suffer in church, at the opera, in close warm rooms, like Lycopodium. Girls that faint every time they go to church are relieved by Ignatia.
 
 **Head:** We commence now with the study of the head.
 
@@ -7564,7 +7560,7 @@ In Arum triphyllum, there is marked picking of the nose and lips; they pick and 
 
 "Tearing, stitching toothache while eating;" from warm drinks, from warm foods, worse in a warm-room, wants cold foods in the mouth, wants to be in cold air, but worse from motion.
 
-"Toothache &gt; by cold water or lying on painful side." Pressing hard upon the painful tooth ameliorate it. "Toothache &lt; from smoking."
+"Toothache > by cold water or lying on painful side." Pressing hard upon the painful tooth ameliorate it. "Toothache < from smoking."
 
 You see how the relief from cold and aggravation from heat go along with us; we shall keep reiterating these modalities that affect the patient as a general state, and we shall see as we go through that nearly all his symptoms are worse from motion, worse from heat, etc.
 
@@ -7676,7 +7672,7 @@ He cannot be raised up in bed because of the nausea, and if he persists in risin
 
 Sensitiveness of the pit. of the stomach, and sensitiveness Over the whole abdomen. This is commonly relieved by heat, although the patient himself wants to lie in a cool room.
 
-The heat of the room is oppressive, yet beat applied is agreeable. Every inspiration, every motion of the chest greatly aggravates these pains, so that you will find a Bryonia patient shortening' up his breathing instead of breathing deep. He keeps that up until he cannot stand it any longer, and then he takes a long breath that causes groaning.
+The heat of the room is oppressive, yet heat applied is agreeable. Every inspiration, every motion of the chest greatly aggravates these pains, so that you will find a Bryonia patient shortening up his breathing instead of breathing deep. He keeps that up until he cannot stand it any longer, and then he takes a long breath that causes groaning.
 
 Gastric inflammatory affections and disordered stomach, gastric affections in young girls from suppression of the menstrual flow, gastritis, gastroenteritis.
 
@@ -7790,7 +7786,7 @@ If you will only read the text carefully and make application of what has been s
 
 The little glands along the back of the toad's neck, when squeezed with forceps, ooze a secretion which is soluble in alcohol and has been proved, this is the subject we will now consider.
 
-Bufo satyhienis is the one I use in practice. Bufo is a wonderful medicine, it profoundly affected the mind and especially the intellectual faculties, including confusion of mind and loss of memory until the patient gradually goes towards a state of imbecility.
+Bufo satyhienis is the one I use in practice. Bufo is a wonderful medicine, it profoundly affects the mind and especially the intellectual faculties, including confusion of mind and loss of memory until the patient gradually goes towards a state of imbecility.
 
 The greatest use of this medicine will be found in nervous conditions, throbbings, jerking and spasmodic condition of muscles, ulceration of the skin and mucous membranes, and all this in such patients as are tending towards a state of imbecility, a state of confusion or weakness of mind.
 
@@ -7930,7 +7926,7 @@ Burning in the genital organs, in the ovaries, and rending, tearing pains that e
 
 All these conditions are curable!
 
-"Burning beat and stitches in ovaries."
+"Burning heat and stitches in ovaries."
 
 "Distending, burning pains or cramps in uterus."
 
@@ -7956,7 +7952,7 @@ When the girl lies in an unconscious condition during the menstrual period and h
 
 Bufo has been a great palliative in cancer of the mammae, for the burning pains and for the blisters that form roundabout; large, yellow blisters; blisters that fill with yellow, serous discharge; it has been especially useful when the milk is mixed with blood.
 
-**Larynx and chest:** It corresponds to the low form of inflammation of the blood-vessels, like milk leg, when the veins feet like whipcords in the thighs.
+**Larynx and chest:** It corresponds to the low form of inflammation of the blood-vessels, like milk leg, when the veins feel like whipcords in the thighs.
 
 " : : : : " Burning, excoriation in larynx.
 
@@ -7978,7 +7974,7 @@ It has those low forms of disease which must develop when outward manifestations
 
 The nature of the Bufo constitution is such that it is capable of giving out symptoms similar to those produced by low forms of disease.
 
-He is not likely to live to be old, he A likely to break down at forty. She comes to her end by cancer of uterus or breast, or by imbecility. He comes to his end with low forms of disease, malignant manifestations. This medicine, therefore goes into the very life.
+He is not likely to live to be old, he is likely to break down at forty. She comes to her end by cancer of uterus or breast, or by imbecility. He comes to his end with low forms of disease, malignant manifestations. This medicine, therefore goes into the very life.
 
 Children develop an unusual tendency to low forms of chronic disease; they do not possess a good healthy nature, a good sound brain; but they are feeble, they break out with eruptions, they go into consumption. Persons of twenty-five have a tendency to break down, and when the symptoms look like those of Bufo this medicine will, in a wonderful way, make that constitution all over.
 
@@ -8116,11 +8112,11 @@ It has fever, but it has these without fever. But with Bell. when you have these
 
 The patient has choking about the neck, as from a tight collar. Constriction; tension of the skin and muscles everywhere. Choking about the neck with constriction of the heart. Choking about the neck in hysteria;
 
-globus hystericus; a lump or ball coming up into the throat, and she constantly swallows and choked and she goes into cramps with great numbness of the left arm.
+globus hystericus; a lump or ball coming up into the throat, and she constantly swallows and chokes and she goes into cramps with great numbness of the left arm.
 
 Cramping especially of the left arm. Complete numbness of the left arm along with cardiac conditions in the history of rheumatism and in hysteria. The history of rheumatism goes well to fill up the Cactus case. The face is flushed bright red, becoming blue. With weakness of the heart it is blue, blue lips.
 
-We need Cactus for a patient that has constriction about the neck, with congested head, blue face, and lips mottled, numbness of the left band, constriction of the heart. The left hand mysteriously weak, or is numb, tingling and crawling, like a formication.
+We need Cactus for a patient that has constriction about the neck, with congested head, blue face, and lips mottled, numbness of the left hand, constriction of the heart. The left hand mysteriously weak, or is numb, tingling and crawling, like a formication.
 
 **Congestion and hemorrhages:** Another thing running all through the remedy is its hemorrhages. That is not surprising. Any medicine that has such cardiac conditions and such vascular conditions will at times have more or less relaxation of blood vessels, and it would be quite in the nature of it to bleed. It has hemorrhages of two kinds. Hemorrhage from vascular relaxation accompanying cardiac and vascular conditions, and hemorrhage from violent congestion of a part.
 
@@ -8172,7 +8168,7 @@ It will postpone death.
 
 Often this pain shoots down the left hand, is attended with numbness, and sometimes with swelling. Numbness, tingling, swelling.
 
-"Dull pain in the heart. Heavy pain in, the heart, aggravated from pressure. Contractive pain in the region of the heart going down to left abdomen. At times felt as if, some one was grasping the heart firmly. Paroxysms of pain in the heart," that is this kind of constriction comes in periods of violent paroxysms. "
+"Dull pain in the heart. Heavy pain in the heart, aggravated from pressure. Contractive pain in the region of the heart going down to left abdomen. At times felt as if, some one was grasping the heart firmly. Paroxysms of pain in the heart," that is this kind of constriction comes in periods of violent paroxysms. "
 
 " Acute inflammation of the heart. Chronic inflammation of the heart. Palpitation of the heart, continued day and night when walking, and, at night when lying on the left side."
 
@@ -8210,7 +8206,7 @@ It is not so often called for in ordinary headaches, but in headaches occurring 
 
 Old "sore eyes," rousing up with every cold and change of weather. Thickening of the conjunctiva. Scrofulous sore eyes. Ulcer spots; old scars which break and heal up.
 
-It does wonderful work in curing old eye troubles; opacities with slow inflammation. Pressure above the eyes. Paralysis of the lids; ptosis. It commonly affects one side of the face and one eye. It has paralytic conditions like Causticum; paralysis of one part or of one edge of the body. After an apoplectic attack when the patient recovers, but weakness of one arm and leg remains, it competes with Phos.
+It does wonderful work in curing old eye troubles; opacities with slow inflammation. Pressure above the eyes. Paralysis of the lids; ptosis. It commonly affects one side of the face and one eye. It has paralytic conditions like Causticum; paralysis of one part or of one side of the body. After an apoplectic attack when the patient recovers, but weakness of one arm and leg remains, it competes with Phos.
 
 Changes in sensation here and there. Formication of the skin and deeper tissues.
 
@@ -8218,7 +8214,7 @@ Changes in sensation here and there. Formication of the skin and deeper tissues.
 
 **Nose:** Old nasal catarrh which has progressed till the nasal bones are being destroyed by caries. Ulceration. Pains in the bones. Sneezing; coryza, boils, abscesses.
 
-**Mouth and taste:** Disturbances of the taste. It is suitable to low forms of continued fever; it has sordes, dark tongue, bleeding tongue and dry mouth, as in typhus, typhoid and yellow fever. Sluggish tongue; difficulty in moving it. Difficult swallowing. The muscles of the throat are affected causing dysphagia. Constriction of the oesophagus. Violent thirst. Every time he takes cold water, which he craves, goose-flesh comes on, a creeping or horripilation like Capsicum.
+**Mouth and taste:** Disturbances of the taste. It is suitable to low forms of continued fever; it has sordes, dark tongue, bleeding tongue and dry mouth, as in typhus, typhoid and yellow fever. Sluggish tongue; difficulty in moving it. Difficult swallowing. The muscles of the throat are affected causing dysphagia. Constriction of the oesophagus. Violent thirst. Every time he takes cold water, which he craves, goose-flesh comes on a creeping or horripilation like Capsicum.
 
 **Stomach:** The stomach gives us the strongest and most important symptoms. The stomach quits business; no digestion. Everything sours; fluids and the simplest things taken are changed and come up sour, mixed with blood or bile; rancid eructations; with great exhaustion.
 
@@ -8284,7 +8280,7 @@ This alternates with an opposite condition. At times he is wholly incapable of a
 
 **Vertigo:** Vertigo on closing the eyes. He cannot stand or walk with the eyes shut, but it is not otherwise sufficiently related to locomotor ataxia to be of use in that disease.
 
-Rocking, dizzy sensation after lying down and closing the eyes, as it in a rocking chair. Vertigo and nausea in the morning with stitch in pit of stomach. He opens his eyes and asks:
+Rocking, dizzy sensation after lying down and closing the eyes, as if in a rocking chair. Vertigo and nausea in the morning with stitch in pit of stomach. He opens his eyes and asks:
 
 "Where am I? What do you want around me?"
 
@@ -8358,7 +8354,7 @@ Eczema of face and scalp. Coldness of head. Pale, sickly, bloated face. Fluent c
 
 Loss of all desire for food, but thirst for cold water. Eructations and vomiting after food. Stomach easily disordered, especially after milk and cold food.
 
-Pain in stomach after drinking cold water. Load in stomach after eating. Pain in groin after drinking wine. Waterbrash and spur stomach. Anxiety and burning in stomach. Stitching pain in stomach. Gnawing pain in stomach. Distension of stomach and abdomen. It has cured gastric ulcer.
+Pain in stomach after drinking cold water. Load in stomach after eating. Pain in groin after drinking wine. Waterbrash and sour stomach. Anxiety and burning in stomach. Stitching pain in stomach. Gnawing pain in stomach. Distension of stomach and abdomen. It has cured gastric ulcer.
 
 Much soreness in region of kidneys. Scanty, burning urine, contains albumin and casts.
 
@@ -8398,7 +8394,7 @@ What a foolish notion it is to feed that infant lime water because he cannot dig
 
 Now, it is astonishing that one single dose of the potency suitable to meet the state of disorder will make that infant commence to digest its food, and appropriate from its food the lime substance that it needs in its bones, and wherever else it needs it.
 
-All at once the teeth begin to grow; the bones begin to grow, and the legs get stiff enough for him to begin to walk, and they will hold up. It is astonishing what changes will take place under the various medicines that are suitable for the disturbances of the hair, and the bones and nails.
+All at once the teeth begin to grow; the bones begin to grow, and the legs get stiff enough for him to begin to walk, and they will hold him up. It is astonishing what changes will take place under the various medicines that are suitable for the disturbances of the hair, and the bones and nails.
 
 The remedy must be sufficiently potentized to correspond with the wrong. It certainly must not be crude because the child is already stunted by the crude material. You will see within a month or six weeks after giving a solitary dose of the sufficiently potentized remedy the nails that were corrugated and uneven and spotted and irregular will form a margin and will grow out smooth.
 
@@ -8444,7 +8440,7 @@ There is malignancy in almost all these cases. They differ entirely from glands 
 
 Another thing running through the remedy is a pyoemic state, in which there are abscesses in deep muscles. Abscesses deep in the neck, deep in the thigh, in the abdomen.
 
-You will be astonished to learn that Calcarea will take care of the abscess (when the symptoms agree), and it will not break. I have many times seen an abscess disappear when fluctuation was most positive. I have seen those abscesses disappear when pus was shown to he present by the needle; I have not only seen the abscesses go away, but also the pyoemic state which was prior to it. We have but a few medicines that will do that.
+You will be astonished to learn that Calcarea will take care of the abscess (when the symptoms agree), and it will not break. I have many times seen an abscess disappear when fluctuation was most positive. I have seen those abscesses disappear when pus was shown to be present by the needle; I have not only seen the abscesses go away, but also the pyoemic state which was prior to it. We have but a few medicines that will do that.
 
 There is something singular about this. Why does Calcarea favor the resorption of that fluid and encourage the part to become calcareous?
 
@@ -8656,9 +8652,9 @@ Stitching, pulsating pains in the head, as if it would split. Headaches worse fr
 
 Now, all of these sensations are difficult to describe, but sometimes they are one and the same thing. All the headaches of Calcarea, are more or less congestive. It is a peculiar feature of Calcarea, that the more marked the congestion of internal parts, the colder the surface becomes.
 
-With chest troubles, and stomach troubles, and bowel troubles, the feet and hands become like ice, W covered with sweat; and he lies in bed sometimes with a fever in the rest of his body, and the scalp covered with cold sweat.
+With chest troubles, and stomach troubles, and bowel troubles, the feet and hands become like ice, and covered with sweat; and he lies in bed sometimes with a fever in the rest of his body, and the scalp covered with cold sweat.
 
-That is strange. You cannot account for that by any process of reasoning in pathology, and when a thing is so strange that it cannot be accounted, for, it become very valuable as descriptive of the remedy, and is one that cannot generally be left out when prescribing for a patient.
+That is strange. You cannot account for that by any process of reasoning in pathology, and when a thing is so strange that it cannot be accounted, for, it becomes very valuable as descriptive of the remedy, and is one that cannot generally be left out when prescribing for a patient.
 
 That is almost a general state, it is so marked. It has burning in the vertex, and this is often present coldness of the forehead, or the whole head may feel cold except a burning spot on the vertex. Calcarea will again have cold head and icy cold feet when walking in cold air or in very cold weather; but as soon as the feet get warm, they go to the other extreme, and burn so that he puts them out of bed.
 
@@ -8670,7 +8666,7 @@ In hydrocephalic children this sweating head is a common feature. The child lies
 
 In persons suffering from softening of the brain, the pillow is wet all around the head. Children going through difficult dentition have dreadful times in their dreams, they screech out in the night, and the pillow is wet all around their head.
 
-Old plethoric patients, broken down constitutions, fat, flabby, lymphatic patients, with enlarged glands, with sweating of the head, cold sweating of the head. The hair falls out, not in the regular way such as occurs in old ago bit in patches here and there.
+Old plethoric patients, broken down constitutions, fat, flabby, lymphatic patients, with enlarged glands, with sweating of the head, cold sweating of the head. The hair falls out, not in the regular way such as occurs in old age but in patches here and there.
 
 You see a bald spot on the side of the head, or the back of the head; a tuft of hair has come out, or in two or three places. Then it has eruptions upon the head and face; eczema that we find in children and infants.
 
@@ -8724,7 +8720,7 @@ If it is an ear trouble, he may have difficult hearing, abscess of the middle ea
 
 He breathes part of the night through the nose, and then his nose clogs up so that he breathes, through the mouth. It has cured a great many times polypi of the nose.
 
-The homeopathic physician, trusting so much to his symptoms, knows so well the remedy after studying the case, that be very likely will prescribe for the patient on the symptoms alone. He says:
+The homeopathic physician, trusting so much to his symptoms, knows so well the remedy after studying the case, that he very likely will prescribe for the patient on the symptoms alone. He says:
 
 This patient needs Calcarea, there is no doubt about it. He prescribes for him and sends him away.
 
@@ -8750,7 +8746,7 @@ The glands all take part in the Calcarea troubles.
 
 It may in the beginning be a Bell. throat, which is quite likely, but before he gets over it he has taken another cold. Remember that this is a part of the Calcarea patient, that he takes cold so easily; he takes cold from every, draft, from very exposure, and from damp weather.
 
-When getting over a Bell. sore throat - about the time he thinks he is over it he takes a new cold. Perhaps it has been relieved two or three times with Bell., and then it settles down into a chronic state, and there are little red patches, perhaps little ulcers in the throat, this extends all over . It extends to the roof of the mouth, a sore tongue, and a constant dry, choking feeling in the pharynx, covering the tonsils and extending, up into the posterior nares, filling with thick, yellow mucus.
+When getting over a Bell. sore throat - about the time he thinks he is over it he takes a new cold. Perhaps it has been relieved two or three times with Bell., and then it settles down into a chronic state, and there are little red patches, perhaps little ulcers in the throat, this extends all over . It extends to the roof of the mouth, with a sore tongue, and a constant dry, choking feeling in the pharynx, covering the tonsils and extending, up into the posterior nares, filling with thick, yellow mucus.
 
 Chronic inflammation. The uvula may be puffed; swollen. "Parts swollen, red, tumid," but it patches.
 
@@ -8824,7 +8820,7 @@ Much rattling of mucus; rattling breathing; coarse rattling; that is, much mucus
 
 The dyspnoea comes on from going up stairs, from walking against the wind. Anything that has any exertion in it will bring on the dyspnoea. We find this in asthma, weak heart, weak chest and in threatening phthisis.
 
-That state of the lungs you will know very often by the kind of breathing; because all that are going into phthisis are tired and weak. He is too tired and weak to make any effort at breathing, so that he has difficult in going up stairs, climbing a hill, walking against the wind.
+That state of the lungs you will know very often by the kind of breathing; because all that are going into phthisis are tired and weak. He is too tired and weak to make any effort at breathing, and he tires very easily so that he has difficulty in going up stairs, climbing a hill, walking against the wind.
 
 **Chest:** The chest troubles furnishes one of our best fields for Calcarea.
 
@@ -8842,7 +8838,7 @@ Generally he is after the money that may be in it. Hardly any one who knows anyt
 
 To prevent those things is what we want to do, and this is the great sphere of Calcarea. The expectoration is sweetish very often, like Phos. and Stannum. White, yellow, thick.
 
-We might go over all the general symptoms here, the soreness, the tenderness, the kind of pains, the lassitude, and a great many symptoms of that sort, they are too numerous to mention, but they are non descriptive, for the reason that after you get these pains and study them carefully, you are no better off. You must study the constitution of Calcarea, the nature of Calcarea, its character.
+We might go over all the general symptoms here, the soreness, the tenderness, the kind of pains, the lassitude, and a great many symptoms of that sort, they are too numerous to mention, but they are not descriptive, for the reason that after you get these pains and study them carefully, you are no better off. You must study the constitution of Calcarea, the nature of Calcarea, its character.
 
 There are spine symptoms; plenty' of them. Weak; all degrees of weakness. The Calcarea patient is so weak in the back that he slides down in the chair while sitting; cannot sit right in his chair.
 
@@ -9150,7 +9146,7 @@ Suppuration in the chest. Weakness in the chest. Itching, burning of the externa
 
 **Extremities:** The symptoms of the extremities make a gouty constitution. Gouty joints. Awkward, clumsy fingers, from gouty finger joints. Coldness of the extremities, of the hands, legs and feet. Cramps in the calves.
 
-Eruptions, pimples and vesicles. Heat of the hands. Heaviness of the lower limbs. This remedy has been of great service in many cases of hip joint disease. Itching of, the, skin of the extremities. Often itching and burning.
+Eruptions, pimples and vesicles. Heat of the hands. Heaviness of the lower limbs. This remedy has been of great service in many cases of hip joint disease. Itching of the, skin of the extremities. Often itching and burning.
 
 Burning of hands and feet; burning palms and soles. Numbness of hands and also of the lower limbs and of the feet.
 
@@ -9200,7 +9196,7 @@ But there is another thing that runs through Camph., by which a distinction can 
 
 The patient is a most troublesome patient to nurse; nobody and nothing suits. If an inflammation of the bladder comes on, there is intense pain and tenderness, and from the shock of the suffering the mind is in a state of frenzy.
 
-Coldness then comes on and the patient wants to be uncovered, wants cold air, wants the windows open, but before all this can be done, a flash of beat comes on and then he wants the covers on, and the register turned on, and wants a hot iron and hot bottles; but this stage now passes off, and while the nurse is bringing the hot irons he wants her to open the windows and have everything cool.
+Coldness then comes on and the patient wants to be uncovered, wants cold air, wants the windows open, but before all this can be done, a flash of heat comes on and then he wants the covers on, and the register turned on, and wants a hot iron and hot bottles; but this stage now passes off, and while the nurse is bringing the hot irons he wants her to open the windows and have everything cool.
 
 You will see at once that these are serious cases. This occurs with opisthotonos, convulsions, inflammation of the brain, liver, kidney, bladder, coming on from violent shock and cold with great exhaustion. You will see this in one who has worked for hours for his life, and when the excitement is over reaction sets in and it is like a whirlwind; he has worked until he is exhausted and now he is prostrated, cold and blue; here is the sphere where the old woman with her Camphor bottle has established a reputation, but potentized Camphor will do more for him than the Camphor bottle, it will put him into a refreshing sleep.
 
@@ -9308,7 +9304,7 @@ The resemblance of this remedy to Cannabis Indica is remarkable and has led to a
 
 The one has often been substituted for the other, and has cured symptoms produced by the other. Their mental and urinary symptoms are very similar. The sensation of opening and shutting has been cured by both remedies.
 
-Things seem strange and unreal. He seems as though in a dream. Confusion is to his personal identity. Makes mistakes in writing and speaking, and misunderstands what he reads and hears said.
+Things seem strange and unreal. He seems as though in a dream. Confusion as to his personal identity. Makes mistakes in writing and speaking, and misunderstands what he reads and hears said.
 
 Sounds in the room seem to come from a distance. When he speaks it seems as though some one else were speaking (Alum). Seems as though her senses would vanish.
 
@@ -9410,7 +9406,7 @@ In the female there is oversensitiveness of all parts. Inflammation of the ovari
 
 Puerperal convulsions. Retained placenta. Burning pains. When there have been no expulsive pains present to expel the afterbirth, with the symptoms running all through this remedy, after it has been given, normal contractions of the uterus have come on with expulsion of the membranes.
 
-Violent lancinating pains through the kidneys and back. Pains in the loins and abdomen. Pain on urinating so that he moaned and screamed on passing a drop.
+Violent lancinating pains through the kidneys and back. Pains in the loins kidneys and abdomen. Pain on urinating so that he moaned and screamed on passing a drop.
 
 ## Capsicum
 
@@ -9496,7 +9492,7 @@ It is useful in perplexing and troublesome chronic hoarseness. He had had a cold
 
 It is the same with the cough. After making several blunders you wake up and see it is a Capsicum case and that you have never yet gotten at the root of the trouble. This shows the importance of getting at the things general first. If there is much acute suffering of course you must give an acute remedy, but if the patient has delayed recovery and convalescence is slow the next remedy should be the remedy for the patient.
 
-Sometimes it is Sulph., Phos., Lyc., and sometimes it is Caps. If the patient has a good constitutional state he will get over the told on the acute remedy, but the old gouty, rheumatic, flabby patients need a constitutional remedy.
+Sometimes it is Sulph., Phos., Lyc., and sometimes it is Caps. If the patient has a good constitutional state he will get over the cold on the acute remedy, but the old gouty, rheumatic, flabby patients need a constitutional remedy.
 
 Cough in sudden paroxysms convulsing the whole body. Cries, after the cough from the headache. Stitches in the suffering part with the cough. Every cough jars the affected joint. The constitutional state comes first and the particulars must agree i. e., prescribe according to the totality.
 
@@ -9512,7 +9508,7 @@ Some of these medicines, after infiltrating a gland, will hurry up the inflammat
 
 But this medicine paralyzes and infiltrates the little veins in the inflamed part, and there seems to be no tendency to suppuration.
 
-We see that the economy of this patient is in a sluggish state there are no rapid changes; but everything is slowed down. Even the inflammatory process is a passive one. Very often a slow quasi-erysipelatous inflammation comes on, the part becomes purple and will pit upon pressure. Just think what a contrast this to Belladonna.
+We see that the economy of this patient is in a sluggish state there are no rapid changes; but everything is slowed down. Even the inflammatory process is a passive one. Very often a slow quasi-erysipelatous inflammation comes on the part becomes purple and will pit upon pressure. Just think what a contrast this to Belladonna.
 
 Belladonna will inflame all the glands, they will swell, become hot and so, sensitive that they can hardly be touched; at first bright red, then purple, with a tendency to resolution if let alone. But the Carbo animalis inflammation comes on slowly, its progress is slow, and there is no tendency to repair.
 
@@ -9766,7 +9762,7 @@ Vomiting of sour, bloody, bilious masses.
 
 **Stomach and food:** There is an accumulation of flatus in the stomach, so that the stomach feels distended. All food taken into the stomach seems to turn into flatus; he is always belching and is slightly, relieved for a while by belching. Carbo veg., has cramps in the bowels and stomach; burning pain; anxiety; distension.
 
-All these symptoms are ameliorated by belching or passing flatus. Amelioration from belching seems quite a natural event; but when we study China, you will see that the patient appears to be aggravated from belching. The idea is that the patient gets relief from belching from eructation, but under Lycopodium and China it seems that no relief comes. They belch copiously and yet seem just as full of mind as ever, and sometimes even seem to be worse.
+All these symptoms are ameliorated by belching or passing flatus. Amelioration from belching seems quite a natural event; but when we study China, you will see that the patient appears to be aggravated from belching. The idea is that the patient gets relief from belching from eructation, but under Lycopodium and China it seems that no relief comes. They belch copiously and yet seem just as full of wind as ever, and sometimes even seem to be worse.
 
 The Carbo veg. patient experiences a decided relief from eructation. This is a particular symptom, but it becomes almost general, and sometimes quite general. Headaches are relieved by belching; rheumatic pains are relieved by belching; sufferings and distensions of various kinds are relieved by eructations.
 
@@ -9888,7 +9884,7 @@ Greatly reduced vitality; great relaxation; worn out persons, old people. Person
 
 A dry, hacking cough, yet there is rattling in the chest, and the cough does not seem to do any good. He seems to cough and become exhausted, sweats and strangles. It seems as if he would suffocate with the cough.
 
-Finally he succeeds in getting up some mucus, and the follows mouthful after mouthful of thick purulent expectoration. Frequent attacks of spasmodic cough in violent paroxysm lasting for many minutes, sometimes an hour.
+Finally he succeeds in getting up some mucus, and then follows mouthful after mouthful of thick purulent expectoration. Frequent attacks of spasmodic cough in violent paroxysms lasting for many minutes, sometimes an hour.
 
 Cold sweat, coldness and pinched appearance of the face. This increases as he goes into the paroxysm of coughing. His face looks haggard, so distressed does he become while in a paroxysm of coughing. This state is present in old phthisical cases, in the advanced stage, when they are incurable. Under such circumstances Carbo veg. furnishes an excellent palliative.
 
@@ -10004,7 +10000,7 @@ Pulsating pain in temples in the morning on waking 6 A.M. Pain in vertex. Boring
 
 Dull pain in head toward evening. Jerking pain in forehead. Pressing pain in the head in forenoon. Pressing pain in forehead with sleepiness, worse reading and stooping; over eyes; extending to eyes and temples. PRESSING PAIN IN OCCIPUT; in temples, extending to vertex; in VERTEX ALL DAY. Sore bruised pain in head.
 
-Stitching pain in temples worse on left side, extending to occiput. Tearing pains better in open air and during test; in forehead; occiput; sides; temples; worse on left side. Cold perspiration on forehead. The scalp is sensitive to the brush. Pulsation in occiput and temples. Electric shock in the head.
+Stitching pain in temples worse on left side, extending to occiput. Tearing pains better in open air and during rest; in forehead; occiput; sides; temples; worse on left side. Cold perspiration on forehead. The scalp is sensitive to the brush. Pulsation in occiput and temples. Electric shock in the head.
 
 **Eyes:** The eyelids stick together during the night. The discharges are acrid, bloody, purulent and yellow. Dulness of the eyes. Eruptions about the eyes; on the lids, pustules on upper lids that itch and burn. Falling lids. Granular lids. The eyes feel hot. Heaviness of the lids and they are sore on moving them. Catarrhal inflammation of eyes and lids.
 
@@ -10026,13 +10022,13 @@ OBSTRUCTION OF NOSE. Foetid odor from nose. Ozaena. Pain and soreness in nose. B
 
 **Face:** The face is bloated and chlorotic. Sensation of tension in the face. The face is cold and the lips are cracked. The face is discolored; bluish; dark; PALE; sickly; yellow.
 
-Dry burning lips. Eruptions on chin; lips; around month; on nose. Acne rosacea on face and forehead. Acne of drunkards. Comedones. Crusty eruptions on face and nose. Herpes on face with tearing pains in limbs.
+Dry burning lips. Eruptions on chin; lips; around mouth; on nose. Acne rosacea on face and forehead. Acne of drunkards. Comedones. Crusty eruptions on face and nose. Herpes on face with tearing pains in limbs.
 
-Moist itching eruptions. Pimples, pustules, rash. Red eruptions on checks and nose. Scurfy scaly eruptions. Tetter on left check. Vesicles on face. Phlegmonous erysipelas. Expression is anxious; bewildered; sickly; suffering; vacant. Heat of face evening; during chill FLASHES. Itching of face.
+Moist itching eruptions. Pimples, pustules, rash. Red eruptions on cheeks and nose. Scurfy scaly eruptions. Tetter on left cheek. Vesicles on face. Phlegmonous erysipelas. Expression is anxious; bewildered; sickly; suffering; vacant. Heat of face evening; during chill FLASHES. Itching of face.
 
 Pain in face in cold air; while lying. Burning face and lips. Drawing, sore, bruised, stitching and tearing pain in face. Cold sweat on face, Stiffness of jaw. Sunken look. Swelling of face; oedematous; glands; parotid; sub-maxillary. Tension in muscles of lower jaw. Ulceration of lips.
 
-Anesthesia of mouth and tongue. Aphthae of month and tongue. Bleeding of month and gums. The tongue feels cold. The tongue is cracked. The gums are detached from the teeth. The tongue is coated white; dryness of mouth and tongue in the morning with unquenchable thirst. Odor from mouth offensive; putrid.
+Anesthesia of mouth and tongue. Aphthae of mouth and tongue. Bleeding of mouth and gums. The tongue feels cold. The tongue is cracked. The gums are detached from the teeth. The tongue is coated white; dryness of mouth and tongue in the morning with unquenchable thirst. Odor from mouth offensive; putrid.
 
 **Teeth:** Burning mouth and tongue. Saliva is bloody. Copious flow of saliva. Speech difficult and stammering. Gums swollen, Taste is bad; BITTER in the morning; foul, metallic; nauseous; pasty; saltish; sour; sweetish. Tickling of soft palate after lying down. Ulcers in the mouth. The teeth are on edge and loose. Pain in teeth evening and night; in cold air; from cold water; during and after eating; when masticating; from touch; from warm food and drink; from external warmth; from both warm and cold things.
 
@@ -10092,11 +10088,11 @@ LEUCORRHOEA ACRID bloody; burning; copious; before and after menses; milky thin 
 
 **Air passages:** Catarrh of air passages. Constriction of larynx causing cough. Heat in larynx. Inflammation of larynx. Irritation of larynx and trachea. Mucus in larynx. Pain in larynx. Burning in larynx. Rawness in larynx and trachea. Soreness in larynx and trachea. Laryngeal phthisis. Rattling in the trachea. He constantly clears the larynx. The larynx very sensitive. Tickling in larynx and trachea. Hoarseness morning and evening; with coryza; in damp weather. Voice is lost.
 
-Fast breathing. It has served well in asthma. Asphyxia from alcohol and from coal gas. Difficult breathing; evening; night ascending in a close room; when coughing; after eating; after slight exertion while lying; must have windows open, on falling asleep; on waking. Respiration raffling; short; sighing. Suffocation at night and in a warm room, wheezing whistling.
+Fast breathing. It has served well in asthma. Asphyxia from alcohol and from coal gas. Difficult breathing; evening; night ascending in a close room; when coughing; after eating; after slight exertion while lying; must have windows open, on falling asleep; on waking. Respiration rattling; short; sighing. Suffocation at night and in a warm room, wheezing whistling.
 
 Cough in morning; evening NIGHT; before midnight; in cold air; asthmatic; on becoming cold; from constriction of larynx, dry; hacking hoarse, from irritation in larynx, bronchial tubes and trachea; loose morning cough; lying down in evening; paroxysmal; from rawness in larynx; from scraping larynx short; waking one from sleep; spasmodic; suffocative; from talking from tickling in larynx and trachea; whooping cough.
 
-**Expectoration:** in daytime; morning; evening; night; Moody; copious; GREENISH; mucous; offensive; purulent: tasting putrid and salty; viscid; yellow. It has cured paroxysmal ear cough.
+**Expectoration:** in daytime; morning; evening; night; Bloody; copious; GREENISH; mucous; offensive; purulent: tasting putrid and salty; viscid; yellow. It has cured paroxysmal ear cough.
 
 Anxiety in chest; in the heart. It has been of great service in cancer of mammae. Very stubborn catarrh of chest.
 
@@ -10120,7 +10116,7 @@ Excoriations between nates; between thighs. Formication of limbs; upper limbs; f
 
 Hip joint disease; itching of the limbs; upper limbs; upper arm; forearm; hands; lower limbs; thighs. Milk leg has been cured by this remedy. Convulsive motion of limbs like chorea.
 
-NUMBNESS OF UPPER LIMBS; lower limbs. Pain in limbs; during chill; PAROXYSMAL; rheumatic; in joints; gouty. Pain in upper limbs; during the night paralytic in left arm; rheumatic in shoulder; in elbow on motion; rheumatism in elbow, in hand; gouty in hand. Pain in lower limbs; rheumatic; worse on motion; sciatica from taking cold; in thighs after dinner; neuralgia in thighs; in knees; in hips; in hollow of knee. Pain in leg; rheumatic; in ankles in morning; in os calcis on ascending steps; in fact after dinner and while walking.
+NUMBNESS OF UPPER LIMBS; lower limbs. Pain in limbs; during chill; PAROXYSMAL; rheumatic; in joints; gouty. Pain in upper limbs; during the night paralytic in left arm; rheumatic in shoulder; in elbow on motion; rheumatism in elbow, in hand; gouty in hand. Pain in lower limbs; rheumatic; worse on motion; sciatica from taking cold; in thighs after dinner; neuralgia in thighs; in knees; in hips; in hollow of knee. Pain in leg; rheumatic; in ankles in morning; in os calcis on ascending steps; in feet after dinner and while walking.
 
 Aching in forearm. Burning pain in limbs; in shoulder; upper arm; forearm; hand palm; thighs; feet; soles; joints of feet. Drawing pains in limbs; shoulder, upper arm; elbow; forearm; wrist; hands fingers; lower limbs; hips thighs while walking; hollow of knees leg; calf; few Itching, stitching pains deltoid muscle. Jerking pains in hip and ankles on ascending. Jerking, stitching in all the limbs; in biceps; in fingers; in thumb; in thighs in legs; in toes. Pressing pains in left forearm, worse learning on it in left heel.
 
@@ -10130,7 +10126,7 @@ Paralysis of extensors of wrist; of lower limbs, Perspiration of hands; OF FEET;
 
 Tingling of limbs; upper and lower hands and feet. Trembling of limbs; upper limbs; forearm; hands; lower limbs. Twitching of the limbs; upper limbs; hand; lower limbs; thighs; leg; feet. Ulcers on lower limbs; LEGS; feet; ABOUT THE NAILS. Varicose veins, lower limbs, thighs; knees; legs.
 
-**Sleep and dreams:** Deep morning sleep. Dreams: amorous; ANXIOUS; of danger; Of death; distressing; of previous events; fantastic; frightful; of ghost horrible; unpleasant; VEXATIONS; vivid. Late falling asleep. Restless all night. SLEEPINESS IN MORNING; afternoon; after 3 P. M; evening; after dinner; after eating; while reading; sleepless before midnight; with sleepiness, from thinking; after waking.
+**Sleep and dreams:** Deep morning sleep. Dreams: amorous; ANXIOUS; of danger; Of death; distressing; of previous events; fantastic; frightful; of ghosts; horrible; unpleasant; VEXATIONS; vivid. Late falling asleep. Restless all night. SLEEPINESS IN MORNING; afternoon; after 3 P. M; evening; after dinner; after eating; while reading; sleepless before midnight; with sleepiness, from thinking; after waking.
 
 He is not refreshed after sleep. Waking difficult, early, or late; frequent. Coldness in morning in bed; in afternoon; evening; 7 P.M.; 8 P.M. Icy coldness.
 
@@ -10576,7 +10572,7 @@ She becomes very philosophical after a dose of Chamomilla, and often goes to sle
 
 **Chest, cough and respiration:** There are many suffocative attacks and difficulties of breathing, inflammation of the larynx, that you can read up easily.
 
-The cough of Chamomilla has some striking things in it. It is a hard cough, a dry, backing cough. The child goes to sleep at night and coughs and does not wake up. Coughs in its sleep, It is a little feverish has taken cold, and one side of the face is flushed.
+The cough of Chamomilla has some striking things in it. It is a hard cough, a dry, hacking cough. The child goes to sleep at night and coughs and does not wake up. Coughs in its sleep, It is a little feverish has taken cold, and one side of the face is flushed.
 
 It is crabbed when it is awake. The child becomes angry when it has a cold and a little cough, and a little disturbance of the larynx and bronchial tubes has been noticed coming on, and all at once it becomes more excitable, wants to be carried, and if not pleased, or is angered, it will go into a hard coughing spell, and cough and vomit.
 
@@ -10736,9 +10732,9 @@ In the face the jaundice is the most marked thing that is expressed and, then, w
 
 **Head:** The headaches are brought on from heat, unlike the stomach and the liver, and the lungs, etc.
 
-The head is aggravated from motion, aggravated from beat, aggravated from a warm room, aggravated from warm applications. There is where it differs from the internal or general state. There are numerous headaches.
+The head is aggravated from motion, aggravated from heat, aggravated from a warm room, aggravated from warm applications. There is where it differs from the internal or general state. There are numerous headaches.
 
-Periodical bilious sick headaches, with vomiting of bile, brought on from exposure to beat, from being overheated, aggravated from motion, wants to lie perfectly quiet in a dark room, and better from vomiting bile.
+Periodical bilious sick headaches, with vomiting of bile, brought on from exposure to heat, from being overheated, aggravated from motion, wants to lie perfectly quiet in a dark room, and better from vomiting bile.
 
 Old-fashioned bilious sick headaches.
 
@@ -10820,7 +10816,7 @@ The chilliness is brought on by thinking of it. The headache is worse by mental 
 
 Vertigo comes in the evening, with nausea; while walking in the open air.
 
-**Head:** Cerebral congestion with great heat of the head. The forehead becomes cold and covered with sweat. Constriction of the head. Great beat in the forehead. Heaviness in the head in the morning. Motion is felt in the brain on moving the head.
+**Head:** Cerebral congestion with great heat of the head. The forehead becomes cold and covered with sweat. Constriction of the head. Great heat in the forehead. Heaviness in the head in the morning. Motion is felt in the brain on moving the head.
 
 Sensation of rushing in the brain, down right side of the neck and arm becoming convulsive, and ending in real convulsion. Violent darting pains in the head preventing sleep. Pain in the whole head.
 
@@ -10856,7 +10852,7 @@ Hot mouth. Burning rawness of the tongue. Sore tongue. Salivation. Swollen gums 
 
 Vesicles on the tongue.
 
-**Teeth:** Pain in the teeth at night, &lt; by biting the teeth together, from touch; cold drinks. Pains come on periodically, are jerking, pulsating, tearing, and date back to malarial fever.
+**Teeth:** Pain in the teeth at night, < by biting the teeth together, from touch; cold drinks. Pains come on periodically, are jerking, pulsating, tearing, and date back to malarial fever.
 
 **Throat:** Contraction in the throat. Dryness in the throat. Gangrenous inflammation of the throat with putrid odor, in malignant scarlet fever.
 
@@ -10912,7 +10908,7 @@ Tearing pain in the limbs; upper limbs, shoulders, elbows, wrist, hand, fingers;
 
 Intermittent fever. CHILL, morning, forenoon, noon, AFTERNOON evening, night, midnight; open air; walking in the open air; anticipating; in bed. Drinking aggravates chill. Quotidian chill; quotidian or tertian. Hard, shaking chill. Chill like cold waves with gooseflesh all over body. Warm room ameliorates. External warmth ameliorates.
 
-High fever follows chill. Fever without chill afternoon and evening. Fever and chill alternate. Burning fever. Feverish all the time, but more so at night. Dry heat at night. Hectic fever. Heat during sleep. Chill, heat, then sweat. During the beat be desires to uncover.
+High fever follows chill. Fever without chill afternoon and evening. Fever and chill alternate. Burning fever. Feverish all the time, but more so at night. Dry heat at night. Hectic fever. Heat during sleep. Chill, heat, then sweat. During the heat he desires to uncover.
 
 Perspiration, morning, night; during anxiety. COLD; from coughing; with weakness; during slight exertion; following fever; from motion; PROFUSE; during sleep; after waking; staining linen yellow. Fevers from living in damp rooms. Malarial fevers. Symptoms increase while perspiring. Fevers with extreme prostration.
 
@@ -10950,7 +10946,7 @@ Convulsions generally take the place of the ecstatic or cataleptic condition. Na
 
 **Mind:** Wants to be alone; dislike to society. Singing, shouting, dancing; likes toys, jumps about like a child. Lies in bed lamenting and wailing. Great agitation; child grasps at one's clothing in a frightened manner.
 
-This is likely to occur before the convulsion, great horror in the, countenance, yet he has no recollection of the horror when be comes out of the convulsion. That state of anxiety and fear comes after the attack has begun, though the convulsions have not yet come on.
+This is likely to occur before the convulsion, great horror in the, countenance, yet he has no recollection of the horror when he comes out of the convulsion. That state of anxiety and fear comes after the attack has begun, though the convulsions have not yet come on.
 
 Between the convulsions the patient is mild, gentle, placid and yielding, which distinguishes it from Strych. and Nux v. convulsions. The Nux convulsions are all over the body and are worse from touch and draft, blueness and purple color of the body, but between the convulsions the patient is very irritable.
 
@@ -10970,9 +10966,9 @@ This may change into a spasm. The head is bent back in spasms; jerking back of t
 
 **Eyes:** Convulsive action about the eyes; pupils dilated and insensible patient lies fixed in one place, with starting, fixed, glassy, upturned eyes, like Cupr.
 
-Strabismus may be the only spasm the child is subject to from cerebral irritation. Every time the child is frightened it has strabismus; when touched or when it has cold, or after a fall biting the head, or coming periodically, it has strabismus.
+Strabismus may be the only spasm the child is subject to from cerebral irritation. Every time the child is frightened it has strabismus; when touched or when it has cold, or after a fall hitting the head, or coming periodically, it has strabismus.
 
-**Nose:** The nose is sensitive to touch. Touch and jarring bring on complaints, and hence it was so useful in, and was the first remedy for, the result of injuries and irritability and over-sensibility.
+**Nose:** The nose is sensitive to touch. Touch and jarring bring on complaints, and hence it was so useful in, and was the first remedy for the result of injuries and irritability and over-sensibility.
 
 It has troubles from shaving; it is useful in such eruptions as come in the whiskers; barber's itch; a solid crop of eruptions all over the face wherever the whiskers grow. Eruptions on the cheek like eczema. Swelling of the submaxillary glands. Erysipelatous eruptions.
 
@@ -11024,7 +11020,7 @@ Rubs the eyes and can then see more clearly. On rising from the bed blackness be
 
 **Face:** Face sunken, pallid, wings of nose drawn in. Blue ring or gray streak around the mouth. "A sure sign of worms," the mother says.
 
-Child rubs its nose with the hands or on the pillow or on the nurse's, shoulder. Child bores into the nose until the blood come. The sickly aspect is striking, but it is representative of brain trouble, central trouble. The brain symptoms are the highest and most important. It frightened, whipped, or scolded, the brain is disturbed and the stomach disordered.
+Child rubs its nose with the hands or on the pillow or on the nurse's, shoulder. Child bores into the nose until the blood comes. The sickly aspect is striking, but it is representative of brain trouble, central trouble. The brain symptoms are the highest and most important. If frightened, whipped, or scolded, the brain is disturbed and the stomach disordered.
 
 They get indigestion and breed worms; white or blue appearance about the mouth, grinding of the teeth during sleep. Before the child has teeth it has a chewing motion, a side to side movement. Sensitiveness of the teeth to the cold air and cold water.
 
@@ -11084,7 +11080,7 @@ Dropsy runs through the remedy; anasarca and also dropsy of shut sacs. A peculia
 
 A part of this periodicity is an aggravation at night, and sometimes sharply at midnight. In colic that comes on regularly every night at 12 o'clock, and it may be, perhaps, a week before you, suspect it to be a China colic. A lady had colic and bloating of the abdomen every night at 12 o'clock.
 
-After suffering many nights a single dose of China, prevented any further trouble. Haemorrhage from the nose coming on with regularity. Diarrhoea at night. Several gushing, black, watery stool; during the night; in the daytime, only after eating.
+After suffering many nights a single dose of China, prevented any further trouble. Haemorrhage from the nose coming on with regularity. Diarrhoea at night. Several gushing, black, watery stools; during the night; in the daytime, only after eating.
 
 There is a general aggravation after eating. Remember that this is a chilly patient, sensitive to draft, sensitive to cold, whose complaints are brought on by being exposed to cold air; sensitive to touch, sensitive to motion. Extreme irritability of the tissues.
 
@@ -11164,7 +11160,7 @@ His appetite varies. Thirst is peculiar. The patient will say:
 
 "I know my chill is coming on now because I have thirst."
 
-**Thirst:** before the chill, but as soon as the chill comes on there is no thirst. But when he begins to warm up he begins to get thirsty; that I during the period in which the two lap he is thirsty, but when the chill has fairly subsided and the heat is upon him his thirst subsides also and he only wants to wet his mouth.
+**Thirst:** before the chill, but as soon as the chill comes on there is no thirst. But when he begins to warm up he begins to get thirsty; that is during the period in which the two lap he is thirsty, but when the chill has fairly subsided and the heat is upon him his thirst subsides also and he only wants to wet his mouth.
 
 But as the hot spell begins to subside he increases the amount taken, and all through the sweat he can hardly get water enough.
 
@@ -11296,7 +11292,7 @@ The teeth have all sorts of disturbances; the gums settle away, the teeth become
 
 Every cold settles in the throat. Hot air feels good everywhere. In old cases there is trouble with scrofulous glands, which are enlarged, and the patient wants the heat; goes to the register and turns the heat on, wants to feel the heat in the nose, throat and lungs.
 
-Patients going into tuberculosis have that desire for beat; chilly persons, They do not feel cold to touch, but they are cold subjectively, chilly. Hawking of gum-like mucus, especially in the morning, fauces inflamed and dry. Suppuration of the glands of the throat.
+Patients going into tuberculosis have that desire for heat; chilly persons, They do not feel cold to touch, but they are cold subjectively, chilly. Hawking of gum-like mucus, especially in the morning, fauces inflamed and dry. Suppuration of the glands of the throat.
 
 These patients crave pungent things, and especially want something to warm them up, something to build them up, something stimulating herring, cheese; something strong.
 
@@ -11526,7 +11522,7 @@ They certainly cannot have both."
 
 But they do have both, sometimes under different conditions and sometimes under the same conditions. Sometimes these are primary, sometimes they are secondary symptoms. A remedy must be examined to ascertain how it is that these circumstances can be the very opposite of each other.
 
-But commonly Boenninghausen registers both those things that belong to particulars and those things that belong to generals, and if the symptom, in his judgment, is strikingly worse by a certain circumstance, even if it is the very opposite of the general, he had that symptom in boldfaced type. Phos. is a good illustration of what we have been talking about.
+But commonly Boenninghausen registers both those things that belong to particulars and those things that belong to generals, and if the symptom, in his judgment, is strikingly worse by a certain circumstance, even if it is the very opposite of the general, he has that symptom in boldfaced type. Phos. is a good illustration of what we have been talking about.
 
 If you make a careful study of Phos. you will see that the complaints of the chest are all worse from cold, from cold air and from being cold. He catches cold and it settles in the chest, and the cough and irritation in the chest are worse from cold and being exposed to cold air.
 
@@ -11550,25 +11546,25 @@ The chest fills up with mucus until respiration cannot be carried on any longer 
 
 One of the earliest signs of improvement will be observed in the easier respiration. The cough becomes less violent, the retching passes away, and in a week or ten, days the cough will go, too. Cough worse after eating, worse on waking, worse in a warm room.
 
-In the early stages of whooping cough Carbo veg. will develop and. bring out the symptoms and furnish a good picture for a second prescription, even if it does not cure.
+In the early stages of whooping cough Carbo veg. will develop and bring out the symptoms and furnish a good picture for a second prescription, even if it does not cure.
 
 Discharge of thick yellow mucus from the nose; nose stopped up, with inclination to sneeze. Great dryness of the nose. The air passages burn after the mucus has been cleared away. The chest burns from the mere exhaling of air. Sore throat with redness. Tickling in the throat. Sensation of a hair or crumb lodged in the throat behind the larynx. Fauces very sensitive.
 
-Arch of palate and fauces, as far as visible, very red. Burning in the throat &lt; in the warmth, especially when warmed up in bed, &lt; from warm drinks, though hot drinks are not so bad. Better from cold drinks. If the patient gets warm in bed or the room gets warm he commences to clutch the larynx and cough. The slightest touch on the palate or even the gums in examination of the throat will cause gagging sometimes when the parts look normal. He cannot hawk without gagging. On swallowing food sometimes it will come right back again and cause gagging and retching.
+Arch of palate and fauces, as far as visible, very red. Burning in the throat < in the warmth, especially when warmed up in bed, < from warm drinks, though hot drinks are not so bad. Better from cold drinks. If the patient gets warm in bed or the room gets warm he commences to clutch the larynx and cough. The slightest touch on the palate or even the gums in examination of the throat will cause gagging sometimes when the parts look normal. He cannot hawk without gagging. On swallowing food sometimes it will come right back again and cause gagging and retching.
 
 Great thirst; wants water often and in large quantities. Nauseous taste in the mouth; never rid of it. Nausea in the throat. Vomiting of white, bitter tasting froth. Toothache; sudden drawing pains in the teeth, worse from cold and from touch.
 
 **Mind:** The mental symptoms are chiefly depression and anxiety. Great sadness; a cloud seems to hang over everything.
 
-Apprehensiveness, especially at 2 to 4 A.M. This state may alternate with loquacity and liveliness, like Lachesis. There are other symptoms worse after sleep; wakes in the morning with basilar headache, or with headache in the forehead; &lt; mental exertion; after lying down; sometimes &gt; from slow motion; &lt; on coughing and from exertion; &gt; after sleep.
+Apprehensiveness, especially at 2 to 4 A.M. This state may alternate with loquacity and liveliness, like Lachesis. There are other symptoms worse after sleep; wakes in the morning with basilar headache, or with headache in the forehead; < mental exertion; after lying down; sometimes > from slow motion; < on coughing and from exertion; > after sleep.
 
-**Kidneys:** A strong feature is its action on the kidneys, resembling acute parenchymatous nephritis. Albumen in the urine. Dark red sediment in the urine. Pain shooting from the kidney to the bladder and down the legs; &lt; from motion.
+**Kidneys:** A strong feature is its action on the kidneys, resembling acute parenchymatous nephritis. Albumen in the urine. Dark red sediment in the urine. Pain shooting from the kidney to the bladder and down the legs; < from motion.
 
 Renal colic. Urging to urinate, but inability to pass urine until a large clot of blood has been passed. In Coccus cacti the right side of the heart is affected, the vessels become friable and there is haemorrhage, oozing of blood, forming great black clots.
 
 The above symptom suggests a woman with uterine hemorrhage. There are haemorrhages of the uterus where the blood flows freely, coagulates slowly and does not form much of any clot in the vagina. But in this remedy the clots form very rapidly and the vagina becomes packed, and the bladder cannot be emptied until the clot is expelled. Uterine hemorrhage is a strong feature of this remedy. Copious, frequent, prolonged menstrual flow. Large, hard, black clots fill the uterus, are expelled by labor-like pains, and form again. Inflammation of uterus and vagina, with copious, thick, white, jelly-like, ropy mucus. Soreness of the vulva; cannot bear the pressure of the clothing.
 
-Haemoptysis, dark, clotted &lt; from exertion.
+Haemoptysis, dark, clotted < from exertion.
 
 In the male there is impotence with dull pain in the loins. Dull pains in the region of the kidneys, with albuminuria; heavy sediment in the urine, etc., just such a state as you would find in a child that had taken cold after scarlet fever.
 
@@ -11732,7 +11728,7 @@ So your books on symptomatology and pathology, diagnosis, etc., will tell you mu
 
 The Materia Medica man learns to single out and trace every little thing in order to individualize. So it may be said that years of observation in studying disease, studying the sick man along with the Materia Medica, will open to the mind a much grander knowledge of the sicknesses of humanity than can be had by practicing traditional medicine. Traditional medicine benumbs the ability to observe.
 
-**Motion &lt;:** All the complaints of this remedy are aggravated from motion. The painful complaints, the head complaints, the bowel complaints, the liver complaints, the stomach complaints, are all worse from motion. Such an aggravation from motion that he dreads to move. About as marked as we find in Bryonia.
+**Motion <:** All the complaints of this remedy are aggravated from motion. The painful complaints, the head complaints, the bowel complaints, the liver complaints, the stomach complaints, are all worse from motion. Such an aggravation from motion that he dreads to move. About as marked as we find in Bryonia.
 
 Aversion to motion, and aggravation from motion. Aggravation from becoming cold and in cold, damp weather. He is a chilly patient, sensitive to cold. Most rheumatic patients are sensitive to cold, but there are a few exceptions. There is no greater rheumatic patient than the Ledum patient. He presents, both sides. Though he is cold, his pains are ameliorated by cold. In Colchicum the pains are ameliorated by heat, by wrapping up, by being warm.
 
@@ -11740,7 +11736,7 @@ If he moves, any suffering that he may have will be intensified. Great prostrati
 
 His hands and feet pit upon pressure. Examine the urine and you will find albumen in it. The urine becomes black like ink with albumen. There is an unusual degree of irritability of the tissues, soreness, sensitiveness to touch, sensitiveness to motion; bruised feeling of the joints and of the whole body.
 
-Touch and motion bring on a painful sensation in the body as of. electric vibrations. Great weakness and exhaustion. He cannot exert himself in the least without causing dyspnea, Must lie down; does not want to move; sinking of strength; seems as if his life will flow out of him from motion and from exertion; so tired and exhausted.
+Touch and motion bring on a painful sensation in the body as of electric vibrations. Great weakness and exhaustion. He cannot exert himself in the least without causing dyspnea, Must lie down; does not want to move; sinking of strength; seems as if his life will flow out of him from motion and from exertion; so tired and exhausted.
 
 This naturally occurs when going towards Bright's disease, when going towards a continued fever. Kidney affections and liver affections. Lassitude, prostration, anxiety. The muscles twitch and electric shocks pass through the body. A paralytic weakness was observed in the poisonous effects and too prolonged provings. The jaw hangs down, the muscles are flabby, relaxed. He lies on the back as if sinking; slides down in bed like one in typhoid, in low forms of rheumatic and in continued fevers, so great is the exhaustion. Paralysis of the limbs or of one limb, or of any part.
 
@@ -11830,11 +11826,11 @@ Numbness, oedema, swelling of the limbs.
 
 ## Colocynthis
 
-**Pains:** The principal feature of Colocynth is its severe, tearing, neuralgic pains; so severe that the patient is unable to keep still. Sometimes they are &gt; by motion - at least it appears that they are worse during rest- &gt; by pressure and sometimes &gt; by heat. Pains occur in the face, abdomen, along the course of the nerves.
+**Pains:** The principal feature of Colocynth is its severe, tearing, neuralgic pains; so severe that the patient is unable to keep still. Sometimes they are > by motion - at least it appears that they are worse during rest- > by pressure and sometimes > by heat. Pains occur in the face, abdomen, along the course of the nerves.
 
 These pains are often due to a very singular cause, namely, anger with indignation. Hence persons who are haughty and easily offended or chagrined have Colocynth complaints. Anger will be followed by violent neuralgia in the head, eyes, down the spine and in the intestines.
 
-In spite of extreme restlessness there is great weakness with the pains. It patient suffering with chronic diarrhoea, with severe colic, will sometimes become so weak that he can hardly speak. A feeling of faintness, or even fainting, is by no means an unusual concomitant of the pains. Griping occurs along the course of nerves, and in some cases numbness, pricking and tingling, like the crawling of ants in the part affected.
+In spite of extreme restlessness there is great weakness with the pains. A patient suffering with chronic diarrhoea, with severe colic, will sometimes become so weak that he can hardly speak. A feeling of faintness, or even fainting, is by no means an unusual concomitant of the pains. Griping occurs along the course of nerves, and in some cases numbness, pricking and tingling, like the crawling of ants in the part affected.
 
 With many doctors Colocynth is a routine remedy for sciatica; and only when it fails to do they take the symptoms of the case in order to find the remedy that is indicated. There is no excuse for such practice. Where the pain is better from hard pressure and from heat, where it is worse during repose and drives the patient to despair, Colocynth will generally cure.
 
@@ -11916,17 +11912,17 @@ The same symptoms accompanying the diarrhoea and dysentery, The stools consists 
 
 At first they may be copious, strong smelling, pappy, and later watery, yellow, scanty and almost inodorous.
 
-Diarrhoea and dysentery from anger with indignation; the most awful tenesmus during stool; urging to stool with colic. Eating ever so little, rings on the colic, urging and stool. Watery stools after eating. Many of these cases, find relief from heat and the warmth of the bed.
+Diarrhoea and dysentery from anger with indignation; the most awful tenesmus during stool; urging to stool with colic. Eating ever so little, brings on the colic, urging and stool. Watery stools after eating. Many of these cases, find relief from heat and the warmth of the bed.
 
 ## Conium Maculatum
 
 This medicine is a deep, long acting antipsoric, establishing a state of disorder in the economy that is so far reaching and so long lasting that it disturbs almost all the tissues of the body.
 
-**Glands:** The complaints are brought on from taking cold, and the glands become affected all over the body. From every little cold the glands become hard and. sore. Infiltration in deep-seated diseases in the region of ulcers and in the region of inflamed parts; in the glands along the course of the lymphatics, so we get a chain like knots.
+**Glands:** The complaints are brought on from taking cold, and the glands become affected all over the body. From every little cold the glands become hard and sore. Infiltration in deep-seated diseases in the region of ulcers and in the region of inflamed parts; in the glands along the course of the lymphatics, so we get a chain like knots.
 
 The glands under the arm inflame and ulcerate. The glands in the neck, in the groin and abdomen become enlarged. Ulcerated parts indurate. An abscess of the breast becomes surrounded by lumps and nodules. Nodules in the breast even where milk has not yet formed; lumps and nodules, indurations and enlarged glands form under the skin all over the body.
 
-Conium has been used extensively for malignant affections of glands, because it takes hold of glands from the beginning and infiltrates, and they gradually grows a stony hardness, like scirrhus.
+Conium has been used extensively for malignant affections of glands, because it takes hold of glands from the beginning and infiltrates, and they gradually grow to a stony hardness, like scirrhus.
 
 Now, another grand feature running through this remedy is the action upon the nerves.
 
@@ -12408,7 +12404,7 @@ From what I have said you will see that the Cuprum case is, above all others, th
 
 He is full of cramps and is compelled to cry out with the pain from the contractions of the muscles. Camphor is the coldest of all the three remedies; the Camphor patient is cold as death. Camphor has the blueness, the exhaustive discharge, though less than Cuprum and Veratrum; but whereas in the two latter remedies the patient is willing to be covered up, in Camphor he wants the windows open and wants to be cool.
 
-Though he is cold he wants to be uncovered and to have the windows open. But just here let me mention another feature in Camphor. It has also some convulsions which are painful, and when the pain is on he wants to be covered up and wants the windows shut. If there are cramps in the bowels with the pain, be wants to be covered up.
+Though he is cold he wants to be uncovered and to have the windows open. But just here let me mention another feature in Camphor. It has also some convulsions which are painful, and when the pain is on he wants to be covered up and wants the windows shut. If there are cramps in the bowels with the pain, he wants to be covered up.
 
 So that in Camphor, during all of its complaints in febrile conditions (and fever is very rare in Camphor), and during the pains he wants to be covered up and warm, but during the coldness he wants to be uncovered and have the air.
 
@@ -12428,7 +12424,7 @@ The cramps in Podophyllum, are violent, they feel to him as if the intestines we
 
 The stool is gushing, copious, and is accompanied by dreadful exhaustion.
 
-"It is a wonder where it can all come from," says the mother, speaking of the exhausting diarrhea in an infant or in a child. The stool runs away gushingly, in prolonged squirts, with a sensation of emptiness, sinking, deathly goneness in the whole abdomen. Phosphorus also ought to be thought of in relation to Cuprum. It also has cramps in the bowels, exhaustive diarrhea, a, sinking as if dying, but commonly with heat of the skin, with burning internally, with gurgling of all the fluids taken into the stomach; as soon as they come to the stomach they commence to gurgle, and gurgle all the way through the bowel.
+"It is a wonder where it can all come from," says the mother, speaking of the exhausting diarrhea in an infant or in a child. The stool runs away gushingly, in prolonged squirts, with a sensation of emptiness, sinking, deathly goneness in the whole abdomen. Phosphorus also ought to be thought of in relation to Cuprum. It also has cramps in the bowels, exhaustive diarrhea, a sinking as if dying, but commonly with heat of the skin, with burning internally, with gurgling of all the fluids taken into the stomach; as soon as they come to the stomach they commence to gurgle, and gurgle all the way through the bowel.
 
 A drink of water seems to, flow through the bowel with a gurgle. Now this gurgling in Cuprum commences at the throat; he swallows with a gurgle; gurgling in the oesophagus when swallowing.
 
@@ -12456,7 +12452,7 @@ Cuprum is not passive in its business. Violence is manifested everywhere. Violen
 
 Hysterical cramps and hysterical attitudes may change in a night or in a day to St. Vitus' dance, and go on with it as if nothing had happened. Such is the suddenness with which it changes its character. This is not generally known of Cuprum - this constant changing about. Spasmodic affections in general. Spasmodic coughs, spasms all over the body.
 
-**Chest:** The face becomes purple. He loses his breath; suffocated. The mother thinks the child will never come to life again. Spasms of the chest; spasms of the larynx; spasms of the whole respiratory system of such a character that the child seems to be choking to death.
+**Chest:** The face becomes purple. He loses his breath; suffocates. The mother thinks the child will never come to life again. Spasms of the chest; spasms of the larynx; spasms of the whole respiratory system of such a character that the child seems to be choking to death.
 
 Whooping cough. With every spell of whooping cough comes this awful spasmodic state, this spasmodic coughing. Jerking of the muscles. Cuprum has spasms of the limbs with all sorts of contractions such as are found in hysterical constitutions.
 
@@ -12534,7 +12530,7 @@ Serene humor changes suddenly into seriousness or peevishness. Grief and fear ke
 
 Dullness of mind prevents mental labor. Absorbed in thought seeks solitude; thinks about the future. Answers incoherently, confusion of mind. Aversion to work, and dread of open air.
 
-Wants to remain in a warm room, and. in solitude.
+Wants to remain in a warm room, and in solitude.
 
 Remains a long time silent. Excitement with trembling.
 
@@ -12734,7 +12730,7 @@ Confusion of mind and much dizziness. Lancinating pains in various parts of the 
 
 Must support the chest when coughing. Must press upon the abdomen. Pressive, congestive headaches. Corrosive itching in various parts of the body with measles-like eruptions. The eyeballs become prominent and congested from coughing during measles and in convulsions. Stitching pain in the eyes. Noises in the ears, roaring, humming and drumming. Earache in children. Stitching in the ears. Bleeding from various orifices, especially from the nose, throat, larynx, and chest when coughing, in connection with the spasmodic coughs.
 
-**Face:** Ordinarily the face is pale and sunken with beat of the face and he has cold extremities, except when coughing, at which time the face becomes red, congested, and purple like Bell. and Cupr. Stitching pains will be found in many complaints.
+**Face:** Ordinarily the face is pale and sunken with heat of the face and he has cold extremities, except when coughing, at which time the face becomes red, congested, and purple like Bell. and Cupr. Stitching pains will be found in many complaints.
 
 Putrid taste in the mouth is a common symptom when it is found in phthisical conditions of the lungs, larynx, and also in whooping cough. Bloody saliva and hemorrhage from the mouth. Difficulty in swallowing solid foods.
 
@@ -12784,7 +12780,7 @@ If you go into the mountains at such a time, either in the North or West, you wi
 
 This will make the baby sick; it is too warm to take the child out in the middle of the day, and so he is taken out in his carriage in the evening; he has been overheated in the house during the day, and then catches this draft in the evening.
 
-Dulcamara is suitable for conditions that would arise from just such a state. So with an adult who has been out in the beat of the sun and catches the cold draft by night, which means hot days and cold nights, such as occur in the fall of the year, at the close of the summer and coming in of the winter; this intermingling of hot air and cold drafts.
+Dulcamara is suitable for conditions that would arise from just such a state. So with an adult who has been out in the heat of the sun and catches the cold draft by night, which means hot days and cold nights, such as occur in the fall of the year, at the close of the summer and coming in of the winter; this intermingling of hot air and cold drafts.
 
 You go up towards the foot of the hills after a hot day, you will walk through a stratum of air that will make you perspire and the next minute a cold air that will make you want your overcoat on, and then again a stratum of hot air and so on.
 
@@ -12898,7 +12894,7 @@ So he puzzles, for a long time, and prescribes on the immediate attack and palli
 
 But a conscientious physician feels worried and knows he is not doing what he ought to do by his patient, unless he reaches out for the remedy which touches the constitution. It is far more useful to keep people from taking colds than to cure colds.
 
-**Bright's disease:** There is a form of acute Bright's disease that Dulcamara cures. You can probably now surmise from what we have said of the nature of the remedy, that in cases of Bright's disease following scarlet fever, or from malaria, or in any acute disease that has ended badly, i. c., the patient has been exposed to the cold too soon, and has taken "cold," or from sudden change of weather, damp and cold, the feet commence to swell, there is albumin in the urine, the limbs are waxy, the face becomes waxy and sallow, and there is constant urging to urinate. Dulcamara, with other constitutional symptoms, will be suitable.
+**Bright's disease:** There is a form of acute Bright's disease that Dulcamara cures. You can probably now surmise from what we have said of the nature of the remedy, that in cases of Bright's disease following scarlet fever, or from malaria, or in any acute disease that has ended badly, i. e., the patient has been exposed to the cold too soon, and has taken "cold," or from sudden change of weather, damp and cold, the feet commence to swell, there is albumin in the urine, the limbs are waxy, the face becomes waxy and sallow, and there is constant urging to urinate. Dulcamara, with other constitutional symptoms, will be suitable.
 
 In bladder catarrh, where there is a copious discharge of mucus, or muco-pus in the urine; when the urine stands, a thick, purulent sediment, yellowish-white, and a constant urging to urinate; every time he takes a little cold, the urine becomes bloody, the frequency of urination is increased, the urine becomes irritating, the catarrh of the bladder rouses up like a flame, all the symptoms are worse in cold, damp weather, and from getting chilled; better from becoming warm. So you see whether it is a catarrh of the kidney ora catarrhal state of the bladder, or an attack of dysentery, or an attack of sudden diarrhea, every cold spell of the weather brings on an increase of the trouble.
 
@@ -12948,11 +12944,11 @@ If this state goes on for a few days the patient will become yellow, the cold wi
 
 These remedies are especially useful throughout New England, New York, Ohio, the North and Canada. They do not have this kind of a cold very frequently in the warmer climates, but Eupatorium is often indicated in the warmer climates for fevers, yellow fever, bilious fever, break-bone fever and intermittent fever. It seems to be useful in one kind of complaints in one climate and in another kind of complaints in another climate.
 
-In the Southwest and the West, in the valleys of the great river Eupatorium cures complaints beginning as if the back would break, great shivering from head to foot spreading from the back, great sensitiveness to cold, congestive headaches, flushed face, yellow skin and yellow eyes, pain in the abdomen, and in the region of the live inability to retain any food, nausea from the sight and smell of food the bones ache as if they would break, the fever runs high, the un is of a mahogany color, the tongue is heavily coated yellow, and the is nausea and vomiting of bile.
+In the Southwest and the West, in the valleys of the great river Eupatorium cures complaints beginning as if the back would break, great shivering from head to foot spreading from the back, great sensitiveness to cold, congestive headaches, flushed face, yellow skin and yellow eyes, pain in the abdomen, and in the region of the liver, inability to retain any food, nausea from the sight and smell of food, the bones ache as if they would break, the fever runs high, the urine is of a mahogany color, the tongue is heavily coated yellow, and there is nausea and vomiting of bile.
 
 That gives the picture of Eupatorium in the Mississippi Valley, in the Ohio Valley, in Florida and Alabama and all through the Southern States. The most prominent symptoms are the vomiting of bile, the aching of the bones as if they would break, the pains in the stomach after eating, and the nausea from the thought and smell of food.
 
-The stomach is very irritable; the thought of food gags him. The patient desires to keep still, but the pain is s severe that he must move and so he appears restless. These are among the acute manifestations, and are things only very general that we must take up and apply to sick people.
+The stomach is very irritable; the thought of food gags him. The patient desires to keep still, but the pain is so severe that he must move and so he appears restless. These are among the acute manifestations, and are things only very general that we must take up and apply to sick people.
 
 Eupatorium has been a very useful remedy in intermittent fever when epidemic in the valleys. Among the first signs is nausea sometime before the attack, and there are sometimes spells of vomiting bile. About seven or nine o'clock in the forenoon, he commences to shudder, the shivering runs down the back and spreads from the back to the extremities; he has violent thirst, but the shiverings are made worse from drinking so that he dare not drink cold water. There is soreness and pulsation in the back of the head, violent pain in the occiput and back before and during the chill. During the chill he wants to cover up and the clothing needs to be piled on.
 
@@ -12960,7 +12956,7 @@ The thirst extends through all the stages. At the close of the chill there is vo
 
 Intense heat, burning in the top the head, his feet burn and his skin burns. The burning is more intense than the heat would justify. It is characteristic of this remedy, for the sweat to be scanty; a violent chill, intense fever which passes off slowly, and very scanty sweat. The bones ache as if they would break.
 
-During the chill his head aches as if it would burst, it throbs it tears, it stings, it burns; he describes the headache in terms expressive of violence, as if probably a congestive headache. One would think after the fever subsides and he commences to sweat a little that he would get relief, which is true excepting the headache, which often gets worse clear through to the end of the attack, and. sometimes it will last all day and night; then he will have a whole day free from the headache, but on the third day at seven or nine o'clock on will come the same trouble with increasing violence.
+During the chill his head aches as if it would burst, it throbs it tears, it stings, it burns; he describes the headache in terms expressive of violence, as if probably a congestive headache. One would think after the fever subsides and he commences to sweat a little that he would get relief, which is true excepting the headache, which often gets worse clear through to the end of the attack, and sometimes it will last all day and night; then he will have a whole day free from the headache, but on the third day at seven or nine o'clock on will come the same trouble with increasing violence.
 
 At times these attacks are prolonged, the one will extend into the other, that is enter into a sort of remittent character with no intermission. The longer this runs the more the liver becomes engorged, and finally the urine is loaded with bile, the stool becomes whitish, the fever increases, the nausea increasing, the tongue becomes pointed and elongated, and is dry, the headache is extremely painful, and a state of masked fever comes on.
 
@@ -13112,7 +13108,7 @@ Fullness and distension of the eyes; fullness of the neck. Palpitation of the he
 
 Every quick motion aggravates the headache. Coughing aggravates the headache; pain in the head and occiput from coughing. These pains are sometimes ameliorated by walking gently. Going up stairs, sitting down, rising from a seat unless it is done very deliberately - will arouse all the pains of Ferrum.
 
-Any sudden motion will bring on hammering and a feeling of great expansion in the head. And then will come more or less shooting, tearing pains. Beating in the back of the head from rising or from coughing, because coughing is a sudden motion. Confusion of mind with hammering headache. Rush of blood to the head. Congestive headaches from excitement; from taking cold; from exposure; lasting three or four days or a week. The face is gushed and perhaps cold, the head somewhat hot, but not as hot as would be expected.
+Any sudden motion will bring on hammering and a feeling of great expansion in the head. And then will come more or less shooting, tearing pains. Beating in the back of the head from rising or from coughing, because coughing is a sudden motion. Confusion of mind with hammering headache. Rush of blood to the head. Congestive headaches from excitement; from taking cold; from exposure; lasting three or four days or a week. The face is flushed and perhaps cold, the head somewhat hot, but not as hot as would be expected.
 
 Redness of the eye; engorged vessels. Great weakness, dyspnoea and palpitation. Writing - a mental operation - causes the headache to reappear. Great sensitiveness of the scalp. The patient must let the hair hang down. Mental disorders and headaches accompanying or following haemorrhages, and in lying in women.
 
@@ -13348,7 +13344,7 @@ While it has in its nature some febrile action, it is not for this purpose that 
 
 It is an unusually hot-blooded remedy at times, and again it has conditions of coldness. In the evening and night great heat seems to evolve from the body without increase of temperature. The skin becomes very hot.
 
-That patient is often &lt; from warm things, &lt; from covering, &lt; from warm air; suffocates somewhat like Puls. in a warm room. He wants to bathe the face and head in cold water; such bathing is grateful.
+That patient is often < from warm things, < from covering, < from warm air; suffocates somewhat like Puls. in a warm room. He wants to bathe the face and head in cold water; such bathing is grateful.
 
 The feet burn and are put out of bed in the night; he hunts around in bed for a cool place for the feet and hands. The soles perspire, and the palms perspire, and the sweat is acrid, making the parts sore; excoriation from the sweat between the toes.
 
@@ -13378,13 +13374,13 @@ Bone affections stand out prominently. Necrosis, especially of the long bones, b
 
 It is very analogous to Sil., and it is one of the natural followers of Sil. where Sil. has been too frequently repeated by persons who do not know that Silicea does its best in a single dose and that it is a long acting and slow medicine.
 
-It not only antidotes the abuse of Sil., but also follows Sil., After practicing a while you will be surprised to observe the Pendulum like -action between beat and cold in various complementary remedies.
+It not only antidotes the abuse of Sil., but also follows Sil., After practicing a while you will be surprised to observe the Pendulum like -action between heat and cold in various complementary remedies.
 
 To make that clear I will illustrate it by using the series in which this remedy is set and to which it naturally belongs. You take a patient who is hot-blooded, who is always suffering from the heat, from too much clothing and too warm a room especially in the evenings, a patient that is tearful and sad, and may bea blonde.
 
 Why you say, I am trying to describe a Pulsatilla patient. Well, yes; anyone can see that. Puls. is a hot-blooded patient, but after using that remedy a while you notice that the patient goes to the other extreme and becomes chilly, and wants much clothing; the heat is taken out of the case. Sil. is the natural follower of Puls., and you would be astonished to know how often a patient leaving Puls. runs toward Sil.
 
-Sil. goes deeper into the case, it does more cutting, and it is the, natural chronic of Puls. Other remedies of course follow Puls., but Sil. more frequently than any other medicine. Now, that is the second step; the patient has gone from a warm to a cool state; the overheated state has been lost and he has gone into Sil., but when Sil. has been administered for a while it cures the cold state, and removes the chilliness of the patient (remember, however, that Sil. has at times something of Puls. in it; in some of its complaints it is &lt; from being overheated) and the patient under Sil. goes back to the warm state again, becomes hot-blooded, wants the warm covers thrown off, wants to be lightly covered.
+Sil. goes deeper into the case, it does more cutting, and it is the, natural chronic of Puls. Other remedies of course follow Puls., but Sil. more frequently than any other medicine. Now, that is the second step; the patient has gone from a warm to a cool state; the overheated state has been lost and he has gone into Sil., but when Sil. has been administered for a while it cures the cold state, and removes the chilliness of the patient (remember, however, that Sil. has at times something of Puls. in it; in some of its complaints it is < from being overheated) and the patient under Sil. goes back to the warm state again, becomes hot-blooded, wants the warm covers thrown off, wants to be lightly covered.
 
 Then it is that this medicine comes in the series. Fluor. ac. follows Sil. as naturally as Sil. follows Puls. They exist in threes.
 
@@ -13404,11 +13400,11 @@ A very serious case had better first receive Puls., and the way being paved by t
 
 **Bones:** Think of the remedy, then, in vicious bone diseases, in necrosis and caries, in fistulous openings, fistula leading to the teeth, fistula lachrymalis and fistula in ano; in calcareous degenerations; in deformity of the nails, hair and teeth; in affections of the thigh bones and leg bones, with chronic fistulous openings leading to bone discharging pus which excoriates the parts all around.
 
-The patient is over-sensitive; is made worse if the bowels do not move regularly; is distressed if the menstrual flow is slightly delayed; suffers if the call to urinate cannot be immediately attended to, hence, as in the text, "headaches &gt; by micturition."
+The patient is over-sensitive; is made worse if the bowels do not move regularly; is distressed if the menstrual flow is slightly delayed; suffers if the call to urinate cannot be immediately attended to, hence, as in the text, "headaches > by micturition."
 
-**Headache:** That symptom is all that is given in the text; but remember something that is analogous to it, viz.; If the call to urinate be not attended to the headache will continue to grow &lt; until the urine is avoided.
+**Headache:** That symptom is all that is given in the text; but remember something that is analogous to it, viz.; If the call to urinate be not attended to the headache will continue to grow < until the urine is voided.
 
-That is a peculiar symptom, and it sometimes leads to the study of Fluor, ac. Violent congestive headache with beat and fullness. Violent occipital headaches, worse from motion.
+That is a peculiar symptom, and it sometimes leads to the study of Fluor, ac. Violent congestive headache with heat and fullness. Violent occipital headaches, worse from motion.
 
 Now, if we take into consideration its great depth of action, we will see furthermore that it is suitable in some brain diseases. In persons who have overworked, who have been working day and night to establish a business, or to keep it up, and when there has been constant use of the brain it is suitable.
 
@@ -13482,7 +13478,7 @@ Very often the trouble will come back in the throat, and the ulcers consist of l
 
 In potentized form sil. and Merc. are inimical, yet the high potencies of Sil. will antidote crude Mercury.
 
-This patient craves pungent, highly seasoned things. The appetite must be tickled; there must be some inducement to eat. At times the appetite is changeable in spite of the fact that he is overwhelmingly hungry; he cannot eat, yet he is &gt; when the food is in the stomach, &gt; after eating.
+This patient craves pungent, highly seasoned things. The appetite must be tickled; there must be some inducement to eat. At times the appetite is changeable in spite of the fact that he is overwhelmingly hungry; he cannot eat, yet he is > when the food is in the stomach, > after eating.
 
 The most vicious kind of chronic diarrhea with this low feeble constitution, in insidious complaints. "Morning diarrhoea."
 
@@ -13606,7 +13602,7 @@ The weight of the hat is a very common aggravation in headaches in school childr
 
 The Glonoine patient is also worse from wine and from stimulants, and from mental application. When the headache is on he cannot think, and he cannot write. An additional hindrance to writing is that he trembles so that he cannot write. Trembling and throbbing of the fingers so that he is unable to do his work or perform any delicate work with the fingers or hands.
 
-We have puerperal convulsions with such an appearance as J have described. We may have the same violence in congestive chills, or in any type of congestion of the brain.
+We have puerperal convulsions with such an appearance as I have described. We may have the same violence in congestive chills, or in any type of congestion of the brain.
 
 **Brain:** There is a milder form of trouble that calls for its use, a condition corresponding to the chronic types of disease. This milder form exists where the patient has simply what might be called a hyperemia of the brain, a rush of blood to the head when able to be about. It comes in spells, comes in moments when he least expects it; while walking on the street he feels a surging to the brain like a flush of heat and a flush on the face, his hands tremble, and the hands and feet become cold, he breaks out in a sweat; he looks around him and does not know which way to go home, he does not know where his dwelling is.
 
@@ -13632,7 +13628,7 @@ The headache is worse from bending backward and from stooping forward. There are
 
 "Some months after being violently jarred by being thrown from a carriage, a sensitiveness of the upper part of the back and neck came on."
 
-There are two strong characteristics of Glonoine in that cure, viz: "&lt; from wine and the &lt; from lying down."
+There are two strong characteristics of Glonoine in that cure, viz: "< from wine and the < from lying down."
 
 The other symptoms might have pointed to other remedies, but these two features are there. It is interesting when reading a case, if you have first a knowledge of the Materia Medica, to note what symptoms are verified when you do not know the Materia Medica then the case is confusing.
 
@@ -13726,7 +13722,7 @@ Hyperaemia of the brain in the evening in a warm room; frequent moments of conge
 
 **Eyes:** Extreme photophobia in the sunlight with copious lachrymation. No remedy has photophobia more marked than Graphites. Pain in the eyes and over the eyes by looking long toward a sun lighted window; complaints from eyestrain.
 
-Letters appear double when writing, letters run together when reading; flickerings and fiery zigs-zags just outside the field of vision in the evening; misty vision; vanishing of sight during menses.
+Letters appear double when writing, letters run together when reading; flickerings and fiery zig-zags just outside the field of vision in the evening; misty vision; vanishing of sight during menses.
 
 Burning, pressing, stitching pains in the eyes. It has cured ulceration of the cornea. Recurrent pustular inflammation of the cornea. Keratitis pustulosa in children with fissures in the canthi, extreme photophobia and eczema on the face.
 
@@ -13830,7 +13826,7 @@ Herpes in the groin and hollow of the knee. Cold feet in evening in bed; copious
 
 Dreams vivid; anxious, horrible, vexatious. Sleepless before midnight; sleepiness during the day. Nightly pains in sleep. Frequent waking. Unrefreshed in the morning.
 
-Graphites should be used more frequently in chronic recurrent intermittent fever. Chill in the evening with tearing in the limbs chill intermingled with the fever; wants to be covered in all stages chill worse after eating, better after drinking and in open air. Nightly fevers with chilliness but no sweat; dry beat evening and night, especially before midnight; anxiety and restlessness during the fever, hands and soles very hot; even burning heat.
+Graphites should be used more frequently in chronic recurrent intermittent fever. Chill in the evening with tearing in the limbs chill intermingled with the fever; wants to be covered in all stages chill worse after eating, better after drinking and in open air. Nightly fevers with chilliness but no sweat; dry heat evening and night, especially before midnight; anxiety and restlessness during the fever, hands and soles very hot; even burning heat.
 
 It has chill with fever followed by sweat; sweat from slight exertion; sweat on front of body; the sweat is offensive, cold and stains yellow; copious night sweats in weakness and during phthisis; entire inability to perspire, in many chronic complaints.
 
@@ -13862,7 +13858,7 @@ Pain in the throat, compelling constant swallowing; much mucus in the throat, wh
 
 Nausea better after eating and by eructations. Vomiting of bitter, sour water and mucus. A feeling of anxiety in the stomach. Cramping in the stomach after food and a heavy load that seems to go from side to side as he turns from side to side, with nausea and eructation. Distension after eating. Pressure in stomach, after eating. Marked coldness in stomach. Cramp and hard aching in stomach, pain grows rapidly worse and seems to extend to back and kidneys.
 
-Cold feeling in abdomen. Cramping like colic with nausea. Rumbling in abdomen with distension in afternoon and evening. Swelling of mesenteric glands. Pinching in abdomen, better by passing flatus. Diarrhoea, with copious gushing, yellow or yellowish-green, frothy, watery stools; copious watery vomiting and purging, like. cholera morbus; copious green watery stools. The diarrhoea is brought on. from drinking large quantities of water, due to the violent thirst.
+Cold feeling in abdomen. Cramping like colic with nausea. Rumbling in abdomen with distension in afternoon and evening. Swelling of mesenteric glands. Pinching in abdomen, better by passing flatus. Diarrhoea, with copious gushing, yellow or yellowish-green, frothy, watery stools; copious watery vomiting and purging, like. cholera morbus; copious green watery stools. The diarrhoea is brought on from drinking large quantities of water, due to the violent thirst.
 
 During the diarrhoea he is often sensitive to draft and open air which give him urging to stool. It has cured fully developed, rapid, Asiatic cholera. Green stools and green vomiting, unconscious stools.
 
@@ -14032,7 +14028,7 @@ Zincum is, if possible, even more profound in its dreadful state of stupefaction
 
 Do not take the mother; do not tell her a word about it, unless she is an unusually excellent mother, because that is her child, and she is sympathetic, and she will cry when she hears that child cry; she will lose her head and will insist upon the father turning you out of doors.
 
-But you take the father aside beforehand and tell him what is going to happen; explain it to him so he will see it for himself; and tell him that if this is not permitted to go on, that if the remedy is interfered with, he will lose his child.
+But you take the father aside beforehand and tell him what is going to happen; explain it to him so he will see it for himself; and tell him that if this is not permitted to go on that if the remedy is interfered with, he will lose his child.
 
 It is not so much the awful pains, but it is the itching, tingling and formication that cause the appearance of extreme agony. Sometimes in every part of the child's body it is a week before all these symptoms go away of themselves but they will go away, if left alone.
 
@@ -14060,7 +14056,7 @@ The exposure of hand or foot at night in bed brings on symptoms. He wants the co
 
 **Pains:** But the pains of Hepar may be very severe, very sharp. Inflamed spots, eruptions, boils or suppurations are full of sharp pains. This is so intense that it is described at times, as a sticking and jagging like sharp sticks.
 
-The pains in ulcers are often felt like sticks; intense and sharp as if sticks were jagging the ulcer. This sensation is often expressed by the patient suffering from sore throat. Lip feels as if he had swallowed a fish bone, or stick. This is in keeping with the general character, because it is present everywhere, in inflammations, ulcers, pustules, boils and eruptions; all seem to have sticks in them or some thing jagging.
+The pains in ulcers are often felt like sticks; intense and sharp as if sticks were jagging the ulcer. This sensation is often expressed by the patient suffering from sore throat. He feels as if he had swallowed a fish bone, or stick. This is in keeping with the general character, because it is present everywhere, in inflammations, ulcers, pustules, boils and eruptions; all seem to have sticks in them or some thing jagging.
 
 Eruptions are sensitive, to touch. This accords with the oversensitiveness of the nerves found everywhere. The Hepar patient faints with pain, even from slight pain.
 
@@ -14202,7 +14198,7 @@ Many excellent homoeopathic physicians have said to me,
 
 "I do not agree with you as to the danger of Sulphur in phthisical cases. I have cured cases of phthisis with Sulphur."
 
-So have I many of them. But I did not refer to curable cases, but to those cases which are well developed and have gave symptoms. It is well to know all the elements in the case; then if you have administered a remedy and killed your patient, you know at least what you have done.
+So have I many of them. But I did not refer to curable cases, but to those cases which are well developed and have grave symptoms. It is well to know all the elements in the case; then if you have administered a remedy and killed your patient, you know at least what you have done.
 
 It is better to know what you have done if you have killed your patient, than to be ignorant of it and go on and kill some more in the same way.
 
@@ -14564,13 +14560,13 @@ For the final weakness that persists even after Rhus we have Calcarea carb. In t
 
 Hypericum and Ledum run close together, and they have to be compared. Ledum, as much of the sore bruised feeling of Arnica and will often take its place; but Hypericum and Ledum come together for consideration when an injury to a nerve has taken on inflammatory action. Instead of the muscles and bones and blood vessels, as in Arnica, Rhus and Calcarea, the nerves are the sphere for these two remedies.
 
-**Nerves injuries:** When the finger ends or toes have beer, bruised or lacerated, or a nail has been torn off, or when a nerve has become pinched between a hammer and the bone in a blow, and that nerve becomes inflamed and the pain can be traced up along the nerve, and it is gradually extending toward the body from the injured part with stitching, darting pains, coming and going, or shooting up from the region of the injury toward the body, a dangerous condition is coming on.
+**Nerves injuries:** When the finger ends or toes have been bruised or lacerated, or a nail has been torn off, or when a nerve has become pinched between a hammer and the bone in a blow, and that nerve becomes inflamed and the pain can be traced up along the nerve, and it is gradually extending toward the body from the injured part with stitching, darting pains, coming and going, or shooting up from the region of the injury toward the body, a dangerous condition is coming on.
 
 In this condition Hypericum is above all the remedies to be thought of and hardly any other medicine is likely to come in. It hardly need be said that lock-jaw is threatening.
 
-Sometimes a vicious dog will take hold of an individual through the thumb, or through the hand or the. wrist and run one of his great teeth through the radial nerve or some of its branches in the hand, causing a lacerated wound. You may not find in the earlier stages the symptoms of Hypericum, but they will develop gradually and you will have them to treat. Do not cut the off, but cure it. We cure all these injuries with medicines-punctured, incised, contused and lacerated wounds, painful wounds.
+Sometimes a vicious dog will take hold of an individual through the thumb, or through the hand or the wrist and run one of his great teeth through the radial nerve or some of its branches in the hand, causing a lacerated wound. You may not find in the earlier stages the symptoms of Hypericum, but they will develop gradually and you will have them to treat. Do not cut the arm off, but cure it. We cure all these injuries with medicines-punctured, incised, contused and lacerated wounds, painful wounds.
 
-A wound will sometimes yawn, swell up, no tendency to heal, look dry and shiny on its edges, red; inflamed; burning, stinging, tearing pains; no healing process. That wound needs Hypericum. It prevents tetanus. Every practitioner knows that lock-jaw way develop after an injury to sentient nerves. The old school doctor is frightened by these shooting pains up the arms after an injury. A shoemaker may stick his awl into the end of his thumb or a carpenter may stick his finger with a brass tack and he does not think much of it, but the next night shooting pains extend up the arm with much violence.
+A wound will sometimes yawn, swell up, no tendency to heal, look dry and shiny on its edges, red; inflamed; burning, stinging, tearing pains; no healing process. That wound needs Hypericum. It prevents tetanus. Every practitioner knows that lock-jaw may develop after an injury to sentient nerves. The old school doctor is frightened by these shooting pains up the arms after an injury. A shoemaker may stick his awl into the end of his thumb or a carpenter may stick his finger with a brass tack and he does not think much of it, but the next night shooting pains extend up the arm with much violence.
 
 The allopathic physician looks upon that as a series matter, for he sees lockjaw or tetanus ahead. When these pains come on Hypericum will stop them, and from this stage to advanced states of tetanus with opisthotonos and lock-jaw Hypericum is the remedy. It is full of just such symptoms as are found in tetanus and such symptoms as lead to tetanus and it is full of all the manifestations of an ascending neuritis.
 
@@ -14834,7 +14830,7 @@ This enlargement of the glands is especially observed among the lymphatic glands
 
 There is this peculiar circumstance also in Iodine, viz., that while the body withers the glands enlarge. That is peculiar and will enable you to think of Iodine, because the glands grow in proportion to the dwindling of the body and the emaciation of the limbs. We find this state in marasmus. There is withering throughout the body, the muscles shrink, the skin wrinkles and the face of the child looks like that of a little old person, but the glands under the arms, in the groin and in the belly are enlarged and hard.
 
-The mesenteric glands can be felt as knots. We see the same tendency in old cases of malaria coming from the allopaths in which Quinine and Arsenic have been extensively used and the chills have kept on; the face and the upper part of the body are withered, the skin looks shriveled and yellow; a diarrhoea has come on, the liver and spleen are enlarged and the lymphatic glands of the belly can be felt. Even in the earlier stages, when these states are only threatening, we may look forward and see that the case is progressing toward an Iodine state.
+The mesenteric glands can be felt as knots. We see the same tendency in old cases of malaria coming from the allopaths in which Quinine and Arsenic have been extensively used and the chills have kept on; the face and the upper part of the body are withered, the skin looks shriveled and yellow; a diarrhoea has come on the liver and spleen are enlarged and the lymphatic glands of the belly can be felt. Even in the earlier stages, when these states are only threatening, we may look forward and see that the case is progressing toward an Iodine state.
 
 Now take a patient that is suffering from intermittent fever brought on from malaria, or damp cellars. The patient grows increasingly hot; it is not always a febrile heat, but a sensation of heat; he wants to be bathed in cold water, wants the face and body cooled by cold sponging; he suffocates and coughs in a warm room, dreads heat, sweats easily and easily becomes exhausted. It is in this kind of a constitution that acute complaints will come on, such as acute inflammatory conditions of the mucous membranes and gastritis, inflammation of the liver, inflammation of the spleen, diarrhoea, croup, inflammation of the throat.
 
@@ -14930,7 +14926,7 @@ The Pulsatilla patient often increases in flesh, although growing increasingly n
 
 Iodine has also an indigestion that comes from overeating. The food sours, he is troubled with sour eructations, with much flatulence, with belching, with undigested stools, with diarrhoea, watery, cheesy stools, and he digests less and less. The digestion becomes more and more feeble until he digests almost nothing of what he eats, and yet the craving increases. He vomits and diarrhoea comes on and so he increasingly emaciates; because it is like burning the candle at both, ends. It is not surprising that he is extremely weak because he is assimilating very little of what he takes.
 
-The articles of food act as foreign substances to disorder his bowels and stomach. Now, with this trouble going on, the liver and spleen become hard and enlarged, and the patient becomes jaundiced. The stool is hard, lumpy and white, or colorless, or clay colored, sometimes soft and pappy; there seems to be little or no bile in it.
+The articles of food act as foreign substances to disorder his bowels and stomach. Now, with this trouble going on the liver and spleen become hard and enlarged, and the patient becomes jaundiced. The stool is hard, lumpy and white, or colorless, or clay colored, sometimes soft and pappy; there seems to be little or no bile in it.
 
 This stage gradually increases until hypertrophy of the liver comes on. Finally the abdomen sinks in and reveals this enlargement of the liver and the enlarged lymphatic glands.
 
@@ -14940,7 +14936,7 @@ These are very knotty and as hard as in tabes mesenterica. Iodine is indicated i
 
 When the constitutional state is present it is primary to the varying kinds of stools that it is possible for the patient to have.
 
-So if you have a marked state of the constitution, a case in which there are a great number of general symptoms for you to associate the remedy with, the little symptoms of the diarrhoea cease to be important. The constitutional state in that patient is that which is "strange, rare and peculiar."
+So if you have a marked state of the constitution, a case in which there are a great number of general symptoms for you to associate the remedy with the little symptoms of the diarrhoea cease to be important. The constitutional state in that patient is that which is "strange, rare and peculiar."
 
 Almost any kind of diarrheic stool will be cured if the constitutional state is covered by the remedy.
 
@@ -15108,7 +15104,7 @@ A very strange condition then is observed. Scabs form upon the nasal septum; whe
 
 **Face:** The bones of the face are often very sore, with shooting pains in the malar bones. Pain in the malar bones on coughing. With the catarrhal conditions there is much suffering from the malar bones, like Merc. It has cured lupus exedens. It has cured ulceration of the lip. Swollen parotid is quite a common feature in its proving. It has cured impetigo.
 
-**The tongue:** is smooth, shiny, sometimes cracked. This is especially observed in low forms of fever, like typhoid. The tongue is often coated, thick and yellow at. the base. Papillae raise on the dorsum of the tongue, making it look like strawberry tongue. Again the tongue is coated a thick brown. The provers seemed to be much annoyed by a sensation of a hair on the base of the tongue. It has produced and cured ulceration of the tongue; even when syphilitic, it is a useful remedy. Ulcers deep as if punched out; with stinging pains.
+**The tongue:** is smooth, shiny, sometimes cracked. This is especially observed in low forms of fever, like typhoid. The tongue is often coated, thick and yellow at the base. Papillae raise on the dorsum of the tongue, making it look like strawberry tongue. Again the tongue is coated a thick brown. The provers seemed to be much annoyed by a sensation of a hair on the base of the tongue. It has produced and cured ulceration of the tongue; even when syphilitic, it is a useful remedy. Ulcers deep as if punched out; with stinging pains.
 
 There is great dryness of the mouth; ropy saliva and mucus ulcers anywhere in the mouth; aphthous patches; ulcers of the roof of the mouth; even when these are syphilitic it is a most useful remedy; deep punched out ulcers.
 
@@ -15120,7 +15116,7 @@ Deep ulcers in the throat and ulcers on the tonsils. Ulceration so extensive tha
 
 **Throat:** There are also enlarged veins in the throat. Like the sensation of the tongue as if a hair in various places in the fauces and nose. Dry, burning sensation in the throat is very common. Quite a characteristic symptom of Kali bichromicum is the intense pain in the root of the tongue, when putting the tongue out. It has much exudation in the throat that is not diphtheria, but resembles it.
 
-**The stomach:** symptoms are also very numerous. There is aversion to meat and strange to say, he craves beer, which makes him sick, brings on diarrhoea. Food lies like a load in the stomach; digestion seems suspended; there is a pressure as of a load after eating and much foods eructations. Nausea comes on very suddenly, sometimes while eating, soon after eating; vomits all food and it is sour as if it had turned sour very rapidly; so that there is vomiting of sour, undigested food, bile, bitter mucus, blood, yellow mucus and ropy mucus.
+**The stomach:** symptoms are also very numerous. There is aversion to meat and strange to say, he craves beer, which makes him sick, brings on diarrhoea. Food lies like a load in the stomach; digestion seems suspended; there is a pressure as of a load after eating and much foetid eructation. Nausea comes on very suddenly, sometimes while eating, soon after eating; vomits all food and it is sour as if it had turned sour very rapidly; so that there is vomiting of sour, undigested food, bile, bitter mucus, blood, yellow mucus and ropy mucus.
 
 It is a very useful remedy in nausea and vomiting of drunkards and beer drinkers. When a beer drinker has arrived at a point where he can no longer tolerate his beer but it makes him sick, Kali bichromicum is a useful remedy. In the stomach there is also soreness and coldness. It is a very useful remedy in ulceration of the stomach; and when such ulcer is cancerous it relieves the pain, stops the vomiting, makes the patient comfortable for a long time.
 
@@ -15202,7 +15198,7 @@ This remedy is full of sticking, burning, tearing pains, and these fly around fr
 
 These pains are felt in internal parts and dry passages. Burning in the anus and rectum, described as if a hot poker were forced into that passage; burning as with fire. The hemorrhoids burn like coals of fire. The burning of Kali carb. is like that of Arsenicum.
 
-Again from studying the text it will be seen that it is a common feature of this medicine to have its symptoms come on at 2, 3 or 5 o'clock in the morning. In Kali carb. the cough will come or have its greatest &lt; at three or four or five o'clock in the morning.
+Again from studying the text it will be seen that it is a common feature of this medicine to have its symptoms come on at 2, 3 or 5 o'clock in the morning. In Kali carb. the cough will come or have its greatest < at three or four or five o'clock in the morning.
 
 The febrile state will occur from 3-5 in the morning. The patient, who is subject to asthmatic dyspnoea, will have an attack at 3 o'clock in the morning, waking him out of sleep. He will wake up with various symptoms and remain awake until 5 o'clock in the morning, and after that to a great extent they are relieved.
 
@@ -15300,7 +15296,7 @@ All that, however, is different from this state of ticklishness. I have seen pat
 
 Such a state is in keeping with Kali carb. These things often have to be dug out by observation in studying the nature of provings, and associating things. These things that run into the oversensitiveness of patients are of great value clinically. The capabilities of our Materia Medica are something wonderful, but they could be developed much more rapidly if a number of homoeopathic physicians would make application of the Materia Medica with accuracy and intelligence, observing what they see and relating it literally.
 
-At the present day there is only a very small number of homoeopathic physicians that can come together in a body and say things that are worth listening to, a shamefully small number when we consider the length of time Hahnemann's books have been before the world.
+At the present day there is only a very small number of homoeopathic physicians that can come together in a body and say things that are worth listening to a shamefully small number when we consider the length of time Hahnemann's books have been before the world.
 
 **Liver:** There are many old chronic liver subjects who talk about nothing else but the liver.
 
@@ -15390,7 +15386,7 @@ You must remember that there is natural tendency for a fibroid to cease to grow 
 
 **Pregnancy:** Kali carb. is often a remedy for vomiting in pregnancy, but find out when it is the remedy for vomiting of pregnancy we have to go to the whole constitutional state.
 
-Vomiting of pregnancy is not cured, although it may be temporarily relieved, by Ipeca, as this is a medicine that corresponds merely to the nausea its. In a large number of instances gagging and nausea are only a second or third grade symptom in the remedy that will cure. The condition really depends upon the constitutional state, and the remedy that is to cure must be a constitutional remedy. Sulphur, Sepia and Kali carb. are among the remedies commonly indicated.
+Vomiting of pregnancy is not cured, although it may be temporarily relieved, by Ipeca, as this is a medicine that corresponds merely to the nausea itself. In a large number of instances gagging and nausea are only a second or third grade symptom in the remedy that will cure. The condition really depends upon the constitutional state, and the remedy that is to cure must be a constitutional remedy. Sulphur, Sepia and Kali carb. are among the remedies commonly indicated.
 
 Sometimes Arsen is needed. Of course, if a pregnant woman has simply disordered her stomach and has vomited bile a few times the remedy might be Ipeca. When a pregnant woman has no constitutional symptoms at all, and upon examining the case you find nothing but the nausea, overwhelming deathly nausea, with continuous vomiting day and night, a single dose of Symphoricarpus rac. will help.
 
@@ -15402,7 +15398,7 @@ At times you will go into the confinement room when the woman has pains in the b
 
 The pains extend down the buttocks and legs. Pain in the back as if the back would break. Under good prescribing these pains are changed into contractions, which prove sufficient to expel the contents of the uterus.
 
-When you hear such things you will look back over the history of the case. You will look back for weeks as the woman has been drawing near the end of gestation and see that the vague things, the chilliness and other features in her constitutional state for which you have been trying to find a remedy now culminate at the time of her confinement into a class of pain. Had you seen that six weeks before and given her Kali carb. you would have prevented the severe labor.
+When you hear such things you will look back over the history of the case. You will look back for weeks as the woman has been drawing near the end of gestation and see that the vague things, the chilliness and other features in her constitutional state for which you have been trying to find a remedy now culminate at the time of her confinement into a class of pains. Had you seen that six weeks before and given her Kali carb. you would have prevented the severe labor.
 
 It is a severe labor, a prolonged labor; the uterus appears to be weak, and the pains are feeble they are all in the back, and do not go to the centre of operation as they should. Now, this same kind of a pain may deceive you in taking another form. The pains begin in the back, and appear to go to the uterus and then run up the back, which would turn you aside entirely from the Kali carb. pain into a pain that would indicate Gelsemium.
 
@@ -15462,7 +15458,7 @@ While studying the text book, look over the sensations. They are very numerous. 
 
 This remedy is an antipsoric and antisyphilitic. It has been used very extensively by the old school as an antisyphilitic, but in the very large doses which they used it became to a great extent allopathic to the disease, because of the tremendous effect it produced upon the economy, and implanted its own miasm, and thereby in a measure it suppressed many cases of syphilis.
 
-The medicines that are the most powerful substances are really those that sustain in homoeopathic relation to the disease in general, and of these the very smallest dose often cure when similar. When the remedy is not similar enough to cure in such a form the increasing of the dose does not make it homoeopathic. There is an idea in vogue that increasing the dose makes the remedy similar. That is going away from principle. If the remedy is not similar there is no form of dose that can make it similar.
+The medicines that are the most powerful substances are really those that sustain in homoeopathic relation to the disease in general, and of these the very smallest dose will cure when similar. When the remedy is not similar enough to cure in such a form the increasing of the dose does not make it homoeopathic. There is an idea in vogue that increasing the dose makes the remedy similar. That is going away from principle. If the remedy is not similar there is no form of dose that can make it similar.
 
 It affects the glandular structures and the periosteum after the manner of syphilis. It produces catarrhal inflammations. It is a deep-acting medicine and closely related to Mercurius. It has ulcerations and catarrhal states and glandular affections like Mercurius. It is similar in its action to Mercurius and is an antidote to it.
 
@@ -15512,15 +15508,15 @@ Kali iod. also produces oedema of the lids and injection and tumefaction of the 
 
 Old gouty subjects who must keep in motion, and must keep in the open air, who are always too warm, and cannot endure any degree of warmth in the room, who suffer more from their gouty pains when keeping quiet, those who are fatigued when keeping quiet and can walk and move without fatigue in the open air, especially when it is cold, with enlarged joints, with restlessness, anxiety, nervousness, harshness of the temper and great irritability, alternating with weeping.
 
-This relief from motion will make the routinist give Rhus in many instances, but Rhus would have no relation to the case whatever. Remember, Rhus is a cold patient, who is always shivering and wants to be by the fire, whose complaints are &gt; by the heat, he is &gt; in a warm room and becomes fatigued from motion, whereas Kali iod. does not become fatigued from continued motion.
+This relief from motion will make the routinist give Rhus in many instances, but Rhus would have no relation to the case whatever. Remember, Rhus is a cold patient, who is always shivering and wants to be by the fire, whose complaints are > by the heat, he is > in a warm room and becomes fatigued from motion, whereas Kali iod. does not become fatigued from continued motion.
 
 **The nose:** comes in for much trouble.
 
 In old syphilitic catarrhs they blow out great crusts and pieces of bone; syphilitic ozaena; the bones of the nose are very sensitive to touch and become necrosed, and the nose flattens down and becomes soft. It is deprived of the bony framework that holds it in shape and settles down flat, leaving only the red tip. Extreme pain at the root of the nose like Hepar.
 
-Thick, yellowish-green, copious discharge from the nose. Every change of the weather brings on catarrhal states. He is constantly taking cold, sneezing continuously. Copious, watery discharge from the nose, excoriating the passage, and causing burning in the nose. This coryza is &lt; in the open air, but all the rest of the patient is &gt; in the open air.
+Thick, yellowish-green, copious discharge from the nose. Every change of the weather brings on catarrhal states. He is constantly taking cold, sneezing continuously. Copious, watery discharge from the nose, excoriating the passage, and causing burning in the nose. This coryza is < in the open air, but all the rest of the patient is > in the open air.
 
-Consequently, when a patient has two such conditions that operate against each other he suffers much, because he cannot find quarters for relief. In a warm room his nasal catarrh, or his coryza, is &gt;, but in the open air he feels &gt; as to the rest of his complaints.
+Consequently, when a patient has two such conditions that operate against each other he suffers much, because he cannot find quarters for relief. In a warm room his nasal catarrh, or his coryza, is >, but in the open air he feels > as to the rest of his complaints.
 
 "Repeated attacks of violent, acrid coryza from the least cold."
 
@@ -15534,7 +15530,7 @@ Deep ulcers in the throat, old syphilitic ulcers; perforating ulcers, eating awa
 
 The whole pharynx, larynx, trachea and bronchial tubes suffer from catarrhal conditions. Inflammatory conditions with greenish discharge.
 
-While all the external symptoms and the rest of the body symptoms are relieved in the cold air and by the contact of external cold, internally cold things aggravate. Cold milk, ice cream, ice water, cold drinks and cold food, cold things in the stomach &lt; all the symptoms. Though he has an excessive thirst and will drink large quantities of water, if very cold it will make him sick.
+While all the external symptoms and the rest of the body symptoms are relieved in the cold air and by the contact of external cold, internally cold things aggravate. Cold milk, ice cream, ice water, cold drinks and cold food, cold things in the stomach < all the symptoms. Though he has an excessive thirst and will drink large quantities of water, if very cold it will make him sick.
 
 Kali iod. has all the flatulence and belching of Carbo veg. and Lycopodium.
 
@@ -15752,7 +15748,7 @@ Wandering pains. Pains ameliorated by motion, ameliorated walking, ameliorated i
 
 The pain are burning, cutting, jerking, stitching and tearing, ulcerative pains. Tearing downward in the limbs. Tearing in glands and muscles. Pulsation all over the body. Touch aggravates many symptoms. Many symptoms appear on waking.
 
-Trembling and quivering. Walking ameliorates. Warm coverings aggravate, warm room aggravate, warm bed aggravates, warm wraps aggravate; bathing aggravates. Complaints dating back to suppressed eruptions. Post scarlatinal nephritis. One does not need to reflect to perceive this is Pulsatilla somewhat intensified. It takes up the work and finishes as a complement of Pulsatilla, unless, as in some instances, the patient becomes a cold and chilly subject and is better during rest, and then Silicea often will be found to have what symptoms remain.
+Trembling and quivering. Walking ameliorates. Warm coverings aggravate, warm room aggravates, warm bed aggravates, warm wraps aggravate; bathing aggravates. Complaints dating back to suppressed eruptions. Post scarlatinal nephritis. One does not need to reflect to perceive this is Pulsatilla somewhat intensified. It takes up the work and finishes as a complement of Pulsatilla, unless, as in some instances, the patient becomes a cold and chilly subject and is better during rest, and then Silicea often will be found to have what symptoms remain.
 
 It is usual for a patient under a deep acting remedy to go to opposite modalities, and hence Puls. is so often followed by Silicea; but this is not always true. When Puls. has acted well for a time and because of opposite modalities Silicea does good work for a while, and then the patient swings back to the original state, symptoms and modalities, then it is that Kali sulph. is of great usefulness.
 
@@ -15880,7 +15876,7 @@ Asthma aggravated in a warm room, ameliorated in open air. Dyspnoea evening, nig
 
 Short, suffocative breathing in a warm room. Wheezing in a warm room. Whistling.
 
-Coughing in morning, evening, in bed, night; ameliorated in cold air, ameliorated in open air, ameliorated by cold drinks. Cough with coryza; aggravated lying. Dry, hoarse, croupy cough at night. Cough aggravated after eating, during fever. Exhausting cough. Hacking tough. Loose cough. Paroxysmal, racking cough. Rattling cough. Suffocating cough. Tickling in larynx, trachea and deep in chest.
+Coughing in morning, evening, in bed, night; ameliorated in cold air, ameliorated in open air, ameliorated by cold drinks. Cough with coryza; aggravated lying. Dry, hoarse, croupy cough at night. Cough aggravated after eating, during fever. Exhausting cough. Hacking cough. Loose cough. Paroxysmal, racking cough. Rattling cough. Suffocating cough. Tickling in larynx, trachea and deep in chest.
 
 Warm room aggravates cough. Whooping cough with yellow, slime or yellow watery expectoration. Expectoration bloody, difficult, must be swallowed, or slips back, purulent, yellow or greenish, slimy, watery, viscid.
 
@@ -15938,7 +15934,7 @@ Pains come and go with the sun, that is, they begin in the morning at the rising
 
 Moving about disturbs makes him incompetent. The pains are also worse the first half of the night. With these symptoms there is cardiac trouble of rheumatic origin. The condition has increased until organic disease has come, even hypertrophy of the heart and valves.
 
-**Heart:** This remedy has cured that state. Palpitation very marked when lying on the left side, &gt; when lying on the back, sometimes &gt; when sitting erect, &lt; when bending forward.
+**Heart:** This remedy has cured that state. Palpitation very marked when lying on the left side, > when lying on the back, sometimes > when sitting erect, < when bending forward.
 
 These symptoms alone cause this remedy to stand out in relief. It is useful in rheumatic patients where syphilis is at the bottom, syphilitic rheumatism that has taken the course described until finally the heart has become affected and there is thickening of the valves. Shooting pains through the heart, pains in the chest, intermittent pulse, pulse skipping a beat now and then.
 
@@ -15954,11 +15950,11 @@ If the patient persists in moving, nausea and vomiting will follow. It has palpi
 
 It is suitable in old, troublesome, recurrent headaches associated with cardiac affections. A headache will come on daily if the sun comes out, but it will not come on if the day is clouded. He is aggravated from the light of the sun and the increasing brightness of the sun's rays.
 
-In addition to these there are paroxysms of pain that are nightly. These are the bone pains, pains in the shin bones as if the periosteum would be torn off; these pains come on at night, or the first half of the night. It is well known in syphilis that the &lt; is at night. It is an antipsoric, antisycotic and antisyphilitic, it can be selected when the symptoms agree with any of the three miasms. Pains in the pericranium, pains in the bones nearest to the surface. In bed at night the pains become very severe and last all night.
+In addition to these there are paroxysms of pain that are nightly. These are the bone pains, pains in the shin bones as if the periosteum would be torn off; these pains come on at night, or the first half of the night. It is well known in syphilis that the < is at night. It is an antipsoric, antisycotic and antisyphilitic, it can be selected when the symptoms agree with any of the three miasms. Pains in the pericranium, pains in the bones nearest to the surface. In bed at night the pains become very severe and last all night.
 
 This night aggravation, is especially true of the marked antisyphilitic medicines. It is found under Hepar and Mercurius; but in none of the remedies do we find it so strikingly manifested as in the disease, or miasm, syphilis itself.
 
-In syphilis the &lt; comes with the setting of the sun. It is one of man's enemies that does its work in the night. Many of the complaints of sycosis conform to the day hours, and the pains are &lt; from the rising to the going down of the sun.
+In syphilis the < comes with the setting of the sun. It is one of man's enemies that does its work in the night. Many of the complaints of sycosis conform to the day hours, and the pains are < from the rising to the going down of the sun.
 
 Medicines also have such I queer whims. We must study remedies as we would human character. Some of them seem to be extremely whimsical, and it is by knowing these whimsical, strange and peculiar things that we are able to mark the character of the remedy, When we know these peculiarities we have found the circumstance under which the remedy Works
 
@@ -15970,7 +15966,7 @@ Difficulties of breathing, difficult heart action, with albuminuria. It will rel
 
 **Pains:** For the pains in the eyes, the stitching, tearing pains that occur during kidney disturbance in pregnancy, or during albuminuria, Kalmia becomes a remedy,
 
-This remedy is useful in neuralgia; neuralgia of the eye, neuralgia of the face, violent, tearing pains in the face. Sometimes it takes the form of a nightly &lt; and sometimes it takes the form of daily &lt;. The aggravation in the daytime comes and goes with the sun. The &lt; at night time comes with the lying down.
+This remedy is useful in neuralgia; neuralgia of the eye, neuralgia of the face, violent, tearing pains in the face. Sometimes it takes the form of a nightly < and sometimes it takes the form of daily <. The aggravation in the daytime comes and goes with the sun. The < at night time comes with the lying down.
 
 "Anxious expression of countenance" associated with rheumatism of the heart. "Flushing of the face, with vertigo."
 
@@ -16024,7 +16020,7 @@ These three characteristics are:
 
 When these three things are associated in a high degree Kreosote should be examined. A prick of a pin will cause the oozing of bright red blood, and mucous membranes bleed easily. Any pressure upon the mucous membranes will cause oozing.
 
-Bleeding here and there about the body. The lachrymation is excoriating. It excoriates the margins of the lids and checks, and they become red and raw, and smart. If there is a purulent discharge it is acrid. The corners of the lips and mouth are red and raw, and' the saliva burns and smarts. The moisture about the mouth, whatever it may be, excoriates and the mouth is raw. The eyes smart and burn as if raw.
+Bleeding here and there about the body. The lachrymation is excoriating. It excoriates the margins of the lids and cheeks, and they become red and raw, and smart. If there is a purulent discharge it is acrid. The corners of the lips and mouth are red and raw, and' the saliva burns and smarts. The moisture about the mouth, whatever it may be, excoriates and the mouth is raw. The eyes smart and burn as if raw.
 
 The leucorrhoea causes smarting and burning about the vulva, so that the mucous surfaces of the labia are red and raw, sometimes inflamed, but always burning. The vagina burns during coition, and there is bleeding after coition; granulations of the vagina and os uteri, so that the pressure of the act of coition brings on bleeding and burning, smarting and excoriation. And the male organ will smart and burn after coming in contact with the secretion of the vagina during coition.
 
@@ -16040,7 +16036,7 @@ Mentally the patient is so irritable that there is nothing that will suit him. T
 
 You see the child in the mother's arms. It wants a toy, and when given it throws it in the face of somebody; it wants this and that and is never satisfied, always wanting something new, a new toy which it throws away the moment it gets it and then calls for something else.
 
-The lips are red and bleeding, the corners of the month are raw, the eyelids red and the skin excoriated. If it has, in connection with all this, loose passages from the bowels and you examine the fissure between the nates, you will find it is red and raw. If the child be old enough to make such motions he will put the hands upon the sore genitals and fissures and cry out in a most irritable way, because of the smarting.
+The lips are red and bleeding, the corners of the mouth are raw, the eyelids red and the skin excoriated. If it has, in connection with all this, loose passages from the bowels and you examine the fissure between the nates, you will find it is red and raw. If the child be old enough to make such motions he will put the hands upon the sore genitals and fissures and cry out in a most irritable way, because of the smarting.
 
 Such is the Kreosote baby. It may be suffering from cholera infantum; it may be subject to wetting the bed; it may have spells of vomiting, in which it vomits all its food; it is a Kreosote baby.
 
@@ -16056,7 +16052,7 @@ They become spongy and bleed easily. In the mouth there is much ulceration and l
 
 At the close of a typhoid fever haemorrhage from the bowels, bleeding from the mucous membranes. The mouth becomes raw, and wherever there is a mucous membrane there is a rawness, and the fluids that ooze continue to, eat and cause ulceration. If at the close of a typhoid fever, when the time comes for convalescence, vomiting comes.
 
-Vomiting, bleedings, diarrheas. The fluids vomited from, the stomach are so acrid that they seem to take the skin off from the mouth, set the teeth on edge, make the lips raw. So excoriation from acrid fluids, as well as throbbing all over the body, are features that you must bear in mind with Kreosote.
+Vomiting, bleedings, diarrheas. The fluids vomited from the stomach are so acrid that they seem to take the skin off from the mouth, set the teeth on edge, make the lips raw. So excoriation from acrid fluids, as well as throbbing all over the body, are features that you must bear in mind with Kreosote.
 
 The discharges from the body are offensive; offensive, bloody, acrid discharges from the nose; offensive, watery discharges from any part of the body; sometimes even putrid; the leucorrhea is very offensive. Rapid emaciation, with spongy, burning ulceration, pus acrid, ichorous, foetid and yellow. Sometimes the inflammatory condition will run so high in an ulcer, only a small ulceration, that gangrene will set in, and hence we have a gangrenous ulceration; gangrene of parts that are inflamed.
 
@@ -16102,7 +16098,7 @@ It is an important remedy in complaints following badly treated diphtheria, in p
 
 For example, a woman lay in bed for days with the fingers abducted and would go wild if they touched each other. The fingers were not aggravated from hard pressure, but she would scream, if they touched. This state is difficult to cure outside of Lac can. and Lach. Lach, has produced a similar condition. The sensitiveness of the abdomen so that the sheet cannot be permitted to touch the skin belongs to both.
 
-Another strange state is a peculiar vertigo, a condition, when walking, in which she seems to be floating in mid-air, or, when lying, as it she were not on the bed. Other remedies have this. The sensation, as if floating, or not touching the bed, or sinking down, belongs to Lach. The sensation of gliding while walking is strong under Asarum Europaeum.
+Another strange state is a peculiar vertigo, a condition, when walking, in which she seems to be floating in mid-air, or, when lying, as if she were not on the bed. Other remedies have this. The sensation, as if floating, or not touching the bed, or sinking down, belongs to Lach. The sensation of gliding while walking is strong under Asarum Europaeum.
 
 **Alternates sides:** The complaints, almost regardless of kind or quality, change sides.
 
@@ -16116,9 +16112,9 @@ Wandering features in the mental sphere, wandering and alternating states. Canno
 
 In this it is somewhat analogous to Alumina in which the patient feels as if someone else and not himself were saying everything, a lack of consciousness of the reality of things.
 
-Every time a symptom appears she thinks it is a settled disease fear and anxiety that some horrible disease has come upon her, a delusion that she was suppurating and in a loathsome state; infested with makes.
+Every time a symptom appears she thinks it is a settled disease fear and anxiety that some horrible disease has come upon her, a delusion that she was suppurating and in a loathsome state; infested with snakes.
 
-Horrible sights are presented to the mental vision, nor always makes, and she fears the objects will take form and present themselves to her eyes. This is analogous to Lach., which has the feeling that the atmosphere is full of hovering spirits, although he never sees them.
+Horrible sights are presented to the mental vision, nor always snakes, and she fears the objects will take form and present themselves to her eyes. This is analogous to Lach., which has the feeling that the atmosphere is full of hovering spirits, although he never sees them.
 
 Imagines he wears someone else's nose. Imagines she is not herself and her properties not her own. Imagines she sees spiders, snakes, vermin. She cannot bear to be alone. In Lach. the patient wants to be alone to indulge the strange fancies, and when alone she feels as if she were floating out of the window and over the grassy plains, but a sound will bring her back to the world again.
 
@@ -16210,7 +16206,7 @@ Painful pressure or tightness at the root of the nose.
 
 **Face:** Deathly paleness of the face; wasted, thin and excessively sallow, with dark stains beneath the eyes. Sallow complexion with eczema. Flushes of heat in left side of face; sensation as if flesh was off the bones of the face, and edges were separated and sticking out.
 
-Grinding teeth during sleep, with pain in stomach and head, with vomiting. Taste insipid, sour; month dry; breath offensive; mouth clammy and frothy, especially during conversation.
+Grinding teeth during sleep, with pain in stomach and head, with vomiting. Taste insipid, sour; mouth dry; breath offensive; mouth clammy and frothy, especially during conversation.
 
 Globus hystericus; sore throat, worse when swallowing. The mucous membrane of the throat is very pale.
 
@@ -16282,7 +16278,7 @@ The mental state is large. Jealousy without any reason. Unwarranted jealousy and
 
 Suspects that they are contriving to injure her, and she will resort to any scheme to see if they were not talking of her to her detriment. A woman imagines that her friends, husband, and children are trying to damage her; that her friends are going to put her in an insane asylum.
 
-Apprehension of the future. Thinks she is going to have heart disease, and is going insane; and that people are contriving to put her in an insane asylum. Imagine her relatives are trying to poison her and she refuses to eat. She thinks sometimes that it is only a dream and she can hardly say whether she dreamed it or whether she thinks it. She thinks she is dead, or dreams that she is dead, and in the dream preparations are being made to lay her out, or that she is about to die.
+Apprehension of the future. Thinks she is going to have heart disease, and is going insane; and that people are contriving to put her in an insane asylum. Imagines her relatives are trying to poison her and she refuses to eat. She thinks sometimes that it is only a dream and she can hardly say whether she dreamed it or whether she thinks it. She thinks she is dead, or dreams that she is dead, and in the dream preparations are being made to lay her out, or that she is about to die.
 
 Thinks she is somebody else, and in the hands of a stronger power. She thinks she is under superhuman control. She is compelled to do things by spirits. She hears a command, partly in her dream, that she must carry out. Sometimes it takes the form of voices in which she is commanded to steal, to murder, or to confess things she never did, and she has no peace of mind until she makes a confession of something she has never done.
 
@@ -16300,7 +16296,7 @@ The state of religious melancholy, with religious insanity, is not uncommonly at
 
 There is another kind of loquacity belonging to Lachesis. The patient is impelled to talk continuously. It is found in another state in which the patient is compelled to hurry in everything she does and wants everybody else to hurry, With that state of hurry is brought out the loquacity, and this is something far beyond comprehension, until you have once heard it.
 
-There is no use attempting to describe it, it is so rapid, changing from one subject to another. Sentences are sometimes only half finished; she takes it for granted that you understand the balance and she will hurry an. Day and night she is wide awake, and with such sensitiveness to her surroundings that you, would naturally think, from what things she hears and how she is disturbed, by noise, that she can hear the flies walk upon the walls and the clock striking upon the distant steeple.
+There is no use attempting to describe it, it is so rapid, changing from one subject to another. Sentences are sometimes only half finished; she takes it for granted that you understand the balance and she will hurry on. Day and night she is wide awake, and with such sensitiveness to her surroundings that you, would naturally think, from what things she hears and how she is disturbed, by noise, that she can hear the flies walk upon the walls and the clock striking upon the distant steeple.
 
 You do not get all these things in the text, you have to see them applied. But the things I give you that are brought out clinically are those things that have come from applying the symptoms of the remedy at the bedside to sick folks.
 
@@ -16336,7 +16332,7 @@ In relation to the head symptoms and mind symptoms and the sensorium in general,
 
 Oversensitive to noise, oversensitive to motion in the room, to conversation and to others walking over the floor. By these circumstances the pains are increased. The patient becomes extremely sensitive throughout all the senses of the body.
 
-The oversensitiveness to touch is probably extensively in the skin, because of the fact that hard pressure often gives relief. In one who is suffering from peritonitis, from inflammation of the ovaries or uterus, or any of the abdominal viscera, the skin is so sensitive to. the clothing that contrivances are sometimes necessary to relieve the suffering from, the touch of the bed clothing. Something in the form of a hoop will be found in the bed, or the patient will have the knees drawn up, or with the hands will hold the clothing from touching the body. The ordinary weight of the hand may bring out the soreness that is in the abdomen, which is an entirely different soreness, whereas the clothing touching the abdomen only brings out the oversensitiveness of the skin. The mere touch of the skin with the finger or hand is unbearable.
+The oversensitiveness to touch is probably extensively in the skin, because of the fact that hard pressure often gives relief. In one who is suffering from peritonitis, from inflammation of the ovaries or uterus, or any of the abdominal viscera, the skin is so sensitive to the clothing that contrivances are sometimes necessary to relieve the suffering from the touch of the bed clothing. Something in the form of a hoop will be found in the bed, or the patient will have the knees drawn up, or with the hands will hold the clothing from touching the body. The ordinary weight of the hand may bring out the soreness that is in the abdomen, which is an entirely different soreness, whereas the clothing touching the abdomen only brings out the oversensitiveness of the skin. The mere touch of the skin with the finger or hand is unbearable.
 
 **Eyes:** There are many inflammatory and congestive conditions of the eyes.
 
@@ -16546,11 +16542,11 @@ Calendula will keep it protected. The sides of a cut must be drawn together, and
 
 These remedies that I have mentioned, to a great extent, cover the management of wounds, and it is simple. Anyone has sense enough to draw together and close up a yawning wound, and to properly dress it. The muscles that naturally draw a wound open have to be overcome by stitches or by strappings. They do not belong to prescribing, they belong to the surgeon.
 
-**Coldness:** The Ledum patient is very often subject to what may be called constitutional coldness, coldness to touch, coldness in the lady and coldness in the extremities with hot head, and again we see the other extreme, where the whole body is overheated, and the head also is in a state of great heat. There is throbbing and pulsating all over the body; the skin is purple or is too highly colored; he wants the covers all off at night. It is not uncommon to hear a patient, who has a Ledum headache, say that she wants the head out in the cold air, wants to put it out of the window, does not want any covering upon the head; delights to bathe it with very cold water.
+**Coldness:** The Ledum patient is very often subject to what may be called constitutional coldness, coldness to touch, coldness in the body and coldness in the extremities with hot head, and again we see the other extreme, where the whole body is overheated, and the head also is in a state of great heat. There is throbbing and pulsating all over the body; the skin is purple or is too highly colored; he wants the covers all off at night. It is not uncommon to hear a patient, who has a Ledum headache, say that she wants the head out in the cold air, wants to put it out of the window, does not want any covering upon the head; delights to bathe it with very cold water.
 
 Ledum has a bloated condition of the hands, face, and feet; bloated and purple from the knees down in certain dropsical conditions. With this purple, mottled, bloated condition from the knees to the feet the swelling as big as the skin will allow, and the pain excruciating.
 
-The only relief that patient gets is by sitting, with the feet in a tub of ice cold water. I remember the first time I ever saw this in a patient. He was an old syphilitic, whose nasal bones had been eaten cut by syphilis, and his nose was a flabby piece of skin; it had no stiffening in it. He was a drunkard, and was extremely abusive to his family when drunk.
+The only relief that patient gets is by sitting, with the feet in a tub of ice cold water. I remember the first time I ever saw this in a patient. He was an old syphilitic, whose nasal bones had been eaten out by syphilis, and his nose was a flabby piece of skin; it had no stiffening in it. He was a drunkard, and was extremely abusive to his family when drunk.
 
 He had been for several years unwilling to work, having lost his ambition, and he would sit in the house and allow his wife to wait upon him. He had practically become a tramp, only he could not tramp, for this dropsical condition had come on and his feet were so badly swollen and sensitive that he sat in the house day after day. When I first saw him he had before him a good-sized old-fashioned wash-tub, and there he sat with the ice water two-thirds up to his knees and pieces of ice floating around on the top of the water, which he liked to have coming in contact with the skin.
 
@@ -16604,13 +16600,13 @@ When coming in contact with her friends she has these feelings. The contact seem
 
 This patient very commonly is a warm-blooded patient.
 
-She is like the Pulsatilla patient; warm-blooded, wants a cool room, likes to walk in the open air, except at times when the prolapsus is aggravated by walking. The head is generally relieved by moving about in the open air, &gt; when walking in the open air. The headache and most of the complaints are relieved from cold, or from a cool room, and aggravated from a warm room. The dyspnoea comes on in a warm room. The patient suffocates in a crowded room, in the theatre, in church, like Apis, Iodine, Kalii., Lyc. and Puls.
+She is like the Pulsatilla patient; warm-blooded, wants a cool room, likes to walk in the open air, except at times when the prolapsus is aggravated by walking. The head is generally relieved by moving about in the open air, > when walking in the open air. The headache and most of the complaints are relieved from cold, or from a cool room, and aggravated from a warm room. The dyspnoea comes on in a warm room. The patient suffocates in a crowded room, in the theatre, in church, like Apis, Iodine, Kalii., Lyc. and Puls.
 
 **Head:** A crazy feeling comes up from the back of the head to the top of the head.
 
 What that is only one that feels it can describe. It is described sometimes as a tingling, or an electric sensation. A slight tingling comes up the back of the head and goes to the top, and is associated with vertigo. When you come to sift that thought it really brings nothing to mind. Very often you have to get those things clinically, and think about them to get at the idea.
 
-The pains in the forehead are very marked, and they are associated with great disturbance of vision, a loss of vision, the room looks dark, or the eyes are unable to focus. Nervous disturbance of vision, photophobia, twitching of the lids, jerking about the eyeballs, and inflammation of the mucous membrane of the eyes, of the lids and balls, conjunctivitis. Very often with the complaints of the head the eyes are turned in, a convergent strabismus, or there is threatened syncope, with the pain in the forehead.
+The pains in the forehead are very marked, and they are associated with great disturbance of vision, a loss of vision, the room looks dark, or the eyes are unable to focus. Nervous disturbance of vision, photophobia, twitching of the lids, jerking about the eyeballs, and inflammation of the mucous membrane of the eyes, of the lids and balls, conjunctivitis. Very often with the complaints of the head the eyes are turned in a convergent strabismus, or there is threatened syncope, with the pain in the forehead.
 
 By all these things mentioned it may be known what an over-sensitive, extremely nervous, hysterical person the Lilium tig. patient must be. These things are commonly associated with patients who are extremely nervous, who have fluttering of the heart, who have pain down the spine, and more or less prolapsus, with a great sense of dragging down. When one condition is present, the other is commonly absent; they alternate, or they may exist all together.
 
@@ -16630,7 +16626,7 @@ Recurrent dysenteric attacks with every cold in those who suffer from pelvic and
 
 All of these dysenteric manifestations have been left out of the Guiding Symptoms, yet I have seen them verified over and over. Again, it has a most inveterate and troublesome constipation.
 
-It has also a tenesmus of the bladder and rectum. Teasing to urinate, as well as urging to stool. Sit a long time with much urging, and after long straining no stool.
+It has also a tenesmus of the bladder and rectum. Teasing to urinate, as well as urging to stool. Sits a long time with much urging, and after long straining no stool.
 
 Frequent urging, with a sensation as if a ball were in the rectum. When the fundus of the uterus is turned back to the rectum it gives a sensation as if the rectum were full of faeces; it brings on urging to stool and the patient will sit and strain, and the tenesmus of the bladder and rectum is unbearable. Constant urging to stool, and no stool in the rectum. You will be astonished to know that the remedy that is indicated with such symptoms will relieve the patient of all distress in a short time.
 
@@ -16650,7 +16646,7 @@ This will make you think of Puls., the menses being so scanty, and because the P
 
 Then come the heart symptoms. "Seems as if the heart were grasped or squeezed in a vise, hard, as if violently grasped."
 
-"Constrictive pain in the heart." "In fresh air, chilly, but vertigo is &gt;."
+"Constrictive pain in the heart." "In fresh air, chilly, but vertigo is >."
 
 Pain in the back and down the spine; irritable and sensitive spine with trembling. It competes very closely with Platina.
 
@@ -16742,13 +16738,13 @@ Cactus has a congestive headache which becomes extremely violent with flushed fa
 
 At or about the beginning of the attack there is a faint all-gone hungry feeling which eating does not satisfy. Such is the nature of Phosphorus and Psorinum when the appetite and headache are associated.
 
-The Lycopodium headache is &lt; from heat, from the warmth of the bed, and from lying down, &gt; from cold, from the cold air, and from having the windows open. Lean, emaciated boys are subject to prolonged pains in the head. Every time this little fellow takes cold he has a prolonged, throbbing, congestive headache, and from day to day and from month to month he becomes more emaciated, especially about the face and neck. This same trouble is present when a narrow chested boy has a dry, teasing cough, without expectoration, and emaciates about the neck and face.
+The Lycopodium headache is < from heat, from the warmth of the bed, and from lying down, > from cold, from the cold air, and from having the windows open. Lean, emaciated boys are subject to prolonged pains in the head. Every time this little fellow takes cold he has a prolonged, throbbing, congestive headache, and from day to day and from month to month he becomes more emaciated, especially about the face and neck. This same trouble is present when a narrow chested boy has a dry, teasing cough, without expectoration, and emaciates about the neck and face.
 
 This remedy is especially suitable in these withered lads, with a dry cough or prolonged headache. In children who wither after pneumonia or bronchitis, emaciate about the face and neck, take cold on the slightest provocation, suffer with headache from being heated, have nightly headaches, and a state of congestion that affects the mind more or less, in which they rouse out of sleep in confusion.
 
 The little one screams out in sleep, awakes frightened, looks wild, does not know the father and mother, or nurse or family until after a few moments, when he seems to be able to collect his senses and then realizes where he is and lies down to sleep again. In a little while he wakes up again in a fright, looks strange and confused. That repeats itself.
 
-The headaches are throbbing and pressing, as if the head would burst; but this is not so important as the manner in which they come on, the circumstance of their cause, the things that the child does and the fact that they are better from cold, worse from noise and talking, worse from 4 to 8 P.M., and he emaciates from above downward.
+The headaches are throbbing and pressing, as if the head would burst; but this is not so important as the manner in which they come on the circumstance of their cause, the things that the child does and the fact that they are better from cold, worse from noise and talking, worse from 4 to 8 P.M., and he emaciates from above downward.
 
 These are more important than the quality of the pain that the patient feels, but if he describes the quality of the pain it is spoken of as a throbbing, pressing, bursting or as a fullness.
 
@@ -16760,11 +16756,11 @@ Eczema in a lean, hungry, withering child with more or, less head trouble, such 
 
 It will throw out a greater amount of eruption at first, but this will subside finally and the child will return to health. The head in general is closely related to one symptom, viz., red sand in the urine. A long as the red sand is plentiful, the patient is free from these congestive headaches, but when the urine becomes pale and free from the red pepper deposit; then comes the bursting, pressing headache, lasting for days.
 
-It might be said that this is a uraemic headache; but it does not matter what you call it, if the symptoms are present the remedy will be justified. In old gouty constitutions, when the headache is most marked, the gout in the extremities will be &gt; and vice versa.
+It might be said that this is a uraemic headache; but it does not matter what you call it, if the symptoms are present the remedy will be justified. In old gouty constitutions, when the headache is most marked, the gout in the extremities will be > and vice versa.
 
-The headaches is present only in the absence of pain in the extremities. Again, when there is a copious quantity of red sand in the urine the gouty state, either in the head or extremities, will be absent, but whenever he takes cold the secretion seems to slacken up with an &lt; of the pain.
+The headaches is present only in the absence of pain in the extremities. Again, when there is a copious quantity of red sand in the urine the gouty state, either in the head or extremities, will be absent, but whenever he takes cold the secretion seems to slacken up with an < of the pain.
 
-There is another feature of the Lyc. headache related to catarrhal states. The headache is &lt; when the catarrh is slacked up by an acute cold. The Lyc subject often suffers from thick, yellow discharge from the nose.
+There is another feature of the Lyc. headache related to catarrhal states. The headache is < when the catarrh is slacked up by an acute cold. The Lyc subject often suffers from thick, yellow discharge from the nose.
 
 The nose is filled with yellow, green crusts, blown out of the nose in the morning and hawked out of the throat. Now, when the patient takes cold the thick discharge to a great extent ceases, and he commences to sneeze and has a watery discharge. Then comes on a Lyc. headache, with great suffering, with pressing pains, with hunger, and finally the coryza passes away, and the thick yellow discharge returns and the headache subsides.
 
@@ -16778,7 +16774,7 @@ If the suitable remedy be given in a case of scarlet fever, there will be no ear
 
 The trouble often begins in infancy. The little infant will lie at first with a peculiar rattling breathing through the nose, and finally it will breathe only through the mouth, as the nose is obstructed. This goes on for days and months. The child breathes only through the mouth, and when it cries it has the shrill tone, such as is found when the nose is plugged up. If you look you will see the nose is filled up with a purulent matter and hanging down the throat is a muco-purulent discharge. Much stuffing up of the nose is a chronic state of Lyc.
 
-The child will go on with this trouble until it forms into great cruse, yellow, sometimes blackish, sometimes greenish, and the nose bleeds. It is most useful in those troublesome catarrhs associated with headaches; in such patients as lose flesh about the neck. It may seem strange and unaccountable that Lyc. can cause emaciation about the neck and shriveling of the face when the lower limbs are in a very good state of preservation. In old chronic catarrhs of adults they must keep continually blowing the nose.
+The child will go on with this trouble until it forms into great crusts, yellow, sometimes blackish, sometimes greenish, and the nose bleeds. It is most useful in those troublesome catarrhs associated with headaches; in such patients as lose flesh about the neck. It may seem strange and unaccountable that Lyc. can cause emaciation about the neck and shriveling of the face when the lower limbs are in a very good state of preservation. In old chronic catarrhs of adults they must keep continually blowing the nose.
 
 He cannot breathe through the nose at night, as crusts form in all portions of the mucous membranes. Crusty nostrils with eczema, with oozing eruptions about the face and nose. The mucous discharge is almost as thick and tenacious as in Kalium bichromicum.
 
@@ -16888,7 +16884,7 @@ The right lung is most affected, or more likely to be affected than the left, or
 
 I have mentioned sufficiently the gouty tendencies of the limbs and the nerve symptoms. But there is a restlessness of the lower limbs and which comes on when he thinks of going to sleep and this prevents sleep until midnight.
 
-Much like Arsenicum. It is often a very distressing feature. Numbness of the limbs. Drawing, tearing in the limbs at night; better by warmth of bed and motion. These pains are sometimes found in chronic intermittent fever and are cured by this remedy. Sciatica that comes on periodically, better by beat and walking. Varicose veins of the legs. One foot hot the other cold. Oedema of the feet.
+Much like Arsenicum. It is often a very distressing feature. Numbness of the limbs. Drawing, tearing in the limbs at night; better by warmth of bed and motion. These pains are sometimes found in chronic intermittent fever and are cured by this remedy. Sciatica that comes on periodically, better by heat and walking. Varicose veins of the legs. One foot hot the other cold. Oedema of the feet.
 
 It has all manner of fevers, continued intermittent and remittent. It is especially suitable in old age, and in premature old age, when a person at 60 years appears to be 80 years, broken down, feeble and tired.
 
@@ -17018,9 +17014,9 @@ These two, if used, would cure many of the liver troubles that are not now cured
 
 Magnesia mur. is a deep-acting antipsoric suited to nervous patients with stomach and liver troubles. It has enlarged glands and irritation of the nerve centres and brain. This patient is often sensitive to cold, chilly, but he desires fresh air and open air.
 
-Many of the complaints are ameliorated by the open, fresh air, but come head symptoms are an exception. The head must be covered, as it is so sensitive to the open air. He is extremely restless; only with great difficulty can he keep still, and if forced to keep still, he becomes anxious. Anxiety is the marked feature. Restlessness, fidgetiness throughout the body, coupled with anxiety.
+Many of the complaints are ameliorated by the open, fresh air, but some head symptoms are an exception. The head must be covered, as it is so sensitive to the open air. He is extremely restless; only with great difficulty can he keep still, and if forced to keep still, he becomes anxious. Anxiety is the marked feature. Restlessness, fidgetiness throughout the body, coupled with anxiety.
 
-This comes on at any time, but it is worse at night in bed and still worse on closing the eyes to go to sleep. When he closes the eyes he becomes go anxious, restless and fidgety that he must throw the covers off, take a long breath or do something.
+This comes on at any time, but it is worse at night in bed and still worse on closing the eyes to go to sleep. When he closes the eyes he becomes so anxious, restless and fidgety that he must throw the covers off, take a long breath or do something.
 
 He is kept awake at night by the anxious feeling. It was described originally by the prover as an uneasiness, but in the Guiding Symptoms it is spoken of as a restlessness in bed. If you study the hysterical nature, the anxiety and restlessness, you will see it is throughout the whole economy and should be classed under mind and nerves.
 
@@ -17190,7 +17186,7 @@ His catarrh rouses up in cold weather. Every cold, damp spell causes hoarseness 
 
 Wherever there is irritation there is great soreness. The eyes are red and sore. The throat is red and raw. Ear discharges are followed by great tenderness. Soreness and tenderness run all through.
 
-Chronic catarrh. Nose stopped up. Discharge yellow, lumpy and green in the morning. Bloody discharge. The nose and cartilages sore. He avoids handling the nose.
+Chronic catarrh. Nose stopped up. Discharge yellow, lumpy and green in the morning. Bloody discharge. The nose and cartilages are sore. He avoids handling the nose.
 
 No medicine will give you a sicklier face. When persons have bled out and have become waxy and pale the routinist thinks of China, but when there has been no bleeding and this same state is present from, breaking down of the blood corpuscles Manganum is to be thought of.
 
@@ -17432,7 +17428,7 @@ A strange feature is repeated swelling and abscess formation without any heat. A
 
 The superficial ulceration is inclined to spread and become phagedenic; it is not deep but grows larger. These open ulcers are especially seen in old syphilitics; lardaceous base; not much irritability, they are even numb, and if pus is discharged it is greenish-yellow; false granulations appear. Merc. cor. is a greater remedy for the superficial, eating, phagedenic ulcer.
 
-At times Merc. takes on a gangrenous condition. This may be seen anywhere, but especially on the lips, cheeks and gums. Cancrum oris. Gangrenous chancre, foetid and black; a sphacelus forms in the chancre and the part sloughs off. All these conditions are aggravated by beat.
+At times Merc. takes on a gangrenous condition. This may be seen anywhere, but especially on the lips, cheeks and gums. Cancrum oris. Gangrenous chancre, foetid and black; a sphacelus forms in the chancre and the part sloughs off. All these conditions are aggravated by heat.
 
 A patient with a typical Merc. abscess rebels at times against the poultice, for it makes the trouble worse.
 
@@ -17458,9 +17454,7 @@ Think of Merc. if you are called to a child with sweating of the head, dilated p
 
 This would go on for five or six weeks and be relieved only when the discharge returned after a dose of Merc. I remember a case of this type. It was called cerebro-spinal meningitis; the head was drawn back and twisted and held to one side.
 
-It began as an otitis media with discharge which was suppressed. Two or three doctors were called and could do nothing. In the night I went to the bedside and got the history and symptoms of Merc. Merc. re-
-
-established the discharge in twenty-four hours, the torticollis passed away, the fever subsided and the child made an excellent recovery. I can recall many such cases.
+It began as an otitis media with discharge which was suppressed. Two or three doctors were called and could do nothing. In the night I went to the bedside and got the history and symptoms of Merc. Merc. re-established the discharge in twenty-four hours, the torticollis passed away, the fever subsided and the child made an excellent recovery. I can recall many such cases.
 
 There is a tension about the scalp as if it were bandaged. Nervous girls have headache over the nose and around the eyes as if tied with a tape, or as if a tight hat were pressing on the head. Pressing, tearing pain in the eyes. Burning pains in the temples ameliorated by sitting up and moving about, worse at night.
 
@@ -17470,7 +17464,7 @@ The thick discharge becomes watery and the pain in the forehead, face and ears v
 
 Silicea has that also. Sil. and Merc. do not follow each other well, when well selected; but if crude Mercury has been taken for a long time, Silica, like Nitric acid, is a good remedy to eliminate it when the symptoms agree.
 
-With all headaches there is much heat in the head. Bursting headaches, fullness of the brain, and. constriction like a band. Vise-like pressure. He is sensitive to the air when he has headache. This is true of Merc. all through. He is relieved in the room, but worse in a warm or cold room, and violently worse from a draught. He wants to be covered but is worse from heat. The hoop-like sensation is worse at night.
+With all headaches there is much heat in the head. Bursting headaches, fullness of the brain, and constriction like a band. Vise-like pressure. He is sensitive to the air when he has headache. This is true of Merc. all through. He is relieved in the room, but worse in a warm or cold room, and violently worse from a draught. He wants to be covered but is worse from heat. The hoop-like sensation is worse at night.
 
 Merc. is a wonderful remedy to ward off acute hydrocephalus after measles and scarlatina; the child rolls the head and moans, and the head sweats. It is closely related to Apis, which is also a great remedy after scarlet fever to ward off or cure hydrocephalus. Exostoses in old syphilitics.
 
@@ -17572,7 +17566,7 @@ In pelvic cellulitis in the early months of pregnancy Merc. is an important reme
 
 Merc. is one of the best palliatives in cancer of the uterus and mammae. It will restrain and sometimes cure epithelioma. I knew one case cured by the Proto-iodide, an ulcerated, indurated lump in the breast, as large as a goose egg with knots in the axilla, blueness of the part, and no hope.
 
-The stooth attenuation, given as often as the pains were very severe, took it away and she remained well. The effect observed on the nose is not all of the Merc. coryza.
+The 100th attenuation, given as often as the pains were very severe, took it away and she remained well. The effect observed on the nose is not all of the Merc. coryza.
 
 **Respiratory:** Most Merc cases begin in the nose and travel down the throat, creating rawness and scraping of the larynx, and rawness and soreness in the chest; laryngitis, tracheitis and bronchitis.
 
@@ -17718,7 +17712,7 @@ Scabs on the head look chalky and extended to the eyebrows and nape of neck. Ele
 
 Neuralgias, sciatica, pain in the spine, in the brachial plexus and down the arms; neuralgia of the face; all following suppressed eruptions.
 
-The Mez. patient is sensitive to warm air as far as the skin and. eruptions are concerned, but very sensitive to damp or cold weather as to the neuralgias. After the eruptions have given place to internal manifestations, the patient is chilly, sensitive to the changes of the weather, worse in stormy weather; worse after a bath, because he takes cold and his internal complaints are aggravated. The eruptions are aggravated after washing.
+The Mez. patient is sensitive to warm air as far as the skin and eruptions are concerned, but very sensitive to damp or cold weather as to the neuralgias. After the eruptions have given place to internal manifestations, the patient is chilly, sensitive to the changes of the weather, worse in stormy weather; worse after a bath, because he takes cold and his internal complaints are aggravated. The eruptions are aggravated after washing.
 
 When the eruptions are not out, the skin is hot and he wants something to cool it; he is better from cool water; there is simply a redness at this time. The itching is aggravated from bathing in warm water.
 
@@ -17924,11 +17918,11 @@ It is highly probable that there is a throwing off from the sick human race of s
 
 In two thousand years there might be a necessity for some kind of a check upon the growth of plants. The absorption of these evils may cause them to vary in species, and if they continue to grow and each to absorb the evils from the human race, they will continue to differ. This favors evolution and explains it in a sense.
 
-It is important to compare the symptoms of Naja with those of the other snakes. The patient is disturbed by closeness of the collar, &lt; after sleep.
+It is important to compare the symptoms of Naja with those of the other snakes. The patient is disturbed by closeness of the collar, < after sleep.
 
 There are exhaustion and trembling, trembling, of the muscles. Its direction is somewhat like Lach., from left to right, i. e., the ovarian pains, the diphtheria, the joint affections go from left to right.
 
-Naja, like Lach., is &lt; in damp weather. On inflamed surfaces it produces grayish exudations. It does not partake so, extensively of this character as do Lach. and Crotalus. There is only a shadow of the septic in Naja, but it is extensive in Lach. and extremely marked in Crotalus. Naja is not as subject to haemorrhage as either Lach. or Crotalus.
+Naja, like Lach., is < in damp weather. On inflamed surfaces it produces grayish exudations. It does not partake so, extensively of this character as do Lach. and Crotalus. There is only a shadow of the septic in Naja, but it is extensive in Lach. and extremely marked in Crotalus. Naja is not as subject to haemorrhage as either Lach. or Crotalus.
 
 There is trembling of the muscles, a rheumatic diathesis, and tendency of all complaints to settle about the heart. It is used in valvular troubles of the heart, in young persons who grow up with cardiac valvular diseases. The whole trouble settled about the heart. This suggests Naja, and Naja has often cured.
 
@@ -17944,7 +17938,7 @@ The whole chest is in a state of congestion; emptiness of the left side of the c
 
 There is a dry, hacking cough with sweating in the palms of the hands that is cured by Naja. These cardiac cases are often attended by a dry, hacking cough, a cough with every little exertion. It is not catarrhal state, nor is it tubercular. The heart beats slowly and will not be urged to work, and a cough comes on from exertion. Cactus also has a cardiac cough.
 
-The extremities are cold and blue and the head hot. The head symptoms are &lt; in a warm room; the head feels warm, fevered, yet the feet and limb do not become warm. There is copious sweating of the hands and feet causing the gloves and shoes to rot out; but the sweat is not offensive.
+The extremities are cold and blue and the head hot. The head symptoms are < in a warm room; the head feels warm, fevered, yet the feet and limb do not become warm. There is copious sweating of the hands and feet causing the gloves and shoes to rot out; but the sweat is not offensive.
 
 There is a sense of fullness and puffiness of the hands and feet, showing a slow circulation in the veins which we might expect.
 
@@ -17952,13 +17946,13 @@ We might naturally expect that this patient would be intense and excitable, whic
 
 The headaches are nondescript; of a congestive character all over the head, especially in the occiput. Headaches accompanied by a quick and nervous pulse.
 
-Profound sleep is consistent with all the makes. There is deep, profound sleep with stertorous breathing.
+Profound sleep is consistent with all the snakes. There is deep, profound sleep with stertorous breathing.
 
-She wakes with a headache every morning. It is natural for the Naja headache to be present in the morning and wear off with exertion. The other complains are &lt; exertion. The mind symptoms are &lt; exertion of the mind.
+She wakes with a headache every morning. It is natural for the Naja headache to be present in the morning and wear off with exertion. The other complains are < exertion. The mind symptoms are < exertion of the mind.
 
 There are symptoms in connection with hay fever. The rawness in the throat and larynx; dreadful aching in the throat extending to the larynx, which swallowing does not relieve. The Lach. state is expressed more by a lump in the throat; grasping of the throat with a sense of choking.
 
-The Naja patient is subject to severe attacks of bronchitis. There is rawness between the larynx and trachea, &lt; after coughing.
+The Naja patient is subject to severe attacks of bronchitis. There is rawness between the larynx and trachea, < after coughing.
 
 This is a great remedy in asthma, especially cardiac asthma. The breathing is so bad that he cannot lie down.
 
@@ -17968,7 +17962,7 @@ There is a continued, dull, aching pain through the back between the shoulders, 
 
 Sometimes there is little beside this sensation of heat, of aching, to indicate the remedy; he is so tired in that spot that he wants to lie down or lean backwards to test his back.
 
-The palpitation is &lt; lying on the left side, &lt; walking.
+The palpitation is < lying on the left side, < walking.
 
 This is the most useful of all the remedies we have in a cardiac state with very, few symptoms. It is true that this region is particularly singled out by Naja to produce its symptoms.
 
@@ -18174,7 +18168,7 @@ Confusion of mind follows and then he is unable, to perform any mental labor. Me
 
 Oversensitive to heat, especially after sunstroke, even some years after; has to be well shaded when walking in the sun, must seek a cool or dark place the patient has not had the proper acute remedy during the attack the remedy is aggravated by both cold and heat, but this is a special aggravation from the heat of the sun; head troubles are not worse from cold in Natr. carb.
 
-Old cases of brain fag with weakness and trepidation. The body troubles are aggravated from cold and in the winter; as cold as if he had no blood in the body, extremities cold, and he cannot get them warm; cold as ice to, the knees and elbows.
+Old cases of brain fag with weakness and trepidation. The body troubles are aggravated from cold and in the winter; as cold as if he had no blood in the body, extremities cold, and he cannot get them warm; cold as ice to the knees and elbows.
 
 The body and extremities are worse in winter, the head in summer.
 
@@ -18194,7 +18188,7 @@ Otalgia, with sharp, darting, piercing pains when the mental state, the chilline
 
 Coryzas trouble much; always has a cold in the head the watery discharge is of short duration and is soon followed by a thick copious flow of yellow mucus.
 
-Ulceration, thick crusts; sleeps at night with the month open; dry, yellow crusts are blown out with pain and bleeding. The catarrh increases with each fresh cold, until it becomes foetid; the bones of the nose are affected; almost a constant headache over the eyes, in the forehead, at the root of the nose; congestive headaches, worse from change of weather, cold room, damp weather; increased by every storm.
+Ulceration, thick crusts; sleeps at night with the mouth open; dry, yellow crusts are blown out with pain and bleeding. The catarrh increases with each fresh cold, until it becomes foetid; the bones of the nose are affected; almost a constant headache over the eyes, in the forehead, at the root of the nose; congestive headaches, worse from change of weather, cold room, damp weather; increased by every storm.
 
 Most foetid ozaena, mucous membranes ulcerated and destroyed.
 
@@ -18202,7 +18196,7 @@ Pale face with blue ring around the eyes, yellow blotches on the forehead, puffi
 
 Enlargement of the glands with induration, axillary, inguinal, abdominal, salivary. Especially suitable for enlargement of the prostate in old men. Chronic enlargement of the parotids, slow and of long duration; of the tonsils.
 
-Ulcerations of the mouth; nursing sore month in women; thrush in infants; little white aphthous patches, especially in nervous, withered infants who cannot stand any kind of milk, who have diarrhoea from milk; they thrive better on cereals; when asleep the child jumps, cries, springs up and grasps the mother; a nervous, cold baby, easily startled like the Borax baby.
+Ulcerations of the mouth; nursing sore mouth in women; thrush in infants; little white aphthous patches, especially in nervous, withered infants who cannot stand any kind of milk, who have diarrhoea from milk; they thrive better on cereals; when asleep the child jumps, cries, springs up and grasps the mother; a nervous, cold baby, easily startled like the Borax baby.
 
 So are the Natrum babies in general.
 
@@ -18258,7 +18252,7 @@ This will be followed by tearfulness, great sadness, joylessness. No matter how 
 
 Unpleasant occurrences are recalled that she may grieve over them. Consolation aggravated the state of the mind - the melancholy, the tearfulness, sometimes brings on anger. She appears to bid for sympathy and is mad when it is given.
 
-Headache comes on with this melancholy. She walks the floor in rage. She is extremely forgetful; cannot cast up accounts; is unable to meditate; forges what she was going to say; loses the thread of what she is hearing or reading. There is a great prostration of the mind.
+Headache comes on with this melancholy. She walks the floor in rage. She is extremely forgetful; cannot cast up accounts; is unable to meditate; forgets what she was going to say; loses the thread of what she is hearing or reading. There is a great prostration of the mind.
 
 Unrequited affection brings on complaints. She is unable to control her affections and falls in love with a married man. She knows that it is foolish, but lies awake with love for him. She falls in love with a coachman. She knows that she is unwise, but cannot help it. In cases of this kind Natr. mur. will turn her mind into order, and she will look back and wonder why she was so silly. This remedy belongs to hysterical girls.
 
@@ -18266,11 +18260,11 @@ In a mental state where Ign. temporarily benefits the symptoms, but does not cur
 
 **Modalities:** Aversion to bread, to fats and rich things.
 
-The Natr. mur. patient is greatly disturbed by excitement, is extremely emotional. The whole nervous economy is in a state of fret and irritation, &lt; from noise, the slamming of a door, the ringing of a bell, the firing of a pistol, &lt; music.
+The Natr. mur. patient is greatly disturbed by excitement, is extremely emotional. The whole nervous economy is in a state of fret and irritation, < from noise, the slamming of a door, the ringing of a bell, the firing of a pistol, < music.
 
 The pains are stitching, electric-like shocks, convulsive jerkings of the limbs on falling asleep, twitchings, shooting pains. She is oversensitive to all sorts of influences, is excitable, emotional, intense.
 
-Complaints come on in the warm room, worse in the house, she wants the open air. The mental complaints are &gt; in the open air. She takes cold easily from sweating, but is generally &gt; in the open air, though worse on getting heated; &lt; by sufficient exertion to heat up, but &gt; by moderate exertion in the cold air.
+Complaints come on in the warm room, worse in the house, she wants the open air. The mental complaints are > in the open air. She takes cold easily from sweating, but is generally > in the open air, though worse on getting heated; < by sufficient exertion to heat up, but > by moderate exertion in the cold air.
 
 Both Natr. carb. and Natr. mur. have the general nervous tension of Natrum, but one is a chilly patient, the other warm, blooded.
 
@@ -18296,25 +18290,25 @@ Hammering pains in the head on waking in the morning.
 
 The pain comes on in the latter part of sleep. There is great nervousness during the first part of the night; she falls asleep late and awakes with hammering in the head. There are also headaches beginning at 10 to 11 A.M., lasting until 3 P.M. or evening.
 
-The headaches are periodical, every day, or third day, or fourth day. Headaches of those living in malarial districts, &gt; from sleep; the patient must go to bed and be perfectly quiet, &gt; from sweating, headaches associated with intermittent fever.
+The headaches are periodical, every day, or third day, or fourth day. Headaches of those living in malarial districts, > from sleep; the patient must go to bed and be perfectly quiet, > from sweating, headaches associated with intermittent fever.
 
 During the chill it seemed as though the head would burst; he is delirious and drinks large quantities of cold water. There is no relief to the head until after the sweat. Sometimes all the symptoms are relieved by the sweat except the headache.
 
-In another form of headache; the greater the pain the more the sweat; sweating does not relieve; the forehead is cold, covered with a cold sweat. When the head is covered warmly he is &gt; moving about in the open air.
+In another form of headache; the greater the pain the more the sweat; sweating does not relieve; the forehead is cold, covered with a cold sweat. When the head is covered warmly he is > moving about in the open air.
 
-Headache due to disturbance of vision where there is inability to focus rapidly enough. Headache &lt; from noise.
+Headache due to disturbance of vision where there is inability to focus rapidly enough. Headache < from noise.
 
 Headache involving the whole back of the head and even going down the spine in troubles following the brain diseases, hydrocephalus.
 
 **Spine:** In spinal troubles, when there is great sensitiveness to pressure an irritable spine.
 
-The vertebrae are sensitive and there is a great deal of aching along the spine. Coughing aggravates the pain in the spine, also walking makes it worse, but it is &gt; from lying on something hard, or pressing the back up against something hard; they may sit with a pillow or the hand pressed against the back. In menstrual troubles, you find the woman lying with some hard object under the spine.
+The vertebrae are sensitive and there is a great deal of aching along the spine. Coughing aggravates the pain in the spine, also walking makes it worse, but it is > from lying on something hard, or pressing the back up against something hard; they may sit with a pillow or the hand pressed against the back. In menstrual troubles, you find the woman lying with some hard object under the spine.
 
 A general nervous trembling pervades the body. There is jerking of the muscles, trembling of the limbs, inability to keep the limbs still, as in Zincum.
 
 **Stomach and liver:** The stomach and liver are closely related.
 
-The stomach is distended with flatus. After eating there is a lump in the stomach. It seems to take a long time for food to digest. &lt; from eating. Whitish, slimy mucus is vomited attended with relief.
+The stomach is distended with flatus. After eating there is a lump in the stomach. It seems to take a long time for food to digest. < from eating. Whitish, slimy mucus is vomited attended with relief.
 
 There is great thirst for cold water, sometimes there is relief from drinking, sometimes the thirst is unquenchable. We find fullness in the region of the liver with stitching, tearing pains.
 
@@ -18346,11 +18340,11 @@ Natr. mur. is a long acting remedy; its symptoms continue for years; it conforms
 
 The chill comes in the morning at 10-30; every day, every other day, every third or fourth day. The chill begins in the extremities which become blue; there is throbbing pain in the head, the face is flushed; delirium, talking of everything, constant maniacal actions.
 
-They grow worse until a congestive attack comes. During the entire attack there is thirst for cold water. During the coldness he is not &gt; by heat, not &gt; by piling on the clothing, but wants cold drinks.
+They grow worse until a congestive attack comes. During the entire attack there is thirst for cold water. During the coldness he is not > by heat, not > by piling on the clothing, but wants cold drinks.
 
 We would naturally suppose that a person freezing to death would want warm things, but the Natr. mur. patient cannot bear them.
 
-The teeth chatter, he tosses from side to side, the bones ache as if they would break, and there is vomiting as in congestive conditions. In the fever he is so hot that the fingers are almost scorched with the intense heat, and he goes into a congestive sleep or stupor. The sweat relieves him; the aching all over is &gt; by the sweat, and in time the headache passes away.
+The teeth chatter, he tosses from side to side, the bones ache as if they would break, and there is vomiting as in congestive conditions. In the fever he is so hot that the fingers are almost scorched with the intense heat, and he goes into a congestive sleep or stupor. The sweat relieves him; the aching all over is > by the sweat, and in time the headache passes away.
 
 There is intense chill, fever and sweat. Sometimes the attacks are in robust, strong people, but usually in the anaemic, in emaciated people full of malaria; lingering, chronic cases.
 
@@ -18412,7 +18406,7 @@ Useful after labor when the mother does not progress well; she is feeble and exc
 
 Useful in after pains where there is subinvolution of the uterus, the uterus is in a state of prolonged congestion.
 
-She is &lt; noise, music, the slamming of a door. She craves salt and has an aversion to bread, wine and fat things. Sour wines disorder the stomach. Natr. mur. will clear up the case, restore the milk, turn the case into order.
+She is < noise, music, the slamming of a door. She craves salt and has an aversion to bread, wine and fat things. Sour wines disorder the stomach. Natr. mur. will clear up the case, restore the milk, turn the case into order.
 
 Natr. mur. is needed by those chlorotic girls who have a greasy skin, a greenish, yellowish complexion; who menstruate only once in two or three months.
 
@@ -18428,11 +18422,11 @@ Schuessler's indications were good and mostly confirmed by clinical observations
 
 **Modalities:** The symptoms are worse in the morning, EVENING, and night, and after midnight. There is marked anemia and aversion to the open air.
 
-He is aggravated from a draft, from open cold, from becoming cold and after becoming cold, and there is a tendency to frequent taking cold.
+He is aggravated from a draft, from open air, from cold, from becoming cold and after becoming cold, and there is a tendency to frequent taking cold.
 
-He is worse from changes weather. Chlorosis. Aversion to bathing. Many symptoms after coition. He may be a sexual debauche.
+He is worse from changes in the weather. Chlorosis. Aversion to bathing. Many symptoms come on after coition. He may be a sexual debauche.
 
-Many symptoms come on from fasting, and he is generally ameliorated after eating aggravated from any physical exertion. His muscles are flabby, he is losing flesh.
+Many symptoms come on from fasting, and he is generally ameliorated after eating; he is aggravated from any physical exertion. His muscles are flabby, he is losing flesh.
 
 He is disturbed by butter, cold drinks, fats, fruit, MILK, sour things and vinegar.
 
@@ -18446,19 +18440,19 @@ Sitting aggravates. General aggravation during a thunderstorm. Tension in muscle
 
 **Mind:** Anger over trifles, and complaints from vexation.
 
-Anxiety and night; in bed; before midnight; after eating; with fear fever; about the future; about his health; on waking.
+Anxiety at night; in bed; before midnight; after eating; with fear during fever; about the future; about his health; on waking.
 
 Complaints from bad news. Aversion to company. Concentration difficult. Confusion of mind in the morning; in the evening; after eating; from mental exertion; on waking.
 
-Delusions, frightful; thinks he sees dead people; imagines; thinks he is going to have typhoid fever; hears footsteps in the next room.
+Delusions, frightful; thinks he sees dead people; imagines; thinks he is going to have typhoid fever; that he hears footsteps in the next room.
 
 Discontented, discouraged and easily distracted. Dullness of mind while reading. Mental exertion brings on many complaints.
 
 He is very excitable. Fear at night; of impending disease; that something will happen; of misfortune; on waking.
 
-Fears bad news. Forgetful. Easily frightened, and heedless. She is hysterical, and in a hurry. No one works fast enough suit him. Sometimes his ideas are abundant, and again deficient and his mind grows sluggish.
+Fears bad news. Forgetful. Easily frightened, and heedless. She is hysterical, and in a hurry. No one works fast enough to suit him. Sometimes his ideas are abundant, and again deficient and his mind grows sluggish.
 
-Impatience. He is indifferent to every thing, even to his family. A gradually increasing indolence; a mental and physical work. Irritability; in the morning menses; about trifles. Memory weak.
+Impatience. He is indifferent to every thing, even to his family. A gradually increasing indolence; a dread of mental and physical work. Irritability; in the morning; during menses; about trifles. Memory weak.
 
 Times of mirthfulness. GREAT PROSTRATION OF MIND. Restless and anxious, evening and night. Sadness in evening, after emission, during fever, and from music.
 
@@ -18730,7 +18724,7 @@ Pain in the region of the caecum. It has cured many cases resembling the first s
 
 Distress in the abdomen that hurries him to stool but only flatus passes. Pain in the abdomen during menses. Cramp in morning before breakfast. Pain in abdomen, 4 to 8 P.M., and in evening. Constant distress in bowels and urging to stool.
 
-Fullness, rumbling, motions, gurgling with or without diarrhea. Pain in right ascending colon when lying on the. right side. Bilious colic with vomiting of bile. It has cured many cases of syphilis. It has cured enlarged abdominal glands. Morning diarrhea with copious flatus soon after rising or soon after standing on the feet. Diarrhea in wet weather.
+Fullness, rumbling, motions, gurgling with or without diarrhea. Pain in right ascending colon when lying on the right side. Bilious colic with vomiting of bile. It has cured many cases of syphilis. It has cured enlarged abdominal glands. Morning diarrhea with copious flatus soon after rising or soon after standing on the feet. Diarrhea in wet weather.
 
 Stools gushing; copious; greenish; thin; very offensive; slimy, bloody; cramps in the abdomen before stool. Smarting in the anus during stool. Sometimes cheerful after stool. Often the diarrhea is painless.
 
@@ -18740,9 +18734,7 @@ It has cured many cases of chronic diarrhea with stool involuntary and lienteric
 
 **Kidneys and urines:** It has cured parenchymatic inflammation of the kidneys following scarlet fever and from malarial influences.
 
-It has cured sugar in the urine and polyuria. It has cured brick dust sediment many times also where copious white sandy sediment was present. It has cured copious deposits of phosphates with copious jelly-
-
-like mucous sediment. Must rise often in the night to urinate. Burning during and after urination. Urine loaded with bile. Where these symptoms appear after neglected gonorrhea.
+It has cured sugar in the urine and polyuria. It has cured brick dust sediment many times also where copious white sandy sediment was present. It has cured copious deposits of phosphates with copious jelly-like mucous sediment. Must rise often in the night to urinate. Burning during and after urination. Urine loaded with bile. Where these symptoms appear after neglected gonorrhea.
 
 **Male:** In the male strong sexual desire and troublesome erections.
 
@@ -18772,7 +18764,7 @@ It has been the epidemic remedy in this country in cerebro-spinal meningitis, wh
 
 Tenderness of the spine. Sore pain in the small of the back and sacrum. Pain in the small of the back during the night compelling her to lie on the right side; it passes away in the morning after rising. Pain in the small of the back from retaining the urine. Itching of the back when undressing. Pain in the sacrum, cannot lie on either side.
 
-Trembling, twitching and weakness in the limbs, twitching in hands and feet during sleep. Pains in the limbs during rest. Rheumatic pains in the limbs in wet weather. Cracking in the joint. Warts on the arms and hands. Pains in the limbs during chill and fever, better by motion and walking. Worse in the lower than in the upper limbs.
+Trembling, twitching and weakness in the limbs, twitching in hands and feet during sleep. Pains in the limbs during rest. Rheumatic pains in the limbs in wet weather. Cracking in the joints. Warts on the arms and hands. Pains in the limbs during chill and fever, better by motion and walking. Worse in the lower than in the upper limbs.
 
 Weakness in the hands; flexors pain on grasping anything. Trembling in the hands in the morning on waking and when writing. The tendency to suppuration around the nails is a marked symptom in this remedy. Palms raw and sore and exude a watery fluid. It has cured bad cases of psoriasis of the palms. Fingers swollen and stiff.
 
@@ -18966,7 +18958,7 @@ The patient appears to be dazed; there is a complete loss of memory; she is auto
 
 Sometimes it is impossible to find out what state of the mind is present she is so forgetful. She lies with the eyes closed and yet knows everything that is going on, but remembers nothing. She speaks with intelligence about the things of the moment, but knows nothing of the past. She prophesies, predicts with a sort of clairvoyance.
 
-The mental state is the keynote. Sometimes she is &lt; in the morning, sometimes in the evening, or on waking. She performs all her duties and yet seems to be in a dream, she seems not to know her friends.
+The mental state is the keynote. Sometimes she is < in the morning, sometimes in the evening, or on waking. She performs all her duties and yet seems to be in a dream, she seems not to know her friends.
 
 **Sleep:** The Nux mos. patient is always ready to go to sleep; it is with great difficulty that she can keep awake. She falls asleep on all occasions, in season and out of season. The eyes look heavy; she cannot keep awake; falls into a profound slumber, sometimes into coma.
 
@@ -18984,7 +18976,7 @@ There is a dry mouth, the tongue cleaves to the roof of the mouth in all complai
 
 The hemorrhages stand out in bold relief; hemorrhages from the nose, uterus and bowels. There is vomiting of blood.
 
-The patient is sensitive to wind, to a draft, to damp air. She has a headache &lt; walking against the wind; hoarseness from walking against the wind; she is so sensitive to cold weather that she comes home dazed and sleepy from walking against the wind; her mouth is dry but there is no thirst, she doesn't desire water (sometimes thirst is present).
+The patient is sensitive to wind, to a draft, to damp air. She has a headache < walking against the wind; hoarseness from walking against the wind; she is so sensitive to cold weather that she comes home dazed and sleepy from walking against the wind; her mouth is dry but there is no thirst, she doesn't desire water (sometimes thirst is present).
 
 The patient may hold water in the mouth without desire to swallow it. Nux mos. holds ice water and succulent fruits in the mouth to relieve the sensation of dryness. Often there is a sensation of dryness when the mouth is moist.
 
@@ -19136,7 +19128,7 @@ Coryza every time he disorders his stomach. I have a patient who has a coryza ev
 
 Palpitation and excitement of the heart and circulation. Much throbbing, Worse in the morning - mentally and physically. The coryza and some head symptoms are worse from the warmth of the bed like Merc., yet worse uncovering; worse from eating and from motion; head is worse from heat.
 
-Pressure and sense of weakness in, the left inguinal ring - hence cures hernia in babies (Lyc., right side). Arn. relieves soreness, etc. Conium also - it competes with Nux in sense of goneness in the groin.
+Pressure and sense of weakness in the left inguinal ring - hence cures hernia in babies (Lyc., right side). Arn. relieves soreness, etc. Conium also - it competes with Nux in sense of goneness in the groin.
 
 Chills are not better from any amount of covers; Ign. chills are better uncovering. In intermittents, the chill and heat intermingle, the heat is short and dry, and followed by hot, sweat and intense heat worse in the morning, but the chill comes at any time.
 
@@ -19162,7 +19154,7 @@ Ulcers which are perfectly painless, which do not granulate, and do not eat or s
 
 Paralytic conditions or paresis, partial paralysis; inactivity, sluggishness. Such a condition is found in the bowels so that they do not move, and rectum fills with round, hard, black balls, which can be dug out with the finger or spoon. There is no activity, no ability to strain at stool.
 
-The bladder is in a similar state. There is no ability to use the abdominal muscles; he cannot strain to urinate retention of accelerator muscles are in a state of paresis.
+The bladder is in a similar state. There is no ability to use the abdominal muscles; he cannot strain to urinate; retention of urine; accelerator muscles are in a state of paresis.
 
 When drinking the oesophagus seems to have no action and the fluid does not go down but passes out through the nose; a paresis fluids go down the wrong way or out through the nose.
 
@@ -19344,7 +19336,7 @@ The most common form of seasickness I have found to be the following:
 
 Awful deathly nausea pallor, cold body, profuse sweat and exhaustion, ameliorated by fanning, by the open air, by closing the eyes, by quiet and darkness, and aggravated by warmth. Tabacum is generally the remedy of such cases.
 
-In Petroleum there is much disturbance of vision, but the catarrhal the eyes is striking. Vesicular formations, ulcerations, inflammation, redness and copious discharge; granular lids, thickening mucous membranes, cracks in the lids, fissures in the corners eyes with great itching.
+In Petroleum there is much disturbance of vision, but the catarrhal state of the eyes is striking. Vesicular formations, ulcerations, inflammation, redness and copious discharge; granular lids, thickening mucous membranes, cracks in the lids, fissures in the corners of the eyes with great itching.
 
 This itching is present in all congestions of the mucous membrane. Eustachian tubes. The mucous membrane is thickened, and deafness results. It is a catarrhal state, attended by great itching in the tube, which he cannot reach by any method; itching deep in the ear. He rubs the ear and tries to scratch it, but he cannot reach it. Itching in the pharynx; also in the external canal of the ear. Ear discharges.
 
@@ -19354,7 +19346,7 @@ Face pale or yellow; sickly. "Nausea and qualmishness all day".
 
 Stiffness in the back. Pain in the back on rising from a seat.
 
-Heat and burning. Skin hot in places; with sensation of coldness. Burning and itching of palms and soles; face and scalp. The itching and burning often go together; parts that burn much. Feet burn and have a sensation as if frozen. Chilblains itch, burn and become purple. Parts frozen will, years after, itch, burn, sting and become red and hot. The patient can tell when it will thaw because of the itching in the chilblains.
+Heat and burning. Skin hot in places; with sensation of coldness. in spots Burning and itching of palms and soles; face and scalp. burn The itching and burning often go together; parts that burn itch much. Feet burn and have a sensation as if frozen. Chilblains itch, burn and become purple. Parts frozen will, years after, itch, burn, sting and become red and hot. The patient can tell when it will thaw because of the itching in the chilblains.
 
 Petroleum cures the itching and burning in frozen parts, but not as prominently as Agaricus leads all other remedies, especially when the condition affects parts where the tissues are thin over the bones, as over the back of the toes.
 
@@ -19466,7 +19458,7 @@ The indications for Phosphoric acid are seldom found in the tissue changes, but 
 
 Prolonged pneumonia with the mental symptoms, lack of reaction, infiltration at the end of pneumonia. Haemoptysis.
 
-Prolonged fever ending in feeble heart, with palpitation and the. mental symptoms. Palpitating during sexual excitement. Tendency to abscesses after a prolonged fever.
+Prolonged fever ending in feeble heart, with palpitation and the mental symptoms. Palpitating during sexual excitement. Tendency to abscesses after a prolonged fever.
 
 Limbs and joints become affected. Pain in the hip joint. Pains in the long bones between the joints, better by motion. Old gouty constitution. Tissues become weak. Red spots appear wherever the flesh is thin over the bones, and these spots become inflamed and form open ulcers.
 
@@ -19504,7 +19496,7 @@ General dropsical condition. Bloating of the hands and feet, especially dropsica
 
 The genitals hang down. In the woman, relaxation of the pelvic organs, prolapsus and other displacements. Stiffness is a marked feature of Phosphorus. Stiffness on beginning to move. Limbs stiff like a foundered horse, especially in the morning. Rheumatic stiffness in all the limbs. Phosphorus has tearing, drawing pains in the limbs. Drawing, tearing pains in affected parts. Phosphorus complaints are worse in cold weather.
 
-The patient himself, generally considered, is sensitive to cold. All his complaints are worse from cold and cold applications, and better from beat and warm applications, except the complaints of the head and stomach, which are ameliorated from cold as will hereafter be described. Phosphorus has been very useful in weak, relaxed conditions of the joints following sprains, when the symptoms agree.
+The patient himself, generally considered, is sensitive to cold. All his complaints are worse from cold and cold applications, and better from heat and warm applications, except the complaints of the head and stomach, which are ameliorated from cold as will hereafter be described. Phosphorus has been very useful in weak, relaxed conditions of the joints following sprains, when the symptoms agree.
 
 Necrosis is another feature of Phosphorus, especially of the lower jaw, but may be useful in necrosis of any of the bones. Exostoses of the skull with tearing pains. Tearing, boring pains, especially at night.
 
@@ -19576,9 +19568,9 @@ Frequent alternations of fluent and stopped-up conditions of the nose; coryza wi
 
 It has cured polypi of the nose, especially bleeding polypi. Fan-like motion of the nose, like Lycopodium.
 
-**Face:** The Phosphorus patient presents a sickly face, earthy, sunken and pale, such as we find in consumption and those about to go into consumption those suffering from deep-seated constitutional conditions; haggard, anemic.
+**Face:** The Phosphorus patient presents a sickly face, earthy, sunken and pale, such as we find in consumption and those about to go into consumption and those suffering from deep-seated constitutional conditions; haggard, anemic.
 
-The color is changeable; swollen, oedematous face; puffed under the eyes; lips and eyelids swollen. Again, red spots upon the checks, which appear in hectic fever; the hectic blush. Tension of the skin and of the face; tearing, shooting pains all through the face and about the eyes, from the temples and vertex down to the zygoma. Jerking, tearing pains in the teeth.
+The color is changeable; swollen, oedematous face; puffed under the eyes; lips and eyelids swollen. Again, red spots upon the cheeks, which appear in hectic fever; the hectic blush. Tension of the skin and of the face; tearing, shooting pains all through the face and about the eyes, from the temples and vertex down to the zygoma. Jerking, tearing pains in the teeth.
 
 The pains of the teeth are often ameliorated by warmth, while those of the head are ameliorated by cold. The pains of the teeth are worse when talking and eating, and worse after eating It has violent neuralgias of the face involving the jaw and temples, with hot, bloated face, worse from talking and from eating.
 
@@ -19730,7 +19722,7 @@ The Phosphorus patient wants to lie down; exhausted; he is unable to walk; stagg
 
 Jerking and twitching of the muscles; spasms of the paralyzed parts. Epilepsy; convulsions; neuralgic pains of the various parts of the body and of the limbs especially, ameliorated by heat. It has cured multiple neuritis.
 
-**Sleep:** Restless sleep; starts in sleep; feels in the morning as if he has not kept enough, yet most of the complaints and aches are ameliorated by sleep, especially the head symptoms; walks in his sleep.
+**Sleep:** Restless sleep; starts in sleep; feels in the morning as if he has not slept enough, yet most of the complaints and aches are ameliorated by sleep, especially the head symptoms; walks in his sleep.
 
 He sleeps on the right side. Lying on the left side causes anxiety and pain in the heart and palpitation. Late falling to sleep in the evening; lies awake thinking about the affairs of the day and borrowing trouble. Phosphorus is a usual remedy in low forms of typhoid fever on the symptoms previously mentioned.
 
@@ -20114,7 +20106,7 @@ A torpid liver is often associated with a torpid fluctuating state of the mind; 
 
 In this mental state with jaundice, all-gone sensation, aversion to food, even the thought or smell of food; stuffed feeling and distension in the region of the liver. The tongue is covered with thick slime; pasty, yellow coating as if mustard were spread upon it; imprint of the teeth upon the tongue; breath foul. For such a condition the ancients gave Calomel.
 
-Gallstone colic; enlargement of the liver; gastric weakness; unable to digest; duodenal catarrh; catarrh of intestines with copious diarrhea. If you notice the Podophyllum discharge in the commode, you will see a great amount of water, on the bottom a sediment like cornmeal gruel; as if cornmeal had been stirred in. If you see it early it is yellow, muddy, or yellow-green, profuse, offensive, cadaverous; the odor penetrates the whole house; stool gushes away like water from a bung-bole; gurgling and much flatus.
+Gallstone colic; enlargement of the liver; gastric weakness; unable to digest; duodenal catarrh; catarrh of intestines with copious diarrhea. If you notice the Podophyllum discharge in the commode, you will see a great amount of water, on the bottom a sediment like cornmeal gruel; as if cornmeal had been stirred in. If you see it early it is yellow, muddy, or yellow-green, profuse, offensive, cadaverous; the odor penetrates the whole house; stool gushes away like water from a bung-hole; gurgling and much flatus.
 
 With the stool there is very commonly a prolapse of the rectum; a gush of watery stool and a prolapse of the rectum; a soft stool with great straining and a prolapse of the rectum.
 
@@ -20176,13 +20168,13 @@ A psoric patient comes down with typhoid; the typhoid has been arrested or has r
 
 The Psorinum complex of symptoms is one in which remedies cause improvement but a short time and then the symptoms change and another remedy must be selected. It is a state of feeble reaction.
 
-**Mind:** The mental symptoms present some strong features. Sadness, hopeless; he sees no light breaking through the clouds above his head; all is dark about him.
+**Mind:** The mental symptoms present some strong features. Sadness, hopelessness; he sees no light breaking through the clouds above his head; all is dark about him.
 
 He thinks his business is going to be a failure; that he is going to the poor house; that he has sinned away his day of grace. It is a fixed idea during the day and he dreams about it at night. Overwhelming sadness; dejection; he takes no joy in his family; feels that these things are not for him.
 
 His business is prosperous, yet he feels as if he were going to the poor house. No joy or realization of benefit . Extremely irritable, wants to be alone. Does not want to be washed.
 
-Full of anxiety, even of suicide. Despair of recovery his sick. Though there is no eruption at night he is driven to despair by the continual itching. If he throws the covers off then he becomes chilly; if he covers up, then there is itching.
+Full of anxiety, even of suicide. Despair of recovery if sick. Though there is no eruption at night he is driven to despair by the continual itching. If he throws the covers off then he becomes chilly; if he covers up, then there is itching.
 
 Sensitive to cold yet the skin is worse from heat. Tingling, itching, formication, crawling like ants running over the surface, as of insects in the skin.
 
@@ -20190,11 +20182,11 @@ Especially suited to broken down individuals, who have vertigo as soon as they g
 
 **Head:** Old chronic periodical headaches with hunger, and often the hunger lasts during the whole headache; must get up at night for have something to eat.
 
-The headache is sometimes improve by eating. If he goes without a meal he has a headache.
+The headache is sometimes improved by eating. If he goes without a meal he has a headache.
 
 Violent rush of blood to the head, hot face, hair wet with the perspiration, hunger. Every one, two, or three weeks a recurrent headache. Every time the air blows on his head it slacks up the catarrh and a headache comes on.
 
-Either coryza or headache from catching cold. Headache is violent, throbbing, pecking as of little hammer, red face, hot head-congestive at times sweat. Hungry headache in such as have a dry cough in winter. Dry, teasing, racking cough with no expectoration. If the cough ceases he has a periodic headache. So complaints alternate. Head ache goes and cough appears or eruption in winter alternating with headache.
+Either coryza or headache from catching cold. Headache is violent, throbbing, pecking as of little hammers, red face, hot head-congestive at times sweat. Hungry headache in such as have a dry cough in winter. Dry, teasing, racking cough with no expectoration. If the cough ceases he has a periodic headache. So complaints alternate. Head ache goes and cough appears or eruption in winter alternating with headache.
 
 Scalp cold; wears fur cap in summer; worse uncovering the head (Sil.), worse from getting the hair cut (Bell., Glon., Sep.). Hepar is also worse from cold.
 
@@ -20246,7 +20238,7 @@ Old gleet, painless discharge; the "last drop;" relaxed and cold genitals; a dro
 
 Palpitation from the least exertion, better lying. Stitching pain better lying. Cardiac murmurs of either side. Mitral regurgitant murmur. Pericarditis of rheumatic origin. Heart symptoms with general weakness, dusky face, dazed look.
 
-Weak, irregular and rapid pulse. But mark the modalities. Aggravation in the open air, aggravation when sitting up, aggravation when sitting at the writing table; wants to rest the chest and breathing apparatus by lying down. Asthmatic dyspnoea ameliorated by lying down, and worse the nearer the arms are brought to the body. Such symptoms are found in very few remedies and in none so marked as in Psorinum.
+Weak, irregular and rapid pulse. But mark the modalities. Aggravation in the open air, aggravation when sitting up, aggravation when sitting at the writing table; wants to lie down; wants to rest the chest and breathing apparatus by lying down. Asthmatic dyspnoea ameliorated by lying down, and worse the nearer the arms are brought to the body. Such symptoms are found in very few remedies and in none so marked as in Psorinum.
 
 Febrile state. Intermittent, bilious fever, fever from a cold. The patient is so hot that the hand under the covers feels as though in a steam bath and the sensation of heat causes one to draw it back.
 
@@ -20386,7 +20378,7 @@ Iodide of Arsenic; anxiety, restlessness and weakness; frequent sneezing and cop
 
 The remedies having the dyspnoea are Arsenic, Iodide of Arsenic, Iodine, Kali hydr., and Sabadilla; these are the ones I have found most frequently indicated in the asthmatic forms of hay fever. If the complaint has been developed after being overheated about that time, you will find that Silica, Puls. and Carbo veg. must be carefully compared.
 
-There is another class of remedies having the stuffing up of the nose not relieved by the discharge. There is a constant duke to blow the nose, yet he gets no relief. This makes me think at once of Lach., Kali bi., Psor., Naja and Sticta.
+There is another class of remedies having the stuffing up of the nose not relieved by the discharge. There is a constant desire to blow the nose, yet he gets no relief. This makes me think at once of Lach., Kali bi., Psor., Naja and Sticta.
 
 Psorinum has the copious, watery, bland discharge from the nose, it may be excoriating, it has both. The stuffing up of the nose generally takes place in the open air; he is relieved in a warm, close room, and by lying down; has some dyspnoea, which is relieved by stretching the arms at right angles with the body. Hay fever is a psoric sickness. Psorinum given in a single dose will so develop the symptoms that the case will be more clear. The attack is not the best thing to prescribe for. If it is too violent, a short acting remedy may be selected that will mitigate it.
 
@@ -20406,7 +20398,7 @@ But here is the distinguishing feature - Pulsatilla sticks to its own text; it k
 
 "This is a new disease today."
 
-The patient has a violent diarrhoea today, and an ignoramus suppresses it; an inflammatory rheumatism comes on, and he calls it a new disease. The suppression of a diarrhoea or a hemorrhage, or the removal of piles, causes an out-cropping somewhere else. A child has a summer complaint suppressed and there follow symptoms referring to the brain, kidneys, liver, or a marasmus with emaciation from. below upwards. Such things are in the nature of Abrotanum.
+The patient has a violent diarrhoea today, and an ignoramus suppresses it; an inflammatory rheumatism comes on, and he calls it a new disease. The suppression of a diarrhoea or a hemorrhage, or the removal of piles, causes an out-cropping somewhere else. A child has a summer complaint suppressed and there follow symptoms referring to the brain, kidneys, liver, or a marasmus with emaciation from below upwards. Such things are in the nature of Abrotanum.
 
 **Stomach:** Hours after eating the patient eructates mouthfuls of sour, rancid, bitter fluid; liquids roll up from the stomach; always belching up rancid food.
 
@@ -20470,7 +20462,7 @@ The aggravation from lying down in extremely painful hemorrhoids is contrasted w
 
 In those with sticking, tearing pains study Aesculus.
 
-Looking over a number of years I have been forced to use in this cases a remedy not yet fully proven. In painful hemorrhoids, in a broken down constitution where the whole disease seems to culminate in the hemorrhoids; bleeding, protruding; a mere touch almost causes a convulsion; it causes her to scream out at the top of her voice; it is so painful that she feels that death would be a relief; she lies in bed, holding the nates far apart with her hands; after every stool she has three or four hours of extreme suffering. In these case look up the Paeony.
+Looking over a number of years I have been forced to use in these cases a remedy not yet fully proven. In painful hemorrhoids, in a broken down constitution where the whole disease seems to culminate in the hemorrhoids; bleeding, protruding; a mere touch almost causes a convulsion; it causes her to scream out at the top of her voice; it is so painful that she feels that death would be a relief; she lies in bed, holding the nates far apart with her hands; after every stool she has three or four hours of extreme suffering. In these cases look up the Paeony.
 
 The hemorrhoids it cures look like the flowers of the plant, they are so inflamed, so red and bleeding; oozing; tender to touch; patient is so worn out with the pain. It has many times relieved the pain and cured these enormous haemorrhoidal tumors. I have cured them after they had been operated on, and all sorts of violence done them, without relief. Do not go to this drug if you can find a remedy that covers all the patient. Many patients will not confess any other symptoms, and some of these will suffer so much from the hemorrhoids alone that you will really need this remedy.
 
@@ -20536,7 +20528,7 @@ Dyspnoea; oppression from walking fast or becoming overheated after eating; stop
 
 Asthma of children from suppressed rash or in women from suppressed menses. Loud rattling in the chest when lying. Chronic loose cough after measles. Expectoration of copious, thick, yellow-green, or bloody mucus; salty; offensive. Chronic catarrh of chest. Sensation of fullness in the chest in the evening with pulsation preventing sleep.
 
-Palpitation from lying on the left side. Soreness in the walls of the chest. Pain in the chest sometimes relieved by lying on the opposite side; dryness and rawness in the chest. Wandering tearing pains in the chest; cutting pains in pleurisy; violent beat in the chest.
+Palpitation from lying on the left side. Soreness in the walls of the chest. Pain in the chest sometimes relieved by lying on the opposite side; dryness and rawness in the chest. Wandering tearing pains in the chest; cutting pains in pleurisy; violent heat in the chest.
 
 Haemorrhage of the lungs, dark blood. Dry cough in the evening, loose in the morning. Hemorrhage with suppressed menses or instead of the menses. Pulsatilla is very useful in catarrhal phthisis in chlorotic girls.
 
@@ -20558,13 +20550,13 @@ Thirst before the chill and seldom during the heat; heat with distended veins; s
 
 **Fever:** The potencies prepared from Heath's 3d of decomposed beef have been used by the author for many years against all forms of septic fever and sequelae, when the symptoms agree.
 
-Violent chill intermingled with heat and sweat, or dry heat with marked aching in the limbs; restlessness, &gt; by motion and heat. The sore bruised condition is as marked as in Arnica and Baptisia; the aching in the bones like Eupatorium, the restlessness, &gt; by motion and heat like Rhus.
+Violent chill intermingled with heat and sweat, or dry heat with marked aching in the limbs; restlessness, > by motion and heat. The sore bruised condition is as marked as in Arnica and Baptisia; the aching in the bones like Eupatorium, the restlessness, > by motion and heat like Rhus.
 
 Pains all aggravated sitting. Complaints come on from becoming cold, and from cold damp weather.
 
 These features are found in hectic fevers in the last stages of phthisis, as well as septic fevers. It aborts puerperal fever in a few hours when clearly indicated. In cases of typhoid where there is the confusion like - that found in Baptisia and the heat is too intense for that remedy, Pyrogen should always be considered.
 
-When the temperature reaches 106° and there is great soreness and aching this remedy will make great changes in a single day; but if the pains are &gt; by motion and heat it will abort the fever.
+When the temperature reaches 106° and there is great soreness and aching this remedy will make great changes in a single day; but if the pains are > by motion and heat it will abort the fever.
 
 When the pulse is extremely high, and the temperature not correspondingly high this remedy will be useful. On the other hand, when the pulse and temperature are out of rhythm either way this remedy should be considered if the case is of septic origin. Great pain when the flow from an open abscess becomes scanty. Violent burning in an abscess (Ars., Anthr., Tarent. cubensis).
 
@@ -20586,7 +20578,7 @@ Feels when lying on one side she is one person, and another when turning on the 
 
 These symptoms are much like Baptisia, but if the temperature runs very high Baptisia will not meet the condition so well as Pyrogen.
 
-**Head:** Violent congestion of the head with pressing pain and pulsation, &gt; by pressure. Copious sweat on the head.
+**Head:** Violent congestion of the head with pressing pain and pulsation, > by pressure. Copious sweat on the head.
 
 Pain in occiput on coughing; in the morning on walking.
 
@@ -20622,7 +20614,7 @@ Pain on deep breathing.
 
 Cutting, colicky pain.
 
-Pain in right side going through to the back &lt; on every motion, talking and breathing; &gt; by lying on right side; groaning with every breath.
+Pain in right side going through to the back < on every motion, talking and breathing; > by lying on right side; groaning with every breath.
 
 Copious, liquid, putrid stools.
 
@@ -20666,9 +20658,9 @@ Prolapsus of uterus.
 
 Weak and husky voice, and hoarseness.
 
-Cough with large masses of mucus from larynx, &lt; by motion, and in warm room. Cough causes burning in larynx and bronchi. Putrid, thick, purulent expectoration.
+Cough with large masses of mucus from larynx, < by motion, and in warm room. Cough causes burning in larynx and bronchi. Putrid, thick, purulent expectoration.
 
-Cough &lt; by lying, &gt; by sitting up.
+Cough < by lying, > by sitting up.
 
 Bloody or rusty expectoration.
 
@@ -20676,7 +20668,7 @@ Cough, with copious, offensive night sweats.
 
 It is a great palliative in the last weeks of consumption. Abscesses in lung.
 
-Heart failure in septic fevers, &lt; by least motion. Every pulsation felt in distant parts.
+Heart failure in septic fevers, < by least motion. Every pulsation felt in distant parts.
 
 Anxiety and sinking sensation in region of heart. Distinct consciousness of the heart.
 
@@ -20696,7 +20688,7 @@ Weak feeling in the back. Stitching in back on coughing.
 
 Pain in all the limbs with great restlessness.
 
-Aching in bones all over the body. Soreness of the muscles and the bed feels hard, &gt; by motion.
+Aching in bones all over the body. Soreness of the muscles and the bed feels hard, > by motion.
 
 **Limbs:** Cold extremities.
 
@@ -20704,9 +20696,9 @@ Numbness of extremities. Hands and arms numb.
 
 Hands cold and clammy. Pain in the thighs during chill and fever.
 
-Pain in the knees and legs during chill and fever, ameliorated from walking, and from heat. Aching in legs while sitting, &gt; by walking.
+Pain in the knees and legs during chill and fever, ameliorated from walking, and from heat. Aching in legs while sitting, > by walking.
 
-Aching above knee as if bone were broken, &gt; by stretching of limbs and motion. Feet and legs dropsical. Numbness of feet.
+Aching above knee as if bone were broken, > by stretching of limbs and motion. Feet and legs dropsical. Numbness of feet.
 
 Skin pale, cold, of ashy hue. Obstinate varicose offensive ulcers of old people. It has cured many, old fever sores with putrid, thin, bloody discharges. Carrion-like perspiration. Putrid odors of the body. Must be covered in all stages.
 
@@ -20974,7 +20966,7 @@ There are violent pains in the back, especially in the lumbar region, as if the 
 
 This remedy has many spinal symptoms with paralytic weakness either of the lower limbs or of one part of the body, Stiffness and lameness in the sacrum aggravated on resting after exercise. It might now be predicted that symptoms are to be found in the limbs from what has been said in general.
 
-There are stitching pains, pressing pains, all sorts of rheumatic lameness, and these pains are ameliorated from motion and are worse from keeping still. They are brought on from cold air and from suppressing the sweat, and as these pains grow worse they became tearing down the limbs, drawing pains. Paralytic pains, benumbing pains, and these are relieved from motion; numbness throughout the limbs; numbness and aching in the arms from heart disease; numbness in the joints; jerking, tearing pains in the joints. Paralysis of the arms; erysipelas with much swelling in the limbs; swelling of the hands and arms.
+There are stitching pains, pressing pains, all sorts of rheumatic lameness, and these pains are ameliorated from motion and are worse from keeping still. They are brought on from cold air and from suppressing the sweat, and as these pains grow worse they become tearing down the limbs, drawing pains. Paralytic pains, benumbing pains, and these are relieved from motion; numbness throughout the limbs; numbness and aching in the arms from heart disease; numbness in the joints; jerking, tearing pains in the joints. Paralysis of the arms; erysipelas with much swelling in the limbs; swelling of the hands and arms.
 
 When grasping anything a tingling and pricking is felt in the hands and fingers; crawling and numbness in the finger tips and fingers; swelling of the fingers; eruptions upon the hands and fingers. In the lower limbs, we find similar pains and similar modalities pain in the hip when lying upon it; tearing, drawing pains in the lower limbs; sciatica with tearing, drawing pains in the lower limbs, worse during rest and ameliorated from motion, brought on from becoming chilled, from cold damp weather, from exposure, and from suppressing the sweat.
 
@@ -21048,7 +21040,7 @@ Phosphorus has this hoarseness, but especially aphonia relieved by hemming up a 
 
 "Aching in the pharynx, with collection of tough mucus in the fauces." "Catarrhal affections of throat and fauces."
 
-This remedy shows the various stages of severe cold, but is especially indicated in constitutions that are constantly taking cold worse from change of the weather; always shivering about the fire want much clothing, want even the head covered up.
+This remedy shows the various stages of severe colds, but is especially indicated in constitutions that are constantly taking cold worse from change of the weather; always shivering about the fire want much clothing, want even the head covered up.
 
 Many complaints are worse in the evening, from a bath, from becoming cold, from inhaling cold air. Rheumatic complaints are common and are aggravated by cold. Every cold seems to affect the joints. This is a marked feature of Calcarea phos .; every change to cold is felt in the joints; from bathing and getting chilled afterwards.
 
@@ -21150,7 +21142,7 @@ The only thing here is that it is aggravated toward evening. When things are bro
 
 **Pains:** Many of the complaints are worse lying down, especially the pains that are sharp, stinging, tearing in the nerves.
 
-Ruta is a painful medicine, but is slow in producing symptoms, hence it of a chronic nature. Old neuralgias, stinging, tearing, burning pains, especially in the lower extremities, about the eyes; faceaches. It has all the pains, described by all the adjectives that apply to pain, but it is worse lying down and worse from cold.
+Ruta is a painful medicine, but is slow in producing symptoms, hence its pains are of a chronic nature. Old neuralgias, stinging, tearing, burning pains, especially in the lower extremities, about the eyes; faceaches. It has all the pains, described by all the adjectives that apply to pain, but it is worse lying down and worse from cold.
 
 Rending, tearing pains in the sciatic nerves. The severest forms of sciatica; pains commence in the back and go down the hips and thighs; tearing pains; comfortable during the day, but aggravated as soon as he lies down at night. Gnaphalium is a great sciatic remedy, and it also has this aggravation from lying down.
 
@@ -21166,7 +21158,7 @@ After overusing the eyes in this way, if the patient rides in a cold wind, a par
 
 "Loss of power over internal rectus."
 
-"Asthenopia; irritability of every tissue of eye from overwork or from using eyes on fine pork; beat and aching in and over eyes; eyes feel like balls of fire at night; blurring of vision; letters seem to run together, lachrymation, etc."
+"Asthenopia; irritability of every tissue of eye from overwork or from using eyes on fine work; heat and aching in and over eyes; eyes feel like balls of fire at night; blurring of vision; letters seem to run together, lachrymation, etc."
 
 Amblyopia, dependent upon overexertion of eyes, or anomalies of refraction; from writing by artificial light; fine needlework, etc. in a weaver, could with difficulty distinguish one, thread from another, and could not read at all; mistiness of sight, with complete obscuration at a distance.
 
@@ -21220,7 +21212,7 @@ We often study remedies by contrast. This remedy travels from left to right, and
 
 **Nose:** Catarrhal condition of the nose, with constant sneezing; sensation of great rawness in the nose; burning; stuffing up of the nose.
 
-Discharge at first of thin mums and later thick mucus. It has all the appearance of a coryza. The coryza is ameliorated from inhaling hot air. He sits before an open grate or register, with the head close to it, inhaling the hot air. Especially useful when the catarrhal state of the nose is prolonged; a prolonged coryza, which does not yield to ordinary remedies; a lingering coryza, and the discharge is exaggerated by the odor of flowers. Even thinking of the odor of flowers makes him sneeze and increases the flow from the nose. So thinking of various things aggravates his complaints.
+Discharge at first of thin mucus and later thick mucus. It has all the appearance of a coryza. The coryza is ameliorated from inhaling hot air. He sits before an open grate or register, with the head close to it, inhaling the hot air. Especially useful when the catarrhal state of the nose is prolonged; a prolonged coryza, which does not yield to ordinary remedies; a lingering coryza, and the discharge is exaggerated by the odor of flowers. Even thinking of the odor of flowers makes him sneeze and increases the flow from the nose. So thinking of various things aggravates his complaints.
 
 Many hay fever patients are sensitive to the odor of flowers, to the, odor of the hay field, to dying vegetable matter; so oversensitive to the odor of fruit are some that apples have to be removed from the house. Inhalation of odors that are beautiful, as that of the lavender, some hay fever patients cannot tolerate; such things may bring on an attack out of the season. Now Sabadilla is of this sort oversensitive to surroundings, to odors; these increase the catarrhal state of the throat and posterior nares.
 
@@ -21324,7 +21316,7 @@ Inflammation of the urethra, with a gonorrhoeal discharge, or a catarrhal discha
 
 Too frequent and prolonged copious menses. A striking feature in this drug, as in a few other remedies, is that the flow is liquid, bright red, intermingled with clots. It suits many cases in which the flow slackens up and remains away for a while and then labor-pains come on, and an enormous, partially decomposed clot is passed and this is followed by a bright red flow. This occurs over and over again.
 
-Such a state comes on after abortion, after labor and in dysmenorrhoea. Accompanying the labor-like pains is a violent pain in the sacrum, to the uterus or pubes. Another striking feature is itching, shooting, knife-like pains, causing the patient to scream out, shooting up the vagina to the uterus, or up as far as the umbilicus. These two features, shooting pains from the back to the front and from. below upwards, with hemorrhages, are striking corroborations.
+Such a state comes on after abortion, after labor and in dysmenorrhoea. Accompanying the labor-like pains is a violent pain in the sacrum, to the uterus or pubes. Another striking feature is itching, shooting, knife-like pains, causing the patient to scream out, shooting up the vagina to the uterus, or up as far as the umbilicus. These two features, shooting pains from the back to the front and from below upwards, with hemorrhages, are striking corroborations.
 
 Belladonna and Sabina are the two most important remedies in abortion at three months. Bell. has the same bearing down pains which expel a clot followed by a copious, bright red flow. But the Bell. state is not like that of Sabina. In Bell. it is a hyperesthesia, oversensitiveness to touch and jar; the patient will not allow the nurse to jar the bed, and the bright red flow is hot, so much so that it is noticeable; the parts over which the flow passes are so sensitive that the blood feels intensely hot to her.
 
@@ -21390,7 +21382,7 @@ An alternation of states The gouty condition of the veins is often a hemorrhagic
 
 **Generalities:** Blood root is an old domestic remedy. A great many eastern farmers' wives will not go into the winter without blood root in the house.
 
-In the cold winter days, when the coryzas come on, a "cold" in the head, throat and chest, then they get the blood root ready and make a tea of it. With them it is a routine remedy for "colds." They give it to combat all complaints, and there is no doubt but that even in this crude form it does break up "colds," because the provings show its relation to chest troubles and "colds" that go to the chest.
+In the cold winter days, when the coryzas come on a "cold" in the head, throat and chest, then they get the blood root ready and make a tea of it. With them it is a routine remedy for "colds." They give it to combat all complaints, and there is no doubt but that even in this crude form it does break up "colds," because the provings show its relation to chest troubles and "colds" that go to the chest.
 
 **Head:** Periodic headaches, when the headache comes once in seven days it begins in the morning on waking or wakes the patient up.
 
@@ -21502,7 +21494,7 @@ Cough worse at night with diarrhoea is the feature this remedy is prescribed for
 
 An adult takes cold and has a spasmodic cough, like whooping cough. He says it is a stomach cough, because there is a gagging with it. In all there is burning and diarrhoea.
 
-"Distressing, dry, spasmodic, exhaustive coughs, especially in children; worse towards night, lying down, going into a cold room to. sleep, feeling of rawness and burning in bronchi."
+"Distressing, dry, spasmodic, exhaustive coughs, especially in children; worse towards night, lying down, going into a cold room to sleep, feeling of rawness and burning in bronchi."
 
 The trachea seems so sore, and it is sore; a bolus of food passing down the oesophagus can be plainly felt; he can outline the part where the food passes.
 
@@ -21600,7 +21592,7 @@ Some women are so insane that though they die they will get rid of their offspri
 
 "I have had no health since I aborted."
 
-The worst state of health is produced by ergot; it establishes a miasm as deep as psora itself. The duke to destroy the offspring is an engraftment on psora and by ergot she takes on a miasm as dangerous as sycosis or syphilis.
+The worst state of health is produced by ergot; it establishes a miasm as deep as psora itself. The desire to destroy the offspring is an engraftment on psora and by ergot she takes on a miasm as dangerous as sycosis or syphilis.
 
 I have patients who took ergot to cause abortion, and I can do nothing more than palliate them. They have Secale symptoms, sequelae, and their psoric symptoms are suppressed, held down, just as syphilis holds down psoric manifestations; only by covering the Secale miasm and getting at the psora can we help the patient.
 
@@ -21610,7 +21602,7 @@ They have placed themselves beyond the help of the physician and the ergot will 
 
 Wants cold though the limbs are cold as ice, wants to be uncovered, wants the windows open; a patient with hemorrhages wants the covers off though the room is cold. A patient with ulcers wants to be uncovered; in inflammatory condition of the stomach and bowels, wants the abdomen uncovered.
 
-At times there is a lingering state of heat of the skin and the patient wants to be covered up; there are also sharp, stinging neuralgic pains, which burn like fire and cut like a knife and are relieved by the application of beat; headache worse in cold air.
+At times there is a lingering state of heat of the skin and the patient wants to be covered up; there are also sharp, stinging neuralgic pains, which burn like fire and cut like a knife and are relieved by the application of heat; headache worse in cold air.
 
 But the general state is ameliorated from uncovering, in a cold room, and from cold air blowing on the patient.
 
@@ -21664,7 +21656,7 @@ The diseased limb withers. The hair falls out all over the body, head, eyebrows,
 
 Some complaints are worse from wine, tea and lemonade. It is of great value in drunkards. Irresistible desire for alcoholic stimulants. Symptoms worse after sleep, especially on a hot day. Irritable after emissions. He is indifferent to his surroundings and his mind is dull and in confusion.
 
-He is very forgetful during his waking hours, but in sleep he dreams what he has forgotten. Makes mistakes in syllables and. mispronounces words. Stammering speech. Often fails to understand what he hears or reads. He has become unfit for his business. He is excitable and talkative in the evening. Mental exertion is exhaustive and he dreads company. His mind dwells on lascivious thoughts, yet he is sometimes impotent. All the mental symptoms are worse after coition.
+He is very forgetful during his waking hours, but in sleep he dreams what he has forgotten. Makes mistakes in syllables and mispronounces words. Stammering speech. Often fails to understand what he hears or reads. He has become unfit for his business. He is excitable and talkative in the evening. Mental exertion is exhaustive and he dreads company. His mind dwells on lascivious thoughts, yet he is sometimes impotent. All the mental symptoms are worse after coition.
 
 Vertigo on rising from bed or seat, on moving about, with nausea, vomiting and faintness, worse after breakfast and dinner.
 
@@ -21968,7 +21960,7 @@ The nose is a favorite locality; loss of smell; yellow or green thick crusts fil
 
 "Large offensive-smelling plugs from the nose, often so large that they have to be drawn back into the mouth and expectorated, causing vomiting.
 
-Dry coryza especially of left nostril, following of large lumps of yellow or green mucus or yellow-green crusts with blood from the nose."
+Dry coryza especially of left nostril, blowing of large lumps of yellow or green mucus or yellow-green crusts with blood from the nose."
 
 This is descriptive of the worst forms of catarrh; very few will let it run on thus far, they apply local treatment and heal the nose up, and, the process at once going to the chest, phthisis pituitosa comes on.
 
@@ -22000,7 +21992,7 @@ Kali carb. has it also, without the amelioration from taking food; it is even in
 
 In severe liver and heart affections the stomach is not able to keep up assimilation; palpitation, great weakness, liver congested, white stool.
 
-Digitalis comes in here with its deathly sinking not better by vomiting. In Sepia this symptom is associated with the loss of affections, the lump in the rectum, with the constipation, etc.
+Digitalis comes in here with its deathly sinking not better by eating. In Sepia this symptom is associated with the loss of affections, the lump in the rectum, with the constipation, etc.
 
 "Pain in the stomach after the simplest food.
 
@@ -22226,7 +22218,7 @@ Crusty formations upon the ears.
 
 The teeth break down, lose their enamel surface; the dentine is made up largely of the silicate of lime and the surface of the tooth becomes rough, loses its shiny appearance and caries sets in.
 
-This often takes place at the margin of the gum; ulcers form on the tip of the fangs. The teeth suffer when it is cold or damp; toothache in wet weather, and the teeth are yellow, decay rapidly, and the gums settle away from. them.
+This often takes place at the margin of the gum; ulcers form on the tip of the fangs. The teeth suffer when it is cold or damp; toothache in wet weather, and the teeth are yellow, decay rapidly, and the gums settle away from them.
 
 All the neuralgias and toothaches are better in a warm room and from hot drinks. Abscesses about the gums and face, better by warmth. Severe pain in the jaw, rending, tearing at night, better from heat; these pains often end in abscesses about the teeth. Sometimes relieved by pressure unless the part is extremely sore from inflammation.
 
@@ -22360,7 +22352,7 @@ Hardly a nerve in the body escapes; shooting, burning, tearing, neuralgic pains;
 
 Pains in the neck and shoulders are better from heat; those about the eyes are better from cold. Shooting, tearing pains in the extremities like hot wires.
 
-Sometimes the pains are worse from lying down, but most commonly better from keeping still; worse from light, eating, motion, jarring; so sore in the painful region that any gentle exercise like going up or down stairs, or riding in a carriage that jar, makes the pain unbearable.
+Sometimes the pains are worse from lying down, but most commonly better from keeping still; worse from light, eating, motion, jarring; so sore in the painful region that any gentle exercise like going up or down stairs, or riding in a carriage that jars, makes the pain unbearable.
 
 The Spigelia patient is sensitive to cold, to atmospheric changes, he is a rheumatic patient, but the nerves are attacked by neuralgia.
 
@@ -22758,7 +22750,7 @@ Stram. is like an earthquake in its violence. The mind is in an uproar; cursing,
 
 It is useful in mania that has existed for some time; attacks of mania coming on in paroxysms, appearing with more or less suddenness, so that a single attack would look like Bell., but the history differentiates. Bell. would hardly be more than a palliative in the first attack, and the second exhibition of it would do nothing.
 
-When the delirium is not on, the patient has the appearance of great suffering, forehead wrinkled, face pallid, sickly, haggard. In head pains this anxious look, indicative of intense suffering from meningeal involvement.
+When the delirium is not on the patient has the appearance of great suffering, forehead wrinkled, face pallid, sickly, haggard. In head pains this anxious look, indicative of intense suffering from meningeal involvement.
 
 "Delirium bland, murmuring; violent, foolish, joyful, loquacious, incoherent chattering with open eyes; vivid; merry, with spasmodic laughter; furious, raving, wild; attempts to stab and bite; with queerest notions; with sexual excitement; fear as if a dog were attacking him."
 
@@ -22900,7 +22892,7 @@ The diarrhea drives him out of bed.
 
 It is generally thin, watery; there is not much gushing, and it is not very copious, sometimes quite scanty, sometimes yellow faecal. After this morning stool he has, in many cases, no further trouble till next morning.
 
-There are many people who go on year after year with, this urging to stool driving out of bed in the morning. The patient suffers from pain, griping, uneasiness, and burning soreness through the bowels. The stool burns while it is passing, and all parts that it comes in contact with are made sore and raw, and there is much chafing.
+There are many people who go on year after year with this urging to stool driving out of bed in the morning. The patient suffers from pain, griping, uneasiness, and burning soreness through the bowels. The stool burns while it is passing, and all parts that it comes in contact with are made sore and raw, and there is much chafing.
 
 **Desires and aversions:** The Sulphur patient is very thirsty.
 
@@ -22986,7 +22978,7 @@ Sulphur, like Silicea, is a dangerous medicine to give where there is structural
 
 Sulphur will often heal old fistulous pipes and turn old abscesses into a normal state, so that healthy pus will follow, when it is indicated by the symptoms. It will open abscesses that are very slow, doing nothing, it will reduce inflamed glands that are indurated and about to suppurate, when the symptoms agree.
 
-But it is a dangerous medicine to administer in advanced cases of phthisis, and, if given, it should not be prescribed in. the highest potencies. If there are symptoms that are very painful, and you think that Sulphur must be administered, go to the 30th or 200th potency.
+But it is a dangerous medicine to administer in advanced cases of phthisis, and, if given, it should not be prescribed in the highest potencies. If there are symptoms that are very painful, and you think that Sulphur must be administered, go to the 30th or 200th potency.
 
 Do not undertake to stop the night sweats that come in the advanced stages, even if Sulphur seems to be indicated by the symptoms; the fact is, it is not indicated. A remedy that is dangerous in any case ought not to be considered as indicated, even though the symptoms are similar.
 
@@ -23000,7 +22992,7 @@ It is true that many patients will not have Homoeopathy because they do not want
 
 Even when acute eruptions have been suppressed, Sulphur becomes a valuable remedy. In suppressed gonorrhoea Sulphur is often the remedy to start up the discharge and re-establish the conditions that have been caused to disappear. Symptoms that have been suppressed must return or a cure is not possible.
 
-Sulphur has been the remedy from the beginning of its history, from the time of Hahnemann, and on his recommendation, to be thought of when there is a paucity of symptoms to prescribe on, a latent condition of the symptoms due to psora. In this state it has been administered with so much benefit that the routine prescriber has learned the fact.
+Sulphur has been the remedy from the beginning of its history, from the time of Hahnemann, and on his recommendation, to be thought of when there is a paucity of symptoms to prescribe on a latent condition of the symptoms due to psora. In this state it has been administered with so much benefit that the routine prescriber has learned the fact.
 
 When apparently (superficially) well-indicated remedies fail to hold a patient, and symptoms cannot be found for a better remedy, it is true that Sulphur takes a deep hold of the economy and remedies act better after it.
 
@@ -23282,7 +23274,7 @@ The prepuce becomes narrow and cannot be drawn back inflammatory phimosis; thick
 
 Under female sexual, organs we have sterility. We have irregularity in the menstrual flow, menstrual flow suppressed from the slightest disturbance. Haemorrhage in connection with the menstrual flow; uterine haemorrhage; prolonged uterine haemorrhage.
 
-In an abortion you may have selected Belladonna, which war, suitable while the woman was aborting, and it may have overcome the present state; or you may have selected Apis or Sabina, which was suitable for the early state, and it either postpones or checks the haemorrhage for the time or hurries the expulsion of the foetus; but the haemorrhage starts in again and with its return we have prolonged tribulation. In many of these cases we can do nothing until we put the patient on Sulphur.
+In an abortion you may have selected Belladonna, which was suitable while the woman was aborting, and it may have overcome the present state; or you may have selected Apis or Sabina, which was suitable for the early state, and it either postpones or checks the haemorrhage for the time or hurries the expulsion of the foetus; but the haemorrhage starts in again and with its return we have prolonged tribulation. In many of these cases we can do nothing until we put the patient on Sulphur.
 
 If the symptoms are masked, Sulphur stands very high. When Belladonna has been given you will often have to follow it with Sulphur. Sabina, which has the most violent gushing haemorrhage in abortions, very commonly needs to be followed by Sulphur. In such hemorrhagic affections, however i.e, in a prolonged recurring haemorrhage, a chronic condition, not in the first or most exciting time, not in the time of the earliest gushing, there are two very frequently indicated remedies, viz.: Sulphur and Psorinum.
 
@@ -23304,7 +23296,7 @@ Then we have septicemic conditions, with purulent lochia or suppression of the l
 
 You know now the meaning of the suppression of the lochia; you have a puerperal fever on hand. Study closely for Sulphur instead of hunting around among Aconite, Bryonia, Belladonna, Opium, etc. With these you will make a total failure in most instances, but Sulphur fits into just such a state and has cured many cases of puerperal fever.
 
-If it is but a milk fever or mammary indisposition and the chill is only acute, then your short-acting remedies will do very well and even Aconite has been useful, but when it is a case of septicemia, Sulphur goes to the very root of it. When the feet burp, when there is a hungry feeling in the stomach, the night aggravation with sinking and exhaustion, and when throughout the body there is a sensation of steam rising or hot flashes, one after another, you must give Sulphur.
+If it is but a milk fever or mammary indisposition and the chill is only acute, then your short-acting remedies will do very well and even Aconite has been useful, but when it is a case of septicemia, Sulphur goes to the very root of it. When the feet burn, when there is a hungry feeling in the stomach, the night aggravation with sinking and exhaustion, and when throughout the body there is a sensation of steam rising or hot flashes, one after another, you must give Sulphur.
 
 Now, on the other hand, if in such a case, with the hot sweat and other general features, you have one rigor following another in rapid succession and no end to them, you cannot get out of that case without Lycopodium, which goes as deeply into the case as Sulphur. When there is a continuous intermingling of little chillinesses and little quiverings throughout the body and the pulse has lost its proper relationship to the temperature, Pyrogen must be administered. If there is a purplish appearance of the body, cold sweat all over, if there are remittent or intermittent chills, with thirst during the chill, and at no other time, and the face is red during the chill, you must give Ferrum, as no other remedy looks just like that.
 
@@ -23418,7 +23410,7 @@ Violent neuralgic pains of the face coming on gradually and ceasing suddenly, am
 
 **Teeth:** The teeth decay early.
 
-Violent neuralgia of the teeth, coming on slowly and ceasing suddenly. Worse from cold and better from beat, worse in the evening in bed. The teeth are on edge.
+Violent neuralgia of the teeth, coming on slowly and ceasing suddenly. Worse from cold and better from heat, worse in the evening in bed. The teeth are on edge.
 
 **Mouth:** Loss of taste during coryza.
 
@@ -23454,7 +23446,7 @@ She does not vomit food, but cannot eat, as it causes pain in stomach and she vo
 
 Diarrhoea with great general weakness and sensation of trembling. With weak, sinking sensation in the abdomen after stool. Chronic diarrhoea with much suffering. Excoriating stools, burning in rectum during stool. Diarrhoea brought on from the least indiscretion in eating, after fruit, especially if unripe, after oysters. Stool watery orange yellow, stringy, MUCOUS, Mixed with blood, greenish, black, undigested smelling like spoiled eggs. Hemorrhoids very sore, itching, painful during stool, in drunkards. In constipation the stool is in small balls.
 
-Pain in the bladder if the desire to pass urine is postponed. It had cured diabetes. Scanty urine. Bloody urine. Cuticle in the urine.
+Pain in the bladder if the desire to pass urine is postponed. It has cured diabetes. Scanty urine. Bloody urine. Cuticle in the urine.
 
 **Women:** The menses are too frequent and copious and the flow is dark and thin.
 
@@ -23468,7 +23460,7 @@ It has cured sterility when. it was supposed to depend upon the copious and freq
 
 Hoarseness with a dry feeling and sensation of roughness in the larynx. Weak chest and great dyspnoea. Rapid movement of the wings of nose like Lycopodium. Rapid moving up and down of the larynx during the dyspnoea. Short of breath.
 
-Except in the morning the cough is dry and hacking. Sometimes in two coughs. He coughs in the open air, either walking or riding, worse from cold drinks and from. the odor of coffee. Cough followed by itching and vomiting. The irritation is felt in the chest. The expectoration is in the morning of dark, thin blood, or of thin, yellowish, blood-streaked mucus tasting sour.
+Except in the morning the cough is dry and hacking. Sometimes in two coughs. He coughs in the open air, either walking or riding, worse from cold drinks and from the odor of coffee. Cough followed by itching and vomiting. The irritation is felt in the chest. The expectoration is in the morning of dark, thin blood, or of thin, yellowish, blood-streaked mucus tasting sour.
 
 Weakness in the chest with burning and stitching pain. Pressure on left side of chest. Profuse haemorrhage from the lungs of dark fluid blood, after pneumonia, and during the climacteric period.
 
@@ -23610,7 +23602,7 @@ Trembling and jerking convulsions. It has an appearance very much like St. Vitus
 
 The extreme restlessness of the limbs is like Ars., and it is a deep acting medicine like Ars., and it sometimes has cured where Ars. has failed, although it seemed well selected. Anxiety, restlessness, constant motion of the arms, legs, trunk and head. Restlessness of the limbs in the evening, in bed before going to sleep, like Ars. and Lyc.
 
-It is full of pains in the body and limbs; pains in the bones; pains in the. arms and in the joints. Periodicity is so well marked that it has been a marked curative remedy in intermittent fevers with restlessness of limbs, with aching of the bones, with stitching pains, with the anxiety, especially when these come in the evening and the fever lasts all night.
+It is full of pains in the body and limbs; pains in the bones; pains in the arms and in the joints. Periodicity is so well marked that it has been a marked curative remedy in intermittent fevers with restlessness of limbs, with aching of the bones, with stitching pains, with the anxiety, especially when these come in the evening and the fever lasts all night.
 
 Chill in the evening followed by fever without sweat is a marked feature.
 
@@ -23842,7 +23834,7 @@ As we continue to study Thuja, we see that it has a profound action upon the gla
 
 Many women suffer from grumbling pains in the ovaries all the time, they have a sense of the organ, which they should not feel; pain from taking cold or in change of weather; the increase of the pain in the left ovary is the first sign; sometimes the pain is so severe that the right one suffers apparently, from sympathy. Where the ovaries have been affected for some time there will be mental symptoms, a most violent irritability, jealous, quarrelsomeness, ugliness.
 
-This irritability is likely to been shown towards individuals about the house, toward the husband and the mother; she is yet able to control herself among strangers and the doctor may not be able to find out about it, because she has in her nature a disposition to cheat; she wants to be alone and takes upon herself fixed ideas; that she is pregnant, or that an animal is in her bowels, she is followed, or that someone is walking beside her, thinks that soul and body are separated.
+This irritability is likely to be shown towards individuals about the house, toward the husband and the mother; she is yet able to control herself among strangers and the doctor may not be able to find out about it, because she has in her nature a disposition to cheat; she wants to be alone and takes upon herself fixed ideas; that she is pregnant, or that an animal is in her bowels, she is followed, or that someone is walking beside her, thinks that soul and body are separated.
 
 Now, these are fixed ideas, and there is no use trying to reason them out of her. It seems to her that she is very delicate, that she is made of glass and that she will break. The idea is that she will break, and not that she is transparent.
 
@@ -23902,9 +23894,9 @@ In Pennsylvania there came a time when a handsome herd of cattle had to be slaug
 
 **Dynamization:** I selected from these the most likely specimen.
 
-This was potentized by Boericke &amp; Tafel as far as the 6th, and has since been prepared on the Skinner machine, the 30th, 200th, 1000th and the higher potencies. This preparation I have been using for fifteen years. Many of my friends have been using it, as they have procured it from me.
+This was potentized by Boericke & Tafel as far as the 6th, and has since been prepared on the Skinner machine, the 30th, 200th, 1000th and the higher potencies. This preparation I have been using for fifteen years. Many of my friends have been using it, as they have procured it from me.
 
-From observing the effects of this preparation I have been gathering these notes in my inter-leaved Hering's Guiding'Symptoms, and, they now guide me in the use of Tuberculinum. I do not use Tuberc. merely because it is a nosode, or with the idea that generally prevails of using nosodes; that is, a product of the disease for the disease, and the results of the disease. This I fear is too much the prevailing thought in using nosodes.
+From observing the effects of this preparation I have been gathering these notes in my inter-leaved Hering's Guiding Symptoms, and, they now guide me in the use of Tuberculinum. I do not use Tuberc. merely because it is a nosode, or with the idea that generally prevails of using nosodes; that is, a product of the disease for the disease, and the results of the disease. This I fear is too much the prevailing thought in using nosodes.
 
 In certain places it prevails and is taught that anything relating to syphilis must be treated with Syphilinum; that anything relating to gonorrhoea must be treated with Medorrhinum, anything psoric must be treated with Psorinum, and anything that relates to tuberculosis must be treated with Tuberculinum.
 
@@ -23914,7 +23906,7 @@ It is hoped that provings may be made so that we may be able to prescribe Tuberc
 
 It is deep acting, constitutionally deep, because it is a product of disease from a very deep-seated constitutional condition, like Silica and Sulphur. It goes deep into the life; it is antipsoric; it is long acting, and it affects constitutions more deeply than most remedies; and when our deepest remedies act only a few weeks, and they have to be changed, this remedy comes in as one of the remedies-when the symptoms agree and brings a better state of reaction, so that remedies hold longer. It may well be considered a species of Psorinum.
 
-One of the most prominent uses of this remedy is in intermittent fever. Some of our most stubborn cases of intermittent fever will relapse and continue relapsing, even when such remedies as Silica and Calcarea and the deeper-acting remedies have been indicated, have acted we have broken the fever, and in a few weeks, from exposure to cold, from sitting in a draft, from becoming fatigued, from mental exertion, from over-eating and from disordering the stomach this ague has returned.
+One of the most prominent uses of this remedy is in intermittent fever. Some of our most stubborn cases of intermittent fever will relapse and continue relapsing, even when such remedies as Silica and Calcarea and the deeper-acting remedies have been indicated, have acted well, have broken the fever, and in a few weeks, from exposure to cold, from sitting in a draft, from becoming fatigued, from mental exertion, from over-eating and from disordering the stomach this ague has returned.
 
 Any of these circumstances will bring back these stubborn cases of intermittent fever when Tuberc. is needed. When a patient is traveling toward phthisis and he is exposed and intermittent comes out. He is of a feeble constitution and his complaints have a tendency to relapse, and remedies well selected do not hold long, though they act well at first, they must soon be changed-changing symptoms.
 
@@ -23932,7 +23924,7 @@ Tuberculinum Bovinum be given in 10 M., 50 M. and 100 M. potencies, two doses of
 
 **Mind:** The notes that have guided me to its use I will attempt to explain.
 
-The mental symptoms that I have seen give way while the patient was under treatment, and the mental symptoms that I have seen crop out under the provings, and the mental symptoms that I have so often seen associated when the patient is poisoned by the tubercular toxines are as belong to many complaints and are cured by Tuberc.
+The mental symptoms that I have seen give way while the patient was under treatment, and the mental symptoms that I have seen crop out under the provings, and the mental symptoms that I have so often seen associated when the patient is poisoned by the tubercular toxines are such as belong to many complaints and are cured by Tuberc.
 
 Hopelessness in many complaints. Aversion to mental work. Anxiety evening, until midnight. Anxiety during fever. Loquacity during fever. Weary of life. Cosmopolitan. Tormenting, persistent thoughts during the night.
 
@@ -24246,7 +24238,7 @@ Now, for days and nights while this little one is coming back to consciousness, 
 
 It will go on in this way for a week or two and then will begin to show signs of falling back; it needs another dose of Zinc., which will again be followed by a sweat, vomiting, etc. You will see this in spinal meningitis. The early stage will be that of congestion, and Bell. may palliate, but with the onset of the symptoms enumerated above, Zinc. is the only remedy that will cure. The Bell. case will have flushed face, hot head, rolling of the head, flashing eyes, throbbing carotids. The Bry. case will be docile, stupid, purple, sleepy; ameliorated by quiet.
 
-The Helleborus case will exhibit but little fever; cold extremities, tossing of the head, dilated pupils, unconsciousness, can hardly be aroused; rolling head from. side to side, but when the reflexes are abolished, Zinc. comes in.
+The Helleborus case will exhibit but little fever; cold extremities, tossing of the head, dilated pupils, unconsciousness, can hardly be aroused; rolling head from side to side, but when the reflexes are abolished, Zinc. comes in.
 
 After the relief from Gels., Bell., or Bry. give Zinc. Rugged little fellows who hang on for weeks in this state, emaciating and unconscious.
 
