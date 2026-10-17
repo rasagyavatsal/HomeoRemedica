@@ -4514,6 +4514,116 @@ Complementary: Ferrum; Calc phos.
 
 Dose.--Tincture, to thirtieth potency.
 
+## CHIONANTHUS VIRGINICA
+
+Fringe-tree
+
+(CHIONANTHUS)
+
+This remedy is often of service in many types of headaches, neurasthenic, periodical sick, menstrual and bilious. Taken for several weeks, drop doses, will often break up the sick headache habit. The pain in the forehead, chiefly over eyes. Eyeballs very painful, with pressure over root of nose. Hepatic derangements. Jaundice. Enlarged spleen (Ceanoth). Jaundice with arrest of menses. A prominent liver remedy. Gallstones (Berberis; Cholest; Calc). Diabetes mellitus. Paroxysmal, abdominal pain.
+
+Head.--Listless, apathetic. Dull frontal headache, over root of nose, over eyes, through temples, worse stooping, motion, jar. Yellow conjunctiva.
+
+Tongue.--Broad with thick yellow fur.
+
+Mouth.--Dry sensation not relieved by water, also profuse saliva.
+
+Abdomen and Liver.--Aching in umbilical region, griping. Feels as if a string were tied in a "slip-knot" around intestines which was suddenly drawn tight and then gradually loosened. Sore; enlarged, with jaundice and constipation. Clay-colored stool, also soft, yellow and pasty. Tongue heavily coated. No appetite. Bilious colic. Hepatic region tender. Pancreatic disease and other glandular disorders.
+
+Urine.--Large amount of high specific gravity; frequent urination; bile and sugar in urine. Urine very dark.
+
+Skin.--Yellow; marked moisture of skin. Sallow, greenish, itching.
+
+Relationship.--Compare: Cinchona; Ceanoth; Chelidon; Carduus; Podophyl; Lept.
+
+Dose.--Tincture and first attenuation.
+
+## CHLORALUM HYDRATUM
+
+Chloral Hydrate
+
+(CHLORALUM)
+
+This drug, used in physiological doses, is a powerful hypnotic and cardiac depressant. It has a marked effect on the skin, producing erythema, ecchymosis, etc, which symptoms have been utilized homeopathically with much success, especially in the treatment of hives. Emotional excitability, hallucinations. Night terrors in children. Muscular prostration.
+
+Head.--Morning headache; worse in forehead, also in occiput, on motion; better in open air. Passive cerebral hyperaemia (use 30th). Feeling as if hot band were drawn from temple to temple. Hears voices.
+
+Eyes.--Eyes blood-shot and watery. Circles of light, black spots. Illusions of sight where eyes are closed or at night. Dim vision. Conjunctivitis, burning in eye and lids; eyeball feels too large; everything looks white.
+
+Skin.--Red blotches, like measles. Urticaria, worse, spirituous liquors, hot drinks. Erythema aggravated by alcoholic drinks, with palpitation; causes pain in tendons and extensors. Intense itching. Surface of body stone-cold. Wheals come on from a chill; better, warmth. Purpura (Phos; Crotal).
+
+Respiratory.--Extreme dyspnoea, with sensation of weight and constriction of chest. Asthma, with sleeplessness.
+
+Sleep.--Insomnia, hallucinations, horrid dreams. Somnolence.
+
+Modalities.--Worse, after hot drinks, stimulants, eating, night.
+
+Relationship.--Antidotes: Ammon; Atrop; Dig; Mosch.
+
+Compare: Bell; Opium; Apis; Veronal--(a dangerous drug made by the action of alcohol upon urea and contains the same radical that alcohol does. Makes a man just as drunk as pure alcohol. Staggers, cannot stand up) (Dr. Varney). (Confluent reddish spots; dermatitis, itching of glans and prepuce; circumscribed dermatitis patch on first metacarpal phalangeal joint). Luminal--(Sleeplessness with skin symptoms in migraine; lethargy like epidemic encephalitis) (Dr. Royal).
+
+Dose.--First trituration in hives, otherwise, higher potencies. Locally, in offensive foot-sweat, bathe with one per cent solution. For its physiological effects, five to twenty grains. Use cautiously.
+
+## CHLOROFORMIUM
+
+Chloroform
+
+(CHLOROFORMUM)
+
+General anaesthetic, antispasmodic. Complete muscular relaxation. Weak and quick pulse, shallow or stertorous breathing. Convulsions, nephritic or biliary colic, gastralgia.
+
+Symptoms obtained by Dr. D. Macfarlan with the 6th potency.
+
+Great weakness, especially on right side. Limbs very tired from knees down. Much perspiration all over face and chest; drowsy and dizzy; dry lips and throat; dry tickling cough at night. Flatulence; food regurgitates; sore and bruised feeling in stomach; catching pain around heart. Sharp pain in right chest when he takes long breath; shortness of breath on exertion.
+
+Head.--Delirium where excitement and violence predominate. Head drawn down upon the shoulders, eyes opened and closed rapidly, pupils contracted; rapid convulsive movements of face, of muscles, of extremities.
+
+Relationship.--Ether Post-operative Bronchitis (Prof. Bier). Spiritus Aetheris Compositus.--(Hoffman's Anodyne)--(Flatulence; angina pectoris. Dose 5m to 1 dram in water).
+
+Dose.--Higher attenuations, or sixth. Phosphorus is the remedy to give in narcosis of chloroform.
+
+## CHOLESTERINUM
+
+Cholesterine--The proximate principle--Furnished by the epithelium lining of gall bladder and the larger ducts
+
+For cancer of the liver. Obstinate hepatic engorgements. Burning pain in side; on walking holds his hand on side, hurts him so. Opacities of the vitreous. Jaundice; gallstones. Cholesterine is the physiological opponent of Lecithin. Both seem to play some unknown part in the growth of tumors. Gallstones and insomnia.
+
+Relationship.--Compare: Taurocholate of soda in Homeopathy.--Dr. I. P. Tessier, in an interesting study of the action of bile and its salts, in hepatic affections, analyzes a number of experiments by leading authorities, with the object of determining this action, and concludes that in the Taurocholate of Soda, homeopathy has a useful remedy against certain forms of hypoglobular anaemia. The claim that its pathogenesis and toxicology clearly indicate its value, and that it should also serve us as a remedy in cases of hypertrophy of the spleen and ganglia. He calls our attention to the fact, that it produces dyspnoea, the Cheyne-Stokes rhythm, acute pulmonary oedema, and intense exaggeration of the cardiac pulsations, offering a good field for clinical studies and experimentation of great interest, which may give fruitful and important results.
+
+Dose.--Third trituration.
+
+## CHROMICUM ACIDUM
+
+Chromic Acid
+
+Diphtheria, post-nasal tumors, and epithelioma of the tongue have been benefited by this drug. Bloody, foul-smelling lochia. Symptoms come and go suddenly, and return periodically; offensive discharges.
+
+Nose.--Ulcer and scabs in nose. Offensive smell. Corrosive pain. Ozaena (Aur).
+
+Throat.--Diphtheria; sore throat. Tough mucus, with inclination to swallow it; worse, causing hawking. Post-nasal tumors.
+
+Extremities.--Uneasiness in limbs. Pain in shoulder-blades and back of neck. Pain in knees and balls of feet. Drawing pain in soles while walking.
+
+Stool.--Watery, frequent, copious, with nausea and vertigo. Haemorrhoids, internal and bleeding. Weakness in small of back.
+
+Relationship.--Compare: Kali bich; Rhus; Chromium Sulphate (in locomotor ataxia, goitre, prostatic hypertrophy. Herpes preputialis. Wry neck. Also exophthalmic, inhibits the vagus, relieving tachycardia. Acts like a nerve tonic where there is lack of nervous tone. Fibroid tumors. Infantile paralysis. Dose for adults, 3 to 5 grains after meals and at bedtime).
+
+Dose.--Homeopathically, third to sixth trituration.
+
+## CHRYSAROBINUM
+
+Goa Powder-Andira araroba
+
+Acts as a powerful irritant of the skin and used successfully in skin diseases especially in ringworm, psoriasis, herpes tonsurans acne rosacea. Vesicular or squamous lesions, associated with foul smelling discharge and crust formation, tending to become confluent and to give the appearance of a single crust covering the entire area (Bernstein). Violent itching, thighs, legs and ears. Dry, scaly eruption, especially around eyes and ears, scabs with pus underneath (Mezer).
+
+Eyes.--Blepharitis, conjunctivitis keratitis. Intense photophobia. Optical hyperaesthesia.
+
+Ears.--Eczema behind ears. Filthy, scabby condition with tendency to form thick crust. Whole ear and surrounding tissue appears to be one scab.
+
+Relationship.--Chrysarobinum contains chrysophan, which is rapidly oxidized into chrysophanic acid. This is also contained in Rhubarb and Senna.
+
+Dose.--Locally, as a cerate, 4-8 grains to the ounce, of vaseline. Internally, third to sixth potency. Used externally; should be used with caution on account of its ability to produce inflammation.
+
 ## CINERARIA MARITIMA
 
 Dusty Miller
