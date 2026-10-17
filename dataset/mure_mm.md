@@ -96,31 +96,55 @@ Acute lancination in the left side of the head, evening.
 
 Violent lancination behind the head. The forepart of the left leg is painful to contact. Shootings in the cerebellum.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-HEAD: Head heavy. The head is burning hot. Throbbing in the right frontal eminence for a minute. Sensation of torpor at the vertex. His temples are very sensitive to touch during the whole day. Acute lancination in the head. Acute lancination in the left side of the head. Severe lancination behind the head. Shooting in the cerebellum. Sensation of torpor in the cerebellum.
+#### Head
 
-MOUTH: Mouth pasty through the whole morning. Excoriations of the lips and gums. Excoriations of the lips and gums as on the second day.
+Head heavy. The head is burning hot. Throbbing in the right frontal eminence for a minute. Sensation of torpor at the vertex. His temples are very sensitive to touch during the whole day. Acute lancination in the head. Acute lancination in the left side of the head. Severe lancination behind the head. Shooting in the cerebellum. Sensation of torpor in the cerebellum.
 
-APPETITE: Anorexia. Want of appetite. Complete anorexia. Thirst. Great thirst with bitterness of the mouth. Continual thirst and bitter mouth.
+#### Mouth
 
-STOMACH: Borborygmus in the stomach and intestines. Fullness of the stomach. Pain at the scorbiculus.
+Mouth pasty through the whole morning. Excoriations of the lips and gums. Excoriations of the lips and gums as on the second day.
 
-STOOL AND ANUS: Colic, followed by a stool, at first soft, then diarrhoeic, twice in succession. Easy stool. Burning pains at the anus.
+#### Appetite
 
-URINARY AND GENITAL: He makes water more frequently than usual. Itching on the skin of the prepuce. Pricking in the right testicle.
+Anorexia. Want of appetite. Complete anorexia. Thirst. Great thirst with bitterness of the mouth. Continual thirst and bitter mouth.
 
-CHEST: Lancinating pain at the apex of the heart which takes away his breath at night. Bruised pain over the left pectoral muscle, which is sensitive to the touch at night.
+#### Stomach
 
-BACK: Painful spot under the scapula, as if from having received a blow. Sharp pain between the shoulders. Pain in the right side. Uneasiness in the lumbar region. Dull pain at the lower part of the lumbar region and in the hypogastrium. Acute pain in the sacro lumbar region.
+Borborygmus in the stomach and intestines. Fullness of the stomach. Pain at the scorbiculus.
 
-SUPERIOR EXTREMITIES: The upper and lower parts of the left arm are painful to the touch. Itching above the bend of the right arm. Stinging in the hypothenar eminence of the left hand. Pain in the hypothenar eminence of the right hand. Pain in the dorsal portion of the left index. Pricking in the joint of the first phalanx of the little finger.
+#### Stool and anus
 
-INFERIOR EXTREMITIES: Pain in the right groin. Lancinations through the whole extent of the left inferior extremity. The left leg is red and inflamed. Swelling of the left leg. The leg is swollen and violet-colored in the morning; it becomes inflamed by fatigue and turns blackish red towards evening. The whole leg is covered by large irregular patches formed by extravasated blood. Malaise as if something were collected in the internal part of the right leg above the knee. The pains in the legs continue. Uneasiness, then pricking in the thighs. Stiffness of the leg, with impossibility of standing up for a few minutes. Pricking on the internal surface of the right leg. Smarting on the internal superior part of the right thigh. Pricking in the right thigh. Acute pain in the right thigh. Itching on the right thigh. Itching on the internal surface of the left thigh. The upper part of the left leg is painful to the touch. Itching on the anterior part of the right leg. Bruised pain in the left knee. Bruised pain under the left patella. Painful lancinations in the internal part of the left knee. Prick as from a pin in the lower part of the left leg. Swelling of the lower part of the calf. Cramplike pains in the left tendo-Achillis. Uneasiness in the lower part of the tendo-Achillis. Prick under the heel. Malaise after waking in the morning ; he cannot go to sleep again; he feels as if something incommoded him about the malleoli for several hours. This pain increases, becoming a bruised pain. Partial swellings around the malleoli. The malleoli appear swollen. Feeling as if the lower part of the right leg had a tendency to fall down upon the malleoli, as a stocking might do; he often carries his hand there as if to raise it up. Cramplike pain in the right internal malleolus. Pain above the right internal malleolus. Lancinations in the lower part of the right leg and internal malleolus. The left leg is painful as if excoriated; the pain passes to the right internal malleolus and becomes more acute. Lancinations in the anterior part of the left external malleolus. Itching on the left external malleolus. Itching on the left internal malleolus. Persistent pain above the left internal malleolus. Disagreeable sensation behind the left internal malleolus.
+Colic, followed by a stool, at first soft, then diarrhoeic, twice in succession. Easy stool. Burning pains at the anus.
 
-SLEEP: Disturbed rest. Unquiet sleep. Dreams. Disgusting dreams. He dreams that he can neither act nor drink nor walk. He dreams of a sheep and a dog, covered with red scarves ; the former, elevated above the ground, shook his head and was seized by the dog in the middle of his back ; the dog himself was suspended by the back by a man accompanied by many other individuals. Afterwards, a very amorous dream with pollution.
+#### Urinary and genital
 
-GENERAL: Prickings in different parts of the body.
+He makes water more frequently than usual. Itching on the skin of the prepuce. Pricking in the right testicle.
+
+#### Chest
+
+Lancinating pain at the apex of the heart which takes away his breath at night. Bruised pain over the left pectoral muscle, which is sensitive to the touch at night.
+
+#### Back
+
+Painful spot under the scapula, as if from having received a blow. Sharp pain between the shoulders. Pain in the right side. Uneasiness in the lumbar region. Dull pain at the lower part of the lumbar region and in the hypogastrium. Acute pain in the sacro lumbar region.
+
+#### Superior extremities
+
+The upper and lower parts of the left arm are painful to the touch. Itching above the bend of the right arm. Stinging in the hypothenar eminence of the left hand. Pain in the hypothenar eminence of the right hand. Pain in the dorsal portion of the left index. Pricking in the joint of the first phalanx of the little finger.
+
+#### Inferior extremities
+
+Pain in the right groin. Lancinations through the whole extent of the left inferior extremity. The left leg is red and inflamed. Swelling of the left leg. The leg is swollen and violet-colored in the morning; it becomes inflamed by fatigue and turns blackish red towards evening. The whole leg is covered by large irregular patches formed by extravasated blood. Malaise as if something were collected in the internal part of the right leg above the knee. The pains in the legs continue. Uneasiness, then pricking in the thighs. Stiffness of the leg, with impossibility of standing up for a few minutes. Pricking on the internal surface of the right leg. Smarting on the internal superior part of the right thigh. Pricking in the right thigh. Acute pain in the right thigh. Itching on the right thigh. Itching on the internal surface of the left thigh. The upper part of the left leg is painful to the touch. Itching on the anterior part of the right leg. Bruised pain in the left knee. Bruised pain under the left patella. Painful lancinations in the internal part of the left knee. Prick as from a pin in the lower part of the left leg. Swelling of the lower part of the calf. Cramplike pains in the left tendo-Achillis. Uneasiness in the lower part of the tendo-Achillis. Prick under the heel. Malaise after waking in the morning ; he cannot go to sleep again; he feels as if something incommoded him about the malleoli for several hours. This pain increases, becoming a bruised pain. Partial swellings around the malleoli. The malleoli appear swollen. Feeling as if the lower part of the right leg had a tendency to fall down upon the malleoli, as a stocking might do; he often carries his hand there as if to raise it up. Cramplike pain in the right internal malleolus. Pain above the right internal malleolus. Lancinations in the lower part of the right leg and internal malleolus. The left leg is painful as if excoriated; the pain passes to the right internal malleolus and becomes more acute. Lancinations in the anterior part of the left external malleolus. Itching on the left external malleolus. Itching on the left internal malleolus. Persistent pain above the left internal malleolus. Disagreeable sensation behind the left internal malleolus.
+
+#### Sleep
+
+Disturbed rest. Unquiet sleep. Dreams. Disgusting dreams. He dreams that he can neither act nor drink nor walk. He dreams of a sheep and a dog, covered with red scarves ; the former, elevated above the ground, shook his head and was seized by the dog in the middle of his back ; the dog himself was suspended by the back by a man accompanied by many other individuals. Afterwards, a very amorous dream with pollution.
+
+#### General
+
+Prickings in different parts of the body.
 
 ## BLATTA AMERICANA (LAM.) BLATTA. KAKERLAT AMERICANA OAR.) PORTUG.: BARATTA.
 
@@ -150,7 +174,7 @@ Sense of weariness in the bend of the knee. Pain in the feet, here and there, an
 
 Cramp in the right leg. Weary when going up-stairs. Violent pain in the chest, with want. of breath. Urine of a bright-yellow, albuminous. The proving was interrupted by an accident.
 
-HAHNEMANN'S ARRANGEMENT.
+### Arrangement according to Hahnemann
 
 Aching in the temples. Numbness and heaviness in the head. Acute pains in the temples. Pain in the temple, with lancinations now and then. Stitch in canthus of left eye. Yellowness of the sclerotica. Lachrymation. Bloating at the pit of the stomach. Pain in the transverse colon. Heat in the urethra when urinating. Bright-yellow, albuminous urine. Acute pain in the chest, afternoon, also with want of breath. Pain shifting from the back to the shoulder-blade. Pricklings in the left side of the neck. Formication in the toes. Sense of weariness in the bends of the knees. Pain in the feet, here and there. Chill and shuddering. Shuddering, with sense of heat and moisture all over. Weary when going up-stairs.
 
@@ -208,7 +232,7 @@ Large red pimple on the occiput. Thirty-eighth day. Very gay in the evening. Dis
 
 Gay. Lively. The pimple at the nape of the neck remains. Itching at the lumbar vertebrae. Pain in front of the lobule of the left ear. Ganglion on the sole of the right foot. Excoriation of the left masseter muscle, discharging a little sanguinolent humor. Heaviness of the head after a walk. The eyes smart and are painful when touched. Sleeps for an hour, in the middle of the day, contrary to habit. Sad, he avoids company. He is unable to act with decision, he forms projects and dues not accomplish them. Tingling in the lumbar region. Dreams every night, does not recollect his dreams on waking. Pressure on the right side of the forehead. Taciturn and gloomy. Painful sensation under the false ribs. Itching at the sacrum. (Sense of weakness in the whole left side of the head.) Prickings in the tips of the fingers of the right hand and the left toes. Pimples on the forehead. Weakness of mind and memory, less in the evening. Acute lancinations in the left temple. Acute pain in the right wrist. Continual headache. Pain in the extensor muscles of the right arm. Pimple on the right wrist. Violent itching. Drowsy. Poetical and philosophical dreams. Exalted imagination.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
 Sad, he avoids company. Exalted imagination. Indolence of mind. Merry and talkative. Pressure on the right side of the forehead. Darting in the left temple. Heaviness of the head. Expansive pressure in the orbits, and sensation of internal itching. The eyes are red and smart. The orbits feel larger, and as if in contact with the orbital walls. Formication of the lower jaw. Violent itching at the lips. Itching of the pubis. Erections without desire. Pain under the false ribs. Tingling in the lumbar region. Pain at the sacrum, worse when rising. Itching at the lumbar vertebrae. Prickings in the tips of the right fingers. Acute pain in the right wrist. Pain at the right knee. Prickling at the big toe. Poetical dreams. Red pimple, leaving a black spot after breaking. Excoriation at the left masseter muscle. Aversion to work. Itching all over.
 
@@ -262,11 +286,15 @@ Dullness of the head; same weight at the forehead. Heat in the right leg, where 
 
 Numbness of the hands and legs. Uneasiness in the left leg.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-HEAD, &c.: Depression of spirits. Weight at forehead. The head feels heavy and dull. Heat in the head. The head feels compressed as by a band tied behind. Sensitiveness to light. Left side of the tongue feels sore. Taste of doughy bread. Copper taste in mouth, with heat in throat. Mottled appearance of the face. Hot face. Pricking at right nasal wing. Pain in right groin after walking. Pricking pain in the right groin and navel. Slight pain around the navel. Diarrhoea. Erection.
+#### Head, &c.
 
-EXTREMITIES, &c.: Numbness of the arm on which he had been lying. The left leg feels weak. Tight feeling at inside of right leg, with red spots. Hardness of the left leg, with lancinations. Heat at the legs. Heat in the right leg, where the red spot is. Bruising sensation in left toes. Uneasiness in left leg. Restless sleep. Yawning. Quiet sleep, with frequent waking. Dreams about men dressed in black, about imprisonment, &c. Yawning. Shuddering with twitching. Sensation of gooseflesh. Cold feeling. He feels weary and sore. Languor. Numbness of the bands and legs. Incipient erysipelas. Callosity above the left inner ankle. Red and humid spots on left leg. Dark-rod inflamed spots in face, right side.
+Depression of spirits. Weight at forehead. The head feels heavy and dull. Heat in the head. The head feels compressed as by a band tied behind. Sensitiveness to light. Left side of the tongue feels sore. Taste of doughy bread. Copper taste in mouth, with heat in throat. Mottled appearance of the face. Hot face. Pricking at right nasal wing. Pain in right groin after walking. Pricking pain in the right groin and navel. Slight pain around the navel. Diarrhoea. Erection.
+
+#### Extremities, &c.
+
+Numbness of the arm on which he had been lying. The left leg feels weak. Tight feeling at inside of right leg, with red spots. Hardness of the left leg, with lancinations. Heat at the legs. Heat in the right leg, where the red spot is. Bruising sensation in left toes. Uneasiness in left leg. Restless sleep. Yawning. Quiet sleep, with frequent waking. Dreams about men dressed in black, about imprisonment, &c. Yawning. Shuddering with twitching. Sensation of gooseflesh. Cold feeling. He feels weary and sore. Languor. Numbness of the bands and legs. Incipient erysipelas. Callosity above the left inner ankle. Red and humid spots on left leg. Dark-rod inflamed spots in face, right side.
 
 ## CONVOLVULUS DUARTINUS. (NOBIS)
 
@@ -282,17 +310,27 @@ Prover: Dr. Manoel Duarte Moreira.
 
 Heat and burning of the skin all over, with prickings like the stings of insects. Profuse sweat in bed, several nights in succession. Red spot on the right cheek when rising from bed, it disappears in the course of the day. Shuddering in the day-time, several different times. Small red spot in the right side of the neck. Drowsiness in the evening, in three provers. Prostration, in two provers. Dreams about quarrels. Reveries in the day-time. Dreams about dead persons and about the incisores falling out. Dreams that one flies along an illuminated street; appearance of a ghost; waking with a start. Languor. Sinking of the moral strength, in two provers. Hypochondria. Mental languor. Discouragement. Pain in the left temporal region, in relation with the eye. Pain at the right cheek. Pain in the frontal region. Dizziness, in three provers. Pain all over the head, especially along the median line. Pain in the frontal region, with heat at the root of the nose, in three provers. Two small spots on the forehead, disappearing in a few minutes. Pain in the whole head, from the morning until 5 o'clock in the evening. Acute pain in the left temporal region, in the morning, on two consecutive days, in two provers. Headache, at times at the vertex, at others at the occiput. Pain in the temples. Violent pain at the vertex, evening. Pressure in the frontal region. Headache on the left side. Heaviness and dizziness in the frontal region, two days in succession. Burning in the frontal region, ceasing after taking a cold bath. Violent pain at the vertex, morning. Vertigo with fainting. Slight pain at the vertex. Inflammation of the left eye. Dark redness of the face. Slight heat in the upper part of the oesophagus. Sore throat for eight days. Sense of swelling at the tongue. Toothache. Swelling of the gums. Bad taste in the mouth. Spitting up of mucus. Heat and dryness at the anterior and superior part of the oesophagus, in three provers. Slight pain on each side of the thyroid cartilage. Appetite when rising in the morning, in two provers. Stomach-ache for three days. Decrease of the appetite. Pain in the abdomen, with internal heat. Violent colic with pulling, in two provers. Constipation, the first days, in eight provers. Red urine. Yellow sediment in the urine. Numbness of the left scapular region. Pain at the left shoulder. Numbness of the arm, worse when hanging down. Numbness of both arms. Deep-seated pain in the left forearm. Numbness of the right index- and middle-finger. Pain in the left wrist-joint. Deep-seated pain under the right breast. Pain at the right knee. Deep-seated pain in the calves. Pain at the forepart of the left leg, for four days. Laming pain of the legs and thighs for several days. Deep-seated pain, first in the left, then in the right thigh. Numbness of the left leg and heel. Shooting stitch in the right knee.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-MENTAL, MORAL, HEAD: Vertigo with fainting. Dizziness. Pain all over the head. Headache, at the vertex and at times at the occiput. Pressure in the frontal region. Burning in the frontal region. Pain in the left temporal region, also acute. Pain in the frontal region, also with heat, at the root of the nose.
+#### Mental, moral, head
 
-EYES, &c.: Inflammation of the left eye. Swelling of the gums.
+Vertigo with fainting. Dizziness. Pain all over the head. Headache, at the vertex and at times at the occiput. Pressure in the frontal region. Burning in the frontal region. Pain in the left temporal region, also acute. Pain in the frontal region, also with heat, at the root of the nose.
 
-MOUTH, STOMACH, &c.: Sense of swelling at the tongue. Sore throat. Heat in upper part of the oesophagus. Bad taste in the mouth. Decrease of appetite. Stomach-ache for some days. Pain in abdomen, with internal heat. Colic, with pulling. Constipation. Red urine. Yellow sediment in the urine. Deep-seated pain under the right breast. Pain on each side of the thyroid cartilage. Numbness of the left scapular region.
+#### Eyes, &c.
 
-EXTREMITIES: Pain at left shoulder. Deep-seated pain in left forearm. Numbness of the index- and middle-finger. Numbness of the arms. Deep-seated pain in the calves. Laming pain of the legs and thighs. Deep-seated pain in the thighs. Numbness of the left leg and heel. Shooting stitch in the right knee.
+Inflammation of the left eye. Swelling of the gums.
 
-SLEEP: Quarrelsome dreams. Reveries. Dreams about dead persons and about teeth falling out. He dreams that he is flying along an illuminated street. Burning of the skin all over, with stinging. Profuse sweat in bed. Shuddering, repeatedly. Red spot on the right cheek, when rising from bed, ,also on the neck. Prostration, also moral.
+#### Mouth, stomach, &c.
+
+Sense of swelling at the tongue. Sore throat. Heat in upper part of the oesophagus. Bad taste in the mouth. Decrease of appetite. Stomach-ache for some days. Pain in abdomen, with internal heat. Colic, with pulling. Constipation. Red urine. Yellow sediment in the urine. Deep-seated pain under the right breast. Pain on each side of the thyroid cartilage. Numbness of the left scapular region.
+
+#### Extremities
+
+Pain at left shoulder. Deep-seated pain in left forearm. Numbness of the index- and middle-finger. Numbness of the arms. Deep-seated pain in the calves. Laming pain of the legs and thighs. Deep-seated pain in the thighs. Numbness of the left leg and heel. Shooting stitch in the right knee.
+
+#### Sleep
+
+Quarrelsome dreams. Reveries. Dreams about dead persons and about teeth falling out. He dreams that he is flying along an illuminated street. Burning of the skin all over, with stinging. Profuse sweat in bed. Shuddering, repeatedly. Red spot on the right cheek, when rising from bed, ,also on the neck. Prostration, also moral.
 
 ## CROTALUS CASCAVELLA
 
@@ -362,55 +400,103 @@ Dreams about enormous shaggy spiders walking towards one and attempting to crawl
 
 --Ache, at night, in the upper molares, with inflammation of the gums. Spitting of blood mixed with thick phlegm. Dreams about dead persons and phantoms. Loathing of food. Very deaf, after a month. She fools as though her eyes wore falling out. Slight pain under the lids. Discharge of white mucus from the mouth. Discharge of a bright-red blood from the nose. The last phalanges fool as if broken. The tips of the fingers are blue. Thu nails are bare. Yellow complexion. Pain in the left side. She feels uncomfortable in consequence of having her courses, and is out of humor on account of having thorn. Aversion to talking; sensitive mood. Desire to move about. She answers all questions with: no. Small red pimples all over. Tightness of the head, from above. Cramps in the arms, as if the nerves had been tied up in a knot during a venesection.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-MORAL AND MENTAL SPHERE: She answers no, whenever she is asked a question. Sensitive mood. Aversion to talking. Sensation as if one were falling out of bed, even while awake. Loss of consciousness. She exclaims: he is in the lions' den, but they will nut bite him. Magnetic state; she hears a strange voice, follows it and tilts against the doors; she has three such attacks, occasionally interrupted by laughter and tears. Ineffectual desire to weep. Loss of memory. Magnetic state; she hears nothing, and sees a black skeleton. Mania. He thinks he will die, especially when alone. Depression of spirits. Despair. Anguish.
+#### Moral and mental sphere
 
-HEAD: Sensation as of a red-hot iron in the vertex. Lancinations in right temple. Violent ache at the vertex. Burning forehead. Contusive pain at the occiput. Tightness of the head, from above. Her head feels heavy, with stupor. Sensation in the head as if something alive were walking about in a circle. Shocks in the brain. Painful pressure in the temples. Sensation as if the brain were pressed upon by an iron helmet. Headache as if the forehead would split, with weight above the eyes. Pain in middle of forehead. Pain in the interior of the head. Pain under the right orbit and in right side of forehead. Frontal headache, afterwards all over the head. Sensitiveness of the having scalp.
+She answers no, whenever she is asked a question. Sensitive mood. Aversion to talking. Sensation as if one were falling out of bed, even while awake. Loss of consciousness. She exclaims: he is in the lions' den, but they will nut bite him. Magnetic state; she hears a strange voice, follows it and tilts against the doors; she has three such attacks, occasionally interrupted by laughter and tears. Ineffectual desire to weep. Loss of memory. Magnetic state; she hears nothing, and sees a black skeleton. Mania. He thinks he will die, especially when alone. Depression of spirits. Despair. Anguish.
 
-EYES : Pain under the lids. Sensation as though her eyes would fall out. Profuse lachrymation. Heavy pain at back part of orbit and left eyebrow. Vacant stare. Weight on the orbits, at night. The eyelids feel heavy. Itching of the canthus. Yellow rings round the eyes. Blue dazzling light before the eyes. Twitching of the eyebrows. Sensation as if the eyeball were pulled towards the temple by a thread. Sense of a grain of sand in the outer canthi. The left eye feels as if drawn towards the temples. Contractive pressure at right eyeball, which felt as if drawn out. Cutting round the eyeball.
+#### Head
 
-EARS: Buzzing in the ears while going down-stairs. Lancinations in the meatus auditorius. He imagines he hears someone walking behind him. Sensation as if someone ware moaning. Titillating itching in the ears. Deafness. Swelling of the right ear.
+Sensation as of a red-hot iron in the vertex. Lancinations in right temple. Violent ache at the vertex. Burning forehead. Contusive pain at the occiput. Tightness of the head, from above. Her head feels heavy, with stupor. Sensation in the head as if something alive were walking about in a circle. Shocks in the brain. Painful pressure in the temples. Sensation as if the brain were pressed upon by an iron helmet. Headache as if the forehead would split, with weight above the eyes. Pain in middle of forehead. Pain in the interior of the head. Pain under the right orbit and in right side of forehead. Frontal headache, afterwards all over the head. Sensitiveness of the having scalp.
 
-FACE : Yellow complexion. Alteration of the features. Formication in the face. Flushes of heat in the face. Pain in loft cheek.
+#### Eyes
 
-NOSE: Ulceration of the inner nose. Discharge of a bloody liquid from the nose. Sense of burning and redness of the skin, with depression, at the orifice of the right nostril. Nosebleed. Smarting in the nostrils. lnsipid, nauseous smell all day, as in a hospital. Tho tip of the nose is drawn up.
+Pain under the lids. Sensation as though her eyes would fall out. Profuse lachrymation. Heavy pain at back part of orbit and left eyebrow. Vacant stare. Weight on the orbits, at night. The eyelids feel heavy. Itching of the canthus. Yellow rings round the eyes. Blue dazzling light before the eyes. Twitching of the eyebrows. Sensation as if the eyeball were pulled towards the temple by a thread. Sense of a grain of sand in the outer canthi. The left eye feels as if drawn towards the temples. Contractive pressure at right eyeball, which felt as if drawn out. Cutting round the eyeball.
 
-TEETH: rain in lower gums as from a red-hot iron. Aching in the upper molares, at night, with inflammation of the gums. The molar teeth are sensitive and set on edge. Aching pain in loft gums.
+#### Ears
 
-MOUTH: Paralysis of the tongue. Burning and prickling at the tip of the tongue. Itching of the tongue. Tongue of a scarlet-red. Pain in the tongue. Spitting of black blood. Spitting of blood, mixed with thick phlegm. Discharge of white mucus from the mouth. Greenish spitting in the morning. Black, bloody froth around the lips in the morning. Thick, viscid saliva which it is difficult to get out.
+Buzzing in the ears while going down-stairs. Lancinations in the meatus auditorius. He imagines he hears someone walking behind him. Sensation as if someone ware moaning. Titillating itching in the ears. Deafness. Swelling of the right ear.
 
-TASTE AND GASTRIC SYMPTOMS: Salt taste in the mouth, not removed by drinking sugar-water. Taste as of onions in the mouth, before rinsing it. Aversion to food. Desire for snow. Desire for food, passing off on seeing it. Thirst. Fainting from hunger. Coldness in the back after eating. Anorexia all day. The soup descends into the stomach quite suddenly, and lies there like a heavy body, with pain in the back. Stitch in the left side, after drinking when drawing breath. Colic after drinking. Aversion to meat. Sweat and debility after eating. Desire to vomit.
+#### Face
 
-THROAT : Constriction of the throat. Sensation of a lump in his throat. Difficulty of swallowing. Sense of dust in the throat. Burning and constriction in the throat. Tingling in the throat.
+Yellow complexion. Alteration of the features. Formication in the face. Flushes of heat in the face. Pain in loft cheek.
 
-STOMACH : Stomach-ache, when eating, as if too empty. Faint feeling at the stomach. Pulling in pit of stomach. Sensation of an opening in pit of stomach, through which air passes. Pain from stomach to navel. Burning pinching at the pylorus. Feeling of coldness in the stomach, after eating.
+#### Nose
 
-ABDOMEN: Sensitiveness of the epigastrium. Pressive points in the abdomen. Lancing pains in the large psoas-muscle. Pains in Iower part of belly when taking a cold drink. Pain across the umbilical region, with alternate sensation of spreading out and pinching together. Itching at the epigastrium. Shock at the epigastrium. Falling of the rectum. Weight at the diaphragm. Sense of bands round the abdomen. Pressure in abdomen, towards the navel. The abdomen is sensitive. Discharge of an albuminous substance from the rectum, preceded by tenesmus. Borborygmi. Sense of a peg sticking in the middle of the liver. Circular pain round the abdomen, terminating at the navel.
+Ulceration of the inner nose. Discharge of a bloody liquid from the nose. Sense of burning and redness of the skin, with depression, at the orifice of the right nostril. Nosebleed. Smarting in the nostrils. lnsipid, nauseous smell all day, as in a hospital. Tho tip of the nose is drawn up.
 
-STOOL: Constipation. Yellowish diarrhoea.
+#### Teeth
 
-URINARY AND SEXUAL ORGANS: Emission of a deeply-colored urine. Metrorrhagia (vermillion-colored). Feels uncomfortable in consequence of having her courses. Metrorrhagia alternating with mania. Lancination in uterus, especially when washing one's self with warm water, with weight at the uterus. Leucorrhoea.
+Pain in lower gums as from a red-hot iron. Aching in the upper molares, at night, with inflammation of the gums. The molar teeth are sensitive and set on edge. Aching pain in loft gums.
 
-BRONCHIAL SYMPTOMS: Aphonia. Pain in the larynx. Dry cough, with tickling in the throat, at night.
+#### Mouth
 
-CHEST: Round spot between the breasts, black above and red below. Swelling of the humeral extremity of the left clavicle. Palpitation of the heart. Suffocative oppression. Oppression of breathing, as from want of air. Bone pain and swelling of the left clavicle. Anxious breathing. The heart feels as if beating from above downwards. The thorax feels as if encased in iron. Pain in the right clavicle. Violent pains in the chest. Pain above the right breast. Sensation of water in the chest, and as if the heart were floating in a liquid. Copious sweat on the chest. Ulcerative feeling under the breast.
+Paralysis of the tongue. Burning and prickling at the tip of the tongue. Itching of the tongue. Tongue of a scarlet-red. Pain in the tongue. Spitting of black blood. Spitting of blood, mixed with thick phlegm. Discharge of white mucus from the mouth. Greenish spitting in the morning. Black, bloody froth around the lips in the morning. Thick, viscid saliva which it is difficult to get out.
 
-BACK: Coldness in the back. Slow lancinations between the shoulders, when inclining backwards. Acute pain at the sacro-lumbar articulation. Internal pain between the shoulders. Contusive pain between the shoulders. Lancination in the dorsal spine, as from needles. Painful heaviness in the loins. Contusive feeling at inner side of right shoulder-blade.
+#### Taste and gastric symptoms
 
-NECK: Constrictive pain in thyroid body. Swelling of the jugular veins. He feels the blood rise in the carotid arteries, followed by faint feeling and sensation as if a valve wore opening. Drawing from the neck to the epigastrium. Pain in the jugular veins when moving, the neck. Constriction in thyroid body. Painful pulling in the sides of the' neck when turning the head.
+Salt taste in the mouth, not removed by drinking sugar-water. Taste as of onions in the mouth, before rinsing it. Aversion to food. Desire for snow. Desire for food, passing off on seeing it. Thirst. Fainting from hunger. Coldness in the back after eating. Anorexia all day. The soup descends into the stomach quite suddenly, and lies there like a heavy body, with pain in the back. Stitch in the left side, after drinking when drawing breath. Colic after drinking. Aversion to meat. Sweat and debility after eating. Desire to vomit.
 
-UPPER EXTREMITIES : Lancinations under the right shoulder arresting the breathing. The bitten hand and arm are inflamed and very painful. Sensation of swelling in the forearm. Violent pain in the whole arm. Weakness of the arms. Cramps in the arms as if the nerves had been tied up in a knot, during a venesection. Rheumatic pain in right shoulder. Trembling of the hands. Slight pain in the hollow of the hand. Pulling pain in the elbows. Pain in the elbows. Enormous swelling of the hand. Feeling of coldness in the hand. Jerking in the fingers. Smarting of the tips of the fingers. The tips of the fingers are blue. The last phalanges feel as if broken. She plays with her fingers. Nails are red. The nails are bare. Rheumatic pain in left wrist.
+#### Throat
 
-LOWER EXTREMITIES: Sensation as if the whole right lower limb wore shorter; this causes him to limp. Acute pulling in the thigh, with momentary paralysis. Itching on the thighs. Drawing-up of the lower limb, with crampy pain. Pressure at right hip as from a knife, Heat in the thighs. Sense of burning heat in the legs. Prickling in the bends of the knees. Itching of the calves. Cold feet. Sense of coldness in the feet. The feet are icy-cold. Itching under the feet. Formication in the feet. The toes remain bent. Contraction of the toes. Swelling of the three last toes of the left foot. Violent cramp of the heel.
+Constriction of the throat. Sensation of a lump in his throat. Difficulty of swallowing. Sense of dust in the throat. Burning and constriction in the throat. Tingling in the throat.
 
-SLEEP: Sudden rising at three in the morning, and uttering two shrill cries, with throwing herself forward. Dreams about dead persons and phantoms. Dreams about spiders attempting to crawl over her. Disposition to slumber. Somnolence, the whole morning. Moaning during sleep. Involuntary urination during sleep. Dream about a horse which is drowned in a pond. Yawning. Dreams about illuminations, quarrels. Sleeplessness. Starting during sleep. Fright at night, without knowing about what.
+#### Stomach
 
-FEVER: Chilliness all over. Sense of chilliness. Pulse heavy. Pulse 98 to 104.
+Stomach-ache, when eating, as if too empty. Faint feeling at the stomach. Pulling in pit of stomach. Sensation of an opening in pit of stomach, through which air passes. Pain from stomach to navel. Burning pinching at the pylorus. Feeling of coldness in the stomach, after eating.
 
-CUTANEOUS SYMPTOMS: Bright-yellow spots on upper part of right hand. Red pimples on left foot. Red pimples all over. Red pimples with white tips. Pustules on the left toes. Pimples on the hairy scalp. Pimples resembling flea-bites, afterwards becoming raised and exfoliating, leaving a black point in the center. Red pimples on the wrist.
+#### Abdomen
 
-GENERAL SYMPTOMS: Pain in left side. Trembling of the whole body. She cannot see any one on her right side without feeling a palpitation of the heart, and a real fatigue from pleasure. Desire to move about. Pain in the joints, shoulder-blades, elbows, &c. Trembling of the limbs. Weakness. Torpor. Pains in the whole body, inducing a moaning. Swoon. Lancinations in the side. Prickling all over. Weariness of the arms, and lower limbs. Lancinations in various parts of the body.
+Sensitiveness of the epigastrium. Pressive points in the abdomen. Lancing pains in the large psoas-muscle. Pains in Iower part of belly when taking a cold drink. Pain across the umbilical region, with alternate sensation of spreading out and pinching together. Itching at the epigastrium. Shock at the epigastrium. Falling of the rectum. Weight at the diaphragm. Sense of bands round the abdomen. Pressure in abdomen, towards the navel. The abdomen is sensitive. Discharge of an albuminous substance from the rectum, preceded by tenesmus. Borborygmi. Sense of a peg sticking in the middle of the liver. Circular pain round the abdomen, terminating at the navel.
+
+#### Stool
+
+Constipation. Yellowish diarrhoea.
+
+#### Urinary and sexual organs
+
+Emission of a deeply-colored urine. Metrorrhagia (vermillion-colored). Feels uncomfortable in consequence of having her courses. Metrorrhagia alternating with mania. Lancination in uterus, especially when washing one's self with warm water, with weight at the uterus. Leucorrhoea.
+
+#### Bronchial symptoms
+
+Aphonia. Pain in the larynx. Dry cough, with tickling in the throat, at night.
+
+#### Chest
+
+Round spot between the breasts, black above and red below. Swelling of the humeral extremity of the left clavicle. Palpitation of the heart. Suffocative oppression. Oppression of breathing, as from want of air. Bone pain and swelling of the left clavicle. Anxious breathing. The heart feels as if beating from above downwards. The thorax feels as if encased in iron. Pain in the right clavicle. Violent pains in the chest. Pain above the right breast. Sensation of water in the chest, and as if the heart were floating in a liquid. Copious sweat on the chest. Ulcerative feeling under the breast.
+
+#### Back
+
+Coldness in the back. Slow lancinations between the shoulders, when inclining backwards. Acute pain at the sacro-lumbar articulation. Internal pain between the shoulders. Contusive pain between the shoulders. Lancination in the dorsal spine, as from needles. Painful heaviness in the loins. Contusive feeling at inner side of right shoulder-blade.
+
+#### Neck
+
+Constrictive pain in thyroid body. Swelling of the jugular veins. He feels the blood rise in the carotid arteries, followed by faint feeling and sensation as if a valve wore opening. Drawing from the neck to the epigastrium. Pain in the jugular veins when moving, the neck. Constriction in thyroid body. Painful pulling in the sides of the' neck when turning the head.
+
+#### Upper extremities
+
+Lancinations under the right shoulder arresting the breathing. The bitten hand and arm are inflamed and very painful. Sensation of swelling in the forearm. Violent pain in the whole arm. Weakness of the arms. Cramps in the arms as if the nerves had been tied up in a knot, during a venesection. Rheumatic pain in right shoulder. Trembling of the hands. Slight pain in the hollow of the hand. Pulling pain in the elbows. Pain in the elbows. Enormous swelling of the hand. Feeling of coldness in the hand. Jerking in the fingers. Smarting of the tips of the fingers. The tips of the fingers are blue. The last phalanges feel as if broken. She plays with her fingers. Nails are red. The nails are bare. Rheumatic pain in left wrist.
+
+#### Lower extremities
+
+Sensation as if the whole right lower limb wore shorter; this causes him to limp. Acute pulling in the thigh, with momentary paralysis. Itching on the thighs. Drawing-up of the lower limb, with crampy pain. Pressure at right hip as from a knife, Heat in the thighs. Sense of burning heat in the legs. Prickling in the bends of the knees. Itching of the calves. Cold feet. Sense of coldness in the feet. The feet are icy-cold. Itching under the feet. Formication in the feet. The toes remain bent. Contraction of the toes. Swelling of the three last toes of the left foot. Violent cramp of the heel.
+
+#### Sleep
+
+Sudden rising at three in the morning, and uttering two shrill cries, with throwing herself forward. Dreams about dead persons and phantoms. Dreams about spiders attempting to crawl over her. Disposition to slumber. Somnolence, the whole morning. Moaning during sleep. Involuntary urination during sleep. Dream about a horse which is drowned in a pond. Yawning. Dreams about illuminations, quarrels. Sleeplessness. Starting during sleep. Fright at night, without knowing about what.
+
+#### Fever
+
+Chilliness all over. Sense of chilliness. Pulse heavy. Pulse 98 to 104.
+
+#### Cutaneous symptoms
+
+Bright-yellow spots on upper part of right hand. Red pimples on left foot. Red pimples all over. Red pimples with white tips. Pustules on the left toes. Pimples on the hairy scalp. Pimples resembling flea-bites, afterwards becoming raised and exfoliating, leaving a black point in the center. Red pimples on the wrist.
+
+#### General symptoms
+
+Pain in left side. Trembling of the whole body. She cannot see any one on her right side without feeling a palpitation of the heart, and a real fatigue from pleasure. Desire to move about. Pain in the joints, shoulder-blades, elbows, &c. Trembling of the limbs. Weakness. Torpor. Pains in the whole body, inducing a moaning. Swoon. Lancinations in the side. Prickling all over. Weariness of the arms, and lower limbs. Lancinations in various parts of the body.
 
 ## DELPHINUS AMAZONICUS
 
@@ -478,19 +564,31 @@ After a complete disappearance of all the symptoms, he smells of the drug and af
 
 Swelling of the right eye. He is unable to look at an object steadily. Lancinations in various parts of the body, especially when going down-stairs. Tumor at the left arm. No sleep at night in consequence of the violent itching. Swelling of the left eye. Frequent diarrhoea. He vomits up a cake as soon as he had eaten it.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-MENTAL AND MORAL: Out of humor. Sad. Ennui when alone. Merry.
+#### Mental and moral
 
-HEAD, &c.: Hammering in the temple. Hammering in the head. Hot face.
+Out of humor. Sad. Ennui when alone. Merry.
 
-EYES, EARS, NOSE: Swelling of the left eye. Swelling of the right eye. Unable to look at an object steadily. Confused sight at candle-light. Throbbing toothache. Bad smell in the mouth, after drinking water. Violent heat in the tongue when taking his dinner.
+#### Head, &c.
 
-GASTRIC: Foul eructations. Colic, after taking a cold drink. Desire to vomit. Nausea. Bitter eructations. Loss of appetite. He throws up cake immediately after eating it. Shootings in the throat when swallowing. Bruising pain in abdomen.
+Hammering in the temple. Hammering in the head. Hot face.
 
-STOOL: Black stool. Frequent diarrhoea. White urine. Prickling in larynx when drawing breath. Cough, with lancinations in the sides. Lancinations in the right side of the chest, less during rest. Contusive pain at right side of chest. Embarrassed breathing. Pricking pain in middle of chest. Constrictive pain around the neck. Throbbing pain in nape of neck.
+#### Eyes, ears, nose
 
-EXTREMITIES: Swelling at the left arm. Beating at the left arm. The hand gets burnt when holding it near the fire. Swelling of the right leg. Throbbing pain in the calves. Sharp sticking pain at lower part of left leg. Swelling, roughness and itching of right leg. Pain at the right leg as if stung. Bruising pain at the bend of the knee. Bruising pain at the right knee. Pain at the foot when walking or touching the sole. Drowsy. Shuddering. Itching all over. The skin on each side of the stomach appears thicker, with sticking pain in the last false ribs. Itching every few minutes, especially at the legs. Vesicles here and there, containing a fluid. Vesicles on the swollen leg, containing a fluid. Hammering pain at the tibia, nape of the neck and foot. Vacillating gait. Lancinations in various parts, especially when going down-stairs.
+Swelling of the left eye. Swelling of the right eye. Unable to look at an object steadily. Confused sight at candle-light. Throbbing toothache. Bad smell in the mouth, after drinking water. Violent heat in the tongue when taking his dinner.
+
+#### Gastric
+
+Foul eructations. Colic, after taking a cold drink. Desire to vomit. Nausea. Bitter eructations. Loss of appetite. He throws up cake immediately after eating it. Shootings in the throat when swallowing. Bruising pain in abdomen.
+
+#### Stool
+
+Black stool. Frequent diarrhoea. White urine. Prickling in larynx when drawing breath. Cough, with lancinations in the sides. Lancinations in the right side of the chest, less during rest. Contusive pain at right side of chest. Embarrassed breathing. Pricking pain in middle of chest. Constrictive pain around the neck. Throbbing pain in nape of neck.
+
+#### Extremities
+
+Swelling at the left arm. Beating at the left arm. The hand gets burnt when holding it near the fire. Swelling of the right leg. Throbbing pain in the calves. Sharp sticking pain at lower part of left leg. Swelling, roughness and itching of right leg. Pain at the right leg as if stung. Bruising pain at the bend of the knee. Bruising pain at the right knee. Pain at the foot when walking or touching the sole. Drowsy. Shuddering. Itching all over. The skin on each side of the stomach appears thicker, with sticking pain in the last false ribs. Itching every few minutes, especially at the legs. Vesicles here and there, containing a fluid. Vesicles on the swollen leg, containing a fluid. Hammering pain at the tibia, nape of the neck and foot. Vacillating gait. Lancinations in various parts, especially when going down-stairs.
 
 ## GUANO AUSTRALIS
 
@@ -530,13 +628,19 @@ Sensation as if the gums were cut with pen-knives, after which they bleed for ha
 
 Tongue white and thickly coated. Bitter bilious taste in the mouth, at 6 o'clock in the morning. Deep sleep. She dreams that she is playing with wild beasts.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-HEAD, &c.: Dizziness, objects turn from below upward. Headache. Headache as if the head were encased in iron. Headache as if the head would split. Aching pain in forehead and temples. Pain in forehead when inclining the head forward. Pale face, with faint feeling. Pinching pain behind the ears. Cutting in the gums, followed by bleeding. Tongue coated white. Beating at the left commissure of the lips. Formication in right nasal fossa. Itching in right nostril, with sneezing.
+#### Head, &c.
 
-GASTRIC, &c.: Bilious taste in mouth. Cramp at pit of stomach before eating. Nausea, cannot bear seeing people eat. Pain at pit of stomach, with desire to vomit, while eating. Sweat all, over, after eating. Nausea, with flow of saliva. Desire to vomit. Sharp piercing-sticking pain in abdomen. Itching of the genital organs. Palpitation of the heart. Pain in the lungs, arresting the breathing.
+Dizziness, objects turn from below upward. Headache. Headache as if the head were encased in iron. Headache as if the head would split. Aching pain in forehead and temples. Pain in forehead when inclining the head forward. Pale face, with faint feeling. Pinching pain behind the ears. Cutting in the gums, followed by bleeding. Tongue coated white. Beating at the left commissure of the lips. Formication in right nasal fossa. Itching in right nostril, with sneezing.
 
-EXTREMITIES, &c.: Hammering sensation in nape of neck. Itching of the back, with smarting after scratching. The hands feel like ice in cold water. Pain at the left wrist. Swelling of the right index-finger. Cramp at the left thumb. Burning at the soles. Pain at the feet when pressing them to the ground. Pain at right knee, as if the flesh would be torn off. Internal shuddering, in the morning. She dreams that she is playing wild beasts. Itching, red spot on the back. Hard and red spot on the back, with pricklings. Smarting ganglion below the right calf. Painful ganglion on left arm, with redness. Weakness, no desire to stir. Lassitude. Profuse sweat on the arms and hands, with insensibility of the skin and little pimples.
+#### Gastric, &c.
+
+Bilious taste in mouth. Cramp at pit of stomach before eating. Nausea, cannot bear seeing people eat. Pain at pit of stomach, with desire to vomit, while eating. Sweat all, over, after eating. Nausea, with flow of saliva. Desire to vomit. Sharp piercing-sticking pain in abdomen. Itching of the genital organs. Palpitation of the heart. Pain in the lungs, arresting the breathing.
+
+#### Extremities, &c.
+
+Hammering sensation in nape of neck. Itching of the back, with smarting after scratching. The hands feel like ice in cold water. Pain at the left wrist. Swelling of the right index-finger. Cramp at the left thumb. Burning at the soles. Pain at the feet when pressing them to the ground. Pain at right knee, as if the flesh would be torn off. Internal shuddering, in the morning. She dreams that she is playing wild beasts. Itching, red spot on the back. Hard and red spot on the back, with pricklings. Smarting ganglion below the right calf. Painful ganglion on left arm, with redness. Weakness, no desire to stir. Lassitude. Profuse sweat on the arms and hands, with insensibility of the skin and little pimples.
 
 ## HEDYSARUM ILDEFONSIANUM (NOBIS)
 
@@ -622,23 +726,39 @@ Painful lancinations in the head, temples, and over the eyes. Intense lancinatin
 
 No sleep at night. The headache becomes intolerable. Taste of blood in the mouth. Attack of diarrhoea, with pain and tenesmus. First a natural stool, followed by frequent, painful discharges, first of black, fetid substances, then of a watery liquid ; the attack lasts upwards of two hours. Lancination in the muscles of the right knee, also in the ribs and right side. Pains in the hypochondria. Lancinating pain in the bowels. Lancinating pain in the left shoulder. The headache continues. Complete loss of appetite. No sleep.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-MENTAL AND MORAL: Taciturn. Deep repose of mind. Evanescent ideas. Merry. Sadness. Feeling of tenderness. Sad, then merry dreams.
+#### Mental and moral
 
-HEAD: Heaviness and dullness of the head. Lancinating pain in the head. Pain at the head, as if bandaged all round, after thinking. Headache with vertigo, after eating bread in the morning. Headache, especially in the temples, and above the eyes. Violent headache with painful lancinations. Pain as from a blow all-round the head, when staying in the sun. Weight above the eyes. Pain at nape of neck and forehead, when stooping. Pain and weight at lower part of the head. Lancinating pain in left temple.
+Taciturn. Deep repose of mind. Evanescent ideas. Merry. Sadness. Feeling of tenderness. Sad, then merry dreams.
 
-FACE, GASTRIC: Face yellow, and body red. Buzzing in the ears. Redness and heat of the ears. Buzzing and whizzing in the ears. Dry mouth. Loathing. Loathing of every kind of food. Loss of appetite. Watery vomiting. Desire to smoke. Thirst every hour, with aversion to wine or liquor. Alternate hunger, and loss of appetite. Pricking in the mouth when eating bread. Eructations, like volumes of air rising upwards. Hot air rises during an expiration. Taste of blood in the mouth. Metallic taste in mouth. Dryness of the throat.
+#### Head
 
-STOMACH, BOWELS: Weak stomach. Acute pain and weight in pit of stomach. Lancinations in the groins. Pulling and dragging pain in the bowels. Sensation as of a blow in the abdomen, followed by stool. Violent lancinations in right side of abdomen. Pains in the hypochondria. Lancinations in abdomen and bowels. Sticking pain in abdomen. Beating pain in abdomen, after breakfast. Flatulence.
+Heaviness and dullness of the head. Lancinating pain in the head. Pain at the head, as if bandaged all round, after thinking. Headache with vertigo, after eating bread in the morning. Headache, especially in the temples, and above the eyes. Violent headache with painful lancinations. Pain as from a blow all-round the head, when staying in the sun. Weight above the eyes. Pain at nape of neck and forehead, when stooping. Pain and weight at lower part of the head. Lancinating pain in left temple.
 
-STOOL, URINARY, GENITAL: Easy stool. Colic and diarrhoea, with pulling and pinching in the bowels. Diarrhoea, with pain and tenesmus. Natural stool, followed by painful discharges, first of black and fetid, then of watery, liquid substances. Frequent stool. Dartings in the bladder, when commencing to urinate. Profuse urine, rather white. Urine scanty and whitish.
+#### Face, gastric
 
-CHEST: Full and frequent inspirations. Weak chest. Contusive pain at the clavicles when turning the head. Sense of heat and trembling in the chest. Suffocation and beating in the chest, when attempting to talk or laugh. Violent cough and painful prickings in the throat, after the least exertion. The chest feels bruised, with oppressed breathing. Lancinating pain in the chest. Considerable dilatation of the chest, when drawing breath. Embarrassed breathing. Prickings through the heart.
+Face yellow, and body red. Buzzing in the ears. Redness and heat of the ears. Buzzing and whizzing in the ears. Dry mouth. Loathing. Loathing of every kind of food. Loss of appetite. Watery vomiting. Desire to smoke. Thirst every hour, with aversion to wine or liquor. Alternate hunger, and loss of appetite. Pricking in the mouth when eating bread. Eructations, like volumes of air rising upwards. Hot air rises during an expiration. Taste of blood in the mouth. Metallic taste in mouth. Dryness of the throat.
 
-BACK, EXTREMITIES : Beating pain at left side of neck, or all around it. Pain at right side of neck as if struck with a hammer. Rheumatic pain at the shoulder-blade. Dartings in the left shoulder-blade and muscles, from the left side of the chest. Beating pain in the neck, abating when reclining the head. Lancinating pain in the left shoulder. Intense darting and constrictive pain in the muscles of the upper part of the right arm. Tetter on left arm. Slight beats on the arms as with a finger. Acute pain at the elbow joints. Constrictive pain in wrist and metacarpus, all day, shifting to the arm. His hand trembles after rising, as if paralyzed. Sweat in the palm of the hand. The veins of the hand are swollen. Formication in the right hip, and lancinations when walking. Constrictions around the thighs and legs. Bruising pain in the bends of the knees. Pricking at left knee joint. Dartings in the right knee joint. Swelling of the left ankle. Pricking in the feet when sitting. Formication in the feet.
+#### Stomach, bowels
 
-SLEEP, &c.: Heavy sleep. No sleep at night. Dream about ghosts and phantoms. Constant drowsiness. Deep sleep in the day-time. Red skin. Pimples. Desire to lie down. Aversion to work. Indescribable malaise, with beating pain in the chest and loss of speech. Nervousness, the blows of a hammer produce a counter-shock in the whole body. Beating pain in the head and nape of the neck, with inability to bend the head forwards. Cold extremities. Heaviness all over. Painful dartings in the head, temples, and above the eyes. Darting in the muscles of the right knee, ribs and right side. Weakness in the day-time.
+Weak stomach. Acute pain and weight in pit of stomach. Lancinations in the groins. Pulling and dragging pain in the bowels. Sensation as of a blow in the abdomen, followed by stool. Violent lancinations in right side of abdomen. Pains in the hypochondria. Lancinations in abdomen and bowels. Sticking pain in abdomen. Beating pain in abdomen, after breakfast. Flatulence.
+
+#### Stool, urinary, genital
+
+Easy stool. Colic and diarrhoea, with pulling and pinching in the bowels. Diarrhoea, with pain and tenesmus. Natural stool, followed by painful discharges, first of black and fetid, then of watery, liquid substances. Frequent stool. Dartings in the bladder, when commencing to urinate. Profuse urine, rather white. Urine scanty and whitish.
+
+#### Chest
+
+Full and frequent inspirations. Weak chest. Contusive pain at the clavicles when turning the head. Sense of heat and trembling in the chest. Suffocation and beating in the chest, when attempting to talk or laugh. Violent cough and painful prickings in the throat, after the least exertion. The chest feels bruised, with oppressed breathing. Lancinating pain in the chest. Considerable dilatation of the chest, when drawing breath. Embarrassed breathing. Prickings through the heart.
+
+#### Back, extremities
+
+Beating pain at left side of neck, or all around it. Pain at right side of neck as if struck with a hammer. Rheumatic pain at the shoulder-blade. Dartings in the left shoulder-blade and muscles, from the left side of the chest. Beating pain in the neck, abating when reclining the head. Lancinating pain in the left shoulder. Intense darting and constrictive pain in the muscles of the upper part of the right arm. Tetter on left arm. Slight beats on the arms as with a finger. Acute pain at the elbow joints. Constrictive pain in wrist and metacarpus, all day, shifting to the arm. His hand trembles after rising, as if paralyzed. Sweat in the palm of the hand. The veins of the hand are swollen. Formication in the right hip, and lancinations when walking. Constrictions around the thighs and legs. Bruising pain in the bends of the knees. Pricking at left knee joint. Dartings in the right knee joint. Swelling of the left ankle. Pricking in the feet when sitting. Formication in the feet.
+
+#### Sleep, &c.
+
+Heavy sleep. No sleep at night. Dream about ghosts and phantoms. Constant drowsiness. Deep sleep in the day-time. Red skin. Pimples. Desire to lie down. Aversion to work. Indescribable malaise, with beating pain in the chest and loss of speech. Nervousness, the blows of a hammer produce a counter-shock in the whole body. Beating pain in the head and nape of the neck, with inability to bend the head forwards. Cold extremities. Heaviness all over. Painful dartings in the head, temples, and above the eyes. Darting in the muscles of the right knee, ribs and right side. Weakness in the day-time.
 
 ## HURA BRAZILIENSIS. (WILD)
 
@@ -1166,37 +1286,65 @@ Violent pain in the chest, shifting to the left breast, sometimes to the right, 
 
 Pain and sense of weariness in the renal region. Dreams about travelling and parties. Drowsy at one in the afternoon. Hot face. Coryza. Face dull and dark, with paleness, mottled with red spots. Pain in the renal region, as from falling on the sacrum. Copper taste in the mouth. Pain in left side hindering breathing. Inflammation of the right eye.
 
-ARRANGEMENT OF THE SYMPTOMS ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-MENTAL AND MORAL: Sensation as if floating in the air. Dizziness. She imagines she sees a dead person, and cries. Sensation as if falling to the ground. Sensation as if hanging three feet from the ground. Listless. Absence of mind, he makes mistakes. She imagines she is alone in the world. Laughter with shuddering. Weeping, followed by a nervous laugh. Sad, thinks of the future. Desire to weep, with oppression and tendency to start. Merry, with desire to laugh, followed by shuddering in the head and legs. Depression of spirits. Impatience, because her ideas flow too slowly. Impatience. Peevish. Sadness, despair, he imagines he is abandoned. Thinks of his salvation during a paroxysm. Irritable.
+#### Mental and moral
 
-HEAD: Lancinating pain at the top of the head. Beating pain from the occiput to the vertex. Pain in the head, like a weight. Headache down to the eyebrows and eyes. Contractive sensation in the skin of the forehead. Headache as from a nail in the vertex. Aching pain at the forehead and vertex. Headache on the left side. Semilateral headache. Heat about the head. Slight beating at the forehead. Weight at the frontal muscle. Dullness of the head, in the morning. The right half of the head is painfully sensitive. Headache as if a circle were rolling over the forehead. Frontal headache. Dullness of the head, with weight at the orbits. Numbness of the head. The face and head, from the vertex pain her horribly. Tightness at the back of the head. Painful darting in the head, striking to the ear, teeth, and then shifting to the orbit. Pressure at left temple. Heaviness of the head. Tightness of back part of the head. Rush of blood to the head. Beating in left side of head. Headache. Hemicrania. Heaviness of the head. Torpor of the head, with numbness of the upper gums and muscles of the eye.
+Sensation as if floating in the air. Dizziness. She imagines she sees a dead person, and cries. Sensation as if falling to the ground. Sensation as if hanging three feet from the ground. Listless. Absence of mind, he makes mistakes. She imagines she is alone in the world. Laughter with shuddering. Weeping, followed by a nervous laugh. Sad, thinks of the future. Desire to weep, with oppression and tendency to start. Merry, with desire to laugh, followed by shuddering in the head and legs. Depression of spirits. Impatience, because her ideas flow too slowly. Impatience. Peevish. Sadness, despair, he imagines he is abandoned. Thinks of his salvation during a paroxysm. Irritable.
 
-FACE: Weary look. Burning smarting in the beard, left side. Hot face. Swelling below the zygoma, with sensitiveness to contact. Pale face, with sunken eyes. Beating in the left side of the face. Livid complexion. The face looks weary, Sensation as if the skin of the face were stretched too much. Mottled face, red and pale alternately. Cold sweat in the face. Lancinations all over the face, with tightness proceeding from the temples. Swelling of the right cheek. The left cheek is very red. Cold sweat in the face. Mounting of heat to the face. Burning of the cheeks.
+#### Head
 
-EYES: Bloated eyes. Inflammation of the left eye. Beating in left orbit. Pain in the orbits and forehead. Heaviness at left orbit. Pain shifting from the eye to the gums. Pain in right orbit. Beating in the orbits. Beating in the right orbit, afterwards in the sides. Nervous pain shifting from the orbits to the forehead. Pressure in the orbits as from a severe headache. Sensation as of crumbs in the eyes. N. Redness of the sclerotica, with margins around the eyes, red lids. Weariness of the eyes, with pressure at the superior portion of the orbits. Weak sight. Dimness of sight and prickling in the lids. Beating pressure at the sclerotica. Red eyes, with pale face. Prickling in the eyes. Bloating in the eyes. Sense as of dust in the eyes. Violent pain near the left inner canthus. Inflammation of left puncta lachrymalis. Smarting and itching of the puncta lachrymalis, in the evening, in bed. Burning at right inner canthus. Involuntary closing of the eyelids. Bloating of the lower eyelids. Twitching of left lower eyelid. Itching at the eyelids. Prickling at the margin of the eyelids, in the day-time. Sensation of coldness in the lids when closing them. Beating in the lids. Sparks and zig-zag before the eyes. Dizziness, with waves before the eyes.
+Lancinating pain at the top of the head. Beating pain from the occiput to the vertex. Pain in the head, like a weight. Headache down to the eyebrows and eyes. Contractive sensation in the skin of the forehead. Headache as from a nail in the vertex. Aching pain at the forehead and vertex. Headache on the left side. Semilateral headache. Heat about the head. Slight beating at the forehead. Weight at the frontal muscle. Dullness of the head, in the morning. The right half of the head is painfully sensitive. Headache as if a circle were rolling over the forehead. Frontal headache. Dullness of the head, with weight at the orbits. Numbness of the head. The face and head, from the vertex pain her horribly. Tightness at the back of the head. Painful darting in the head, striking to the ear, teeth, and then shifting to the orbit. Pressure at left temple. Heaviness of the head. Tightness of back part of the head. Rush of blood to the head. Beating in left side of head. Headache. Hemicrania. Heaviness of the head. Torpor of the head, with numbness of the upper gums and muscles of the eye.
 
-EARS: Stoppage of the ears, as if air-bubbles were passing through the left ear. Pain shifting from the left ear to the orbit. Lancinating pains in the ears. Pain in the ear and jaw, followed by pricking in the ear. Pain in the right ear: Tight pain above the ears, with numbness of the jaw. Pain in the right ear. Whizzing in right ear. Sharp pain behind the ears.
+#### Face
 
-NOSE: Dry nose, with itching inside. Redness on the left side of the nose. Redness of the wing of the nose. Beating at the root of the nose. Nosebleed. Tightness at the root of the nose.
+Weary look. Burning smarting in the beard, left side. Hot face. Swelling below the zygoma, with sensitiveness to contact. Pale face, with sunken eyes. Beating in the left side of the face. Livid complexion. The face looks weary, Sensation as if the skin of the face were stretched too much. Mottled face, red and pale alternately. Cold sweat in the face. Lancinations all over the face, with tightness proceeding from the temples. Swelling of the right cheek. The left cheek is very red. Cold sweat in the face. Mounting of heat to the face. Burning of the cheeks.
 
-TEETH: The teeth and gums are painful when pressed against each other. Short lancinations in the last two molares. Toothache on left side, affecting the eyes. Lancination in left lower gums, with tightness of the nose and jaw. Darting in the gums and left eye. Sensation as of a bar through the jaws, from ear to ear. The teeth are painful when chewing. Lancinations in the jaws. Numbness of the gums. Pain in left gums striking to the eye. Lancinations in the gums, affecting the whole head. Acute pain in the left gums, the whole left side of the head being numb. Pain in the right gums and cheek. Pain in left gums. Toothache on left side. Lancination in the left gums. Swelling of the left lower gums, with toothache.
+#### Eyes
 
-MOUTH: Beating at the tip of the tongue. Pain at the tip of the tongue. Pricking at the tongue, with flow of water. White-coated tongue. White spots on the tongue. Contraction of the papillae on the tongue, immediately. Pain under the lower lip, with swelling and a red pimple in the centre of it. Fleshy growths on the inner surface of the lips.
+Bloated eyes. Inflammation of the left eye. Beating in left orbit. Pain in the orbits and forehead. Heaviness at left orbit. Pain shifting from the eye to the gums. Pain in right orbit. Beating in the orbits. Beating in the right orbit, afterwards in the sides. Nervous pain shifting from the orbits to the forehead. Pressure in the orbits as from a severe headache. Sensation as of crumbs in the eyes. N. Redness of the sclerotica, with margins around the eyes, red lids. Weariness of the eyes, with pressure at the superior portion of the orbits. Weak sight. Dimness of sight and prickling in the lids. Beating pressure at the sclerotica. Red eyes, with pale face. Prickling in the eyes. Bloating in the eyes. Sense as of dust in the eyes. Violent pain near the left inner canthus. Inflammation of left puncta lachrymalis. Smarting and itching of the puncta lachrymalis, in the evening, in bed. Burning at right inner canthus. Involuntary closing of the eyelids. Bloating of the lower eyelids. Twitching of left lower eyelid. Itching at the eyelids. Prickling at the margin of the eyelids, in the day-time. Sensation of coldness in the lids when closing them. Beating in the lids. Sparks and zig-zag before the eyes. Dizziness, with waves before the eyes.
 
-GASTRIC: Coppery taste in mouth. Doughy taste every morning, with chocolate-colored sputa and fetid smell. Smoky taste of the water. Violent sensation of hunger early in the morning, with tensive and pressive pain at the stomach. Difficult digestion after breakfast. Sick at the stomach, after eating. Hungry, shortly before a meal. She has to eat to quiet her pain at the stomach. 150.
+#### Ears
+
+Stoppage of the ears, as if air-bubbles were passing through the left ear. Pain shifting from the left ear to the orbit. Lancinating pains in the ears. Pain in the ear and jaw, followed by pricking in the ear. Pain in the right ear: Tight pain above the ears, with numbness of the jaw. Pain in the right ear. Whizzing in right ear. Sharp pain behind the ears.
+
+#### Nose
+
+Dry nose, with itching inside. Redness on the left side of the nose. Redness of the wing of the nose. Beating at the root of the nose. Nosebleed. Tightness at the root of the nose.
+
+#### Teeth
+
+The teeth and gums are painful when pressed against each other. Short lancinations in the last two molares. Toothache on left side, affecting the eyes. Lancination in left lower gums, with tightness of the nose and jaw. Darting in the gums and left eye. Sensation as of a bar through the jaws, from ear to ear. The teeth are painful when chewing. Lancinations in the jaws. Numbness of the gums. Pain in left gums striking to the eye. Lancinations in the gums, affecting the whole head. Acute pain in the left gums, the whole left side of the head being numb. Pain in the right gums and cheek. Pain in left gums. Toothache on left side. Lancination in the left gums. Swelling of the left lower gums, with toothache.
+
+#### Mouth
+
+Beating at the tip of the tongue. Pain at the tip of the tongue. Pricking at the tongue, with flow of water. White-coated tongue. White spots on the tongue. Contraction of the papillae on the tongue, immediately. Pain under the lower lip, with swelling and a red pimple in the centre of it. Fleshy growths on the inner surface of the lips.
+
+#### Gastric
+
+Coppery taste in mouth. Doughy taste every morning, with chocolate-colored sputa and fetid smell. Smoky taste of the water. Violent sensation of hunger early in the morning, with tensive and pressive pain at the stomach. Difficult digestion after breakfast. Sick at the stomach, after eating. Hungry, shortly before a meal. She has to eat to quiet her pain at the stomach. 150.
 
 Hungry after a good meal, Uneasiness after dinner, every day. Loathing and nausea.
 
-STOMACH: Oppression at the stomach, when standing. Uneasiness in the stomach and chest, after standing. Tightness at the stomach, evening, Burning at the stomach. Oppressive pain at the stomach, before and after eating. Pain at the stomach, with oppression, sighs. Beating in pit of stomach, affecting the whole chest.
+#### Stomach
 
-ABDOMEN: Pain in the renal region as from falling on the sacrum. Pain and feeling of weariness in the renal region. Colic with diarrhoea, also every morning. Colic and cold sweat, or diarrhoea. Pain in the renal region. Tightness at the epigastrium, with excited feelings. Beat-in left side of abdomen. Colic with diarrhoea and shuddering. Twisting colic. Twisting sensation in the groin. Pain in the renal region, with sense of weariness in the sacrum. Sensation as of a plaster in the region of the kidneys. Pain at the loins and on each side of the ovary: Lancinations around the pelvis, extorting cries. Compressive pain in the groin. Painful stitch in the ileo-coecal region, again when stirring. Acute pain in the right kidney, while walking. Tearing sensation in the renal region. Sense of heat in the renal region. Shuddering at the rectum. Constrictive sensation at the anus.
+Oppression at the stomach, when standing. Uneasiness in the stomach and chest, after standing. Tightness at the stomach, evening, Burning at the stomach. Oppressive pain at the stomach, before and after eating. Pain at the stomach, with oppression, sighs. Beating in pit of stomach, affecting the whole chest.
 
-STOOL, URINE: Ineffectual urging to stool. Constipation. Hard stool. Diarrhoea succeeded by weakness of the chest. Fetid stool with white little worms. Lancination in the urethra. Watery urine with a greenish tint. Urine with white sediment. Frequent desire to urinate. Frequent emission of watery urine.
+#### Abdomen
 
-SEXUAL: Nocturnal emission. Distressing erections. Taste of blood in the mouth, during an embrace. Weight in the testicles in walking. Profuse menses with leucorrhoea. Premature and profuse menses. Lancinating pain in the vagina. Compressive pain at the uterus. Lancinating pain in the uterus, in zig-zag. Pain in the uterus as if a sharp instrument were thrust in. Leucorrhoea.
+Pain in the renal region as from falling on the sacrum. Pain and feeling of weariness in the renal region. Colic with diarrhoea, also every morning. Colic and cold sweat, or diarrhoea. Pain in the renal region. Tightness at the epigastrium, with excited feelings. Beat-in left side of abdomen. Colic with diarrhoea and shuddering. Twisting colic. Twisting sensation in the groin. Pain in the renal region, with sense of weariness in the sacrum. Sensation as of a plaster in the region of the kidneys. Pain at the loins and on each side of the ovary: Lancinations around the pelvis, extorting cries. Compressive pain in the groin. Painful stitch in the ileo-coecal region, again when stirring. Acute pain in the right kidney, while walking. Tearing sensation in the renal region. Sense of heat in the renal region. Shuddering at the rectum. Constrictive sensation at the anus.
 
-BRONCHIAL, CHEST: Dry cough. Constant sneezing. Dry throat, she has to cough. Suffocative sensation rising to the larynx. Sense of constriction in the upper part of the throat. Sneezing, with discharge of lemon-colored mucus from the nose. Pain behind the right ear and at the larynx as from pressing on a sore. Spitting of blood, with sense of rawness in the throat and the respiratory passages, after talking. Spits blood, coming deep out of the throat. Yellowish, heavy and frothy expectoration. Oppression of the chest, with rush of blood to the larynx, taste of blood, and tearing in the chest. Shifting pain in the chest. Severe pain and beating in the chest. Beating in left breast. Pain in left side, hindering breathing. Stitch- like pain in the left breast. Suffocative oppression of the chest. Painful stitch in the left breast. Deep sighing. Pain from the shoulders to the left breast. Oppressed and heavy breathing. Painful stitch in left breast. Suffocative oppression, with sighing. Darting in left breast. Aching and contusive pain
+#### Stool, urine
+
+Ineffectual urging to stool. Constipation. Hard stool. Diarrhoea succeeded by weakness of the chest. Fetid stool with white little worms. Lancination in the urethra. Watery urine with a greenish tint. Urine with white sediment. Frequent desire to urinate. Frequent emission of watery urine.
+
+#### Sexual
+
+Nocturnal emission. Distressing erections. Taste of blood in the mouth, during an embrace. Weight in the testicles in walking. Profuse menses with leucorrhoea. Premature and profuse menses. Lancinating pain in the vagina. Compressive pain at the uterus. Lancinating pain in the uterus, in zig-zag. Pain in the uterus as if a sharp instrument were thrust in. Leucorrhoea.
+
+#### Bronchial, chest
+
+Dry cough. Constant sneezing. Dry throat, she has to cough. Suffocative sensation rising to the larynx. Sense of constriction in the upper part of the throat. Sneezing, with discharge of lemon-colored mucus from the nose. Pain behind the right ear and at the larynx as from pressing on a sore. Spitting of blood, with sense of rawness in the throat and the respiratory passages, after talking. Spits blood, coming deep out of the throat. Yellowish, heavy and frothy expectoration. Oppression of the chest, with rush of blood to the larynx, taste of blood, and tearing in the chest. Shifting pain in the chest. Severe pain and beating in the chest. Beating in left breast. Pain in left side, hindering breathing. Stitch- like pain in the left breast. Suffocative oppression of the chest. Painful stitch in the left breast. Deep sighing. Pain from the shoulders to the left breast. Oppressed and heavy breathing. Painful stitch in left breast. Suffocative oppression, with sighing. Darting in left breast. Aching and contusive pain
 
 ## ILLICIUM ANISATUM
 
@@ -1250,7 +1398,7 @@ Icy coldness under the shoulder-blades, in bed, even when well covered. Cold fee
 
 Rheumatic pain in the right thigh. Icy coldness in the arm, even to the marrow. The whole head, especially the nape of the neck, is cold.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
 Dizzy. Sad. Bad humor on waking. The whole head and especially the nape of the neck, are cold. Weight in the head. Pain in forehead and nasal fossa. Optical illusion. Pain in the orbits. Whizzing in the ears. Eructations. Thirst. Appetite at breakfast, ceasing suddenly after tasting milk. Doughy mouth. Dry feeling in the oesophagus. Pain at velum palati. Sense of swelling in left tonsil. Dull pain in stomach and bowels. Weight at the stomach. Tenesmus, and pressure in spincter ani, with pricking. Watery, fetid stool. Ineffectual urging to stool. Painful darting in the urethra. Heat in the urethra. Vague pain in the abdomen when urinating. Pain in the side of the cheat, during motion. Pain in the chest. Fetid sweat in the axillae. Acute pain in the left arm. Pain at the left elbow. Icy coldness in the arm. Cold feet and hands. Rheumatic pain in the right thigh. Trembling of the knees and limbs. Swelling about the ankles. Weakness of the knees. Icy coldness under the shoulder blades, in bed. Distressing dreams. Drowsy. Dream about little flames. Sweat during sleep. Prostration.
 
@@ -1434,35 +1582,61 @@ Twenty-second and -third day. No appetite. Pains in the left side of the head. P
 
 The appetite returns.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-MENTAL AND MORAL: She imagined the floor was sinking under her. Inability to think. She imagines she is pursued by a phantom in a church-yard, cries, with loss of voice next morning. Vertigo, with desire to vomit. Vertigo when stooping slightly. Sad and quarrelsome.
+#### Mental and moral
 
-HEAD: Painful pressure on the head. Headache, with heat at front-part of vertex. Headache above the orbits and in the temples. Constrictive pain in the head. Headache, with sense of compression in forehead. Beating headache, as if the brain were bounding. Pains in the left brain, spreading to the occiput and nape of the neck. Boring pain in the vertex. Pricking and pressing pain round the head. Throbbing in the head, causing one to bend it forward. Pricking at the temple, and itching all over. Tightness of the forehead. Pulling at the forehead and root of the nose. Lancinations in left side of the head. Heaviness of the head, with indescribable malaise in the brain, especially the left. Heat in the head, with cold sweat and fever. Sensitiveness of the hairy scalp.
+She imagined the floor was sinking under her. Inability to think. She imagines she is pursued by a phantom in a church-yard, cries, with loss of voice next morning. Vertigo, with desire to vomit. Vertigo when stooping slightly. Sad and quarrelsome.
 
-FACE, EYEs, EARS: Pain in the right cheek, passing off by pressing on the bone. Pricking in left side of the face. Cutting pain from the temple to the chin, across the face. Heat in left side of the face. Heat in the corner of the left nostril, with stitch in the tip. Nose swollen and painful on the left side. Coryza, inflammation, itching of the nose. Discharge of black blood from the right nostril. Heat in the nose, with sensation as of a current of cold air in left nasal fossa. Buzzing in the right ear. Beating pain above the left ear. Itching in the right ear, worse when stooping. Dartings in the ears. Buzzing in left ear. Pricking pain round the right ear. Prickling in the eyes. Burning in the eyes. Eyelids weary at night. Redness and pains of the eyes. Dartings in the right eye. Dimness of sight as if looking through a white gauze. Lachrymation, with itching. Pain in right eye as from a round weight resting upon it.
+#### Head
 
-TEETH, JEWS: Sticking pain in the jaw. Painful beating in the left jaw. Lancinations in the left jaw. Pains in the jaws, as if in the teeth. Pain in the lower teeth, with deafness. Toothache, as if soft and on edge. Stitching pain in the lower gums. Itching under the chin, from ear to ear.
+Painful pressure on the head. Headache, with heat at front-part of vertex. Headache above the orbits and in the temples. Constrictive pain in the head. Headache, with sense of compression in forehead. Beating headache, as if the brain were bounding. Pains in the left brain, spreading to the occiput and nape of the neck. Boring pain in the vertex. Pricking and pressing pain round the head. Throbbing in the head, causing one to bend it forward. Pricking at the temple, and itching all over. Tightness of the forehead. Pulling at the forehead and root of the nose. Lancinations in left side of the head. Heaviness of the head, with indescribable malaise in the brain, especially the left. Heat in the head, with cold sweat and fever. Sensitiveness of the hairy scalp.
 
-MOUTH, THROAT: Pricking itching at the tongue. Drawing pain from the tongue to the arm, with sensation as if the tongue were swollen. Smarting at the tip of the tongue. Dry mouth and throat. Heat in the throat with desire to vomit and noise in the ears on swallowing.
+#### Face, eyes, ears
 
-GASTRIC: Aversion to meat. Desire for tea. Desire for fruit, with loathing of food. Desire for cressis, with loathing when seeing it. Desire for chocolate and salad, vinegar. Desire for coffee. Desire to vomit. Sour eructations. Foul eructations. Prostration with loathing of food. Loathing of food. A cake descends into the stomach suddenly, with a shaking sensation. Oppression after eating.
+Pain in the right cheek, passing off by pressing on the bone. Pricking in left side of the face. Cutting pain from the temple to the chin, across the face. Heat in left side of the face. Heat in the corner of the left nostril, with stitch in the tip. Nose swollen and painful on the left side. Coryza, inflammation, itching of the nose. Discharge of black blood from the right nostril. Heat in the nose, with sensation as of a current of cold air in left nasal fossa. Buzzing in the right ear. Beating pain above the left ear. Itching in the right ear, worse when stooping. Dartings in the ears. Buzzing in left ear. Pricking pain round the right ear. Prickling in the eyes. Burning in the eyes. Eyelids weary at night. Redness and pains of the eyes. Dartings in the right eye. Dimness of sight as if looking through a white gauze. Lachrymation, with itching. Pain in right eye as from a round weight resting upon it.
 
-STOMACH, BOWELS: Faint feeling in stomach. Distress in pit of stomach, with desire to vomit. Heat in stomach, with feeling of dryness. Sickness at the stomach, followed by a desire to vomit, before eating. Pain at the pit of the stomach, after eating. Stitching pain in the pit of the stomach after eating. Weak feeling in the stomach. Pain in the pit of the stomach, as if cut through. Beating and pricking in the pit of the stomach. Throbbing at the epigastrium. The abdomen feels sensitive. Cutting pain at the cardia. Lancinations in the abdomen and sides. Worm-colic, with tenesmus. Compression as by a band round the waist. Colic in damp air. Sense as of a knife being plunged into the epigastrium. Colic. Stitch in left side of abdomen.
+#### Teeth, jaws
 
-STOOL, URINARY, &C.: Diarrhoea. Weight and pressure at the bladder when urinating. Dark urine.
+Sticking pain in the jaw. Painful beating in the left jaw. Lancinations in the left jaw. Pains in the jaws, as if in the teeth. Pain in the lower teeth, with deafness. Toothache, as if soft and on edge. Stitching pain in the lower gums. Itching under the chin, from ear to ear.
 
-BRONCHIAL: Dry cough, with loss of breath. Cough with hoarseness. Hacking cough, with salt saliva. Cough with slight spitting of blood. Salt, thick sputa. 100.
+#### Mouth, throat
+
+Pricking itching at the tongue. Drawing pain from the tongue to the arm, with sensation as if the tongue were swollen. Smarting at the tip of the tongue. Dry mouth and throat. Heat in the throat with desire to vomit and noise in the ears on swallowing.
+
+#### Gastric
+
+Aversion to meat. Desire for tea. Desire for fruit, with loathing of food. Desire for cressis, with loathing when seeing it. Desire for chocolate and salad, vinegar. Desire for coffee. Desire to vomit. Sour eructations. Foul eructations. Prostration with loathing of food. Loathing of food. A cake descends into the stomach suddenly, with a shaking sensation. Oppression after eating.
+
+#### Stomach, bowels
+
+Faint feeling in stomach. Distress in pit of stomach, with desire to vomit. Heat in stomach, with feeling of dryness. Sickness at the stomach, followed by a desire to vomit, before eating. Pain at the pit of the stomach, after eating. Stitching pain in the pit of the stomach after eating. Weak feeling in the stomach. Pain in the pit of the stomach, as if cut through. Beating and pricking in the pit of the stomach. Throbbing at the epigastrium. The abdomen feels sensitive. Cutting pain at the cardia. Lancinations in the abdomen and sides. Worm-colic, with tenesmus. Compression as by a band round the waist. Colic in damp air. Sense as of a knife being plunged into the epigastrium. Colic. Stitch in left side of abdomen.
+
+#### Stool, urinary, &c.
+
+Diarrhoea. Weight and pressure at the bladder when urinating. Dark urine.
+
+#### Bronchial
+
+Dry cough, with loss of breath. Cough with hoarseness. Hacking cough, with salt saliva. Cough with slight spitting of blood. Salt, thick sputa. 100.
 
 Stitch in the right lung. Pain in the right side, arresting the breathing. Twitching pain in the muscles under the right breast. Coldness from the stomach to the throat. Pain in the pectoralis major. Sense as of a string at the right breast. Pain in the left lung, through to the back. Itching at the nipples, swelling of the glands, hardness of the breasts. Sensation as of a band in the side. Pricklings between the breasts. Pain all along the trunk. Lancinations in the right chest. Shortness of breath. Palpitation of the heart, with pain hindering breathing. Convulsive trembling of the heart. Sense as of a knife slowly penetrating into the heart. Constrictive pain at the heart, extending to the left axilla. Palpitation of the heart. Sharp stitching pain in the region of the heart, with lancinations under the false ribs.
 
-BACK: Acute pains in the muscles of the neck and shoulder-blade. Pricklings from the shoulder-blade along the right side of the neck. Sensation as if a string were pulled from the shoulder to the ear. Crampy pain in right side of the neck, extending to the arm. Darting from the ear to the shoulder. Pain from the shoulder round the neck, like a band, with a stitch in the pit of the stomach and nape of the neck. Crampy pain behind the neck. Pain in the side of the neck, worse when turning the head to the right side. Throbbing in the back, passing heat in the back, followed by shuddering all over. Darting in the spine of the shoulder-blade, shifting to the other shoulder. Pains from the shoulder to the back, with lancinations hindering breathing. Sticking pain at the shoulder-blade. Shock across the back. Pain in the back as from a nail.
+#### Back
 
-UPPER EXTREMITIES: Stitching pain in the left axilla. Formication above the left shoulder. Pain under the left axilla, as if cut with a penknife. Quick throbbing on the right shoulder. Violent pain in left arm, worse when covered; she cannot stretch it. Pain as from a blow at the right arm, with numbness. Numbness of the left arm, with pain in the shoulder as if beaten by hammers. Darting from the elbow to the shoulder-blade. Pain in left arm, she can scarcely raise it. Laming pain at left arm, when holding it still. Crampy pain in left hand. Itching on the back of the hands. Crampy pain in the right hand, followed by shuddering all over. Lancinating pains in the muscles of the right hand and shoulder-blades. Rheumatic pain and stiffness of left index-finger. Crampy pain at the right ring-finger. Pain in the bone of the left thumb, with trembling when attempting to use it. Prickling at the tip of the middle-finger, which draws it up.
+Acute pains in the muscles of the neck and shoulder-blade. Pricklings from the shoulder-blade along the right side of the neck. Sensation as if a string were pulled from the shoulder to the ear. Crampy pain in right side of the neck, extending to the arm. Darting from the ear to the shoulder. Pain from the shoulder round the neck, like a band, with a stitch in the pit of the stomach and nape of the neck. Crampy pain behind the neck. Pain in the side of the neck, worse when turning the head to the right side. Throbbing in the back, passing heat in the back, followed by shuddering all over. Darting in the spine of the shoulder-blade, shifting to the other shoulder. Pains from the shoulder to the back, with lancinations hindering breathing. Sticking pain at the shoulder-blade. Shock across the back. Pain in the back as from a nail.
 
-LOWER EXTREMITIES: Contusive pain at the right hip. Pulling along the left sartorius muscle. Pain in left gluteus maximus as if contracted. Contraction of the leg, with stiffness of the bend of the knee. Acute pain at inner side of right tibia. Pain from the left hip to the knee, with weakness of the leg. Pain in the bend of the knee as if a tendon were slowly drawn inwards. Pain as if scratched at the feet, followed by heat. Sense as of a blow at the left big toe.
+#### Upper extremities
 
-SLEEP, &c.: Desire to gape. No sleep after midnight, with pains all over when stirring. Comatose condition, but no sleep. Heavy sleep, with numbness and sense as if bruised on waking. Drowsy, and shuddering in the legs. Restless at night, followed by prickings all over. Heavy and drowsy. Restless night. Suffocative fit at night. She dreams that she is talking with dead persons. Sad dreams with fear on waking. Dreams about dead bodies. Internal heat with restlessness; she has to rise. Heat after the cold, especially in the renal region. Shuddering and cold sweat in the air. Violent pain in the muscles of the neck, thigh and left leg. The limbs feel bruised.
+Stitching pain in the left axilla. Formication above the left shoulder. Pain under the left axilla, as if cut with a penknife. Quick throbbing on the right shoulder. Violent pain in left arm, worse when covered; she cannot stretch it. Pain as from a blow at the right arm, with numbness. Numbness of the left arm, with pain in the shoulder as if beaten by hammers. Darting from the elbow to the shoulder-blade. Pain in left arm, she can scarcely raise it. Laming pain at left arm, when holding it still. Crampy pain in left hand. Itching on the back of the hands. Crampy pain in the right hand, followed by shuddering all over. Lancinating pains in the muscles of the right hand and shoulder-blades. Rheumatic pain and stiffness of left index-finger. Crampy pain at the right ring-finger. Pain in the bone of the left thumb, with trembling when attempting to use it. Prickling at the tip of the middle-finger, which draws it up.
+
+#### Lower extremities
+
+Contusive pain at the right hip. Pulling along the left sartorius muscle. Pain in left gluteus maximus as if contracted. Contraction of the leg, with stiffness of the bend of the knee. Acute pain at inner side of right tibia. Pain from the left hip to the knee, with weakness of the leg. Pain in the bend of the knee as if a tendon were slowly drawn inwards. Pain as if scratched at the feet, followed by heat. Sense as of a blow at the left big toe.
+
+#### Sleep, &c.
+
+Desire to gape. No sleep after midnight, with pains all over when stirring. Comatose condition, but no sleep. Heavy sleep, with numbness and sense as if bruised on waking. Drowsy, and shuddering in the legs. Restless at night, followed by prickings all over. Heavy and drowsy. Restless night. Suffocative fit at night. She dreams that she is talking with dead persons. Sad dreams with fear on waking. Dreams about dead bodies. Internal heat with restlessness; she has to rise. Heat after the cold, especially in the renal region. Shuddering and cold sweat in the air. Violent pain in the muscles of the neck, thigh and left leg. The limbs feel bruised.
 
 ## MELASTOMA ACKERMANI
 
@@ -1520,13 +1694,19 @@ Inflammatory swelling of the left hand. Shuddering.
 
 Diarrhoea. Whizzing in the ears.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-HEAD, &c.: Vertigo. Indifference. Depression of spirits. Pain in the sides of the head. Headache, with weak stomach. Heat in the head. The head feels as if swollen. Coryza, fluent. Itching of the eyes. Dimness of sight. The left eye is inflamed. Inflamed eyes. Whizzing in the ears. Bleeding of the gums.
+#### Head, &c.
 
-GASTRIC SYMPTOMS, &c.: Ptyalism. Stomach-ache after breakfast. Flatulent colic. Diarrhoea. Easy stool. Frequent stools with colic. Rumbling. Dry cough. Oppressed breathing.
+Vertigo. Indifference. Depression of spirits. Pain in the sides of the head. Headache, with weak stomach. Heat in the head. The head feels as if swollen. Coryza, fluent. Itching of the eyes. Dimness of sight. The left eye is inflamed. Inflamed eyes. Whizzing in the ears. Bleeding of the gums.
 
-EXTREMITIES: Pressure at nape of neck. Lancinations in the back. Twitching of the arm. Smarting in the legs, with lame knee. Trembling of the legs. Lancinations in the legs and hand. Stiffness of the bends of the knees. Numbness of the arm and right hand. Lancinations in the legs and arms. Inflammatory swelling of the left hand. Swelling of left ankle, with redness. Yawning. Drowsy. Shuddering. Papulae on left leg and arm. Papulous excrescence on the right leg and instep.
+#### Gastric symptoms, &c.
+
+Ptyalism. Stomach-ache after breakfast. Flatulent colic. Diarrhoea. Easy stool. Frequent stools with colic. Rumbling. Dry cough. Oppressed breathing.
+
+#### Extremities
+
+Pressure at nape of neck. Lancinations in the back. Twitching of the arm. Smarting in the legs, with lame knee. Trembling of the legs. Lancinations in the legs and hand. Stiffness of the bends of the knees. Numbness of the arm and right hand. Lancinations in the legs and arms. Inflammatory swelling of the left hand. Swelling of left ankle, with redness. Yawning. Drowsy. Shuddering. Papulae on left leg and arm. Papulous excrescence on the right leg and instep.
 
 ## MURURE LEITE
 
@@ -1536,7 +1716,7 @@ This rosin is used as an anti-syphilitic.
 
 Blennhorrhoeal discharge. Ulcers on the legs. Yellow and fetid urine. Cracking sensation in the tibia. Profuse flow of saliva. Small painless pimple which terminates in suppuration, with smarting. Spot at the instep, painful in the middle and insensible all-round the circumference. Numbness of the left arm. Numbness of the limbs. Sciatica. Swelling of the face as in the elephantiasis of the Greeks. Pain in a former cicatrix on the left side of the tongue. Cold hands. Heaviness of the head. Pains in the head, recurring on the third and fourth day. Pain in the left ear, on the first day. Stool easier. Heat in the eyes. Sore eyes. Drowsy day and night. Constant restlessness during sleep. Exaltation of ideas. Loathing of food, loss of appetite. Pain at the left shoulder, hindering breathing when walking. Pustules on the penis. Eruption on the legs. Toothache for four days. Pimples on the occiput, on the fourteenth day. Vomiting, on the sixteenth day. Urging to stool, with soft faeces. Little appetite. Severe pain in the thighs. Prickings in the tongue. Heaviness of the head.
 
-HAHNEMANN'S ARRANGEMENT.
+### Arrangement according to Hahnemann
 
 Pain in the head. Heaviness of the head. Pain in left ear. Swelling of the face. Heat in the eyes. Sore eyes. Toothache for four days. Prickings in the tongue. Flow of saliva. Pain of a former cicatrix at the tongue. Loathing of food. Vomiting. Blennhorrhoea. Yellow and fetid urine. Pain at left shoulder, hindering breathing when walking. Numbness of left arm. Cold hands. Severe pain in the thighs. Cracking in the tibia. Painful spot at the instep, insensible all round. Sciatica. Drowsy. Restless sleep. Pustules on the penis. Pimples on the occiput. Numbness of the limbs.
 
@@ -1568,7 +1748,7 @@ At night, hard pressure in the sides of the thorax, though this does not hinder 
 
 Restless sleep. Violent starting during sleep. Pain at the frontal eminence, at noon. He is unable to concentrate his attention on one object, though he has important business to attend to.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
 Indifferent and careless about business. He keeps repeating a tune against his will; this irritates him. Quarrelsome dreams. Is unable to fix his mind. Vertigo from right to left. Painful pressure at frontal eminence from within outwards. Pain at the frontal eminences. Pimples on the left check. Coppery taste in the mouth. Constriction of the pharynx, painful. Soreness of the mouth, tonsils and pharynx. Tongue white-coated and cracked. Difficulty of swallowing saliva. Sensation as if a small body had lodged in the left inguinal region. Stools mixed with yellow mucus. Scanty urine, with less frequent discharges. Hard pressures in the sides of the thorax, at night. Pinching at the right side of the neck. Stiffness of the hands. Tingling in left thumb-joint. Pain at the finger-nails, with swelling of the phalanxes. Painful pinching in right calf. Confused dreams about building houses. No sleep in the evening.
 
@@ -1598,13 +1778,19 @@ Bitter mouth, in the morning after rising, at 5. Pain at the shoulder-blade by t
 
 Numbness of the left hand, it cannot be stirred, at 6 in the morning. Pain as if stabbed with a knife, in the sides and navel. Pain in a decayed tooth, as if a penknife were thrust in, at 7 in the morning. Aching pain at the vertex, with dizziness; this pain shifts to the left eye, followed by sensation as if a rocket were rushing out, of it, at half past 7. Sense of choking at 9 in the morning. Trembling of the right hand. Dissatisfied with herself, everything is unpleasant to her. Headache which increases her dissatisfaction: Shuddering all over.
 
-HAHNEMANN'S ARRANGEMENT.
+### Arrangement according to Hahnemann
 
-HEAD, &c.: Vertigo. Dissatisfied with herself, more so when she has the headache. Pain at the temples as if in a vice. Aching pain at the vertex with dizziness, shifting to the left eye, with sensation as if a rocket were rushing out of it. Heaviness in the forehead. Headache worse when inclining the head to the left side. Sawing pain above the orbits. Pain in a decayed tooth, as if a penknife were thrust in. Heat at the tongue, with sensation as if little drops of ice-water were upon it. Sense of choking.
+#### Head, &c.
 
-GASTRIC, &c.: Hunger with burning at the stomach. Nausea. Hunger, with loathing of food. Bitter mouth, after rising from bed. Globus hystericus at the pit of the stomach. Empty feeling in the stomach. Pain in the sides and navel as if stabbed with a knife. Cutting pain, from the navel all around the abdomen. Pulling pain in the chest. Tearing from the chest to the throat. Pain at the loins as if bruised.
+Vertigo. Dissatisfied with herself, more so when she has the headache. Pain at the temples as if in a vice. Aching pain at the vertex with dizziness, shifting to the left eye, with sensation as if a rocket were rushing out of it. Heaviness in the forehead. Headache worse when inclining the head to the left side. Sawing pain above the orbits. Pain in a decayed tooth, as if a penknife were thrust in. Heat at the tongue, with sensation as if little drops of ice-water were upon it. Sense of choking.
 
-EXTREMITIES: Pain at the shoulder-blade when turning the head to the left side. Pain in the right fore-arm. Trembling of the right hand. Numbness of the left hand. Cramp from the index-finger to the elbow. Cramps in the legs. Sensation as if the toe-nails were torn off. Pain at left shoulder as from a blow. Spasmodic yawning. Shuddering all over. Shuddering in the open air. Heat followed by cold. Weariness. Fainting turn.
+#### Gastric, &c.
+
+Hunger with burning at the stomach. Nausea. Hunger, with loathing of food. Bitter mouth, after rising from bed. Globus hystericus at the pit of the stomach. Empty feeling in the stomach. Pain in the sides and navel as if stabbed with a knife. Cutting pain, from the navel all around the abdomen. Pulling pain in the chest. Tearing from the chest to the throat. Pain at the loins as if bruised.
+
+#### Extremities
+
+Pain at the shoulder-blade when turning the head to the left side. Pain in the right fore-arm. Trembling of the right hand. Numbness of the left hand. Cramp from the index-finger to the elbow. Cramps in the legs. Sensation as if the toe-nails were torn off. Pain at left shoulder as from a blow. Spasmodic yawning. Shuddering all over. Shuddering in the open air. Heat followed by cold. Weariness. Fainting turn.
 
 ## PAULLINIA PINNATA
 
@@ -1696,29 +1882,51 @@ Pain around the umbilicus. Lancinations in the right side of the chest. Lancinat
 
 Oppression on the chest. Dry cough. Pain in the right side of the chest. No appetite. Ulceration at the lower limbs, with itching.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-MENTAL AND MORAL: She likes to be alone and quiet. Ennui. Melancholy. Dizzy, her head inclines forward. In walking she imagines she is walking backwards. Staggering gait. Vision of dead persons.
+#### Mental and moral
 
-HEAD: Headache in the evening, with inability to stoop. Heaviness of the head, with pain in right temple. Acute pain in middle of the head. Pain in head as from a nail. Pressing pain from within outwards, in right parietal region. Splitting headache. Beating in the temple and above the left eye. Pain as from an iron bar compelling the bead to stoop forward. Hammering in the vertex. Headache as if the head were covered with a cap of lead on which one strikes.
+She likes to be alone and quiet. Ennui. Melancholy. Dizzy, her head inclines forward. In walking she imagines she is walking backwards. Staggering gait. Vision of dead persons.
 
-EARS, Eras, &c.: Dull pain in left ear. Sawing pain in the cartilage of the left ear, extending to the neck. Buzzing in left ear. Alternate heat and chilliness in the face. Shooting in the jaws. Pain in right teeth. Darting in right eye, with lachrymation. Pain above the eyes, penetrating to the brain. Stitch under the right eye. Prickling in left eye, which runs and is inflamed. Pain at the eyebrows, towards the root of the nose.
+#### Head
 
-GASTRIC: Rough tongue, with sensation as if larger. Bitter mouth. Out of breath, with desire to vomit. Loathing at the sight of food. Desire for coffee. Desire to vomit. Loathing, with tongue thick and doughy. Desire for dainties. Itching and tingling in the throat. Scraping in the throat. Yellowish, tenacious expectoration. Sensation, while talking, as if a stone were burying itself in the stomach.
+Headache in the evening, with inability to stoop. Heaviness of the head, with pain in right temple. Acute pain in middle of the head. Pain in head as from a nail. Pressing pain from within outwards, in right parietal region. Splitting headache. Beating in the temple and above the left eye. Pain as from an iron bar compelling the bead to stoop forward. Hammering in the vertex. Headache as if the head were covered with a cap of lead on which one strikes.
 
-ABDOMEN: Pain around the navel. Lancinations in the splenetic region. Contusive pain in the region of the liver. Pain in the region of the liver. Pain in abdomen, worse when touched. Pain in right side, as if a knife were plunged in. Painful stitches in each side of the abdomen. Constrictive pain round the hypochondria. Cutting pain at navel. Pain in the side as if a stone were pressed in. Crampy pain in left side of hypogastrium. Pain in the groin as if the nerves were cut. Colic followed by a reddish diarrhoeic stool. Constipation. Diarrhoea. Sharp pain during stool, as from a penknife. Ineffectual desire to urinate. Burning when urinating. Stabbing sensation in the ovaries.
+#### Ears, eyes, &c.
 
-BRONCHIAL: Blood streaked saliva. Cough with inflamed throat.
+Dull pain in left ear. Sawing pain in the cartilage of the left ear, extending to the neck. Buzzing in left ear. Alternate heat and chilliness in the face. Shooting in the jaws. Pain in right teeth. Darting in right eye, with lachrymation. Pain above the eyes, penetrating to the brain. Stitch under the right eye. Prickling in left eye, which runs and is inflamed. Pain at the eyebrows, towards the root of the nose.
 
-CHEST: Her chest feels as if it would open, with cracking. Itching and burning in the chest. Oppression and burning in the sides of the chest. Burning in the chest. Lancing pain in left nipple. Pressure at the chest and sides as from iron sheeting, followed by sensation as if pierced by a penknife. Acute pain in the right side of the chest. Weak feeling in the chest. Pain at the right breast. Dartings in the right breast. Pain under the sternum. Pain under the right clavicle. Shortness of breath. Heat around the breast which feels compressed. Dartings in right side of chest. Scratching pain in left side of chest. When drawing breath, the chest feels as if being opened. Pain at the heart. Lancination in the pre cordial region.
+#### Gastric
 
-BACK: Heat along the back. Pain in the neck. Pain in the shoulder-blades.
+Rough tongue, with sensation as if larger. Bitter mouth. Out of breath, with desire to vomit. Loathing at the sight of food. Desire for coffee. Desire to vomit. Loathing, with tongue thick and doughy. Desire for dainties. Itching and tingling in the throat. Scraping in the throat. Yellowish, tenacious expectoration. Sensation, while talking, as if a stone were burying itself in the stomach.
 
-EXTREMITIES: Numbness in the shoulder. Numbness of the arms. Itching under the arm. Dartings under the right arm. Pain from the left arm to the back. Cramp in the palm and fingers of the left hand. Pain in the lower limbs, which become stiff by walking. Prickings in left thigh, high up. Trembling of the lower limbs. Numbness in right foot and knee. Rheumatic pains in the knees. Pain at right ankle as if sprained. Lancing pain in the heel. Pain of the soles in walking. Heat in the soles. The feet feel numb after going up-stairs.
+#### Abdomen
 
-FEVER, SLEEP: Shuddering with drowsiness and arthritic pains. Chilliness. Shuddering on rising. Chilly. Restless sleep. She dreams that a scabby dog is walking towards her; it bit her, and she cried out. She dreams that she wishes to look into a chest. Dreams about a leprous woman.
+Pain around the navel. Lancinations in the splenetic region. Contusive pain in the region of the liver. Pain in the region of the liver. Pain in abdomen, worse when touched. Pain in right side, as if a knife were plunged in. Painful stitches in each side of the abdomen. Constrictive pain round the hypochondria. Cutting pain at navel. Pain in the side as if a stone were pressed in. Crampy pain in left side of hypogastrium. Pain in the groin as if the nerves were cut. Colic followed by a reddish diarrhoeic stool. Constipation. Diarrhoea. Sharp pain during stool, as from a penknife. Ineffectual desire to urinate. Burning when urinating. Stabbing sensation in the ovaries.
 
-CUTANEOUS, GENERAL: Ulcers at the lower limbs, with itching. Red spots in the face. Itching and suppuration behind the head. Pain in the joints. Distressing itching in the hand and fingers. Desire to lie down. Bruised all over. Lassitude. Sensation in the limbs as if bruised.
+#### Bronchial
+
+Blood streaked saliva. Cough with inflamed throat.
+
+#### Chest
+
+Her chest feels as if it would open, with cracking. Itching and burning in the chest. Oppression and burning in the sides of the chest. Burning in the chest. Lancing pain in left nipple. Pressure at the chest and sides as from iron sheeting, followed by sensation as if pierced by a penknife. Acute pain in the right side of the chest. Weak feeling in the chest. Pain at the right breast. Dartings in the right breast. Pain under the sternum. Pain under the right clavicle. Shortness of breath. Heat around the breast which feels compressed. Dartings in right side of chest. Scratching pain in left side of chest. When drawing breath, the chest feels as if being opened. Pain at the heart. Lancination in the pre cordial region.
+
+#### Back
+
+Heat along the back. Pain in the neck. Pain in the shoulder-blades.
+
+#### Extremities
+
+Numbness in the shoulder. Numbness of the arms. Itching under the arm. Dartings under the right arm. Pain from the left arm to the back. Cramp in the palm and fingers of the left hand. Pain in the lower limbs, which become stiff by walking. Prickings in left thigh, high up. Trembling of the lower limbs. Numbness in right foot and knee. Rheumatic pains in the knees. Pain at right ankle as if sprained. Lancing pain in the heel. Pain of the soles in walking. Heat in the soles. The feet feel numb after going up-stairs.
+
+#### Fever, sleep
+
+Shuddering with drowsiness and arthritic pains. Chilliness. Shuddering on rising. Chilly. Restless sleep. She dreams that a scabby dog is walking towards her; it bit her, and she cried out. She dreams that she wishes to look into a chest. Dreams about a leprous woman.
+
+#### Cutaneous, general
+
+Ulcers at the lower limbs, with itching. Red spots in the face. Itching and suppuration behind the head. Pain in the joints. Distressing itching in the hand and fingers. Desire to lie down. Bruised all over. Lassitude. Sensation in the limbs as if bruised.
 
 ## PEDICULUS CAPITIS (COMMON LOUSE)
 
@@ -1726,47 +1934,85 @@ It is scarcely necessary to give a description of this species which is sufficie
 
 Even before undertaking this experiment we expected to derive from it important results. We entertained the belief that nature pointed out to us the louse as a specific for the hereditary psora, in which belief we were strengthened by the fact that psorin develops the lice-malady in healthy persons. And we are now prepared to affirm that we have found the louse one of the most useful agents in diseases of children. We offer the following pathogenesis with a sincere pleasure which none but those who devote themselves to such patient investigations, can appreciate.
 
-SYMPTOMATIC ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-MORAL AND MENTAL: Depression of spirits. Dullness of feeling. Merry in the evening. Very merry. Irascible. Sad without cause. Sensation as if raised off the ground by the hair. She is waked in the night by an attack of dizziness, and inability to open the eyes. Dizziness while walking; the cerebellum feels compressed, with beating and an acute pain on rising in the morning.
+#### Moral and mental
 
-HEAD.: Frontal headache. Headache at intervals, and abating all at once. Headache in the evening. Heaviness of the head. Dullness of the head, on rising, with beating in the right temple. Heaviness at the vertex. Violent headache, with dizziness and nausea, in the forenoon. Violent headache, worse on stooping. Headache, with nausea, when walking. Violent headache, and darting in the forehead, when walking. Dull pain in the head, on rising from bed. Headache and pressure at the nasal eminence. Lancinations in the forehead. Dartings in the forehead. Dartings in the right parietal bone. Intermittent dartings in the head, worse when stooping. Heat about the head. Itching of the hairy scalp, in front. Contraction of the hairy scalp. Itching of the left temple. Itching of the hairy scalp. Shuddering over the left side of the hairy scalp. Â°Falling of the hair.
+Depression of spirits. Dullness of feeling. Merry in the evening. Very merry. Irascible. Sad without cause. Sensation as if raised off the ground by the hair. She is waked in the night by an attack of dizziness, and inability to open the eyes. Dizziness while walking; the cerebellum feels compressed, with beating and an acute pain on rising in the morning.
 
-FACE: Dark complexion. Warmth of the face, afternoon. Itching of the beard. The face is red and bloated. Sweat in the face. Scarlet-redness of the face. To avoid unnecessary repetition, the natural order of the symptoms has been left out, it being nearly the same as Hahnemann's arrangement. Ed.
+#### Head
+
+Frontal headache. Headache at intervals, and abating all at once. Headache in the evening. Heaviness of the head. Dullness of the head, on rising, with beating in the right temple. Heaviness at the vertex. Violent headache, with dizziness and nausea, in the forenoon. Violent headache, worse on stooping. Headache, with nausea, when walking. Violent headache, and darting in the forehead, when walking. Dull pain in the head, on rising from bed. Headache and pressure at the nasal eminence. Lancinations in the forehead. Dartings in the forehead. Dartings in the right parietal bone. Intermittent dartings in the head, worse when stooping. Heat about the head. Itching of the hairy scalp, in front. Contraction of the hairy scalp. Itching of the left temple. Itching of the hairy scalp. Shuddering over the left side of the hairy scalp. Â°Falling of the hair.
+
+#### Face
+
+Dark complexion. Warmth of the face, afternoon. Itching of the beard. The face is red and bloated. Sweat in the face. Scarlet-redness of the face. To avoid unnecessary repetition, the natural order of the symptoms has been left out, it being nearly the same as Hahnemann's arrangement. Ed.
 
 Itching at the right lower part of the face. Heat in the face. Tingling pain in the right cheek. Itching of the face and hairy scalp. The left cheek is swollen.
 
-NOSE: Tickling and prickling at the left wing of the nose. Inflammation of the nasal fosse . Dartings in the root of the nose. Itching of the tip of the nose.
+#### Nose
 
-EARS: Itching in the left ear, evening. Buzzing in the ears. Hot ears. Itching of the right ear. Whizzing in the ears, when whistling. Cracking in the right ear, when eating.
+Tickling and prickling at the left wing of the nose. Inflammation of the nasal fosse . Dartings in the root of the nose. Itching of the tip of the nose.
 
-EYES: Itching of the left eyelid. Rings around the eyes. Dilatation of the pupils. Smarting of the eyes as from weeping. The eyes feel weary, are red and smart. Sensation as of sand in the eyes. Smarting around the eyes.
+#### Ears
 
-TEETH: The lower jaw feels tired, as from chewing too much. Darlings in the right upper molares.
+Itching in the left ear, evening. Buzzing in the ears. Hot ears. Itching of the right ear. Whizzing in the ears, when whistling. Cracking in the right ear, when eating.
 
-MOUTH: The lips are black and cracked. Dry, swollen and red lips. Burning and prickling on the border of the tongue, which is red and cracked.
+#### Eyes
 
-GASTRIC: Hunger, with inability to swallow; the pharynx seems to contract, followed by fainting and desire to vomit, at noon. Aversion to food. Constant nausea in the evening. Difficult digestion, with contraction of the stomach. Colic and diarrhoea after dinner.
+Itching of the left eyelid. Rings around the eyes. Dilatation of the pupils. Smarting of the eyes as from weeping. The eyes feel weary, are red and smart. Sensation as of sand in the eyes. Smarting around the eyes.
 
-THROAT: Sore throat, getting worse until evening. Scraping in the throat. Sore throat every evening. Transitory choking, especially after supper. Dryness of the throat. Scraping at the tonsils, when swallowing. Sore throat, with constriction of the pharynx. Constant swallowing of saliva.
+#### Teeth
 
-STOMACH &c.: Stomach-ache, and dartings in the umbilical region. Violent colic. Slight colic.
+The lower jaw feels tired, as from chewing too much. Darlings in the right upper molares.
 
-STOOL: Soft stool, in the evening. Diarrhoea evening and next morning. Hard and scanty stool.
+#### Mouth
 
-URINARY, GENITAL, &c.: Frequent and copious discharge of a watery, yellow-greenish urine. Red urine. Yellow, clear urine. Frequent and copious micturition. Continual erection, without desire. Leucorrhoea. Shifting pain in the uterus, in the evening. Painful stitch in the uterus. Painful dartings, heat and itching in the uterus.
+The lips are black and cracked. Dry, swollen and red lips. Burning and prickling on the border of the tongue, which is red and cracked.
 
-BRONCHIAL, CHEST: Thirst with hoarseness, towards evening. Dry and convulsive cough. Numbness while drawing breath. Pain in the breasts, when drawing breath. Pain in the chest, worse when touched. Oppression on the chest, in the evening.
+#### Gastric
 
-BACK: Tickling at the nape of the neck and between the shoulders. Itching of the nape of the neck and back. Frequent pain in the loins, when standing. Itching of the back.
+Hunger, with inability to swallow; the pharynx seems to contract, followed by fainting and desire to vomit, at noon. Aversion to food. Constant nausea in the evening. Difficult digestion, with contraction of the stomach. Colic and diarrhoea after dinner.
 
-EXTREMITIES: Bruising pain on the shoulders and arms. Darting at the arms. Itching of the forearm, in the evening. Pain in the bend of the right arm. Itching of the forearm, in the evening. Tickling at the left wrist. Tickling at the wrists. Darting in the back of the left hand. Itching at the backs of the hands. Itching of the back of the hand, with redness and swelling of the veins. Tremor of the hands. Darting and itching at the first phalanx of the middle-finger. Tingling in the tips of the middle and index fingers. Itching at the ring-finger. Itching of first phalanx of right index-finger. Redness and itching at the right hip. Itching as from nettles in the bend of the thigh. The skin on the left thigh peels off. Weakness of the lower limbs. The knee and upper portion of the left lower limb feel tired. Violent lancination above the left knee-pan. Beating above the left knee-pan. Weariness of the knees, especially the left, in the evening. Intense itching at the right instep. Cold sweat at the feet, followed by excessive coldness, in the evening. Ganglion under the foot, hard, swollen, and painful when walking.
+#### Throat
 
-SLEEP, FEVER: Yawning. Drowsy. Uneasy sleep. Restless night. Frequent waking. Dreams about a mob, then amorous dreams with an emission. Confused dreams about being pursued. He dreams that he is dissecting one of his friends. He dreams that he sees people skate on the Seine, in summer. She dreams that she sees acquaintances walk on water. She dreams that she is sick in a dirty hospital, full of vermin; water flows from her mouth. Dream about large-lice. She dreams that she sees a large, black figure flying to the clouds. He dreams that he is to die in a prison, whence he escapes by crawling out. Shuddering all over, eight or ten times in succession. Shuddering in the evening. Shuddering and twitching. Fever.
+Sore throat, getting worse until evening. Scraping in the throat. Sore throat every evening. Transitory choking, especially after supper. Dryness of the throat. Scraping at the tonsils, when swallowing. Sore throat, with constriction of the pharynx. Constant swallowing of saliva.
 
-CUTANEOUS: Pimples in the face, on the forehead, temples, chin, &c., vesicular with a black point in the center. Miliary pimples at the nape of the neck, on a red base. Red pimples on the hands, passing off soon. Red, inflamed pimples on the temples, shoulders, arms, legs. Inflamed pimples on the back, red all around, white in the middle, with a black point in the center. Red inflamed pimples in the face, evening. Smarting pimples on the back, white at their tips. Red inflamed pimples on the left shoulder and arm. White blotches above the left breast. A number of small pimples on the left knee, black at the center. Small red pimples on the feet, on taking them out of the warm water. Red pimples on the shoulders. Small red pimples and itching on the right calf. Red pimples with a black point in the middle, on the right side of the neck. Miliary pimples on the calves, with itching. Miliary eruption at the inside of the thighs, with itching. Former pimples at the nape of the neck reappear. Miliary pimples at the inside of the arms. White pimples on the forehead.
+#### Stomach &c.
 
-GENERAL: Increase of physical strength. Swelling of the breasts, face, and then of the whole body. Itching all over. Face, hands and feet look red. Tickling all over. Starting when sitting or lying in the evening. Prickling all over, the whole day. Prickling all over, especially at the front part of the thigh. Weariness, dizziness, faint feeling. Shivering, heat and dryness of the extremities. Itching of the skin. Heaviness. Itching here and there, at night.
+Stomach-ache, and dartings in the umbilical region. Violent colic. Slight colic.
+
+#### Stool
+
+Soft stool, in the evening. Diarrhoea evening and next morning. Hard and scanty stool.
+
+#### Urinary, genital, &c.
+
+Frequent and copious discharge of a watery, yellow-greenish urine. Red urine. Yellow, clear urine. Frequent and copious micturition. Continual erection, without desire. Leucorrhoea. Shifting pain in the uterus, in the evening. Painful stitch in the uterus. Painful dartings, heat and itching in the uterus.
+
+#### Bronchial, chest
+
+Thirst with hoarseness, towards evening. Dry and convulsive cough. Numbness while drawing breath. Pain in the breasts, when drawing breath. Pain in the chest, worse when touched. Oppression on the chest, in the evening.
+
+#### Back
+
+Tickling at the nape of the neck and between the shoulders. Itching of the nape of the neck and back. Frequent pain in the loins, when standing. Itching of the back.
+
+#### Extremities
+
+Bruising pain on the shoulders and arms. Darting at the arms. Itching of the forearm, in the evening. Pain in the bend of the right arm. Itching of the forearm, in the evening. Tickling at the left wrist. Tickling at the wrists. Darting in the back of the left hand. Itching at the backs of the hands. Itching of the back of the hand, with redness and swelling of the veins. Tremor of the hands. Darting and itching at the first phalanx of the middle-finger. Tingling in the tips of the middle and index fingers. Itching at the ring-finger. Itching of first phalanx of right index-finger. Redness and itching at the right hip. Itching as from nettles in the bend of the thigh. The skin on the left thigh peels off. Weakness of the lower limbs. The knee and upper portion of the left lower limb feel tired. Violent lancination above the left knee-pan. Beating above the left knee-pan. Weariness of the knees, especially the left, in the evening. Intense itching at the right instep. Cold sweat at the feet, followed by excessive coldness, in the evening. Ganglion under the foot, hard, swollen, and painful when walking.
+
+#### Sleep, fever
+
+Yawning. Drowsy. Uneasy sleep. Restless night. Frequent waking. Dreams about a mob, then amorous dreams with an emission. Confused dreams about being pursued. He dreams that he is dissecting one of his friends. He dreams that he sees people skate on the Seine, in summer. She dreams that she sees acquaintances walk on water. She dreams that she is sick in a dirty hospital, full of vermin; water flows from her mouth. Dream about large-lice. She dreams that she sees a large, black figure flying to the clouds. He dreams that he is to die in a prison, whence he escapes by crawling out. Shuddering all over, eight or ten times in succession. Shuddering in the evening. Shuddering and twitching. Fever.
+
+#### Cutaneous
+
+Pimples in the face, on the forehead, temples, chin, &c., vesicular with a black point in the center. Miliary pimples at the nape of the neck, on a red base. Red pimples on the hands, passing off soon. Red, inflamed pimples on the temples, shoulders, arms, legs. Inflamed pimples on the back, red all around, white in the middle, with a black point in the center. Red inflamed pimples in the face, evening. Smarting pimples on the back, white at their tips. Red inflamed pimples on the left shoulder and arm. White blotches above the left breast. A number of small pimples on the left knee, black at the center. Small red pimples on the feet, on taking them out of the warm water. Red pimples on the shoulders. Small red pimples and itching on the right calf. Red pimples with a black point in the middle, on the right side of the neck. Miliary pimples on the calves, with itching. Miliary eruption at the inside of the thighs, with itching. Former pimples at the nape of the neck reappear. Miliary pimples at the inside of the arms. White pimples on the forehead.
+
+#### General
+
+Increase of physical strength. Swelling of the breasts, face, and then of the whole body. Itching all over. Face, hands and feet look red. Tickling all over. Starting when sitting or lying in the evening. Prickling all over, the whole day. Prickling all over, especially at the front part of the thigh. Weariness, dizziness, faint feeling. Shivering, heat and dryness of the extremities. Itching of the skin. Heaviness. Itching here and there, at night.
 
 ## PETIVERIA TETRANDRA (GOM.)
 
@@ -1788,27 +2034,47 @@ Fifth prover: Miss Nina, 14 years old, sanguine temperament, cheerful dispositio
 
 Sixth prover: Mr. Cyprien Huet, 51 years old, sanguine temperament, robust constitution, serious disposition, red conjunctiva, weak sight, redness of the margin of the eyelids. Very gay. He laughs and sings all day. Deep sleep, commencing sooner and ending later than usual, for four days. uarrelsome dreams, second day. Violet-colored spots elongated horizontally, on the right hypochondrium. Dull pain at a point on the hairy scalp, and pressure at the occiput on the right side. Boring pain at the top of the forehead, second day. Contusive pain at the zygomata. Violent lancinations in the upper part of the forehead and in the left side of the head, for one minute, second day, noon. Pain in the upper part of the left parietal bone, as if the skull would split. Boring pains in the right upper lid, first day. Dull pain at the right eye, as from a blow, relieved by pressure, second day, noon. Slight pain in the nose. Intense and sudden itching on the dorsum of the nose. Stoppage of the right ear, with hard hearing. Contusive pains in the outer parts of the orbits. Sensation as of a pustule on the cheek, of the size of a pea, for some seconds. Violent itching at the same place. Sensation in the throat as from swallowing some astringent substance. Borborygmi when lying down, second day, morning. Lancination in the hypochondria. Mucous diarrhoea, dark-colored, mixed with faecal matter in hard and single fragments, third day. Light-colored and copious urine, second and third day. Dry heat in the palms of the hands, for several days. Sense of contusion in the muscles of the right forearm, at the inner side between the radius and cubitus, first day, morning. Crampy pain in the muscles of the right hand, especially at the thumb, first day, morning. Dull pain and numbness, as is experienced when pressing the brachial nerve where it passes over the internal condyle of the humerus ; aggravated by contact, first day, noon. Violent crampy pain in the muscles of the palm of the right hand, for five minutes. Crampy pain in the left little finger. Numbness of the fingers of the right hand for several hours, first day, after 12. Lancination and heat at the tip of the right thumb, as if there were a whitlow, extending to the first phalangeal articulation. Heaviness and numbness of the extremities, first day, evening. Contusive pain at the forearm. Itching at the last fingers. Numbness of the extremities after rising from bed, second day, three different times. Itching in the palm of the left hand. Pain in the external middle part of the right forearm, as if needles were thrust in. A similar feeling at the left arm, but less distinct. On rising from bed, in the morning, numbness and itching at the right foot, first day. Dull pain in the knee-joint and bend of the knee, especially the first day. Numbness and slight itching of the right leg, down to the foot, second day, noon. Slight, acute and circumscribed pains in the groins, repeatedly and at intervals. Heat in the loins, second day. Dry heat all over, especially in the palms of the hands. General weakness, every morning after rising from bed.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-MENTAL, MORAL, HEAD: Sad. Sad, motionless, speechless. Confused ideas. Merry, disposed to sing. Boring pain at the top of the forehead. Lancinations in forehead and left side of the hand. Splitting pain in left parietal bone. Pain and head in forehead, with pressure on the eyes. Numbness and compressive sensation at the head as from a warm bandage. Sensation as if the finger were pressed on the right temple. Lancing pain in the temples, shifting to the vertex where she feels a burning. Pain at vertex, as from a blow. Numb pain, with pressure, in the temples. Heaviness in the forehead when stooping. Headache, with small pulse and hot face. Painful stitch in forehead, worse when opening the eyes. Stabbing sensation in right temple. Dull, beating pain in left temple. Compressive pain in forepart of head. Headache on waking. Heaviness of the head, also at the vertex. Sense of fullness in the head, as if it would split. Sense as if hot water were thrown on the hairy scalp. Deep-seated pain in upper part of the brain, less when walking about. Dull pain at a point on the hairy scalp.
+#### Mental, moral, head
 
-EYES, &c.: Lachrymation and feeling as of sand in the eyes. Boring pains in right upper lid. Dull pain at the right eye as from a blow. Pain as if the eyes were driven out. Stinging under the left lower lid. Redness of the conjunctiva. The flame of the candle looks yellow. Eyes half closed, bloated. Weight at the eyelids, she has to close them and then sees figures. Dimness of sight. Painful burning at the margin of the eyelids. Toothache. Sense of heat in the face. Itching of the dorsum of the nose. Nose inflamed, shining. Pain at the alae nasi, followed by bloating of the dorsum of the nose. Stoppage of the right ear. Report in the ears when lying down. The left ear is hot and red.
+Sad. Sad, motionless, speechless. Confused ideas. Merry, disposed to sing. Boring pain at the top of the forehead. Lancinations in forehead and left side of the hand. Splitting pain in left parietal bone. Pain and head in forehead, with pressure on the eyes. Numbness and compressive sensation at the head as from a warm bandage. Sensation as if the finger were pressed on the right temple. Lancing pain in the temples, shifting to the vertex where she feels a burning. Pain at vertex, as from a blow. Numb pain, with pressure, in the temples. Heaviness in the forehead when stooping. Headache, with small pulse and hot face. Painful stitch in forehead, worse when opening the eyes. Stabbing sensation in right temple. Dull, beating pain in left temple. Compressive pain in forepart of head. Headache on waking. Heaviness of the head, also at the vertex. Sense of fullness in the head, as if it would split. Sense as if hot water were thrown on the hairy scalp. Deep-seated pain in upper part of the brain, less when walking about. Dull pain at a point on the hairy scalp.
 
-MOUTH, STOMACH, &c.: Stitching in the upper lip. Dry mouth. Burning in the tongue. Flow of saliva in the evening, with ash-colored sediment and granulations tasting like bile. Sore throat with difficulty of swallowing saliva. Astringent sensation in the throat. Lancinations in the epigastrium and stomach. Stomach-ache, with cold feeling internally. Acute pain in stomach when rising from a chair. Circumscribed pains in the groins. Rumbling. Lancing pain in the spleen. Dull pain in bowels.
+#### Eyes, &c.
 
-STOOL: Constipation. Slimy diarrhoea. She urinates every five minutes, with heat in the urethra. Light-colored urine.
+Lachrymation and feeling as of sand in the eyes. Boring pains in right upper lid. Dull pain at the right eye as from a blow. Pain as if the eyes were driven out. Stinging under the left lower lid. Redness of the conjunctiva. The flame of the candle looks yellow. Eyes half closed, bloated. Weight at the eyelids, she has to close them and then sees figures. Dimness of sight. Painful burning at the margin of the eyelids. Toothache. Sense of heat in the face. Itching of the dorsum of the nose. Nose inflamed, shining. Pain at the alae nasi, followed by bloating of the dorsum of the nose. Stoppage of the right ear. Report in the ears when lying down. The left ear is hot and red.
 
-BRONCHIAL: Cough with hoarseness. Suffocation, with cold feet, in bed. Fetid breath. Pain at the sternum when stooping. Deep-seated pain under the sternum. Tightness and beating in the region of the heart.
+#### Mouth, stomach, &c.
 
-EXTREMITIES: Heat in the loins. Twisting sensation at the shoulder-blade, when stooping. Sensation in the spine as if strained when lying down. Prickings at right shoulder, followed by inflammatory redness. The left arm feels weary and numb. Pain at left arm, with large, red, inflamed spot. Burning pain at left radius. Inflammatory redness at left forearm. Sense of paralysis at the forearm and phalanges. Shootings and itching at the inner forearm. Numbness at the inside of the forearm. Sharp pain and rough feeling at the forearm. Pain in the forearm. Contusive sensation at right forearm. Pricking pain at the outer and middle part of the right forearm. Numbness of the right fingers. Stinging pains at the elbow. $5. Numbness at the wrist with sensitiveness to contact. Internal sharp pain in right wrist. Crampy pain in the palm of the hand. Sweaty in the palms of the hands. Pain in the fingers of the right hand, as from a blow. Pain in the right hand. Dry heat in the palms of the hands. Crampy pain in the muscles of the right hand. Numbness of the tips of the fingers. Itching and inflammatory swelling of the ball of the left thumb. Cramp in the ring-finger. Sudden pain from the little finger to the extent of the forearm, with constriction at the elbow. Darting and heat at the tip of the right thumb. Numbness of the lower limbs. Biting sensation at right thigh, with itching and smarting after scratching. Cramp in the calves, at night. Numbness of the legs, also with weakness. Contusive pain at the calf. Numbness and itching of the right leg. Sudden numbness of the knees. Dull pain in the knee joint. Lancing pain in the metatarsal bone. Painful pricking in the left fifth toe, 'followed by a sensation as if it would turn.
+Stitching in the upper lip. Dry mouth. Burning in the tongue. Flow of saliva in the evening, with ash-colored sediment and granulations tasting like bile. Sore throat with difficulty of swallowing saliva. Astringent sensation in the throat. Lancinations in the epigastrium and stomach. Stomach-ache, with cold feeling internally. Acute pain in stomach when rising from a chair. Circumscribed pains in the groins. Rumbling. Lancing pain in the spleen. Dull pain in bowels.
 
-SLEEP: Drowsy, yawning. Deep sleep. Drowsy after breakfast and dinner. Light sleep. Sad dreams about sick persons. Dreams about quarrelling. Unpleasant dreams. Sad dreams. Dreams about dead bodies, she wakes with a start and covered with cold sweat. Quarrelsome dreams.
+#### Stool
 
-FEVER: Febrile heat, pale face, cold hands. Heat all over. Dry heat all over. Shuddering all over. Cold feeling in the bones. Profuse cold sweat and chilliness, first part of the night.
+Constipation. Slimy diarrhoea. She urinates every five minutes, with heat in the urethra. Light-colored urine.
 
-CUTANEOUS: Violet-colored spots on the right hypochondrium. Two yellow spots on the neck.
+#### Bronchial
 
-GENERAL: Heaviness and numbness of the extremities. Weakness every morning. The body feels insensible when lying down, as if in a swoon. Prostration. Dartings through the whole body, followed, by itching and violet-colored spots on the arm, back and feet. Numbness of the arms and legs. Contusive pain in the arms and legs. Heaviness of the limbs.
+Cough with hoarseness. Suffocation, with cold feet, in bed. Fetid breath. Pain at the sternum when stooping. Deep-seated pain under the sternum. Tightness and beating in the region of the heart.
+
+#### Extremities
+
+Heat in the loins. Twisting sensation at the shoulder-blade, when stooping. Sensation in the spine as if strained when lying down. Prickings at right shoulder, followed by inflammatory redness. The left arm feels weary and numb. Pain at left arm, with large, red, inflamed spot. Burning pain at left radius. Inflammatory redness at left forearm. Sense of paralysis at the forearm and phalanges. Shootings and itching at the inner forearm. Numbness at the inside of the forearm. Sharp pain and rough feeling at the forearm. Pain in the forearm. Contusive sensation at right forearm. Pricking pain at the outer and middle part of the right forearm. Numbness of the right fingers. Stinging pains at the elbow. $5. Numbness at the wrist with sensitiveness to contact. Internal sharp pain in right wrist. Crampy pain in the palm of the hand. Sweaty in the palms of the hands. Pain in the fingers of the right hand, as from a blow. Pain in the right hand. Dry heat in the palms of the hands. Crampy pain in the muscles of the right hand. Numbness of the tips of the fingers. Itching and inflammatory swelling of the ball of the left thumb. Cramp in the ring-finger. Sudden pain from the little finger to the extent of the forearm, with constriction at the elbow. Darting and heat at the tip of the right thumb. Numbness of the lower limbs. Biting sensation at right thigh, with itching and smarting after scratching. Cramp in the calves, at night. Numbness of the legs, also with weakness. Contusive pain at the calf. Numbness and itching of the right leg. Sudden numbness of the knees. Dull pain in the knee joint. Lancing pain in the metatarsal bone. Painful pricking in the left fifth toe, 'followed by a sensation as if it would turn.
+
+#### Sleep
+
+Drowsy, yawning. Deep sleep. Drowsy after breakfast and dinner. Light sleep. Sad dreams about sick persons. Dreams about quarrelling. Unpleasant dreams. Sad dreams. Dreams about dead bodies, she wakes with a start and covered with cold sweat. Quarrelsome dreams.
+
+#### Fever
+
+Febrile heat, pale face, cold hands. Heat all over. Dry heat all over. Shuddering all over. Cold feeling in the bones. Profuse cold sweat and chilliness, first part of the night.
+
+#### Cutaneous
+
+Violet-colored spots on the right hypochondrium. Two yellow spots on the neck.
+
+#### General
+
+Heaviness and numbness of the extremities. Weakness every morning. The body feels insensible when lying down, as if in a swoon. Prostration. Dartings through the whole body, followed, by itching and violet-colored spots on the arm, back and feet. Numbness of the arms and legs. Contusive pain in the arms and legs. Heaviness of the limbs.
 
 ## PLUMBAGO LITTORALIS (NOBIS)
 
@@ -1850,13 +2116,19 @@ Pain in the belly. Pain at the right shoulder. Frightful dreams, about dead bodi
 
 Pain in the joints. Pain at the right ribs. Pain in the forehead. Slight pain at the right shoulder. Pain in the lower limbs. Passing pains above the right ear.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-HEAD, &c.: 1.Vertigo after eating. Vertigo. Taciturn. Excessive heat about the head. Dartings in the head. Pain in the temples. , Frontal headache. Sensitive smell, all day. Acute pain in the left ear. Heat in the eyes. Inflammation and running of the left eye.
+#### Head, &c.
 
-GASTRIC, &c.: Profuse saliva. Laceration of the commissure of the lips. Milky spittle. Bitter mouth. Aversion to everything. Painful constriction of the throat. Sore throat. Heaviness at the stomach. Pain in the iliac region. Pain in the kidneys ai if pricked. Pain below the false ribs when drawing breath. Costiveness with red urine. Violent sexual desire.
+1.Vertigo after eating. Vertigo. Taciturn. Excessive heat about the head. Dartings in the head. Pain in the temples. , Frontal headache. Sensitive smell, all day. Acute pain in the left ear. Heat in the eyes. Inflammation and running of the left eye.
 
-CHEST, &c.: Pain at the right ribs. Prickings in the cheat. Pain in the chest, on which account he is unable to lean on the arm. Pain in the sides of the chest. Painful stitch in the region of the heart. Pain at the heart. Palpitation of the heart. Passing pains at the neck. Pain in the back. Pain at the right shoulder. Pain at the humerus when lifting anything. Burning pricking at right shoulder. Weakness of the joints of the lower limbs Weakness of the lower limbs. Drowsy. Dreams about dead bodies. Hot arms with cold hands. Internal heat, coming and going. Sense of chilliness when stirring. Heat in the limbs. Very hot, internally, at night. Pulse hard and small. Prostration. Darting pains here and there. Acute pains all over, for three hours. Pain in the joints.
+#### Gastric, &c.
+
+Profuse saliva. Laceration of the commissure of the lips. Milky spittle. Bitter mouth. Aversion to everything. Painful constriction of the throat. Sore throat. Heaviness at the stomach. Pain in the iliac region. Pain in the kidneys ai if pricked. Pain below the false ribs when drawing breath. Costiveness with red urine. Violent sexual desire.
+
+#### Chest, &c.
+
+Pain at the right ribs. Prickings in the cheat. Pain in the chest, on which account he is unable to lean on the arm. Pain in the sides of the chest. Painful stitch in the region of the heart. Pain at the heart. Palpitation of the heart. Passing pains at the neck. Pain in the back. Pain at the right shoulder. Pain at the humerus when lifting anything. Burning pricking at right shoulder. Weakness of the joints of the lower limbs Weakness of the lower limbs. Drowsy. Dreams about dead bodies. Hot arms with cold hands. Internal heat, coming and going. Sense of chilliness when stirring. Heat in the limbs. Very hot, internally, at night. Pulse hard and small. Prostration. Darting pains here and there. Acute pains all over, for three hours. Pain in the joints.
 
 ## RESINA ITU
 
@@ -1906,13 +2178,19 @@ Burning at the vulva followed by violent itching. Crampy pain at the tendo-Achil
 
 Acute pain in the knee joint. The tongue feels big, as if it filled the whole mouth, though the swelling is but trifling. Red tongue. Difficulty of moving the tongue and talking. Inflammation of the tonsils. Pain in the throat and sensation as of a lump in the pharynx. Pain in the left breast worse when walking. Itching at the left breast and nipple, especially in the morning. Pain at the posterior iliac spine when stretching the leg or rising, several days in succession.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-HEAD, &c.: Vertigo as if one would fall to the right. Stupefying pain in the head. Aching pain in forehead and eyes. Beating in the right temple. Twinkling of the eyes. Burning in the eyelids. Muscae volitantes. Lancing pain in left orbit. Earache in damp weather. Sudden report in the ear, with pain extending to the teeth. Coryza. Toothache worse after a cold drink.
+#### Head, &c.
 
-GASTRIC, &c.: Hiccough. Nausea. The tongue feels big as if filling the mouth. Difficulty of moving the tongue. Red tongue. Inflamed tonsils. Sore throat with sensation of a lump. Lancing pain in the region of the liver worse when stooping. Involuntary stools. Diarrhoea, yellow. Burning pain at the anus after sitting. Burning at the vulva.
+Vertigo as if one would fall to the right. Stupefying pain in the head. Aching pain in forehead and eyes. Beating in the right temple. Twinkling of the eyes. Burning in the eyelids. Muscae volitantes. Lancing pain in left orbit. Earache in damp weather. Sudden report in the ear, with pain extending to the teeth. Coryza. Toothache worse after a cold drink.
 
-CHEST, &c.: Itching at the left breast and nipple. Pain in left breast. Stiffness of the nape of the neck. Pain like wry neck. Pain from nape of neck to forehead, causing a numbness and heaviness. Pain at the posterior iliac spine when stretching the leg. Heaviness in the legs. Acute pain in the knee joint. Cramps at left tarsal joint. Numbness of the legs and tarsal joints. Numbness at the tarsal joint. Crampy pain at tendo-Achillis. Moist tetter with itching at right clavicle. Itching red pimples on the right arm. Pimples on left side of neck. Sense of chilliness in hypogastrium.
+#### Gastric, &c.
+
+Hiccough. Nausea. The tongue feels big as if filling the mouth. Difficulty of moving the tongue. Red tongue. Inflamed tonsils. Sore throat with sensation of a lump. Lancing pain in the region of the liver worse when stooping. Involuntary stools. Diarrhoea, yellow. Burning pain at the anus after sitting. Burning at the vulva.
+
+#### Chest, &c.
+
+Itching at the left breast and nipple. Pain in left breast. Stiffness of the nape of the neck. Pain like wry neck. Pain from nape of neck to forehead, causing a numbness and heaviness. Pain at the posterior iliac spine when stretching the leg. Heaviness in the legs. Acute pain in the knee joint. Cramps at left tarsal joint. Numbness of the legs and tarsal joints. Numbness at the tarsal joint. Crampy pain at tendo-Achillis. Moist tetter with itching at right clavicle. Itching red pimples on the right arm. Pimples on left side of neck. Sense of chilliness in hypogastrium.
 
 ## SEDINHA
 
@@ -1938,7 +2216,7 @@ This is an herbaceous plant with a creeping and somewhat ligneous, cylindrical s
 
 Scanty urine. Short-lasting menses. Toothache at night. Acute catarrh. Suffocating cough. Pain in the face. Toothache. Pain and swelling of the face and throat, with inflammation. No sleep for two nights. Stye on the right lower eyelid. Swelling of a cervical glands. Continual redness of the face. Difficult digestion. Pain at the internal canthi of the eyes. Inflammation of the left upper eyelid. Tickling at the lower limbs. Pustules all over, first white, then red, with an intolerable itching now and then. Lancinating pain in the stomach not lasting long. Sense of chilliness in the left side of the chest, after drinking. Violent pain in the left cheek, spreading over the whole face. Discharge of fetid yellow mucus from the left nostril. Sadness. ,Irritable. Drowsiness with headache. Herpetic eruption at the ankle. Nettle-rash fever. Sore throat. Itching. Ptyalism. No appetite. Tongue coated white. No sleep. Drowsy for four hours in the middle of the day. Discharge of white mucus from the vagina. Swelling of the mammary glands with profuse effusion of milk, on the second day. Drowsy all day. Shortly after taking the drug the breasts of a negro-woman of 60 years began to swell and discharged a quantity of milk.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
 Sad. Irritable. Toothache. Pain in the face, also with swelling of the face and throat, and inflammation. Redness of the face. Pain is left cheek, spreading over the face. Stye on right lower lid. Inflammation of left lower lid. Pain at the inner canthi. Discharge of fetid yellow mucus from left nostril. Difficult digestion. No appetite. Tongue coated white. Chilly feeling in left chest, after drinking. Sore throat. Ptyalism. Lancinating pain in the stomach. Scanty urine. Short-lasting menses. Discharge of white mucus from the vagina. Swelling of the mammary glands, with discharge of milk. Tickling at the lower limbs. No sleep. Drowsy with headache: Itching pustules all over, first white, then red. Herpes at the ankle. Nettle-rash with fever.
 
@@ -2352,59 +2630,109 @@ Heat on the malar eminences and forehead, when going out to the open air. Palpit
 
 Palpitation of the heart the whole day. It is caused by the act of swallowing. The palpitation is instantaneous and corresponds to the superior portions of the thorax. (Her lower limbs tremble on account of the hunger.)
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
-EMOTIVE SPHERE. Quarrelsome, irritable mood. Dread of work. Hypochondriac mood. She wants to enjoy a change of scenery, &c. She fancies she is miserable, and dwells much on the future.
+#### Emotive sphere
 
-SENTIENT SPHERE. Crowd of ideas. His attention is easily disturbed by other things.
+Quarrelsome, irritable mood. Dread of work. Hypochondriac mood. She wants to enjoy a change of scenery, &c. She fancies she is miserable, and dwells much on the future.
 
-HEAD: Heat in the head, evening. Heaviness of the head; in the vertex; on stooping and then raising the head again. Catarrhal dullness of the head, especially the forehead. Headache at noon; increased by the smell of spirits. The head feels too heavy, she has to make an effort to support it. Pressure above the eyes, on waking. In the forehead: violent pain, all day; stitching pain; with dullness of the head, and disposition to fall forwards. Slight beating in the temples. 15, Sensation as if the hair would be torn out on the vertex.
+#### Sentient sphere
 
-EYES: Prickling about the lids, the surface of which is red. Spasmodic contraction and twitching of the left upper lid. Burning in the lids. Prickling and burning in the eyes. Congestion of the conjunctiva. Lachrymation on waking.
+Crowd of ideas. His attention is easily disturbed by other things.
 
-EARS: Ringing in the left ear.
+#### Head
 
-NOSE: Repeated sneezing, followed by feeble cough. Nosebleed.
+Heat in the head, evening. Heaviness of the head; in the vertex; on stooping and then raising the head again. Catarrhal dullness of the head, especially the forehead. Headache at noon; increased by the smell of spirits. The head feels too heavy, she has to make an effort to support it. Pressure above the eyes, on waking. In the forehead: violent pain, all day; stitching pain; with dullness of the head, and disposition to fall forwards. Slight beating in the temples. 15, Sensation as if the hair would be torn out on the vertex.
 
-FACE: Face hot and red. Mounting of heat to the face, now and then. Upper lip bleeding, cracked.
+#### Eyes
 
-TEETH: Swelling of the mucous membrane of the inner margin of the two incisores. Teeth covered with white mucus.
+Prickling about the lids, the surface of which is red. Spasmodic contraction and twitching of the left upper lid. Burning in the lids. Prickling and burning in the eyes. Congestion of the conjunctiva. Lachrymation on waking.
 
-MOUTH: Dry mouth. Salt taste. Taste of raw potatoes. The mucous membrane of the velum palati seems to become detached here and there. Tongue swollen, cracked, early in the morning; coated white or yellowish-white; or coated white, with red tip, or yellowish along the median line. Prickling in the right half of the tongue. THROAT: Inflamed fauces, she is unable to swallow the saliva.
+#### Ears
 
-APPETITE: Canine hunger. Food tastes bitter as gall. Great desire for liquor and oranges.
+Ringing in the left ear.
 
-GASTRIC SYMPTOMS: Eructations followed by rumbling in the stomach. Sour eructations causing a cough. Acidity, bitterness, and gulping-up, after eating. Cardialgia after breakfast, dinner, and supper.
+#### Nose
 
-STOMACH: Pain in the stomach, with red face, after breakfast. Spasmodic pains, griping-tearing at night.
+Repeated sneezing, followed by feeble cough. Nosebleed.
 
-ABDOMEN: Pains and working in the bowels, early in the morning. Painfulness of the abdomen to contact along the median line. In the abdomen: pain after eating; spasmodic pains, as though the bowels became twisted together; dull pains in the hypogastric region, at night; pain with chilliness; rumbling: the clothes cause a feeling of tightness. Emission of flatulence, also with colic. Pain, as if sprained, in the right groin.
+#### Face
 
-STOOL AND ANUS: Frequent urging to stool. Stool scanty, with straining, passing off in small, black lumps; she has to strain until tears come; hard, large, lumpy; with violent burning in the anus and rectum; hard and large, followed by two liquid stools. Copious, greenish-yellow diarrhoeic stool.
+Face hot and red. Mounting of heat to the face, now and then. Upper lip bleeding, cracked.
+
+#### Teeth
+
+Swelling of the mucous membrane of the inner margin of the two incisores. Teeth covered with white mucus.
+
+#### Mouth
+
+Dry mouth. Salt taste. Taste of raw potatoes. The mucous membrane of the velum palati seems to become detached here and there. Tongue swollen, cracked, early in the morning; coated white or yellowish-white; or coated white, with red tip, or yellowish along the median line. Prickling in the right half of the tongue. THROAT: Inflamed fauces, she is unable to swallow the saliva.
+
+#### Appetite
+
+Canine hunger. Food tastes bitter as gall. Great desire for liquor and oranges.
+
+#### Gastric symptoms
+
+Eructations followed by rumbling in the stomach. Sour eructations causing a cough. Acidity, bitterness, and gulping-up, after eating. Cardialgia after breakfast, dinner, and supper.
+
+#### Stomach
+
+Pain in the stomach, with red face, after breakfast. Spasmodic pains, griping-tearing at night.
+
+#### Abdomen
+
+Pains and working in the bowels, early in the morning. Painfulness of the abdomen to contact along the median line. In the abdomen: pain after eating; spasmodic pains, as though the bowels became twisted together; dull pains in the hypogastric region, at night; pain with chilliness; rumbling: the clothes cause a feeling of tightness. Emission of flatulence, also with colic. Pain, as if sprained, in the right groin.
+
+#### Stool and anus
+
+Frequent urging to stool. Stool scanty, with straining, passing off in small, black lumps; she has to strain until tears come; hard, large, lumpy; with violent burning in the anus and rectum; hard and large, followed by two liquid stools. Copious, greenish-yellow diarrhoeic stool.
 
 Constipation for five days. Violent colic previous to stool. Alternate protrusion and retraction of the rectum during stool, with feeling of chilliness in the body.
 
-URINARY ORGANS: Urine reddish, mingled with mucus. Thick urine; it becomes covered with white mucus after standing; turbid, of a dingy-yellow, with copious white sediment; turbid, dingy-yellow, covered with an oily pellicle. Pain in the urethra, after urinating.
+#### Urinary organs
 
-SEXUAL PARTS: Weight in the right testicle, the whole day. Suppression of the menses. Menses smelling of foul fish, mixed with black coagula. Small pimples and intolerable itching of the labia. Spasmodic pains striking through the uterus. Burning and itching in the vagina.
+Urine reddish, mingled with mucus. Thick urine; it becomes covered with white mucus after standing; turbid, of a dingy-yellow, with copious white sediment; turbid, dingy-yellow, covered with an oily pellicle. Pain in the urethra, after urinating.
 
-WINDPIPE: In the windpipe: tearing, prickling, with cough; tearing, with phlegm; sensation as of an obstacle, followed by cough and expectoration of a lump of hard, yellowish-gray mucus. Hoarseness, on walking. Cough, with expectoration of yellow mucus, at night. Dry cough, day and night. Cough, as from stoppage in the pharynx. Expectoration of lumps of black blood, early in the morning.
+#### Sexual parts
 
-CHEST: Constriction and difficulty of breathing, caused by dryness of the mouth. Oppression after supper. Tearing in the chest, also with dryness of the mouth. Sensation, on making the least motion, as though a hollow body were moving about in the chest quickly and with a noise, after which she fancies she will faint, early in the morning. Prickling as from a thousand pins, on the inner surface of the sternum. Violent stitching pain above the right breast. The mammae are painful, especially when raising the arm. Congestions to the chest. Acute pain in the left side, like a stitch. Painful stitches in the right side. Palpitation of the heart, for moments; at night; when lying; when raising one's-self; as though the heart would turn; with fainting feeling; with oppression of the chest (less when lying); irregular (after eating).
+Weight in the right testicle, the whole day. Suppression of the menses. Menses smelling of foul fish, mixed with black coagula. Small pimples and intolerable itching of the labia. Spasmodic pains striking through the uterus. Burning and itching in the vagina.
 
-BACK: Violent beating in the spine, early, when lying. Prickling sensation in the spine, during sleep, waking her. Stinging pain in the large dorsal muscle, right side, when drawing breath. Burning and painful sensation on the fifth dorsal vertebra, caused by the friction of the clothes. Sensation of weariness in the whole back. Stiffness in the muscles of the back. Sense of weight in the back part of the neck. Sensation as if something on the os-sacrum became detached. Pain at the sacrum, when walking or touching the part. Tingling at the os-sacrum. Beating in right shoulder. Prickling in the psoas-muscles. Violent beating in the loins. Pain in the lumbar vertebrae, impeding walking. Intolerable pain in the lumbar region, obliging her to walk bent.
+#### Windpipe
 
-UPPER EXTREMITIES: Feeling of weariness in the muscles, posteriorly. Pain as if sprained, in the right upper arm, after leaning on the elbow. Beating in the middle portion of the triceps brachealis. Heat in the hands. Stinging in the left little finger. Beating in the right ring-finger.
+In the windpipe: tearing, prickling, with cough; tearing, with phlegm; sensation as of an obstacle, followed by cough and expectoration of a lump of hard, yellowish-gray mucus. Hoarseness, on walking. Cough, with expectoration of yellow mucus, at night. Dry cough, day and night. Cough, as from stoppage in the pharynx. Expectoration of lumps of black blood, early in the morning.
 
-LOWER EXTREMITIES: Acute pains in the hip joint, caused by the least motion. Painful pressure on the hip joint, as with an iron bar, compelling her to lie down. In the left gluteus muscle: beating; pain, accompanied by loathing. Lancinations in the posterior part of the right thigh. Weary feeling in the muscles of the right side, after walking. Feeling of dislocation in the hip-joint, with pain in the Womb, after a slight exertion. Shooting pain in the posterior and inferior femoral muscles, when bending the knee. Beating in the internal femoral muscles. Alternate beating and throbbing above the patella, in both limbs. Pain as if sprained, in the whole of the vertebral column, striking through the posterior parts of the thigh, and extending down to the heels. Drawing pain in the posterior part of the right lower limb, from the gluteus muscle down to the heel.
+#### Chest
 
-GENERAL SYMPTOMS: General and partial debility. Debility, she is about to faint. Weariness in all the limbs, on waking. Pain as if bruised, in bed, preventing her from stirring. Cold water causes a sense of oppression.
+Constriction and difficulty of breathing, caused by dryness of the mouth. Oppression after supper. Tearing in the chest, also with dryness of the mouth. Sensation, on making the least motion, as though a hollow body were moving about in the chest quickly and with a noise, after which she fancies she will faint, early in the morning. Prickling as from a thousand pins, on the inner surface of the sternum. Violent stitching pain above the right breast. The mammae are painful, especially when raising the arm. Congestions to the chest. Acute pain in the left side, like a stitch. Painful stitches in the right side. Palpitation of the heart, for moments; at night; when lying; when raising one's-self; as though the heart would turn; with fainting feeling; with oppression of the chest (less when lying); irregular (after eating).
 
-SKIN: Small pimples on the back; causing a violent itching. Small red pimples on the cheeks. The skin in the face peels off a little.
+#### Back
 
-SLEEP: Irresistible drowsiness. Very sleepy in the evening. Restless sleep. Starting from sleep, as in affright. Sleepless. Confused dreams, about fires, revolution, corpses, thieves, &c. Amorous dream. He dreams that he is to dress or draw the body of a drowned person, but is prevented in consequence of the body falling all the time on the clothes or paper. Dreams about men who become transformed to talking animals. He dreams that his hands are cut to pieces. He dreams that he is falling from a steeple. She dreams that she is eating human flesh. She dreams that she is swimming in a river, and that she cannot get out of it.
+Violent beating in the spine, early, when lying. Prickling sensation in the spine, during sleep, waking her. Stinging pain in the large dorsal muscle, right side, when drawing breath. Burning and painful sensation on the fifth dorsal vertebra, caused by the friction of the clothes. Sensation of weariness in the whole back. Stiffness in the muscles of the back. Sense of weight in the back part of the neck. Sensation as if something on the os-sacrum became detached. Pain at the sacrum, when walking or touching the part. Tingling at the os-sacrum. Beating in right shoulder. Prickling in the psoas-muscles. Violent beating in the loins. Pain in the lumbar vertebrae, impeding walking. Intolerable pain in the lumbar region, obliging her to walk bent.
 
-FEVER: Chilliness and sensation of internal coldness. Coldness, with chattering of teeth. Repeated chilly creepings through the whole body, in the evening. Feeling of coldness all over, she is unable to get warm, her cheeks being very red, in the afternoon. Heat all over, with sweat. Violent paroxysms of heat, suddenly passing through the whole body, and proceeding from the vertex. Alternate burning heat and chilliness, at night, in bed. Exhalations from the skin, when performing the least work. Sweat all over, early in the morning, in bed. Cold night-sweat. The sweat smells of potatoes, in bed. Pulse irritated; irregular; hard and tense.
+#### Upper extremities
+
+Feeling of weariness in the muscles, posteriorly. Pain as if sprained, in the right upper arm, after leaning on the elbow. Beating in the middle portion of the triceps brachealis. Heat in the hands. Stinging in the left little finger. Beating in the right ring-finger.
+
+#### Lower extremities
+
+Acute pains in the hip joint, caused by the least motion. Painful pressure on the hip joint, as with an iron bar, compelling her to lie down. In the left gluteus muscle: beating; pain, accompanied by loathing. Lancinations in the posterior part of the right thigh. Weary feeling in the muscles of the right side, after walking. Feeling of dislocation in the hip-joint, with pain in the Womb, after a slight exertion. Shooting pain in the posterior and inferior femoral muscles, when bending the knee. Beating in the internal femoral muscles. Alternate beating and throbbing above the patella, in both limbs. Pain as if sprained, in the whole of the vertebral column, striking through the posterior parts of the thigh, and extending down to the heels. Drawing pain in the posterior part of the right lower limb, from the gluteus muscle down to the heel.
+
+#### General symptoms
+
+General and partial debility. Debility, she is about to faint. Weariness in all the limbs, on waking. Pain as if bruised, in bed, preventing her from stirring. Cold water causes a sense of oppression.
+
+#### Skin
+
+Small pimples on the back; causing a violent itching. Small red pimples on the cheeks. The skin in the face peels off a little.
+
+#### Sleep
+
+Irresistible drowsiness. Very sleepy in the evening. Restless sleep. Starting from sleep, as in affright. Sleepless. Confused dreams, about fires, revolution, corpses, thieves, &c. Amorous dream. He dreams that he is to dress or draw the body of a drowned person, but is prevented in consequence of the body falling all the time on the clothes or paper. Dreams about men who become transformed to talking animals. He dreams that his hands are cut to pieces. He dreams that he is falling from a steeple. She dreams that she is eating human flesh. She dreams that she is swimming in a river, and that she cannot get out of it.
+
+#### Fever
+
+Chilliness and sensation of internal coldness. Coldness, with chattering of teeth. Repeated chilly creepings through the whole body, in the evening. Feeling of coldness all over, she is unable to get warm, her cheeks being very red, in the afternoon. Heat all over, with sweat. Violent paroxysms of heat, suddenly passing through the whole body, and proceeding from the vertex. Alternate burning heat and chilliness, at night, in bed. Exhalations from the skin, when performing the least work. Sweat all over, early in the morning, in bed. Cold night-sweat. The sweat smells of potatoes, in bed. Pulse irritated; irregular; hard and tense.
 
 ## SPIGGURUS MARTINI (NOBIS)
 
@@ -2444,7 +2772,7 @@ Itching all over, with bleeding after scratching. Pain in the right arm, as if t
 
 The scales on the head and in the whiskers are less; before, they were so thick that he did not feel either the cold or heat, and was insensible to water. Irritable, he quarrels about the least trifle. Cracks between the toes. Violent pain in the left kidney. Constant whizzing in the ears. The speech is sometimes embarrassed. He discovers some gray hairs. His hair falls off. Everything is disagreeable to him; he desires to travel.
 
-ARRANGEMENT ACCORDING TO HAHNEMANN.
+### Arrangement according to Hahnemann
 
 Dizziness behind the head. Capricious mood. Everything is disagreeable to him, he desires to travel. Prickings on the vertex. Darting through the left skull-bones. Hemicrania. Boring pain in the skull, after breakfast. Heaviness of the head. The hair falls off. Lachrymation. Deafness on the left ear. Whizzing in the ears. Buzzing in the ears. Pain in the articulation of the jaw. Bleeding of the gums. Pain at the right zygoma. Prickings at the zygoma. Bitter mouth, with salt taste. Nausea, with piercing pain in the back. Desire to vomit at the sight of food. Drowsy after dinner. Embarrassed speech. Constrictive pain in the stomach. Dry and full feeling at stomach, at night. Painful swelling of the abdomen, before dinner. Shootings in the epigastrium. Pain in right side as from a plug. Pain around the navel. Violent pain in the left kidney. Sense of fullness in the abdomen. Pain in the urethra, after urinating, worse when stooping. Itching of the pubis, after taking tea. Cough with pain in the chest. Stitch at the heart. Constriction from the neck to the diaphragm. Pain in the intercostal muscles. Pain in right arm, as if broken. Pains at lower end of the right forearm. Pain at the right arm, as if the stretching were prevented by a string. The knees give way. Heat and numbness of the feet. Cracks between the toes. Lancing pain in the right big toe. Yawning. Morning-dream about a serpent. Merry dreams. Shuddering. Shuddering, with chattering of the teeth. Desquamation at the whiskers. Itching all over, with bleeding after scratching. Pains in the toes, right temple. Feels better in the open air.
 
