@@ -30,6 +30,9 @@ artifacts/corpus/
 *.egg-info/
 *.tsbuildinfo
 
+# Proprietary source dataset (private repository)
+/dataset/
+
 # Local corpus cache and database artifacts
 .cache/
 server-data/
@@ -48,7 +51,7 @@ Thumbs.db
 node_modules/
 
 # Local agent instructions
-AGENTS.md
+CLAUDE.md
 
 # Logs
 *.log

@@ -7,11 +7,11 @@ from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_TRACKED_FILE_BYTES = 8_000_000
-LARGE_SOURCE_FILES = {PurePosixPath("dataset/corpus.json")}
 FORBIDDEN_ROOTS = {
     "build",
     "artifacts",
     "corpora",
+    "dataset",
     "dist",
     "output",
     "server-data",
@@ -55,7 +55,6 @@ def violations() -> tuple[str, ...]:
         if (
             path.is_file()
             and path.stat().st_size > MAX_TRACKED_FILE_BYTES
-            and relative not in LARGE_SOURCE_FILES
         ):
             found.append(f"oversized tracked file: {path_text}")
     return tuple(found)
