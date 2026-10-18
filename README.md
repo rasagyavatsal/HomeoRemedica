@@ -19,7 +19,7 @@ Pydantic · OpenRouter · Z.AI · pytest · Ruff · Pyright
 - **Hybrid retrieval:** combines keyword and vector search through reciprocal-rank fusion, with
   optional filtering by book and up to eight retrieved passages per answer.
 - **Structured corpus:** preserves book, remedy, section, and passage metadata across 118,259
-  individually embedded passages. See the [dataset guide](dataset/README.md) for source details.
+  individually embedded passages.
 - **Verified corpus releases:** builds immutable SQLite artifacts with manifests and SHA-256
   digests, validates database and index integrity, and verifies releases before activation.
 - **Recorded retrieval experiments:** versions query sets and result records, caches embeddings
@@ -151,7 +151,8 @@ uv run --locked chat --list-books
 Repeat `--book` to search up to four selected books. Conversation history stays in memory for
 the current CLI session.
 
-The source dataset is included; generated SQLite releases are not. Building a release calls
+The source dataset is proprietary and not included; place it in `dataset/` to build releases.
+Generated SQLite releases are not included either. Building a release calls
 OpenRouter to embed the corpus. Use a unique version for each build; existing releases cannot
 be overwritten. To use an existing release instead, set `RAG_CORPUS_DIR` to its parent directory
 containing `active.json`.
@@ -287,11 +288,10 @@ runs TypeScript type checking. `make web` starts Vite and FastAPI together with 
 - `web/` — minimal React/Vite chat interface.
 - `src/experimental/` — experimental retrieval, scoring, and terminal chat.
 - `src/corpus/` — source validation, chunking, embeddings, and release tooling.
-- `dataset/` — raw texts, processed books, and merged corpus; see the [dataset guide](dataset/README.md).
+- `dataset/` — local checkout of the private source dataset; ignored by Git.
 - `tests/` — Python test suite.
 
 ## License
 
-Software and documentation: [MIT](LICENSE). Dataset compilation and processing:
-[CC BY 4.0](dataset/LICENSE.md). Underlying historical works retain their applicable rights
-and source notices.
+Software and documentation: [MIT](LICENSE). The dataset is proprietary and not distributed with
+this repository. Underlying historical works retain their applicable rights and source notices.

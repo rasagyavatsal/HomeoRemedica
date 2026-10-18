@@ -7,5 +7,5 @@ Report a suspected exposure privately through GitHub's private vulnerability rep
 repository. Include only the minimum information needed to locate the problem and revoke any
 affected credential immediately.
 
-The source dataset is public. Keep `OPENROUTER_API_KEY` and `ZAI_API_KEY` out of commits and use the
+The source dataset is proprietary; never commit it to this repository. Keep `OPENROUTER_API_KEY` and `ZAI_API_KEY` out of commits and use the
 ignored `.env` file or the process environment for local development.
