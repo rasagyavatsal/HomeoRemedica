@@ -6,8 +6,10 @@ literature and generating answers with source citations. It makes **5,846 chunks
 The source works are by Allen, Boericke, Clarke, and Kent. Historical reference only; not medical
 advice.
 
+**Live app:** <https://homeoremedica-619837289655.asia-south1.run.app>
+
 The project covers hybrid search and answer generation. Search runs against a Qdrant collection
-built by the HomeoRemedica-dataset repository; external APIs provide query embeddings and
+built by the private [HomeoRemedica-dataset](https://github.com/rasagyavatsal/HomeoRemedica-dataset) repository; external APIs provide query embeddings and
 generated answers. A React frontend talks to the production pipeline through a Hono API server on Node.js.
 
 **Stack:** TypeScript · Node.js · Hono · Zod · React · Vite · Qdrant · OpenRouter · Z.AI ·
@@ -25,7 +27,7 @@ Vitest
 
 ## Architecture
 
-The dataset repository chunks the source texts and indexes them in Qdrant. The `production`
+The [HomeoRemedica-dataset](https://github.com/rasagyavatsal/HomeoRemedica-dataset) repository chunks the source texts and indexes them in Qdrant. The `production`
 pipeline searches that collection and generates the answer:
 
 ```mermaid
@@ -66,7 +68,7 @@ cp .env.example .env
 ```
 
 Set `QDRANT_URL`, `QDRANT_API_KEY`, `OPENROUTER_API_KEY`, and `ZAI_API_KEY` in `.env`. The
-collection is built and updated by `scripts/embed_chunks.py` in the HomeoRemedica-dataset
+collection is built and updated by `scripts/embed_chunks.py` in the [HomeoRemedica-dataset](https://github.com/rasagyavatsal/HomeoRemedica-dataset)
 repository.
 
 ## Web app
@@ -140,6 +142,10 @@ never reaches the browser bundle.
 
 ## Deployment
 
+The app runs on Cloud Run at <https://homeoremedica-619837289655.asia-south1.run.app>. Every push
+to `main` runs `npm run check` and deploys through the `Deploy` GitHub Actions workflow, which
+authenticates to Google Cloud with Workload Identity Federation. To deploy manually:
+
 ```sh
 npm run deploy
 ```
@@ -151,5 +157,5 @@ Cloud Run service in `asia-south1`. The service keeps its configuration between 
 
 ## License
 
-Software and documentation: [MIT](LICENSE). The dataset is proprietary and not distributed with
-this repository. Underlying historical works retain their applicable rights and source notices.
+Software and documentation: [MIT](LICENSE). The dataset is proprietary, lives in the private
+[HomeoRemedica-dataset](https://github.com/rasagyavatsal/HomeoRemedica-dataset) repository, and is not distributed with this repository. Underlying historical works retain their applicable rights and source notices.
