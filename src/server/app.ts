@@ -11,7 +11,6 @@ import { BOOKS, CorpusError } from './qdrant.ts'
 import { type Settings, buildService, loadSettings } from './runtime.ts'
 import {
   type BookCatalog,
-  type BookSummary,
   type ChatRequest,
   ChatRequestSchema,
   type ChatResponse,
@@ -21,7 +20,6 @@ import { advanceHistory } from './conversation.ts'
 import { ChatFailure, ConfigurationError, FAILURE_DETAILS, type FailureKind } from './errors.ts'
 
 export interface ChatHandler {
-  readonly books: readonly BookSummary[]
   chat(request: ChatRequest): Promise<ChatResponse>
 }
 
@@ -108,10 +106,6 @@ export function createApp(
     } catch (error) {
       return setupFailure(c, error, 'Failed to initialize production chat')
     }
-
-    const known = new Set(service.books.map((book) => book.bookId))
-    const unknown = [...new Set(request.bookIds ?? [])].filter((bookId) => !known.has(bookId)).sort()
-    if (unknown.length) return c.json({ detail: `unknown book IDs: ${unknown.join(', ')}` }, 400)
 
     try {
       const response = await service.chat(request)

@@ -4,8 +4,7 @@ import { version } from '../../package.json'
 import { loadBooks, sendMessage } from './api'
 import type { Book, Source, Turn } from './api'
 import { Answer } from './Answer'
-import { BooksDialog, bookLabel } from './BooksDialog'
-import { AlertIcon, ArrowUpIcon, BookIcon, MarkIcon, PlusIcon } from './icons'
+import { AlertIcon, ArrowUpIcon, MarkIcon, PlusIcon } from './icons'
 
 interface Message extends Turn {
   id: number
@@ -13,7 +12,6 @@ interface Message extends Turn {
 }
 
 const COMMANDS = [
-  { name: '/books', description: 'Choose which books to search' },
   { name: '/clear', description: 'Start a new conversation' },
   { name: '/quit', description: 'End this session' },
 ] as const
@@ -53,9 +51,6 @@ function EmptyState({ books, onAsk }: { books: readonly Book[]; onAsk: (question
 
 export default function App() {
   const [books, setBooks] = useState<readonly Book[]>([])
-  const [booksLoading, setBooksLoading] = useState(true)
-  const [booksError, setBooksError] = useState('')
-  const [selectedBooks, setSelectedBooks] = useState<string[] | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [history, setHistory] = useState<Turn[]>([])
   const [draft, setDraft] = useState('')
@@ -63,31 +58,16 @@ export default function App() {
   const [error, setError] = useState('')
   const [ended, setEnded] = useState(false)
   const [status, setStatus] = useState('')
-  const [booksOpen, setBooksOpen] = useState(false)
   const textarea = useRef<HTMLTextAreaElement>(null)
   const latestQuestion = useRef<HTMLElement>(null)
   const progress = useRef<HTMLDivElement>(null)
   const nextId = useRef(0)
   const requestInFlight = useRef(false)
 
-  async function refreshBooks(signal?: AbortSignal) {
-    setBooksLoading(true)
-    setBooksError('')
-    try {
-      const response = await loadBooks(signal)
-      if (signal?.aborted) return
-      setBooks(response.books)
-    } catch (failure) {
-      if (signal?.aborted) return
-      setBooksError(errorMessage(failure))
-    } finally {
-      if (!signal?.aborted) setBooksLoading(false)
-    }
-  }
-
+  // The catalog only decorates the empty state, so a failed load leaves the generic copy in place.
   useEffect(() => {
     const controller = new AbortController()
-    void refreshBooks(controller.signal)
+    loadBooks(controller.signal).then((response) => setBooks(response.books), () => {})
     return () => controller.abort()
   }, [])
 
@@ -120,16 +100,13 @@ export default function App() {
 
   function runCommand(command: string) {
     setError('')
-    if (command === '/books') {
-      setBooksOpen(true)
-      setDraft('')
-    } else if (command === '/clear') {
+    if (command === '/clear') {
       clearConversation()
     } else if (command === '/quit' || command === '/exit') {
       setEnded(true)
       setDraft('')
     } else {
-      setError('Unknown command. Use /books, /clear, or /quit.')
+      setError('Unknown command. Use /clear or /quit.')
     }
   }
 
@@ -147,7 +124,7 @@ export default function App() {
     setDraft(text)
     setPending(true)
     try {
-      const response = await sendMessage(message, history, selectedBooks)
+      const response = await sendMessage(message, history)
       setMessages((previous) => [...previous,
         { id: nextId.current++, role: 'user', content: message },
         { id: nextId.current++, role: 'assistant', content: response.answer, sources: response.sources },
@@ -182,9 +159,6 @@ export default function App() {
           <span>Homeo<span className="wordmark-accent">Remedica</span></span>
         </a>
         <div className="header-actions">
-          <button className={`button books-button ${selectedBooks ? 'is-filtered' : ''}`} type="button" onClick={() => setBooksOpen(true)} disabled={pending} aria-haspopup="dialog">
-            <BookIcon /><span>{bookLabel(selectedBooks)}</span>
-          </button>
           <button className="button quiet" type="button" onClick={clearConversation} disabled={pending || (!messages.length && !draft && !ended)} aria-label="New chat" title="New chat">
             <PlusIcon /><span className="button-text">New chat</span>
           </button>
@@ -246,8 +220,6 @@ export default function App() {
           </div>
         </div>
       </main>
-
-      <BooksDialog open={booksOpen} onClose={() => setBooksOpen(false)} books={books} loading={booksLoading} error={booksError} onRetry={() => void refreshBooks()} selected={selectedBooks} onSelect={setSelectedBooks} />
     </div>
   )
 }

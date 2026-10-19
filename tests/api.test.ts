@@ -10,7 +10,6 @@ const BOOK: BookSummary = { bookId: 'kent-lectures', title: "Kent's Lectures", a
 const INTERNAL = 'Something went wrong while preparing the answer. Please try again.'
 
 class StubService implements ChatHandler {
-  readonly books = [BOOK]
   readonly requests: ChatRequest[] = []
   failure: unknown = null
   answer = 'Historical reference only. Kent describes irritability [1].'
@@ -89,19 +88,19 @@ it('books uses only the local catalog', async () => {
   expect(await read(response)).toEqual({ books: [BOOK], corpusVersion: 'local-v1', model: 'test-model' })
 })
 
-it('forwards filters and history and returns citations', async () => {
+it('forwards history and returns citations', async () => {
   const { service, post } = setup()
   const history = [
     { role: 'user', content: 'First question?' },
     { role: 'assistant', content: 'First answer.' },
   ]
 
-  const response = await post({ message: '  What about irritability?  ', bookIds: [BOOK.bookId], history })
+  const response = await post({ message: '  What about irritability?  ', history })
 
   expect(response.status).toBe(200)
   expect(service.requests).toHaveLength(1)
   const [request] = service.requests
-  expect(request).toEqual({ message: 'What about irritability?', bookIds: [BOOK.bookId], history })
+  expect(request).toEqual({ message: 'What about irritability?', history })
   expect(await read(response)).toEqual({
     answer: service.answer,
     corpusVersion: 'local-v1',
@@ -122,15 +121,14 @@ it('forwards filters and history and returns citations', async () => {
   })
 })
 
-it('starts a new conversation with an empty or null history and filter', async () => {
+it('starts a new conversation with an empty history', async () => {
   const { service, post } = setup()
 
   const first = await post({ message: 'First question?' })
-  const second = await post({ message: 'After clearing?', history: [], bookIds: null })
+  const second = await post({ message: 'After clearing?', history: [] })
 
   expect([first.status, second.status]).toEqual([200, 200])
   expect(service.requests.map((request) => request.history)).toEqual([[], []])
-  expect(service.requests.map((request) => request.bookIds)).toEqual([null, null])
   expect((await read(second)).history[0].content).toBe('After clearing?')
 })
 
@@ -177,10 +175,7 @@ describe('invalid requests are rejected before chat', () => {
     { message: 'a'.repeat(4_001) },
     { message: 42 },
     {},
-    { message: 'question', bookIds: [] },
-    { message: 'question', bookIds: Array.from({ length: 5 }, (_, number) => `book-${number}`) },
-    { message: 'question', bookIds: ['../private'] },
-    { message: 'question', bookIds: [BOOK.bookId, BOOK.bookId] },
+    { message: 'question', bookIds: [BOOK.bookId] },
     { message: 'question', history: [{ role: 'system', content: 'hidden' }] },
     { message: 'question', history: Array(21).fill({ role: 'user', content: 'a' }) },
     { message: 'question', history: Array(5).fill({ role: 'user', content: 'a'.repeat(4_000) }) },
@@ -211,16 +206,6 @@ describe('invalid requests are rejected before chat', () => {
 
     expect(await response.text()).not.toContain('private-secret')
   })
-})
-
-it('rejects an unknown book before chat', async () => {
-  const { service, post } = setup()
-
-  const response = await post({ message: 'question', bookIds: ['unknown'] })
-
-  expect(response.status).toBe(400)
-  expect(await read(response)).toEqual({ detail: 'unknown book IDs: unknown' })
-  expect(service.requests).toEqual([])
 })
 
 it.each<[FailureKind, number, string]>([

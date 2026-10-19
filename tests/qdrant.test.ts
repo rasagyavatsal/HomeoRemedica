@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 
 import { VOYAGE_DIMENSIONS, VoyageQueryEmbedder } from '../src/server/embeddings.ts'
 import { CorpusError, QdrantCorpus } from '../src/server/qdrant.ts'
-import { ChatRequestSchema } from '../src/server/contracts.ts'
 import { ProviderError, ProviderTimeoutError } from '../src/server/errors.ts'
 import { fakeFetch, json, timeout } from './fakes.ts'
 
@@ -24,20 +23,19 @@ const corpus = (fetch: ReturnType<typeof fakeFetch>) =>
   new QdrantCorpus({ url: 'https://qdrant.example/', apiKey: 'qdrant-key', fetch })
 
 describe('Qdrant corpus', () => {
-  it('fuses dense and server-side BM25 rankings with a book filter', async () => {
+  it('fuses dense and server-side BM25 rankings', async () => {
     const fetch = fakeFetch(points())
 
-    const sources = await corpus(fetch).search('irritability', [0.1, 0.2], { bookIds: ['clarke', 'kent'], limit: 8 })
+    const sources = await corpus(fetch).search('irritability', [0.1, 0.2], { limit: 8 })
 
     const [call] = fetch.calls
-    const filter = { must: [{ key: 'source', match: { any: ['clarke', 'kent'] } }] }
     expect(call?.url).toBe('https://qdrant.example/collections/materia_medica/points/query')
     expect(call?.method).toBe('POST')
     expect(call?.headers['api-key']).toBe('qdrant-key')
     expect(call?.body).toEqual({
       prefetch: [
-        { query: [0.1, 0.2], using: 'dense', filter, limit: 40 },
-        { query: { text: 'irritability', model: 'qdrant/bm25' }, using: 'bm25', filter, limit: 40 },
+        { query: [0.1, 0.2], using: 'dense', limit: 40 },
+        { query: { text: 'irritability', model: 'qdrant/bm25' }, using: 'bm25', limit: 40 },
       ],
       query: { fusion: 'rrf' },
       limit: 8,
@@ -59,15 +57,6 @@ describe('Qdrant corpus', () => {
     ])
   })
 
-  it('searches without a filter when no books are selected', async () => {
-    const fetch = fakeFetch(points())
-
-    await corpus(fetch).search('question', [1.0], { bookIds: null, limit: 2 })
-
-    const { prefetch } = fetch.calls[0]?.body as { prefetch: object[] }
-    expect(prefetch.every((stage) => !('filter' in stage))).toBe(true)
-  })
-
   it.each([
     [{ section_group: 'Mind', sections: ['Mind'] }, 'Mind'],
     [{ section_group: null, sections: ['Mind', 'Head'] }, 'Mind; Head'],
@@ -75,7 +64,7 @@ describe('Qdrant corpus', () => {
   ])('builds section titles from %j', async (sections, title) => {
     const fetch = fakeFetch(json({ result: { points: [{ score: 1, payload: { ...PAYLOAD, ...sections } }] } }))
 
-    const [source] = await corpus(fetch).search('question', [1.0], { bookIds: null, limit: 1 })
+    const [source] = await corpus(fetch).search('question', [1.0], { limit: 1 })
 
     expect(source?.sectionTitle).toBe(title)
   })
@@ -84,25 +73,18 @@ describe('Qdrant corpus', () => {
     const { chunk_id: _, ...payload } = PAYLOAD
     const fetch = fakeFetch(json({ result: { points: [{ score: 1, payload }] } }))
 
-    await expect(corpus(fetch).search('question', [1.0], { bookIds: null, limit: 1 })).rejects.toThrow(/chunk_id/)
+    await expect(corpus(fetch).search('question', [1.0], { limit: 1 })).rejects.toThrow(/chunk_id/)
   })
 
   it('raises provider errors without the response body', async () => {
     const fetch = fakeFetch(new Response('provider secret', { status: 500 }))
 
     const error = await corpus(fetch)
-      .search('question', [1.0], { bookIds: null, limit: 1 })
+      .search('question', [1.0], { limit: 1 })
       .catch((error: unknown) => error)
 
     expect(error).toBeInstanceOf(ProviderError)
     expect(String(error)).not.toContain('provider secret')
-  })
-
-  it('catalog book IDs are valid request IDs', () => {
-    const bookIds = corpus(fakeFetch()).books.map((book) => book.bookId)
-
-    expect(bookIds).toEqual(['allen', 'boericke', 'clarke', 'kent'])
-    expect(ChatRequestSchema.parse({ message: 'question', bookIds }).bookIds).toEqual(bookIds)
   })
 
   it('verifies that the collection exists', async () => {

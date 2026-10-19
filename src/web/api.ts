@@ -35,11 +35,11 @@ export async function loadBooks(signal?: AbortSignal): Promise<BooksResponse> {
   return readResponse<BooksResponse>(response)
 }
 
-export async function sendMessage(message: string, history: Turn[], bookIds: string[] | null): Promise<ChatResponse> {
+export async function sendMessage(message: string, history: Turn[]): Promise<ChatResponse> {
   const response = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, history, bookIds }),
+    body: JSON.stringify({ message, history }),
   })
   return readResponse<ChatResponse>(response)
 }

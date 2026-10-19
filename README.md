@@ -18,8 +18,7 @@ Vitest
 ## Engineering highlights
 
 - **Hybrid retrieval:** fuses BM25 and voyage-4 vector rankings inside Qdrant through
-  reciprocal-rank fusion, with optional filtering by book and up to eight retrieved chunks per
-  answer.
+  reciprocal-rank fusion, with up to eight retrieved chunks per answer.
 - **Structured corpus:** preserves book, remedy, and section metadata on every chunk, so
   citations point to their source.
 - **Automated quality checks:** checks package boundaries, type-checks the server, tests against
@@ -84,9 +83,8 @@ npm run dev
 Open `http://127.0.0.1:5173`. The Vite dev server serves the frontend and the API from one
 process; edits to either reload automatically. Port 5173 must be available; Vite will report an
 error instead of switching to another port. Restart after changing `.env`.
-Select books to limit retrieval, send questions, inspect numbered sources, and clear the
-conversation. Enter sends; Shift+Enter adds a line. `/books`, `/clear`, `/quit`, and `/exit` also
-work in the message box. Conversation history lives in the current browser session's memory
+Send questions, inspect numbered sources, and clear the conversation. Enter sends; Shift+Enter
+adds a line. `/clear`, `/quit`, and `/exit` also work in the message box. Conversation history lives in the current browser session's memory
 and resets on refresh.
 
 To serve a built frontend and the API from one Node.js server:
@@ -100,8 +98,8 @@ Open `http://127.0.0.1:8000`.
 
 The API initializes the Qdrant and provider clients lazily and checks that the collection exists,
 so setup errors appear in the app. `GET /api/health` checks the server; `GET /api/books` lists the
-production books without requiring provider keys; `POST /api/chat` accepts `message`, `history`,
-and optional `bookIds`. Responses include the answer, source citations, corpus/model metadata,
+production books without requiring provider keys; `POST /api/chat` accepts `message` and
+`history`. Responses include the answer, source citations, corpus/model metadata,
 and the trimmed history to send with the next question.
 
 ## Configuration

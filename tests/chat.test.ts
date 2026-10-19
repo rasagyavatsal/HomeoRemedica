@@ -16,7 +16,6 @@ const request = (input: Record<string, unknown>): ChatRequest => ChatRequestSche
 class StubRetriever implements Retriever {
   readonly corpusVersion = '2026-08-15.v1'
   readonly modelInputLimit = 8_192
-  readonly books = []
   searchCall: { request: ChatRequest; limit: number } | null = null
   failure: unknown = null
 
@@ -68,7 +67,6 @@ it('grounds a conversation-aware answer in versioned sources', async () => {
   const chatRequest = request({
     message: 'What about irritability?',
     history: [{ role: 'user', content: 'Tell me about Nux vomica.' }],
-    bookIds: ['kent-lectures'],
   })
 
   const response = await service.chat(chatRequest)
@@ -150,18 +148,17 @@ it('rejects an oversized history budget', () => {
   expect(() => request({ message: 'current question', history })).toThrow(/history must not exceed/)
 })
 
-it('bounds book identifiers', () => {
-  expect(() => request({ message: 'question', bookIds: ['x'.repeat(65)] })).toThrow(/invalid identifier/)
+it('rejects book filters', () => {
+  expect(() => request({ message: 'question', bookIds: ['kent'] })).toThrow(/unexpected request field/)
 })
 
-it('production retriever embeds the conversation and filters books', async () => {
+it('production retriever embeds the conversation', async () => {
   let searchCall: unknown[] | null = null
   const corpus: SearchableRelease = {
     corpusVersion: 'local-v1',
     modelInputLimit: 8192,
-    books: [],
-    async search(query, embedding, { bookIds, limit }) {
-      searchCall = [query, embedding, bookIds, limit]
+    async search(query, embedding, { limit }) {
+      searchCall = [query, embedding, limit]
       return []
     },
   }
@@ -177,14 +174,13 @@ it('production retriever embeds the conversation and filters books', async () =>
     request({
       message: 'What about irritability?',
       history: [{ role: 'user', content: 'Tell me about Nux vomica.' }],
-      bookIds: ['kent-lectures'],
     }),
     { limit: 8 },
   )
 
   const query = 'Tell me about Nux vomica.\nWhat about irritability?'
   expect(embedded).toBe(query)
-  expect(searchCall).toEqual([query, [1.0, 0.0], ['kent-lectures'], 8])
+  expect(searchCall).toEqual([query, [1.0, 0.0], 8])
 })
 
 it.each([
@@ -195,7 +191,6 @@ it.each([
   const corpus: SearchableRelease = {
     corpusVersion: 'local-v1',
     modelInputLimit: 8192,
-    books: [],
     search: async () => [],
   }
   const embedder = {

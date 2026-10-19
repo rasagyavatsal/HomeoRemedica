@@ -38,7 +38,6 @@ export class CorpusError extends Error {
 export class QdrantCorpus {
   readonly corpusVersion: string
   readonly modelInputLimit = MODEL_INPUT_LIMIT
-  readonly books = BOOKS
   readonly #collectionUrl: string
   readonly #headers: Record<string, string>
   readonly #fetch: Fetch
@@ -83,16 +82,15 @@ export class QdrantCorpus {
   async search(
     query: string,
     embedding: readonly number[],
-    { bookIds, limit }: { bookIds: readonly string[] | null; limit: number },
+    { limit }: { limit: number },
   ): Promise<RetrievedSource[]> {
-    const filter = bookIds?.length ? { must: [{ key: 'source', match: { any: bookIds } }] } : undefined
     const candidates = limit * PREFETCH_MULTIPLIER
     const response = await this.#request('/points/query', {
       method: 'POST',
       body: JSON.stringify({
         prefetch: [
-          { query: embedding, using: DENSE_VECTOR, filter, limit: candidates },
-          { query: { text: query, model: SPARSE_MODEL }, using: SPARSE_VECTOR, filter, limit: candidates },
+          { query: embedding, using: DENSE_VECTOR, limit: candidates },
+          { query: { text: query, model: SPARSE_MODEL }, using: SPARSE_VECTOR, limit: candidates },
         ],
         query: { fusion: 'rrf' },
         limit,

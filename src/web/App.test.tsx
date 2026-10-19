@@ -1,11 +1,11 @@
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { version } from '../../package.json'
 import App from './App'
 import type { ChatResponse, Turn } from './api'
 
-const books = Array.from({ length: 5 }, (_, index) => ({
+const books = Array.from({ length: 4 }, (_, index) => ({
   bookId: `book-${index + 1}`,
   title: `Book ${index + 1}`,
   author: `Author ${index + 1}`,
@@ -59,23 +59,19 @@ function chatCalls() {
 }
 
 function chatBody(index: number) {
-  return JSON.parse(String(chatCalls()[index][1]?.body)) as { message: string; history: Turn[]; bookIds: string[] | null }
+  return JSON.parse(String(chatCalls()[index][1]?.body)) as { message: string; history: Turn[] }
 }
 
 describe('production chat interactions', () => {
-  it('sends selected books and uses server-trimmed history for later questions', async () => {
+  it('uses server-trimmed history for later questions', async () => {
     const user = await ready()
-    await user.click(screen.getByRole('button', { name: 'All books' }))
-    const dialog = screen.getByRole('dialog')
-    await user.click(within(dialog).getByRole('checkbox', { name: 'Book 1 Author 1' }))
-    await user.click(within(dialog).getByRole('button', { name: 'Done' }))
     await user.type(screen.getByRole('textbox', { name: 'Message' }), 'First question{Enter}')
     await screen.findByText('First answer')
-    expect(chatBody(0)).toEqual({ message: 'First question', history: [], bookIds: ['book-1'] })
+    expect(chatBody(0)).toEqual({ message: 'First question', history: [] })
 
     await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Second question{Enter}')
     await waitFor(() => expect(chatCalls()).toHaveLength(2))
-    expect(chatBody(1)).toEqual({ message: 'Second question', history: firstHistory, bookIds: ['book-1'] })
+    expect(chatBody(1)).toEqual({ message: 'Second question', history: firstHistory })
 
     await user.click(screen.getAllByText('Sources')[0])
     await user.click(screen.getAllByText('Book 1')[0])
@@ -99,22 +95,6 @@ describe('production chat interactions', () => {
     expect(screen.getAllByText('Retry question')).toHaveLength(1)
   })
 
-  it('enforces four selected books and restores unrestricted retrieval with All books', async () => {
-    const user = await ready()
-    await user.click(screen.getByRole('button', { name: 'All books' }))
-    const dialog = screen.getByRole('dialog')
-    for (let index = 1; index <= 4; index++) {
-      await user.click(within(dialog).getByRole('checkbox', { name: `Book ${index} Author ${index}` }))
-    }
-    expect(within(dialog).getByRole('checkbox', { name: 'Book 5 Author 5' })).toBeDisabled()
-    await user.click(within(dialog).getByRole('checkbox', { name: 'All books' }))
-    expect(within(dialog).getByRole('checkbox', { name: 'Book 5 Author 5' })).toBeEnabled()
-    await user.click(within(dialog).getByRole('button', { name: 'Done' }))
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Question{Enter}')
-    await waitFor(() => expect(chatCalls()).toHaveLength(1))
-    expect(chatBody(0).bookIds).toBeNull()
-  })
-
   it('handles CLI commands locally and clears request history', async () => {
     const user = await ready()
     const input = screen.getByRole('textbox', { name: 'Message' })
@@ -123,10 +103,7 @@ describe('production chat interactions', () => {
     await user.type(input, '/clear{Enter}')
     expect(screen.queryByText('First answer')).not.toBeInTheDocument()
     await user.type(input, '/books{Enter}')
-    expect(screen.getByRole('dialog')).toBeVisible()
-    await user.click(screen.getByRole('button', { name: 'Done' }))
-    await user.type(input, '/unknown{Enter}')
-    expect(screen.getByRole('alert')).toHaveTextContent('Unknown command. Use /books, /clear, or /quit.')
+    expect(screen.getByRole('alert')).toHaveTextContent('Unknown command. Use /clear or /quit.')
     await user.clear(input)
     await user.type(input, '/exit{Enter}')
     expect(screen.getByText('Session ended.')).toBeVisible()
@@ -184,7 +161,7 @@ describe('production chat interactions', () => {
     const user = await ready()
     await user.click(screen.getByRole('button', { name: 'What are the keynote symptoms of Arsenicum album?' }))
     await screen.findByText('First answer')
-    expect(chatBody(0)).toEqual({ message: 'What are the keynote symptoms of Arsenicum album?', history: [], bookIds: null })
+    expect(chatBody(0)).toEqual({ message: 'What are the keynote symptoms of Arsenicum album?', history: [] })
   })
 
   it('shows the app version', async () => {
@@ -192,14 +169,12 @@ describe('production chat interactions', () => {
     expect(screen.getByText(`v${version}`)).toBeVisible()
   })
 
-  it('can retry a failed book catalog without resetting the conversation', async () => {
+  it('keeps the empty state usable when the book catalog fails', async () => {
     fetchMock.mockImplementationOnce(async () => jsonResponse({ detail: 'Corpus unavailable.' }, 503))
     render(<App />)
-    const user = userEvent.setup()
-    await user.click(screen.getByRole('button', { name: 'All books' }))
-    expect(await screen.findByRole('alert')).toHaveTextContent('Corpus unavailable.')
-    await user.click(screen.getByRole('button', { name: 'Retry' }))
-    expect(await screen.findByRole('checkbox', { name: 'Book 1 Author 1' })).toBeVisible()
-    expect(chatCalls()).toHaveLength(0)
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/books', expect.anything()))
+    expect(screen.getByText(/drawn from historical texts/)).toBeVisible()
+    expect(screen.queryByRole('list', { name: 'Books in the corpus' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 })

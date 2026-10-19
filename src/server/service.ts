@@ -1,6 +1,5 @@
 import {
   type AnswerGenerator,
-  type BookSummary,
   type ChatRequest,
   type ChatResponse,
   type Citation,
@@ -49,10 +48,6 @@ export class ChatService {
 
   get modelName(): string {
     return this.#generator.model
-  }
-
-  get books(): readonly BookSummary[] {
-    return this.#retriever.books
   }
 
   async chat(request: ChatRequest): Promise<ChatResponse> {

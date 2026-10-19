@@ -1,7 +1,6 @@
 /** Production query embedding and corpus search. */
 
 import {
-  type BookSummary,
   type ChatRequest,
   MAX_RETRIEVAL_QUERY_CHARS,
   type RetrievedSource,
@@ -16,11 +15,10 @@ export interface QueryEmbedder {
 export interface SearchableRelease {
   readonly corpusVersion: string
   readonly modelInputLimit: number
-  readonly books: readonly BookSummary[]
   search(
     query: string,
     embedding: readonly number[],
-    options: { bookIds: readonly string[] | null; limit: number },
+    options: { limit: number },
   ): Promise<readonly RetrievedSource[]>
 }
 
@@ -33,10 +31,6 @@ export class ProductionRetriever implements Retriever {
     this.#corpus = corpus
     this.#embedder = embedder
     this.corpusVersion = corpus.corpusVersion
-  }
-
-  get books(): readonly BookSummary[] {
-    return this.#corpus.books
   }
 
   get modelInputLimit(): number {
@@ -57,6 +51,6 @@ export class ProductionRetriever implements Retriever {
       const kind = isTimeout(error) ? 'timeout' : error instanceof ProviderError ? 'provider' : 'internal'
       throw new ChatFailure({ stage: 'embedding', kind, cause: error })
     }
-    return this.#corpus.search(query, embedding, { bookIds: request.bookIds, limit })
+    return this.#corpus.search(query, embedding, { limit })
   }
 }

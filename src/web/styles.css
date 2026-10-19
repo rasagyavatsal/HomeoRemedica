@@ -19,7 +19,6 @@
   --danger-soft: #f8e9e4;
   --shadow-sm: 0 1px 2px rgb(31 30 27 / 5%);
   --shadow-md: 0 1px 2px rgb(31 30 27 / 4%), 0 8px 24px rgb(31 30 27 / 6%);
-  --shadow-lg: 0 24px 80px rgb(31 30 27 / 18%);
   --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Charter, "Source Serif Pro", Georgia, serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -57,7 +56,6 @@
     --danger-soft: #2e1d19;
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
     --shadow-md: 0 1px 2px rgb(0 0 0 / 30%), 0 8px 24px rgb(0 0 0 / 30%);
-    --shadow-lg: 0 24px 80px rgb(0 0 0 / 55%);
   }
 }
 
@@ -107,7 +105,6 @@ button, a, input, textarea, summary { -webkit-tap-highlight-color: transparent; 
 .wordmark-mark { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--accent-soft); color: var(--accent); }
 .wordmark-accent { color: var(--accent); }
 .header-actions { display: flex; align-items: center; gap: 6px; }
-.books-button.is-filtered { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); color: var(--accent); background: var(--accent-soft); }
 
 .main { flex: 1; width: 100%; display: flex; flex-direction: column; }
 .conversation { flex: 1; width: min(100%, var(--column)); margin: 0 auto; padding: 40px 24px 24px; }
@@ -249,44 +246,10 @@ button, a, input, textarea, summary { -webkit-tap-highlight-color: transparent; 
 .error-message svg { flex: none; margin-top: 2px; }
 .ended-session { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 14px 14px 20px; border: 1px dashed var(--line-strong); border-radius: 20px; font-size: 14px; color: var(--muted); }
 
-/* Books dialog */
-.books-dialog {
-  width: min(500px, calc(100% - 32px)); max-height: min(720px, calc(100dvh - 48px)); padding: 0;
-  border: 1px solid var(--line); border-radius: 20px; background: var(--surface); color: var(--ink);
-  box-shadow: var(--shadow-lg); overflow: hidden;
-}
-.books-dialog[open] { display: flex; flex-direction: column; animation: pop 200ms var(--ease) both; }
-.books-dialog::backdrop { background: rgb(20 20 18 / 38%); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
-.dialog-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; padding: 22px 20px 16px 24px; }
-.dialog-header h2 { margin: 0; font-family: var(--serif); font-size: 22px; font-weight: 600; letter-spacing: -.2px; }
-.dialog-header p { margin: 5px 0 0; font-size: 13.5px; color: var(--muted); }
-.dialog-body { flex: 1; min-height: 0; overflow-y: auto; padding: 0 16px 12px; }
-.books-list { display: grid; gap: 4px; }
-.book-option { position: relative; display: flex; align-items: flex-start; gap: 13px; padding: 12px; border: 1px solid transparent; border-radius: 12px; transition: background-color 150ms ease, border-color 150ms ease; }
-.book-option:hover { background: var(--surface-hover); }
-.book-option:has(input:checked) { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 30%, transparent); }
-.book-option:has(input:disabled) { opacity: .45; cursor: not-allowed; }
-.book-option:has(input:disabled):hover { background: transparent; }
-.book-option:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 1px; }
-.book-check { display: grid; place-items: center; flex: none; width: 20px; height: 20px; margin-top: 1px; border: 1.5px solid var(--line-strong); border-radius: 6px; background: var(--surface); color: transparent; transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease; }
-.book-option:has(input:checked) .book-check { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-.book-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.book-title { font-size: 15px; font-weight: 550; line-height: 1.4; }
-.book-author { font-family: var(--serif); font-style: italic; font-size: 13.5px; color: var(--muted); }
-.books-divider { display: flex; align-items: center; gap: 12px; margin: 10px 12px; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
-.books-divider::before, .books-divider::after { content: ''; flex: 1; border-top: 1px solid var(--line); }
-.books-status { display: flex; align-items: center; gap: 10px; padding: 16px 12px; margin: 0; font-size: 14px; color: var(--muted); line-height: 1.6; }
-.books-error { flex-direction: column; align-items: flex-start; }
-.books-error p { margin: 0; color: var(--danger); }
-.spinner { width: 14px; height: 14px; border: 2px solid var(--line-strong); border-top-color: var(--accent); border-radius: 50%; animation: spin 700ms linear infinite; }
-.dialog-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 20px 14px 24px; border-top: 1px solid var(--line); background: var(--surface-sunken); font-size: 13px; color: var(--muted); }
-
 /* Motion */
 @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-@keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
 @keyframes pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
-@keyframes spin { to { transform: rotate(360deg); } }
 
 /* Small screens */
 @media (max-width: 640px) {
@@ -308,9 +271,6 @@ button, a, input, textarea, summary { -webkit-tap-highlight-color: transparent; 
   .composer { padding: 8px 8px 8px 14px; border-radius: 18px; }
   .composer textarea { font-size: 16px; }
   .composer-footer { font-size: 11px; gap: 10px; }
-  .dialog-header { padding: 20px 16px 14px 20px; }
-  .dialog-body { padding: 0 10px 10px; }
-  .dialog-footer { padding: 12px 16px 12px 20px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

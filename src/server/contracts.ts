@@ -3,8 +3,6 @@ import { z } from 'zod'
 export const MAX_TURN_CHARS = 4_000
 export const MAX_HISTORY_TURNS = 20
 export const MAX_HISTORY_CHARS = 16_000
-export const BOOK_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/
-export const MAX_BOOK_FILTERS = 4
 export const MAX_RETRIEVAL_QUERY_CHARS = 8_000
 export const DEFAULT_MODEL_INPUT_LIMIT_TOKENS = 8_192
 export const MAX_CITATION_TEXT_CHARS = 8_000
@@ -33,15 +31,6 @@ export const ChatRequestSchema = z
         .array(ChatTurnSchema)
         .max(MAX_HISTORY_TURNS, { error: `history must not exceed ${MAX_HISTORY_TURNS} turns` })
         .default([]),
-      bookIds: z
-        .array(z.string().regex(BOOK_ID_PATTERN, { error: 'bookIds contain an invalid identifier' }))
-        .min(1, { error: 'bookIds must not be empty' })
-        .max(MAX_BOOK_FILTERS, { error: `bookIds must not exceed ${MAX_BOOK_FILTERS} books` })
-        .refine((ids) => new Set(ids).size === ids.length, {
-          error: 'bookIds must not contain duplicates',
-        })
-        .nullable()
-        .default(null),
     },
     { error: (issue) => (issue.code === 'unrecognized_keys' ? 'unexpected request field' : undefined) },
   )
@@ -106,7 +95,6 @@ export interface WebChatResponse extends ChatResponse {
 
 export interface Retriever {
   readonly corpusVersion: string
-  readonly books: readonly BookSummary[]
   readonly modelInputLimit?: number
   retrieve(request: ChatRequest, options: { limit: number }): Promise<readonly RetrievedSource[]>
 }
