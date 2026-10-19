@@ -7,6 +7,17 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [8.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v7.1.0...HomeoRemedica-v8.0.0) (2026-10-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* POST /api/chat no longer accepts bookIds; requests that include it are rejected with 422.
+
+### Features
+
+* remove book filtering ([20922e7](https://github.com/rasagyavatsal/HomeoRemedica/commit/20922e75f0f55af5323cd1f69c376c6a2332c14e))
+
 ## [7.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v7.0.0...HomeoRemedica-v7.1.0) (2026-10-19)
 
 
