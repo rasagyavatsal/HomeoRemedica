@@ -138,6 +138,17 @@ never reaches the browser bundle.
 - `src/web/` — minimal React chat interface; it shares the server's contract types.
 - `tests/` — server test suite. Frontend tests sit next to the components in `src/web/`.
 
+## Deployment
+
+```sh
+npm run deploy
+```
+
+`npm run deploy` builds the `Dockerfile` with Cloud Build and deploys it to the `homeoremedica`
+Cloud Run service in `asia-south1`. The service keeps its configuration between deploys:
+`QDRANT_URL` is a plain environment variable, and `OPENROUTER_API_KEY`, `ZAI_API_KEY`, and
+`QDRANT_API_KEY` come from Secret Manager. Local `.env` files are not copied into the image.
+
 ## License
 
 Software and documentation: [MIT](LICENSE). The dataset is proprietary and not distributed with
