@@ -1,12 +1,3 @@
-# Python
-.venv/
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.ruff_cache/
-.mypy_cache/
-.pyright/
-
 # Local configuration and secrets
 .env
 .env.*
@@ -27,7 +18,6 @@ dist/
 build/
 output/
 artifacts/corpus/
-*.egg-info/
 *.tsbuildinfo
 
 # Proprietary source dataset (private repository)

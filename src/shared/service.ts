@@ -1,0 +1,109 @@
+import {
+  type AnswerGenerator,
+  type BookSummary,
+  type ChatRequest,
+  type ChatResponse,
+  type Citation,
+  DEFAULT_MODEL_INPUT_LIMIT_TOKENS,
+  MAX_CITATION_TEXT_CHARS,
+  MAX_GENERATED_ANSWER_CHARS,
+  MAX_GENERATION_PROMPT_CHARS,
+  type RetrievedSource,
+  type Retriever,
+} from './contracts.ts'
+import { ChatFailure, type FailureKind, ProviderError, TokenExhaustionError, isTimeout } from './errors.ts'
+import { SAFETY_NOTICE, SYSTEM_INSTRUCTION, generationPrompt } from './generation.ts'
+
+/** Own the complete retrieve-and-generate sequence behind one narrow chat method. */
+export class ChatService {
+  readonly #retriever: Retriever
+  readonly #generator: AnswerGenerator
+  readonly #sourceLimit: number
+  readonly #generationCharLimit: number
+
+  constructor({
+    retriever,
+    generator,
+    sourceLimit = 8,
+  }: {
+    retriever: Retriever
+    generator: AnswerGenerator
+    sourceLimit?: number
+  }) {
+    this.#retriever = retriever
+    this.#generator = generator
+    this.#sourceLimit = sourceLimit
+    const modelInputLimit = retriever.modelInputLimit ?? DEFAULT_MODEL_INPUT_LIMIT_TOKENS
+    if (!Number.isInteger(modelInputLimit) || modelInputLimit <= 0) {
+      throw new RangeError('corpus model input limit must be a positive integer')
+    }
+    // Four characters per token is intentionally conservative and keeps
+    // the prompt below the model's input budget without needing a tokenizer
+    // in the serving container.
+    this.#generationCharLimit = Math.min(MAX_GENERATION_PROMPT_CHARS, Math.max(512, modelInputLimit * 4))
+  }
+
+  get corpusVersion(): string {
+    return this.#retriever.corpusVersion
+  }
+
+  get modelName(): string {
+    return this.#generator.model
+  }
+
+  get books(): readonly BookSummary[] {
+    return this.#retriever.books
+  }
+
+  async chat(request: ChatRequest): Promise<ChatResponse> {
+    let sources: readonly RetrievedSource[]
+    try {
+      sources = await this.#retriever.retrieve(request, { limit: this.#sourceLimit })
+    } catch (error) {
+      if (error instanceof ChatFailure) throw error
+      throw new ChatFailure({ stage: 'corpus_search', kind: isTimeout(error) ? 'timeout' : 'internal', cause: error })
+    }
+
+    let generatedAnswer: string
+    try {
+      generatedAnswer = (
+        await this.#generator.generate(generationPrompt(request, sources, { maxChars: this.#generationCharLimit }), {
+          systemInstruction: SYSTEM_INSTRUCTION,
+        })
+      ).trim()
+    } catch (error) {
+      if (error instanceof ChatFailure) throw error
+      throw new ChatFailure({ stage: 'answer_generation', kind: generationFailureKind(error), cause: error })
+    }
+    if (generatedAnswer.length > MAX_GENERATED_ANSWER_CHARS) {
+      generatedAnswer = `${generatedAnswer.slice(0, MAX_GENERATED_ANSWER_CHARS).trimEnd()}…`
+    }
+    if (sources.some((source) => source.text.length > MAX_CITATION_TEXT_CHARS)) {
+      throw new ChatFailure({ stage: 'chat', kind: 'internal', cause: new RangeError('citation text is too long') })
+    }
+    const corpusVersion = this.#retriever.corpusVersion
+    const citations: Citation[] = sources.map((source) => ({
+      id: `${corpusVersion}/${source.bookId}/${source.chunkId}`,
+      bookId: source.bookId,
+      bookTitle: source.bookTitle,
+      author: source.author,
+      remedyName: source.remedyName,
+      sectionTitle: source.sectionTitle,
+      passageIndexes: source.passageIndexes,
+      text: source.text,
+    }))
+    return {
+      answer: `${SAFETY_NOTICE}\n\n${generatedAnswer}`,
+      corpusVersion,
+      model: this.#generator.model,
+      sources: citations,
+    }
+  }
+}
+
+function generationFailureKind(error: unknown): FailureKind {
+  if (error instanceof TokenExhaustionError) return 'token_exhaustion'
+  if (isTimeout(error)) return 'timeout'
+  if (error instanceof ProviderError) return 'provider'
+  return 'internal'
+}

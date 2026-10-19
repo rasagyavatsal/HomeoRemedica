@@ -1,23 +1,19 @@
-UV ?= uv tool run --from uv==0.11.23 uv
-
 .PHONY: check setup api web web-check
 
 check:
-	$(UV) run --locked python -m build
-	$(UV) run --locked ruff check src tests
-	$(UV) run --locked pyright
-	$(UV) run --locked pytest
+	npm run typecheck
+	npm test
 
 setup:
-	$(UV) sync --locked
+	npm ci
 	npm --prefix web ci
 	@if [ ! -e .env ]; then cp .env.example .env; fi
 
 api:
-	$(UV) run --locked uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
+	npm run api
 
 web:
-	$(UV) run --locked python -m api.dev
+	npm run dev
 
 web-check:
 	npm --prefix web test

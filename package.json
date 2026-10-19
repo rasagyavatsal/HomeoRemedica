@@ -1,0 +1,28 @@
+{
+  "name": "homeoremedica",
+  "private": true,
+  "version": "6.0.0",
+  "description": "HomeoRemedica web chat app",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": "^22.18.0 || ^24.0.0 || >=26.0.0"
+  },
+  "scripts": {
+    "start": "node src/api/server.ts",
+    "api": "node --watch src/api/server.ts",
+    "dev": "node src/api/dev.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.5",
+    "hono": "4.13.13",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.5",
+    "typescript": "7.0.2",
+    "vitest": "5.0.4"
+  }
+}
