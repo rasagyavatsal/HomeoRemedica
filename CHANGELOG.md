@@ -7,6 +7,14 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [7.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v7.0.0...HomeoRemedica-v7.1.0) (2026-10-19)
+
+
+### Features
+
+* **web:** redesign chat interface with inline citations and dark mode ([e6b1b56](https://github.com/rasagyavatsal/HomeoRemedica/commit/e6b1b5629004958927098ef1883141c0b05281c1))
+* **web:** show app version in place of model and corpus details ([be3c86c](https://github.com/rasagyavatsal/HomeoRemedica/commit/be3c86c13260cf089695830925c832542e8ad5b1))
+
 ## [7.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v6.0.0...HomeoRemedica-v7.0.0) (2026-10-19)
 
 
