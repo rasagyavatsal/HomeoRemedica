@@ -1,38 +1,11 @@
-export interface Book {
-  bookId: string
-  title: string
-  author: string | null
-}
+import type { BookCatalog, BookSummary, ChatTurn, Citation, WebChatResponse } from '../server/contracts.ts'
 
-export interface Turn {
-  role: 'user' | 'assistant'
-  content: string
-}
-
-export interface Source {
-  id: string
-  bookId: string
-  bookTitle: string
-  author: string | null
-  remedyName: string
-  sectionTitle: string
-  passageIndexes: number[]
-  text: string
-}
-
-export interface BooksResponse {
-  books: Book[]
-  corpusVersion: string
-  model: string
-}
-
-export interface ChatResponse {
-  answer: string
-  sources: Source[]
-  corpusVersion: string
-  model: string
-  history: Turn[]
-}
+// The browser shares the server's contract types; only types cross this boundary.
+export type Book = BookSummary
+export type Turn = ChatTurn
+export type Source = Citation
+export type BooksResponse = BookCatalog
+export type ChatResponse = WebChatResponse
 
 interface ValidationDetail {
   msg?: string

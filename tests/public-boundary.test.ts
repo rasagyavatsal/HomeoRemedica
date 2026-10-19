@@ -9,12 +9,22 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const MAX_TRACKED_FILE_BYTES = 8_000_000
 const FORBIDDEN_ROOTS = new Set(['build', 'artifacts', 'corpora', 'dataset', 'dist', 'output', 'server-data'])
 const FORBIDDEN_SUFFIXES = new Set(['.db', '.gz', '.sqlite', '.sqlite3', '.tar', '.tgz', '.whl', '.zip', '.zst'])
-// Keep the chat service independent of the web API.
-const FORBIDDEN_IMPORTS: Record<string, readonly string[]> = {
-  'src/shared': ['production', 'api'],
-  'src/production': ['api'],
+// Only the HTTP entry points may depend on the web framework.
+const HTTP_ENTRY_POINTS = new Set(['src/server/app.ts', 'src/server/server.ts'])
+const IMPORT_STATEMENT =
+  /\b(?:import|export)(\s+type)?\s(?:[^'"]*?\sfrom\s)?\s*['"]([^'"]+)['"]|\bimport\(\s*['"]([^'"]+)['"]\s*\)/g
+
+interface ImportReference {
+  specifier: string
+  typeOnly: boolean
 }
-const IMPORT_SPECIFIER = /\b(?:import|export)\s(?:[^'"]*?\sfrom\s)?\s*['"]([^'"]+)['"]|\bimport\(\s*['"]([^'"]+)['"]\s*\)/g
+
+function imports(source: string): ImportReference[] {
+  return [...source.matchAll(IMPORT_STATEMENT)].map((match) => ({
+    specifier: match[2] ?? match[3] ?? '',
+    typeOnly: Boolean(match[1]),
+  }))
+}
 
 function trackedFiles(): string[] {
   return execFileSync('git', ['ls-files', '-z'], { cwd: ROOT, encoding: 'utf8' }).split('\0').filter(Boolean)
@@ -38,19 +48,27 @@ function violations(): string[] {
   return found
 }
 
-function pipelineViolations(): string[] {
+function sourceFiles(directory: string): string[] {
+  return readdirSync(join(ROOT, directory), { recursive: true, encoding: 'utf8' })
+    .filter((name) => /\.tsx?$/.test(name))
+    .map((name) => join(directory, name))
+}
+
+function layerViolations(): string[] {
   const found: string[] = []
-  for (const [sourceRoot, forbiddenRoots] of Object.entries(FORBIDDEN_IMPORTS)) {
-    const directory = join(ROOT, sourceRoot)
-    for (const name of readdirSync(directory).filter((file) => file.endsWith('.ts'))) {
-      const path = join(directory, name)
-      for (const match of readFileSync(path, 'utf8').matchAll(IMPORT_SPECIFIER)) {
-        const specifier = match[1] ?? match[2] ?? ''
-        if (!specifier.startsWith('.')) continue
-        const importedRoot = relative(join(ROOT, 'src'), resolve(dirname(path), specifier)).split('/')[0] ?? ''
-        if (forbiddenRoots.includes(importedRoot)) {
-          found.push(`invalid package dependency: ${relative(ROOT, path)} imports ${specifier}`)
-        }
+  for (const path of [...sourceFiles('src/server'), ...sourceFiles('src/web')]) {
+    const layer = path.split('/')[1]
+    for (const { specifier, typeOnly } of imports(readFileSync(join(ROOT, path), 'utf8'))) {
+      const target = specifier.startsWith('.')
+        ? relative(join(ROOT, 'src'), resolve(dirname(join(ROOT, path)), specifier)).split('/')[0]
+        : undefined
+      if (layer === 'server' && target === 'web') found.push(`server imports the frontend: ${path} imports ${specifier}`)
+      // A value import would bundle server code, and possibly secrets, into the browser.
+      if (layer === 'web' && target === 'server' && !typeOnly) {
+        found.push(`frontend value-imports the server: ${path} imports ${specifier}; use import type`)
+      }
+      if (/^(hono|@hono\/)/.test(specifier) && !HTTP_ENTRY_POINTS.has(path)) {
+        found.push(`web framework outside the HTTP layer: ${path} imports ${specifier}`)
       }
     }
   }
@@ -58,14 +76,23 @@ function pipelineViolations(): string[] {
 }
 
 it('keeps the repository and package boundaries clean', () => {
-  const found = [...violations(), ...pipelineViolations()]
+  const found = [...violations(), ...layerViolations()]
 
   expect(found, found.join('\n')).toEqual([])
 })
 
-it('detects a forbidden import', () => {
-  const source = "import { createApp } from '../api/app.ts'\nexport { x } from \"../production/qdrant.ts\""
-  const specifiers = [...source.matchAll(IMPORT_SPECIFIER)].map((match) => match[1] ?? match[2])
+it('recognizes type-only and value imports', () => {
+  const source = [
+    "import type { Citation } from '../server/contracts.ts'",
+    "import { createApp } from '../server/app.ts'",
+    'export { x } from "./qdrant.ts"',
+    "const lazy = import('hono')",
+  ].join('\n')
 
-  expect(specifiers).toEqual(['../api/app.ts', '../production/qdrant.ts'])
+  expect(imports(source)).toEqual([
+    { specifier: '../server/contracts.ts', typeOnly: true },
+    { specifier: '../server/app.ts', typeOnly: false },
+    { specifier: './qdrant.ts', typeOnly: false },
+    { specifier: 'hono', typeOnly: false },
+  ])
 })

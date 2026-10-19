@@ -92,6 +92,18 @@ export interface ChatResponse {
   sources: readonly Citation[]
 }
 
+/** `GET /api/books` */
+export interface BookCatalog {
+  books: readonly BookSummary[]
+  corpusVersion: string
+  model: string
+}
+
+/** `POST /api/chat`: the answer plus the trimmed history to send with the next question. */
+export interface WebChatResponse extends ChatResponse {
+  history: ChatTurn[]
+}
+
 export interface Retriever {
   readonly corpusVersion: string
   readonly books: readonly BookSummary[]

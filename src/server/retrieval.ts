@@ -6,8 +6,8 @@ import {
   MAX_RETRIEVAL_QUERY_CHARS,
   type RetrievedSource,
   type Retriever,
-} from '../shared/contracts.ts'
-import { ChatFailure, ProviderError, isTimeout } from '../shared/errors.ts'
+} from './contracts.ts'
+import { ChatFailure, ProviderError, isTimeout } from './errors.ts'
 
 export interface QueryEmbedder {
   embedQuery(text: string): Promise<readonly number[]>

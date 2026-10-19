@@ -1,7 +1,7 @@
 /** voyage-4 query embeddings through OpenRouter. */
 
-import { ConfigurationError, ProviderError, ProviderTimeoutError } from '../shared/errors.ts'
-import { type Fetch, isRecord, readJson, send } from '../shared/http.ts'
+import { ConfigurationError, ProviderError, ProviderTimeoutError } from './errors.ts'
+import { type Fetch, isRecord, readJson, send } from './http.ts'
 
 export const DEFAULT_OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 export const VOYAGE_EMBEDDING_MODEL = 'voyageai/voyage-4'

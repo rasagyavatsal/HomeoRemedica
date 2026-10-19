@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { type AppDependencies, type BookCatalog, type ChatHandler, createApp, productionDependencies } from '../src/api/app.ts'
-import { BOOKS, CorpusError } from '../src/production/qdrant.ts'
-import type { Settings } from '../src/production/runtime.ts'
-import type { BookSummary, ChatRequest, ChatResponse } from '../src/shared/contracts.ts'
-import { ChatFailure, ConfigurationError, type FailureKind } from '../src/shared/errors.ts'
+import { type AppDependencies, type ChatHandler, createApp, productionDependencies } from '../src/server/app.ts'
+import { BOOKS, CorpusError } from '../src/server/qdrant.ts'
+import type { Settings } from '../src/server/runtime.ts'
+import type { BookCatalog, BookSummary, ChatRequest, ChatResponse } from '../src/server/contracts.ts'
+import { ChatFailure, ConfigurationError, type FailureKind } from '../src/server/errors.ts'
 
 const BOOK: BookSummary = { bookId: 'kent-lectures', title: "Kent's Lectures", author: 'Kent' }
 const INTERNAL = 'Something went wrong while preparing the answer. Please try again.'

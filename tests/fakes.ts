@@ -1,4 +1,4 @@
-import type { Fetch } from '../src/shared/http.ts'
+import type { Fetch } from '../src/server/http.ts'
 
 export interface FetchCall {
   url: string

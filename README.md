@@ -54,18 +54,16 @@ answers with `glm-5.3-flash` by default.
 
 ## Quick start
 
-Requirements: make, Node.js 22.18+ on a supported even release (Node.js 24 recommended), npm,
-a Qdrant 1.15.2+ cluster holding the `materia_medica` collection, and API keys for OpenRouter and
-Z.AI. Node.js runs the TypeScript server directly, so there is no build step.
+Requirements: Node.js 22.18+ on a supported even release (Node.js 24 recommended), npm, a Qdrant
+1.15.2+ cluster holding the `materia_medica` collection, and API keys for OpenRouter and Z.AI.
+Node.js runs the TypeScript server directly, so the server has no build step.
 
 Run from the repository root:
 
 ```sh
-make setup
+npm ci
+cp .env.example .env
 ```
-
-This installs the locked server and frontend dependencies and creates `.env` from `.env.example`
-if it does not already exist.
 
 Set `QDRANT_URL`, `QDRANT_API_KEY`, `OPENROUTER_API_KEY`, and `ZAI_API_KEY` in `.env`. The
 collection is built and updated by `scripts/embed_chunks.py` in the HomeoRemedica-dataset
@@ -73,38 +71,36 @@ repository.
 
 ## Web app
 
-Run the web app from a source checkout. API keys stay on the API server.
+Run the web app from a source checkout. API keys stay on the server.
 
-After setup above, start the complete web app in one terminal:
+After setup above, start the web app:
 
 ```sh
-make web
+npm run dev
 ```
 
-Open `http://127.0.0.1:5173`. The command starts Vite and the API together with automatic reload.
-Vite forwards `/api` requests to the API on port 8000. Ctrl+C stops both servers; if either
-server exits, the other is stopped too. Port 5173 must be available; Vite will report an error
-instead of switching to another port. Restart after changing `.env`.
+Open `http://127.0.0.1:5173`. The Vite dev server serves the frontend and the API from one
+process; edits to either reload automatically. Port 5173 must be available; Vite will report an
+error instead of switching to another port. Restart after changing `.env`.
 Select books to limit retrieval, send questions, inspect numbered sources, and clear the
 conversation. Enter sends; Shift+Enter adds a line. `/books`, `/clear`, `/quit`, and `/exit` also
 work in the message box. Conversation history lives in the current browser session's memory
 and resets on refresh.
 
-To serve a built frontend and the API from one server:
+To serve a built frontend and the API from one Node.js server:
 
 ```sh
-npm --prefix web run build
+npm run build
 npm start
 ```
 
-Open `http://127.0.0.1:8000`. `make api` remains available for running only the API with automatic
-reload. `npm --prefix web run preview` also proxies API requests to port 8000.
+Open `http://127.0.0.1:8000`.
 
 The API initializes the Qdrant and provider clients lazily and checks that the collection exists,
-so setup errors appear in the app. `GET /api/health` checks the server; `GET /api/books` lists the production books without
-requiring provider keys; `POST /api/chat` accepts `message`, `history`, and optional `bookIds`.
-Responses include the answer, source citations, corpus/model metadata, and the trimmed history
-to send with the next question.
+so setup errors appear in the app. `GET /api/health` checks the server; `GET /api/books` lists the
+production books without requiring provider keys; `POST /api/chat` accepts `message`, `history`,
+and optional `bookIds`. Responses include the answer, source citations, corpus/model metadata,
+and the trimmed history to send with the next question.
 
 ## Configuration
 
@@ -128,24 +124,19 @@ OpenRouter supplies query embeddings.
 ## Development
 
 ```sh
-make setup
-make check
-make web-check
+npm run check
 ```
 
-`make check` validates the server: TypeScript type checking and the Vitest suite.
-The test suite includes repository boundary checks, which reject generated artifacts in Git
-and keep the chat service independent of the API.
-Tests use fakes; they do not require API keys or a Qdrant cluster.
-`make web-check` validates the frontend: interaction tests followed by a Vite build, which also
-runs TypeScript type checking. `make web` starts Vite and the API together with automatic reload;
-`make api` starts only the API.
+`npm run check` type-checks the server and the frontend, runs the Vitest suite, and builds the
+frontend. Tests use fakes; they do not require API keys or a Qdrant cluster. The suite includes
+repository boundary checks, which reject generated artifacts in Git, keep the web framework in
+the HTTP layer, and allow the frontend to import only types from the server, so server code
+never reaches the browser bundle.
 
-- `src/shared/` — conversation contracts, chat service, answer generation, and prompts.
-- `src/production/` — production retrieval from the Qdrant collection.
-- `src/api/` — Hono interface to the production service and optional built frontend hosting.
-- `web/` — minimal React/Vite chat interface.
-- `tests/` — server test suite.
+- `src/server/` — request contracts, the chat service, Qdrant retrieval, provider clients, and
+  the Hono API, which also serves the built frontend.
+- `src/web/` — minimal React chat interface; it shares the server's contract types.
+- `tests/` — server test suite. Frontend tests sit next to the components in `src/web/`.
 
 ## License
 

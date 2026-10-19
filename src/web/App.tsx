@@ -6,7 +6,7 @@ import type { Book, Source, Turn } from './api'
 
 interface Message extends Turn {
   id: number
-  sources?: Source[]
+  sources?: readonly Source[]
 }
 
 function ArrowIcon() {
@@ -17,7 +17,7 @@ function BookIcon() {
   return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Zm0 0v14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
 }
 
-function Sources({ sources }: { sources: Source[] }) {
+function Sources({ sources }: { sources: readonly Source[] }) {
   if (!sources.length) return null
   return (
     <details className="sources">
@@ -46,7 +46,7 @@ function errorMessage(error: unknown) {
 }
 
 export default function App() {
-  const [books, setBooks] = useState<Book[]>([])
+  const [books, setBooks] = useState<readonly Book[]>([])
   const [booksLoading, setBooksLoading] = useState(true)
   const [booksError, setBooksError] = useState('')
   const [selectedBooks, setSelectedBooks] = useState<string[] | null>(null)

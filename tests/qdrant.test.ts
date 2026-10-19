@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
-import { VOYAGE_DIMENSIONS, VoyageQueryEmbedder } from '../src/production/embeddings.ts'
-import { CorpusError, QdrantCorpus } from '../src/production/qdrant.ts'
-import { ChatRequestSchema } from '../src/shared/contracts.ts'
-import { ProviderError, ProviderTimeoutError } from '../src/shared/errors.ts'
+import { VOYAGE_DIMENSIONS, VoyageQueryEmbedder } from '../src/server/embeddings.ts'
+import { CorpusError, QdrantCorpus } from '../src/server/qdrant.ts'
+import { ChatRequestSchema } from '../src/server/contracts.ts'
+import { ProviderError, ProviderTimeoutError } from '../src/server/errors.ts'
 import { fakeFetch, json, timeout } from './fakes.ts'
 
 const PAYLOAD = {

@@ -1,15 +1,15 @@
 import { expect, it } from 'vitest'
 
-import { ProductionRetriever, type SearchableRelease } from '../src/production/retrieval.ts'
+import { ProductionRetriever, type SearchableRelease } from '../src/server/retrieval.ts'
 import {
   type AnswerGenerator,
   type ChatRequest,
   ChatRequestSchema,
   type RetrievedSource,
   type Retriever,
-} from '../src/shared/contracts.ts'
-import { ChatFailure, ProviderError, ProviderTimeoutError, TokenExhaustionError } from '../src/shared/errors.ts'
-import { ChatService } from '../src/shared/service.ts'
+} from '../src/server/contracts.ts'
+import { ChatFailure, ProviderError, ProviderTimeoutError, TokenExhaustionError } from '../src/server/errors.ts'
+import { ChatService } from '../src/server/service.ts'
 
 const request = (input: Record<string, unknown>): ChatRequest => ChatRequestSchema.parse(input)
 

@@ -7,9 +7,9 @@
  * same model that indexed the collection.
  */
 
-import type { BookSummary, RetrievedSource } from '../shared/contracts.ts'
-import { ProviderError } from '../shared/errors.ts'
-import { type Fetch, isRecord, readJson, send } from '../shared/http.ts'
+import type { BookSummary, RetrievedSource } from './contracts.ts'
+import { ProviderError } from './errors.ts'
+import { type Fetch, isRecord, readJson, send } from './http.ts'
 
 export const COLLECTION = 'materia_medica'
 export const DENSE_VECTOR = 'dense'

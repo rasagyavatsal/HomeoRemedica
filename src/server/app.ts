@@ -7,17 +7,18 @@ import { serveStatic } from '@hono/node-server/serve-static'
 import { type Context, Hono } from 'hono'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
 
-import { BOOKS, CorpusError } from '../production/qdrant.ts'
-import { type Settings, buildService, loadSettings } from '../production/runtime.ts'
-import { type BookSummary, type ChatRequest, ChatRequestSchema, type ChatResponse } from '../shared/contracts.ts'
-import { advanceHistory } from '../shared/conversation.ts'
-import { ChatFailure, ConfigurationError, FAILURE_DETAILS, type FailureKind } from '../shared/errors.ts'
-
-export interface BookCatalog {
-  books: readonly BookSummary[]
-  corpusVersion: string
-  model: string
-}
+import { BOOKS, CorpusError } from './qdrant.ts'
+import { type Settings, buildService, loadSettings } from './runtime.ts'
+import {
+  type BookCatalog,
+  type BookSummary,
+  type ChatRequest,
+  ChatRequestSchema,
+  type ChatResponse,
+  type WebChatResponse,
+} from './contracts.ts'
+import { advanceHistory } from './conversation.ts'
+import { ChatFailure, ConfigurationError, FAILURE_DETAILS, type FailureKind } from './errors.ts'
 
 export interface ChatHandler {
   readonly books: readonly BookSummary[]
@@ -36,8 +37,8 @@ const FAILURE_STATUS: Record<FailureKind, ContentfulStatusCode> = {
   internal: 500,
 }
 
-// A built frontend can be served by the API alone. During development Vite proxies /api.
-export const WEB_DIST = fileURLToPath(new URL('../../web/dist', import.meta.url))
+// `npm start` serves the built frontend too. During development Vite serves both.
+export const WEB_DIST = fileURLToPath(new URL('../../dist', import.meta.url))
 
 /** Load the catalog and build the chat service once; a failed build is retried on the next request. */
 export function productionDependencies({
@@ -114,7 +115,11 @@ export function createApp(
 
     try {
       const response = await service.chat(request)
-      return c.json({ ...response, history: advanceHistory(request.history, request.message, response.answer) })
+      const body: WebChatResponse = {
+        ...response,
+        history: advanceHistory(request.history, request.message, response.answer),
+      }
+      return c.json(body)
     } catch (error) {
       if (error instanceof ChatFailure) {
         return c.json({ detail: FAILURE_DETAILS[error.kind] }, FAILURE_STATUS[error.kind])
