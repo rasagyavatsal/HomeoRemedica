@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { version } from '../../package.json'
 import App from './App'
 import type { ChatResponse, Turn } from './api'
 
@@ -49,7 +50,7 @@ afterEach(() => vi.unstubAllGlobals())
 
 async function ready() {
   render(<App />)
-  await screen.findByText('test-model', { exact: false })
+  await screen.findByRole('list', { name: 'Books in the corpus' })
   return userEvent.setup()
 }
 
@@ -184,6 +185,11 @@ describe('production chat interactions', () => {
     await user.click(screen.getByRole('button', { name: 'What are the keynote symptoms of Arsenicum album?' }))
     await screen.findByText('First answer')
     expect(chatBody(0)).toEqual({ message: 'What are the keynote symptoms of Arsenicum album?', history: [], bookIds: null })
+  })
+
+  it('shows the app version', async () => {
+    await ready()
+    expect(screen.getByText(`v${version}`)).toBeVisible()
   })
 
   it('can retry a failed book catalog without resetting the conversation', async () => {

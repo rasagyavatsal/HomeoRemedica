@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent, KeyboardEvent } from 'react'
+import { version } from '../../package.json'
 import { loadBooks, sendMessage } from './api'
 import type { Book, Source, Turn } from './api'
 import { Answer } from './Answer'
@@ -55,7 +56,6 @@ export default function App() {
   const [booksLoading, setBooksLoading] = useState(true)
   const [booksError, setBooksError] = useState('')
   const [selectedBooks, setSelectedBooks] = useState<string[] | null>(null)
-  const [metadata, setMetadata] = useState({ corpusVersion: '', model: '' })
   const [messages, setMessages] = useState<Message[]>([])
   const [history, setHistory] = useState<Turn[]>([])
   const [draft, setDraft] = useState('')
@@ -77,7 +77,6 @@ export default function App() {
       const response = await loadBooks(signal)
       if (signal?.aborted) return
       setBooks(response.books)
-      setMetadata({ corpusVersion: response.corpusVersion, model: response.model })
     } catch (failure) {
       if (signal?.aborted) return
       setBooksError(errorMessage(failure))
@@ -154,7 +153,6 @@ export default function App() {
         { id: nextId.current++, role: 'assistant', content: response.answer, sources: response.sources },
       ])
       setHistory(response.history)
-      setMetadata({ corpusVersion: response.corpusVersion, model: response.model })
       setDraft('')
     } catch (failure) {
       setError(errorMessage(failure))
@@ -243,7 +241,7 @@ export default function App() {
             <div className="composer-footer">
               <span id="input-hint" className="sr-only">Enter to send, Shift + Enter for a new line.</span>
               <span className="disclaimer">Historical reference only — not medical advice.</span>
-              {metadata.corpusVersion && <span className="metadata" title={`Corpus ${metadata.corpusVersion} · ${metadata.model}`}>{metadata.model}<span aria-hidden="true"> · </span>{metadata.corpusVersion}</span>}
+              <span className="app-version">v{version}</span>
             </div>
           </div>
         </div>

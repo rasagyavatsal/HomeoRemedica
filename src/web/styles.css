@@ -245,7 +245,6 @@ button, a, input, textarea, summary { -webkit-tap-highlight-color: transparent; 
 .command:hover, .command:focus-visible { background: var(--surface-hover); color: var(--ink); }
 .command code { font-family: var(--mono); font-size: 12.5px; color: var(--accent); min-width: 56px; }
 .composer-footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 10px; padding: 0 6px; font-size: 11.5px; color: var(--faint); }
-.metadata { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 45%; font-variant-numeric: tabular-nums; }
 .error-message { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 10px; padding: 11px 14px; border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent); border-radius: 12px; background: var(--danger-soft); color: var(--danger); font-size: 13.5px; line-height: 1.5; animation: rise 200ms var(--ease) both; }
 .error-message svg { flex: none; margin-top: 2px; }
 .ended-session { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 14px 14px 20px; border: 1px dashed var(--line-strong); border-radius: 20px; font-size: 14px; color: var(--muted); }
@@ -308,8 +307,7 @@ button, a, input, textarea, summary { -webkit-tap-highlight-color: transparent; 
   .composer-area { padding: 14px 12px max(10px, env(safe-area-inset-bottom)); }
   .composer { padding: 8px 8px 8px 14px; border-radius: 18px; }
   .composer textarea { font-size: 16px; }
-  .composer-footer { justify-content: center; font-size: 11px; }
-  .metadata { display: none; }
+  .composer-footer { font-size: 11px; gap: 10px; }
   .dialog-header { padding: 20px 16px 14px 20px; }
   .dialog-body { padding: 0 10px 10px; }
   .dialog-footer { padding: 12px 16px 12px 20px; }
