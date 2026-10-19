@@ -7,6 +7,49 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [7.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v6.0.0...HomeoRemedica-v7.0.0) (2026-10-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* the Makefile and the separate web/ package are removed; use npm ci, npm run dev, npm run build, npm start and npm run check.
+* the Python package, uv tooling and the /docs API documentation are removed; run the API with npm start.
+* the corpus CLI and the corpus package are removed.
+* the web app reads QDRANT_URL, QDRANT_API_KEY and RAG_QDRANT_COLLECTION instead of RAG_CORPUS_DIR, and book IDs are now allen, boericke, clarke and kent.
+* the `chat`, `eval-chat`, and `evaluation` commands and the `experimental` package are removed.
+* dataset/ is no longer included; builds require a local checkout of the private dataset repository.
+* **web:** Rename the chat and eval_chat Python packages to production and experimental. Existing CLI command names are unchanged.
+* **eval-chat:** eval-chat --config now accepts an evaluation TOML file with a [chat] section.
+* **chat:** The eval package has moved to eval_chat, and chat.chat types and service have moved to shared.
+* **cli:** homeoremedica-corpus and homeoremedica-evaluation are no longer installed; use corpus and evaluation.
+* **cli:** The homeoremedica-chat command is replaced by chat.
+* **cli:** homeoremedica-web and the HTTP chat endpoints are removed; use homeoremedica-chat instead.
+* **web:** The server no longer serves a browser client at /.
+
+### Features
+
+* **chat:** add separate evaluation chat CLI ([#39](https://github.com/rasagyavatsal/HomeoRemedica/issues/39)) ([93fae7b](https://github.com/rasagyavatsal/HomeoRemedica/commit/93fae7b76cbdf7e6b499ae432696a2760de2b5ad))
+* **cli:** replace HTTP server with local chat CLI ([#35](https://github.com/rasagyavatsal/HomeoRemedica/issues/35)) ([d50e9e2](https://github.com/rasagyavatsal/HomeoRemedica/commit/d50e9e24dbbe8ddd22fec7c31f00ecd649f33014))
+* **cli:** replace prefixed commands with corpus and evaluation ([#38](https://github.com/rasagyavatsal/HomeoRemedica/issues/38)) ([8e6a007](https://github.com/rasagyavatsal/HomeoRemedica/commit/8e6a00733a1fd8f9f3e80a41ba6b3fe02a9497fd))
+* **cli:** shorten chat command to chat ([#36](https://github.com/rasagyavatsal/HomeoRemedica/issues/36)) ([34a766e](https://github.com/rasagyavatsal/HomeoRemedica/commit/34a766e5834ac7df509cd16ae55d5dd713136d76))
+* search the Qdrant collection from the web app ([a69fbca](https://github.com/rasagyavatsal/HomeoRemedica/commit/a69fbca5104c70b892e0e274fa9dc140798d9e77))
+* **web:** add production chat web app ([#42](https://github.com/rasagyavatsal/HomeoRemedica/issues/42)) ([cb6e1e4](https://github.com/rasagyavatsal/HomeoRemedica/commit/cb6e1e4964f9708b0da13b8f942c309f3d8992b2))
+
+
+### Miscellaneous Chores
+
+* stop distributing the source dataset ([#44](https://github.com/rasagyavatsal/HomeoRemedica/issues/44)) ([b52491b](https://github.com/rasagyavatsal/HomeoRemedica/commit/b52491bcf12b1e52afbc238ee45c6cf5d176c425))
+
+
+### Code Refactoring
+
+* **eval-chat:** move chat settings into evaluation config ([#40](https://github.com/rasagyavatsal/HomeoRemedica/issues/40)) ([f01047b](https://github.com/rasagyavatsal/HomeoRemedica/commit/f01047b4b1f8b7d60bb8afeff7a891980f165004))
+* merge the server and frontend into one package ([1fbe485](https://github.com/rasagyavatsal/HomeoRemedica/commit/1fbe4852d697c847d11a2cc302ac18412f7f82d9))
+* reduce repository to the web app ([9408f20](https://github.com/rasagyavatsal/HomeoRemedica/commit/9408f20ff75fbbb9a124283e92aa81f84b432dfc))
+* remove the SQLite corpus tooling ([e6d910f](https://github.com/rasagyavatsal/HomeoRemedica/commit/e6d910fdc553160fc200abc6f0689057c02adbd4))
+* rewrite the API server in TypeScript ([a233461](https://github.com/rasagyavatsal/HomeoRemedica/commit/a23346188fdb40bee094108e69a9fab4cccdabb9))
+* **web:** remove browser frontend and static serving ([#34](https://github.com/rasagyavatsal/HomeoRemedica/issues/34)) ([8b0d2ef](https://github.com/rasagyavatsal/HomeoRemedica/commit/8b0d2ef4b2af56569c2209f96400ea5cf59b499f))
+
 ## [6.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v5.0.0...HomeoRemedica-v6.0.0) (2026-09-12)
 
 
