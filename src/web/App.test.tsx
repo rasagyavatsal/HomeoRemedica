@@ -66,7 +66,7 @@ describe('production chat interactions', () => {
     const user = await ready()
     await user.click(screen.getByRole('button', { name: 'All books' }))
     const dialog = screen.getByRole('dialog')
-    await user.click(within(dialog).getByRole('checkbox', { name: 'Book 1 Author 1 book-1' }))
+    await user.click(within(dialog).getByRole('checkbox', { name: 'Book 1 Author 1' }))
     await user.click(within(dialog).getByRole('button', { name: 'Done' }))
     await user.type(screen.getByRole('textbox', { name: 'Message' }), 'First question{Enter}')
     await screen.findByText('First answer')
@@ -103,11 +103,11 @@ describe('production chat interactions', () => {
     await user.click(screen.getByRole('button', { name: 'All books' }))
     const dialog = screen.getByRole('dialog')
     for (let index = 1; index <= 4; index++) {
-      await user.click(within(dialog).getByRole('checkbox', { name: `Book ${index} Author ${index} book-${index}` }))
+      await user.click(within(dialog).getByRole('checkbox', { name: `Book ${index} Author ${index}` }))
     }
-    expect(within(dialog).getByRole('checkbox', { name: 'Book 5 Author 5 book-5' })).toBeDisabled()
+    expect(within(dialog).getByRole('checkbox', { name: 'Book 5 Author 5' })).toBeDisabled()
     await user.click(within(dialog).getByRole('checkbox', { name: 'All books' }))
-    expect(within(dialog).getByRole('checkbox', { name: 'Book 5 Author 5 book-5' })).toBeEnabled()
+    expect(within(dialog).getByRole('checkbox', { name: 'Book 5 Author 5' })).toBeEnabled()
     await user.click(within(dialog).getByRole('button', { name: 'Done' }))
     await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Question{Enter}')
     await waitFor(() => expect(chatCalls()).toHaveLength(1))
@@ -168,6 +168,24 @@ describe('production chat interactions', () => {
     expect(document.querySelector('.answer script')).toBeNull()
   })
 
+  it('links numbered citations to their sources and leaves unknown numbers as text', async () => {
+    const user = await ready()
+    fetchMock.mockImplementationOnce(async () => jsonResponse(chatResponse('Supported claim [1]. Unsupported claim [9].')))
+    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Question{Enter}')
+    const citation = await screen.findByRole('button', { name: 'Source 1: Remedy, Book 1' })
+    expect(screen.getByText('Unsupported claim [9].', { exact: false })).toBeVisible()
+    expect(screen.getByText('The original source passage.')).not.toBeVisible()
+    await user.click(citation)
+    expect(screen.getByText('The original source passage.')).toBeVisible()
+  })
+
+  it('asks a suggested question from the empty state', async () => {
+    const user = await ready()
+    await user.click(screen.getByRole('button', { name: 'What are the keynote symptoms of Arsenicum album?' }))
+    await screen.findByText('First answer')
+    expect(chatBody(0)).toEqual({ message: 'What are the keynote symptoms of Arsenicum album?', history: [], bookIds: null })
+  })
+
   it('can retry a failed book catalog without resetting the conversation', async () => {
     fetchMock.mockImplementationOnce(async () => jsonResponse({ detail: 'Corpus unavailable.' }, 503))
     render(<App />)
@@ -175,7 +193,7 @@ describe('production chat interactions', () => {
     await user.click(screen.getByRole('button', { name: 'All books' }))
     expect(await screen.findByRole('alert')).toHaveTextContent('Corpus unavailable.')
     await user.click(screen.getByRole('button', { name: 'Retry' }))
-    expect(await screen.findByRole('checkbox', { name: 'Book 1 Author 1 book-1' })).toBeVisible()
+    expect(await screen.findByRole('checkbox', { name: 'Book 1 Author 1' })).toBeVisible()
     expect(chatCalls()).toHaveLength(0)
   })
 })

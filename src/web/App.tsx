@@ -1,48 +1,53 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent, KeyboardEvent } from 'react'
-import ReactMarkdown from 'react-markdown'
 import { loadBooks, sendMessage } from './api'
 import type { Book, Source, Turn } from './api'
+import { Answer } from './Answer'
+import { BooksDialog, bookLabel } from './BooksDialog'
+import { AlertIcon, ArrowUpIcon, BookIcon, MarkIcon, PlusIcon } from './icons'
 
 interface Message extends Turn {
   id: number
   sources?: readonly Source[]
 }
 
-function ArrowIcon() {
-  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>
-}
+const COMMANDS = [
+  { name: '/books', description: 'Choose which books to search' },
+  { name: '/clear', description: 'Start a new conversation' },
+  { name: '/quit', description: 'End this session' },
+] as const
 
-function BookIcon() {
-  return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Zm0 0v14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-}
-
-function Sources({ sources }: { sources: readonly Source[] }) {
-  if (!sources.length) return null
-  return (
-    <details className="sources">
-      <summary>Sources <span>{sources.length}</span></summary>
-      <div className="source-list">
-        {sources.map((source, index) => (
-          <details className="source" key={source.id}>
-            <summary>
-              <span className="source-number">{index + 1}</span>
-              <span><strong>{source.bookTitle}</strong><span className="source-location">{source.remedyName} · {source.sectionTitle}</span></span>
-            </summary>
-            <div className="source-content">
-              {source.author && <p className="source-author">{source.author}</p>}
-              <p className="source-text">{source.text}</p>
-              <code>{source.id}</code>
-            </div>
-          </details>
-        ))}
-      </div>
-    </details>
-  )
-}
+const SUGGESTIONS = [
+  'What are the keynote symptoms of Arsenicum album?',
+  'Compare Bryonia and Rhus toxicodendron for joint pain.',
+  'Which remedies are worse from cold, damp weather?',
+  'How is the Pulsatilla temperament described?',
+]
 
 function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : 'The request could not be completed. Please try again.'
+}
+
+function EmptyState({ books, onAsk }: { books: readonly Book[]; onAsk: (question: string) => void }) {
+  return (
+    <div className="empty-state">
+      <span className="empty-mark"><MarkIcon size={28} /></span>
+      <h1>Ask the classical materia medica.</h1>
+      <p className="empty-lede">
+        Answers are drawn from {books.length ? `${books.length} historical texts` : 'historical texts'} and cite the passages they rely on.
+      </p>
+      <div className="suggestions">
+        {SUGGESTIONS.map((suggestion) => (
+          <button key={suggestion} type="button" className="suggestion" onClick={() => onAsk(suggestion)}>{suggestion}</button>
+        ))}
+      </div>
+      {books.length > 0 && (
+        <ul className="corpus-books" aria-label="Books in the corpus">
+          {books.map((book) => <li key={book.bookId}>{book.author ?? book.title}</li>)}
+        </ul>
+      )}
+    </div>
+  )
 }
 
 export default function App() {
@@ -60,8 +65,8 @@ export default function App() {
   const [status, setStatus] = useState('')
   const [booksOpen, setBooksOpen] = useState(false)
   const textarea = useRef<HTMLTextAreaElement>(null)
-  const bottom = useRef<HTMLDivElement>(null)
-  const dialog = useRef<HTMLDialogElement>(null)
+  const latestQuestion = useRef<HTMLElement>(null)
+  const progress = useRef<HTMLDivElement>(null)
   const nextId = useRef(0)
   const requestInFlight = useRef(false)
 
@@ -90,17 +95,17 @@ export default function App() {
   useEffect(() => {
     if (!textarea.current) return
     textarea.current.style.height = 'auto'
-    textarea.current.style.height = `${Math.min(textarea.current.scrollHeight, 180)}px`
+    textarea.current.style.height = `${Math.min(textarea.current.scrollHeight, 200)}px`
   }, [draft, ended])
 
+  // Bring each new exchange to the top of the view so long answers read from their start.
   useEffect(() => {
-    bottom.current?.scrollIntoView?.({ block: 'end' })
-  }, [messages, pending, error, ended])
+    latestQuestion.current?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
+  }, [messages])
 
   useEffect(() => {
-    if (booksOpen) dialog.current?.showModal()
-    else if (dialog.current?.open) dialog.current.close()
-  }, [booksOpen])
+    if (pending) progress.current?.scrollIntoView?.({ behavior: 'smooth', block: 'end' })
+  }, [pending])
 
   function clearConversation() {
     if (requestInFlight.current) return
@@ -110,40 +115,37 @@ export default function App() {
     setError('')
     setEnded(false)
     setStatus('Conversation cleared.')
+    window.scrollTo?.({ top: 0 })
     textarea.current?.focus()
   }
 
-  function toggleBook(bookId: string) {
-    const current = selectedBooks ?? []
-    if (current.includes(bookId)) {
-      const updated = current.filter((id) => id !== bookId)
-      setSelectedBooks(updated.length ? updated : null)
-    } else if (current.length < 4) {
-      setSelectedBooks([...current, bookId])
+  function runCommand(command: string) {
+    setError('')
+    if (command === '/books') {
+      setBooksOpen(true)
+      setDraft('')
+    } else if (command === '/clear') {
+      clearConversation()
+    } else if (command === '/quit' || command === '/exit') {
+      setEnded(true)
+      setDraft('')
+    } else {
+      setError('Unknown command. Use /books, /clear, or /quit.')
     }
   }
 
-  async function submit(event?: FormEvent) {
+  async function submit(event?: FormEvent, text = draft) {
     event?.preventDefault()
-    const message = draft.trim()
+    const message = text.trim()
     if (!message || requestInFlight.current || ended) return
     setError('')
     setStatus('')
     if (message.startsWith('/')) {
-      if (message === '/books') {
-        setBooksOpen(true)
-        setDraft('')
-      } else if (message === '/clear') {
-        clearConversation()
-      } else if (message === '/quit' || message === '/exit') {
-        setEnded(true)
-        setDraft('')
-      } else {
-        setError('Unknown command. Use /books, /clear, or /quit.')
-      }
+      runCommand(message)
       return
     }
     requestInFlight.current = true
+    setDraft(text)
     setPending(true)
     try {
       const response = await sendMessage(message, history, selectedBooks)
@@ -170,70 +172,84 @@ export default function App() {
     }
   }
 
-  const bookLabel = selectedBooks ? `${selectedBooks.length} selected` : 'All books'
+  const commandMatches = /^\/\S*$/.test(draft) ? COMMANDS.filter((command) => command.name.startsWith(draft)) : []
+  const lastUserId = messages.findLast((message) => message.role === 'user')?.id
+  const empty = !messages.length && !pending
 
   return (
     <div className="app-shell">
       <header className="header">
-        <a className="wordmark" href="/" aria-label="HomeoRemedica home">HomeoRemedica<span className="wordmark-dot" aria-hidden="true">.</span></a>
+        <a className="wordmark" href="/" aria-label="HomeoRemedica home">
+          <span className="wordmark-mark"><MarkIcon /></span>
+          <span>Homeo<span className="wordmark-accent">Remedica</span></span>
+        </a>
         <div className="header-actions">
-          <button className="button books-button" onClick={() => setBooksOpen(true)} disabled={pending} aria-haspopup="dialog"><BookIcon /><span>{bookLabel}</span></button>
-          <button className="button quiet" onClick={clearConversation} disabled={pending || (!messages.length && !draft && !ended)} aria-label="Clear conversation">Clear</button>
+          <button className={`button books-button ${selectedBooks ? 'is-filtered' : ''}`} type="button" onClick={() => setBooksOpen(true)} disabled={pending} aria-haspopup="dialog">
+            <BookIcon /><span>{bookLabel(selectedBooks)}</span>
+          </button>
+          <button className="button quiet" type="button" onClick={clearConversation} disabled={pending || (!messages.length && !draft && !ended)} aria-label="New chat" title="New chat">
+            <PlusIcon /><span className="button-text">New chat</span>
+          </button>
         </div>
       </header>
 
       <main className="main">
-        <div className={`conversation ${messages.length ? '' : 'conversation-empty'}`} aria-label="Conversation" role="log" aria-live="polite" aria-relevant="additions">
-          {!messages.length && !pending && <div className="empty-state"><h1>Ask a question.</h1></div>}
-          <div className="messages">
-            {messages.map((message) => (
-              <article className={`message message-${message.role}`} key={message.id}>
-                <div className="message-label">{message.role === 'user' ? 'You' : 'HomeoRemedica'}</div>
-                {message.role === 'user' ? <div className="user-content">{message.content}</div> : <>
-                  <div className="answer"><ReactMarkdown skipHtml>{message.content}</ReactMarkdown></div>
-                  <Sources sources={message.sources ?? []} />
-                </>}
-              </article>
-            ))}
-            {pending && <div className="request-progress" role="status"><span className="progress-dot" />Preparing an answer…</div>}
-            <div ref={bottom} />
-          </div>
+        <div className={`conversation ${empty ? 'conversation-empty' : ''}`} aria-label="Conversation" role="log" aria-live="polite" aria-relevant="additions">
+          {empty && !ended && <EmptyState books={books} onAsk={(question) => void submit(undefined, question)} />}
+          {messages.map((message) => message.role === 'user' ? (
+            <article className="message message-user" key={message.id} ref={message.id === lastUserId ? latestQuestion : undefined}>
+              <h2 className="sr-only">You</h2>
+              <div className="user-content">{message.content}</div>
+            </article>
+          ) : (
+            <article className="message message-assistant" key={message.id}>
+              <h2 className="message-label"><span className="avatar"><MarkIcon size={14} /></span>HomeoRemedica</h2>
+              <Answer id={message.id} content={message.content} sources={message.sources ?? []} />
+            </article>
+          ))}
+          {pending && (
+            <div className="message message-assistant request-progress" ref={progress} role="status">
+              <span className="message-label"><span className="avatar avatar-pulse"><MarkIcon size={14} /></span>Preparing an answer…</span>
+              <div className="skeleton" aria-hidden="true"><span /><span /><span /></div>
+            </div>
+          )}
         </div>
 
         <div className="composer-area">
-          {error && <p className="error-message" role="alert">{error}</p>}
-          <span className="sr-only" role="status">{status}</span>
-          {ended ? <div className="ended-session"><span>Session ended.</span><button className="button primary" onClick={clearConversation}>Start new chat</button></div> : (
-            <form className="composer" onSubmit={(event) => void submit(event)}>
-              <label className="sr-only" htmlFor="message">Message</label>
-              <textarea ref={textarea} id="message" placeholder="Message HomeoRemedica" rows={1} value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={onInputKeyDown} disabled={pending} aria-describedby="input-hint" />
-              <button className="send-button" type="submit" disabled={pending || !draft.trim()} aria-label="Send message"><ArrowIcon /></button>
-            </form>
-          )}
-          <div className="composer-footer"><span id="input-hint">{ended ? '' : 'Enter to send · Shift + Enter for a new line'}</span>{metadata.corpusVersion && <span className="metadata" title={`Corpus ${metadata.corpusVersion} · ${metadata.model}`}>{metadata.model}<span aria-hidden="true"> · </span>{metadata.corpusVersion}</span>}</div>
+          <div className="composer-stack">
+            {error && <p className="error-message" role="alert"><AlertIcon /><span>{error}</span></p>}
+            <span className="sr-only" role="status">{status}</span>
+            {ended ? (
+              <div className="ended-session">
+                <span>Session ended.</span>
+                <button className="button primary" type="button" onClick={clearConversation}>Start new chat</button>
+              </div>
+            ) : (
+              <form className="composer" onSubmit={(event) => void submit(event)}>
+                {commandMatches.length > 0 && (
+                  <div className="command-menu" aria-label="Commands">
+                    {commandMatches.map((command) => (
+                      <button key={command.name} type="button" className="command" onClick={() => { runCommand(command.name); textarea.current?.focus() }}>
+                        <code>{command.name}</code><span>{command.description}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <label className="sr-only" htmlFor="message">Message</label>
+                <textarea ref={textarea} id="message" placeholder={messages.length ? 'Ask a follow-up…' : 'Ask about a remedy or symptom…'} rows={1} value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={onInputKeyDown} disabled={pending} aria-describedby="input-hint" />
+                <button className="send-button" type="submit" disabled={pending || !draft.trim()} aria-label="Send message"><ArrowUpIcon /></button>
+              </form>
+            )}
+            <div className="composer-footer">
+              <span id="input-hint" className="sr-only">Enter to send, Shift + Enter for a new line.</span>
+              <span className="disclaimer">Historical reference only — not medical advice.</span>
+              {metadata.corpusVersion && <span className="metadata" title={`Corpus ${metadata.corpusVersion} · ${metadata.model}`}>{metadata.model}<span aria-hidden="true"> · </span>{metadata.corpusVersion}</span>}
+            </div>
+          </div>
         </div>
       </main>
 
-      <dialog ref={dialog} className="books-dialog" aria-labelledby="books-title" onCancel={() => setBooksOpen(false)} onClose={() => setBooksOpen(false)} onClick={(event) => { if (event.target === event.currentTarget) setBooksOpen(false) }}>
-        <div className="dialog-header"><div><h2 id="books-title">Books</h2><p>All books, or select up to four.</p></div><button className="close-button" onClick={() => setBooksOpen(false)} aria-label="Close books">×</button></div>
-        {booksLoading ? <p className="books-status" role="status">Loading books…</p> : booksError ? <div className="books-status"><p role="alert">{booksError}</p><button className="button" onClick={() => void refreshBooks()}>Retry</button></div> : <>
-          <label className="all-books"><input type="checkbox" checked={selectedBooks === null} onChange={() => setSelectedBooks(null)} />All books</label>
-          <div className="books-list">
-            {books.map((book) => (
-              <label className="book-option" key={book.bookId}>
-                <input type="checkbox" checked={selectedBooks?.includes(book.bookId) ?? false} disabled={selectedBooks?.length === 4 && !selectedBooks.includes(book.bookId)} onChange={() => toggleBook(book.bookId)} />
-                <span>
-                  <strong>{book.title}</strong>{' '}
-                  {book.author && <><span className="book-author">{book.author}</span>{' '}</>}
-                  <code className="book-id">{book.bookId}</code>
-                </span>
-              </label>
-            ))}
-            {!books.length && <p className="books-status">No books available.</p>}
-          </div>
-        </>}
-        <div className="dialog-footer"><span>{bookLabel}</span><button className="button primary" onClick={() => setBooksOpen(false)}>Done</button></div>
-      </dialog>
+      <BooksDialog open={booksOpen} onClose={() => setBooksOpen(false)} books={books} loading={booksLoading} error={booksError} onRetry={() => void refreshBooks()} selected={selectedBooks} onSelect={setSelectedBooks} />
     </div>
   )
 }
