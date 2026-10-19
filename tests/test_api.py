@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import ast
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -379,16 +378,3 @@ def test_unexpected_setup_errors_do_not_leak_details(
     }
     assert "private-secret" not in response.text
 
-
-def test_api_has_no_experimental_imports() -> None:
-    imports: list[str] = []
-    for path in (ROOT / "src/api").rglob("*.py"):
-        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-        for node in ast.walk(tree):
-            if isinstance(node, ast.ImportFrom) and node.module:
-                imports.append(node.module)
-            elif isinstance(node, ast.Import):
-                imports.extend(alias.name for alias in node.names)
-
-    assert any(name == "production.runtime" for name in imports)
-    assert not any(name.partition(".")[0] == "experimental" for name in imports)

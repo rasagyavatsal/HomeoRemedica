@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import ast
 import subprocess
-import tomllib
 from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -61,13 +60,12 @@ def violations() -> tuple[str, ...]:
 
 
 def pipeline_violations() -> tuple[str, ...]:
-    """Keep experimental code and settings out of the chat release graph."""
+    """Keep the corpus tooling independent of the chat service and web API."""
     found: list[str] = []
     forbidden_imports = {
-        ROOT / "src/corpus": {"production", "experimental", "shared"},
-        ROOT / "src/shared": {"production", "experimental", "corpus"},
-        ROOT / "src/production": {"experimental"},
-        ROOT / "src/experimental": {"production"},
+        ROOT / "src/corpus": {"production", "shared", "api"},
+        ROOT / "src/shared": {"production", "corpus", "api"},
+        ROOT / "src/production": {"api"},
     }
     for source_root, forbidden_roots in forbidden_imports.items():
         for path in source_root.glob("*.py"):
@@ -77,23 +75,6 @@ def pipeline_violations() -> tuple[str, ...]:
                     found.append(
                         f"invalid package dependency: {path.relative_to(ROOT)} imports {imported}"
                     )
-
-    with (ROOT / "corpus.toml").open("rb") as source:
-        corpus_settings = tomllib.load(source)
-    with (ROOT / "evaluation.toml").open("rb") as source:
-        evaluation_settings = tomllib.load(source)
-    if "evaluation" in corpus_settings:
-        found.append("corpus.toml contains evaluation settings")
-    release_output = (ROOT / corpus_settings["corpus"]["output_directory"]).resolve()
-    evaluation_outputs = tuple(
-        (ROOT / evaluation_settings["output"][key]).resolve()
-        for key in ("result", "cache_directory")
-    )
-    if any(
-        path.is_relative_to(release_output) or release_output.is_relative_to(path)
-        for path in evaluation_outputs
-    ):
-        found.append("evaluation and release outputs overlap")
     return tuple(found)
 
 

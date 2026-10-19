@@ -1,7 +1,7 @@
 [project]
 name = "HomeoRemedica"
 version = "6.0.0"
-description = "HomeoRemedica production chat, web interface, and RAG corpus release tooling"
+description = "HomeoRemedica web chat app and RAG corpus release tooling"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
@@ -17,9 +17,6 @@ dependencies = [
 
 [project.scripts]
 corpus = "corpus.cli:main"
-evaluation = "experimental.evaluation_cli:main"
-chat = "production.cli:main"
-eval-chat = "experimental.chat_cli:main"
 
 [build-system]
 requires = ["uv-build>=0.11.23,<0.12"]
@@ -57,4 +54,4 @@ reportMissingTypeStubs = false
 required-version = ">=0.11.23,<0.12"
 
 [tool.uv.build-backend]
-module-name = ["shared", "production", "corpus", "experimental", "api"]
+module-name = ["shared", "production", "corpus", "api"]

@@ -4,11 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from corpus.chunking import chunk_book, corpus_hash
+from corpus.chunking import chunk_book
 from corpus.config import load_pipeline_config
-from corpus.sources import CorpusValidationError, load_corpus_books
-from experimental.config import load_evaluation_config
-from experimental.evaluation import load_evaluation_dataset, load_evaluation_gate
+from corpus.sources import load_corpus_books
 
 ROOT = Path(__file__).resolve().parents[1]
 pytestmark = pytest.mark.skipif(
@@ -44,44 +42,3 @@ def test_repository_corpus_matches_config_and_conserves_every_passage() -> None:
         assert chunked_passages == source_passages
         assert all(len(chunk.passages) == 1 for chunk in chunks)
 
-
-def test_repository_v9_settings_apply_to_the_deduplicated_symptom_queries() -> None:
-    config = load_evaluation_config(ROOT / "evaluation.toml")
-    dataset, _ = load_evaluation_dataset(config.dataset, config.retrieval)
-
-    assert dataset.version == "v3"
-    assert dataset.minimum_quality == 0.8
-    assert dataset.remedy_name_normalization == "nfkcCasefoldWhitespace"
-    assert dataset.lexical_query_mode == "contentTerms"
-    assert dataset.ranking_unit == "globalRemedy"
-    assert dataset.fusion_strategy == "normalizedScore"
-    assert dataset.candidate_pool_size == 640
-    assert len(dataset.queries) == 500
-    assert sum(len(query.semantic_inputs) for query in dataset.queries) == 2117
-    assert all(query.semantic_inputs == query.lexical_inputs for query in dataset.queries)
-    assert dataset.semantic_query_instruction is not None
-    assert dataset.semantic_input_groups[0][0] == (
-        f"Instruct: {dataset.semantic_query_instruction}\n"
-        f"Query:{dataset.queries[0].semantic_inputs[0]}"
-    )
-
-
-def test_repository_evaluation_result_matches_its_isolated_configuration() -> None:
-    config = load_evaluation_config(ROOT / "evaluation.toml")
-    if not config.result.exists():
-        pytest.skip(
-            "pending evaluation for the configured dataset; run "
-            "`uv run --locked evaluation` once the OpenRouter key is configured"
-        )
-    books = repository_books(config)
-    chunks = tuple(chunk for book in books for chunk in chunk_book(book, config.chunking))
-    _, query_digest = load_evaluation_dataset(config.dataset, config.retrieval)
-    try:
-        gate = load_evaluation_gate(config.result)
-    except CorpusValidationError as error:
-        pytest.skip(f"recorded evaluation gate has no passing dimension: {error}")
-
-    assert gate.query_sha256 == query_digest
-    assert gate.corpus_hash == corpus_hash(chunks)
-    assert gate.value >= gate.threshold
-    assert gate.chosen_dimensions in config.dimensions

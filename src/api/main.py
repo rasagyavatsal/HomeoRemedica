@@ -17,7 +17,7 @@ from production.runtime import Settings, build_service, load_corpus
 from shared.contracts import BookSummary, ChatRequest, ChatResponse, ChatTurn, Contract
 from shared.conversation import advance_history
 from shared.errors import FAILURE_DETAILS, ChatFailure
-from shared.terminal import ChatSession
+from shared.service import ChatService
 
 logger = logging.getLogger(__name__)
 app = FastAPI(title="HomeoRemedica", version="6.0.0")
@@ -44,7 +44,7 @@ def get_catalog() -> BookCatalog:
 
 
 @lru_cache(maxsize=1)
-def get_service() -> ChatSession:
+def get_service() -> ChatService:
     return build_service(Settings())
 
 

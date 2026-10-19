@@ -1,1 +1,1 @@
-"""Conversation contracts and behavior shared by both chat commands."""
+"""Conversation contracts, answer generation, and the chat service."""
