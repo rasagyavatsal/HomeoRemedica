@@ -6,7 +6,7 @@ from typing import Any
 import pytest
 import requests
 
-from production.runtime import Settings
+from production.runtime import Settings, load_corpus
 from shared.errors import TokenExhaustionError
 from shared.generation import DEFAULT_ZAI_BASE_URL, ZaiChatClient
 
@@ -36,22 +36,32 @@ class TimeoutSession:
         raise requests.Timeout("timeout secret")
 
 
-def test_settings_defaults_to_glm_flash_and_reads_zai_key(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_settings_defaults_to_glm_flash_and_reads_provider_keys(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.setenv("ZAI_API_KEY", "zai-key")
-    monkeypatch.delenv("RAG_CORPUS_DIR", raising=False)
+    monkeypatch.setenv("QDRANT_URL", "https://qdrant.example")
+    monkeypatch.setenv("QDRANT_API_KEY", "qdrant-key")
+    monkeypatch.delenv("RAG_QDRANT_COLLECTION", raising=False)
 
     settings = Settings()
 
     assert settings.model == "glm-5.3-flash"
     assert settings.max_output_tokens == 4_096
     assert settings.zai_api_key == "zai-key"
-    assert settings.corpus_dir == Path("artifacts/corpus")
+    assert settings.qdrant_url == "https://qdrant.example"
+    assert settings.qdrant_api_key == "qdrant-key"
+    assert settings.qdrant_collection == "materia_medica"
 
 
-def test_settings_reads_the_local_corpus_directory(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("RAG_CORPUS_DIR", "~/homeoremedica-corpus")
+def test_load_corpus_requires_a_qdrant_url(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.delenv("QDRANT_URL", raising=False)
+    monkeypatch.chdir(tmp_path)
 
-    assert Settings().corpus_dir == Path.home() / "homeoremedica-corpus"
+    with pytest.raises(ValueError, match="QDRANT_URL"):
+        load_corpus(Settings())
 
 
 def test_zai_client_sends_openai_compatible_chat_request() -> None:

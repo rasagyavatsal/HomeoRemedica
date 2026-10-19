@@ -12,8 +12,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from production.corpus import CorpusError
-from production.runtime import Settings, build_service, load_corpus
+from production.qdrant import BOOKS, CorpusError
+from production.runtime import Settings, build_service
 from shared.contracts import BookSummary, ChatRequest, ChatResponse, ChatTurn, Contract
 from shared.conversation import advance_history
 from shared.errors import FAILURE_DETAILS, ChatFailure
@@ -37,9 +37,8 @@ class WebChatResponse(ChatResponse):
 @lru_cache(maxsize=1)
 def get_catalog() -> BookCatalog:
     settings = Settings()
-    corpus = load_corpus(settings)
     return BookCatalog(
-        books=corpus.books, corpus_version=corpus.corpus_version, model=settings.model
+        books=BOOKS, corpus_version=settings.qdrant_collection, model=settings.model
     )
 
 
@@ -51,13 +50,13 @@ def get_service() -> ChatService:
 def _setup_failure(error: Exception) -> HTTPException:
     if isinstance(error, CorpusError):
         detail = (
-            "The production corpus is unavailable. Build or activate a compatible release, "
-            "check RAG_CORPUS_DIR, then restart the API."
+            "The production corpus is unavailable. Check QDRANT_URL, QDRANT_API_KEY and "
+            "RAG_QDRANT_COLLECTION, then restart the API."
         )
     else:
         detail = (
-            "The production chat is not configured. Check OPENROUTER_API_KEY, ZAI_API_KEY "
-            "and the RAG_ settings in .env, then restart the API."
+            "The production chat is not configured. Check OPENROUTER_API_KEY, ZAI_API_KEY, "
+            "QDRANT_URL and the RAG_ settings in .env, then restart the API."
         )
     return HTTPException(status_code=503, detail=detail)
 

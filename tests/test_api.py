@@ -7,7 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from api import main as api
-from production.corpus import CorpusError
+from production.qdrant import CorpusError
 from shared.contracts import BookSummary, ChatRequest, ChatResponse, Citation
 from shared.errors import ChatFailure, FailureKind
 
@@ -100,18 +100,12 @@ def test_books_uses_only_the_local_catalog(
 def test_catalog_is_cached_without_constructing_chat_providers(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    loads: list[object] = []
-    settings = SimpleNamespace(model="catalog-model")
+    settings = SimpleNamespace(model="catalog-model", qdrant_collection="materia_medica")
     monkeypatch.setattr(api, "Settings", lambda: settings)
-
-    def load(settings: object) -> StubService:
-        loads.append(settings)
-        return StubService()
 
     def unexpected_build(settings: object) -> None:
         raise AssertionError("catalog must not initialize chat providers")
 
-    monkeypatch.setattr(api, "load_corpus", load)
     monkeypatch.setattr(api, "build_service", unexpected_build)
     api.get_catalog.cache_clear()
     try:
@@ -119,9 +113,9 @@ def test_catalog_is_cached_without_constructing_chat_providers(
         second = api.get_catalog()
 
         assert first is second
-        assert first.books == (BOOK,)
+        assert first.books == api.BOOKS
+        assert first.corpus_version == "materia_medica"
         assert first.model == "catalog-model"
-        assert loads == [settings]
     finally:
         api.get_catalog.cache_clear()
 
@@ -324,7 +318,7 @@ def test_unavailable_corpus_has_safe_actionable_detail(
     endpoint: str, client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     def missing_corpus() -> None:
-        raise CorpusError("corpus directory does not exist: /private/secret/path")
+        raise CorpusError("could not reach Qdrant at /private/secret/path")
 
     monkeypatch.setattr(api, "get_catalog", missing_corpus)
     monkeypatch.setattr(api, "get_service", missing_corpus)
@@ -337,7 +331,7 @@ def test_unavailable_corpus_has_safe_actionable_detail(
 
     assert response.status_code == 503
     assert "corpus" in response.json()["detail"].lower()
-    assert "RAG_CORPUS_DIR" in response.json()["detail"]
+    assert "QDRANT_URL" in response.json()["detail"]
     assert "/private/secret/path" not in response.text
 
 
