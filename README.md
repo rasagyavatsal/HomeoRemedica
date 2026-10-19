@@ -21,8 +21,7 @@ Pydantic · OpenRouter · Z.AI · pytest · Ruff · Pyright
 - **Structured corpus:** preserves book, remedy, and section metadata on every chunk, so
   citations point to their source.
 - **Automated quality checks:** checks package boundaries, builds the Python package, runs linting
-  and type checking, tests against fakes and synthetic artifacts without API keys, and tests and
-  builds the frontend.
+  and type checking, tests against fakes without API keys, and tests and builds the frontend.
 
 ## Architecture
 
@@ -127,27 +126,6 @@ The API reads environment variables and optional `.env` and `.env.local` files.
 Each question retrieves up to eight chunks from Qdrant and sends the grounded prompt to Z.AI.
 OpenRouter supplies query embeddings.
 
-## Corpus tooling
-
-The web app no longer reads these SQLite releases; it searches Qdrant. This legacy tooling
-remains for reference.
-
-`corpus.toml` configures the source data, chunking, embeddings, and release output. The default
-pipeline reads `dataset/corpus.json`, treats each passage as one chunk, and builds one shared
-SQLite database for all four books.
-
-```sh
-# Validate sources and chunking locally; no API key needed.
-uv run --locked corpus validate
-
-# Verify and activate an existing release.
-uv run --locked corpus activate local-v1
-```
-
-Builds write `corpus.sqlite` and `manifest.json` under `artifacts/corpus/<version>/`, then update
-`active.json` after verification. Restart the API to load a newly activated release.
-Use `build <version> --workers 8` to reduce the default 32 concurrent embedding requests.
-
 ## Development
 
 ```sh
@@ -158,8 +136,8 @@ make web-check
 
 `make check` validates Python: package building, Ruff linting, Pyright type checking, and pytest.
 The test suite includes repository boundary checks, which reject generated artifacts in Git
-and keep the corpus tooling independent of the chat service and API.
-Tests use fakes and synthetic artifacts; they do not require API keys or a built corpus.
+and keep the chat service independent of the API.
+Tests use fakes; they do not require API keys or a Qdrant cluster.
 `make web-check` validates the frontend: interaction tests followed by a Vite build, which also
 runs TypeScript type checking. `make web` starts Vite and FastAPI together with automatic reload;
 `make api` starts only FastAPI.
@@ -168,8 +146,6 @@ runs TypeScript type checking. `make web` starts Vite and FastAPI together with 
 - `src/production/` — production retrieval from the Qdrant collection.
 - `src/api/` — FastAPI interface to the production service and optional built frontend hosting.
 - `web/` — minimal React/Vite chat interface.
-- `src/corpus/` — source validation, chunking, embeddings, and release tooling.
-- `dataset/` — local checkout of the private source dataset; ignored by Git.
 - `tests/` — Python test suite.
 
 ## License

@@ -1,4 +1,4 @@
-"""Production query embedding and active-release search."""
+"""Production query embedding and corpus search."""
 
 from __future__ import annotations
 

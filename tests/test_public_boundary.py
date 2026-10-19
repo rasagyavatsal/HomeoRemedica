@@ -60,11 +60,10 @@ def violations() -> tuple[str, ...]:
 
 
 def pipeline_violations() -> tuple[str, ...]:
-    """Keep the corpus tooling independent of the chat service and web API."""
+    """Keep the chat service independent of the web API."""
     found: list[str] = []
     forbidden_imports = {
-        ROOT / "src/corpus": {"production", "shared", "api"},
-        ROOT / "src/shared": {"production", "corpus", "api"},
+        ROOT / "src/shared": {"production", "api"},
         ROOT / "src/production": {"api"},
     }
     for source_root, forbidden_roots in forbidden_imports.items():
