@@ -100,7 +100,11 @@ The API initializes the Qdrant and provider clients lazily and checks that the c
 so setup errors appear in the app. `GET /api/health` checks the server; `GET /api/books` lists the
 production books without requiring provider keys; `POST /api/chat` accepts `message` and
 `history`. Responses include the answer, source citations, corpus/model metadata,
-and the trimmed history to send with the next question.
+and the trimmed history to send with the next question. With `Accept: text/event-stream`, the
+chat endpoint streams server-sent events instead: `sources` once retrieval finishes, `text` pieces
+as the answer is generated, then `done` with the full response or `error` with a safe `detail`.
+Each client may send 10 questions a minute and 100 an hour to each server instance; further
+requests get `429` with `Retry-After`.
 
 ## Configuration
 
