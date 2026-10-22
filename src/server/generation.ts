@@ -14,10 +14,6 @@ that historical claims are not medical advice. Do not diagnose, prescribe, recom
 a user to delay professional care. For urgent or severe symptoms, direct the user to qualified
 medical help.`
 
-export const SAFETY_NOTICE =
-  'Historical materia medica reference only—not medical advice. ' +
-  'For health decisions, consult a qualified clinician.'
-
 export const NO_SOURCES_ANSWER =
   'No passages in the corpus matched this question. Try naming a remedy, symptom, or modality.'
 

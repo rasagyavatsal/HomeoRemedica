@@ -74,11 +74,7 @@ it('grounds a conversation-aware answer in versioned sources', async () => {
   expect(generator.generationPrompt).toContain("[1] Kent's Lectures — NUX VOMICA — MIND")
   expect(generator.generationPrompt).toContain('untrusted user-provided context')
   expect(generator.generationPrompt).toContain('untrusted reference data')
-  expect(response.answer).toBe(
-    'Historical materia medica reference only—not medical advice. ' +
-      'For health decisions, consult a qualified clinician.\n\n' +
-      'Kent describes irritability and oversensitivity [1].',
-  )
+  expect(response.answer).toBe('Kent describes irritability and oversensitivity [1].')
   expect(response.corpusVersion).toBe('2026-08-15.v1')
   expect(response.model).toBe('glm-5.3-flash')
   expect(response.sources[0]?.id).toBe('2026-08-15.v1/kent-lectures/chk_1')

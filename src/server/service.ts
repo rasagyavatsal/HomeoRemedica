@@ -10,7 +10,7 @@ import {
   type Retriever,
 } from './contracts.ts'
 import { ChatFailure, type FailureKind, ProviderError, TokenExhaustionError, isTimeout } from './errors.ts'
-import { NO_SOURCES_ANSWER, SAFETY_NOTICE, SYSTEM_INSTRUCTION, generationPrompt } from './generation.ts'
+import { NO_SOURCES_ANSWER, SYSTEM_INSTRUCTION, generationPrompt } from './generation.ts'
 
 /** Own the complete retrieve-and-generate sequence behind one narrow chat method. */
 export class ChatService {
@@ -88,7 +88,7 @@ export class ChatService {
       text: source.text,
     }))
     return {
-      answer: `${SAFETY_NOTICE}\n\n${generatedAnswer}`,
+      answer: generatedAnswer,
       corpusVersion,
       model: this.#generator.model,
       sources: citations,

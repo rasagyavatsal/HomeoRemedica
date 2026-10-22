@@ -214,7 +214,7 @@ export default function App() {
             )}
             <div className="composer-footer">
               <span id="input-hint" className="sr-only">Enter to send, Shift + Enter for a new line.</span>
-              <span className="disclaimer">Historical reference only — not medical advice.</span>
+              <span className="disclaimer">Historical reference only — not medical advice. For health decisions, consult a qualified clinician.</span>
               <span className="app-version">v{version}</span>
             </div>
           </div>
