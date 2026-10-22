@@ -84,8 +84,8 @@ Open `http://127.0.0.1:5173`. The Vite dev server serves the frontend and the AP
 process; edits to either reload automatically. Port 5173 must be available; Vite will report an
 error instead of switching to another port. Restart after changing `.env`.
 Send questions, inspect numbered sources, and clear the conversation. Enter sends; Shift+Enter
-adds a line. `/clear`, `/quit`, and `/exit` also work in the message box. Conversation history lives in the current browser session's memory
-and resets on refresh.
+adds a line. `/clear`, `/quit`, and `/exit` also work in the message box. The conversation is kept in the
+tab's session storage, so it survives a reload and ends when the tab closes or with `/clear`.
 
 To serve a built frontend and the API from one Node.js server:
 

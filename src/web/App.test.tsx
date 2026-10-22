@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { version } from '../../package.json'
@@ -54,6 +54,7 @@ function eventStream() {
 const fetchMock = vi.fn<typeof fetch>()
 
 beforeEach(() => {
+  sessionStorage.clear()
   fetchMock.mockReset()
   fetchMock.mockImplementation(async (url) => {
     if (url === '/api/books') return jsonResponse(catalog)
@@ -224,6 +225,30 @@ describe('production chat interactions', () => {
     const items = screen.getAllByRole('listitem').filter((item) => item.closest('.source-list'))
     expect(items.map((item) => item.querySelector('.source-number')?.textContent)).toEqual(['1', '3', '2'])
     expect(items.map((item) => item.textContent?.includes('Not cited'))).toEqual([false, false, true])
+  })
+
+  it('restores the conversation after a reload until it is cleared', async () => {
+    const user = await ready()
+    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'First question{Enter}')
+    await screen.findByText('First answer')
+    cleanup()
+
+    render(<App />)
+    expect(screen.getByText('First answer')).toBeVisible()
+    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Second question{Enter}')
+    await waitFor(() => expect(chatCalls()).toHaveLength(2))
+    expect(chatBody(1).history).toEqual(firstHistory)
+
+    await user.type(screen.getByRole('textbox', { name: 'Message' }), '/clear{Enter}')
+    cleanup()
+    await ready()
+    expect(screen.queryByText('First answer')).not.toBeInTheDocument()
+  })
+
+  it('starts fresh when the saved conversation is unreadable', async () => {
+    sessionStorage.setItem('homeoremedica:conversation', '{not json')
+    await ready()
+    expect(screen.getByRole('heading', { name: 'Ask the classical materia medica.' })).toBeVisible()
   })
 
   it('asks a suggested question from the empty state', async () => {

@@ -30,6 +30,36 @@ const SUGGESTIONS = [
   'How is the Pulsatilla temperament described?',
 ]
 
+const STORAGE_KEY = 'homeoremedica:conversation'
+
+interface SavedConversation {
+  messages: Message[]
+  history: Turn[]
+}
+
+/** Restore the conversation this tab saved before a reload. */
+function loadConversation(): SavedConversation {
+  try {
+    const saved: unknown = JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? 'null')
+    if (saved && typeof saved === 'object' && 'messages' in saved && 'history' in saved
+      && Array.isArray(saved.messages) && Array.isArray(saved.history)) {
+      return saved as SavedConversation
+    }
+  } catch {
+    // Blocked storage or unreadable data starts a fresh conversation.
+  }
+  return { messages: [], history: [] }
+}
+
+function saveConversation(conversation: SavedConversation) {
+  try {
+    if (conversation.messages.length) sessionStorage.setItem(STORAGE_KEY, JSON.stringify(conversation))
+    else sessionStorage.removeItem(STORAGE_KEY)
+  } catch {
+    // Full or blocked storage only loses the copy kept for reloads.
+  }
+}
+
 function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : 'The request could not be completed. Please try again.'
 }
@@ -57,9 +87,10 @@ function EmptyState({ books, onAsk }: { books: readonly Book[]; onAsk: (question
 }
 
 export default function App() {
+  const [saved] = useState(loadConversation)
   const [books, setBooks] = useState<readonly Book[]>([])
-  const [messages, setMessages] = useState<Message[]>([])
-  const [history, setHistory] = useState<Turn[]>([])
+  const [messages, setMessages] = useState<Message[]>(saved.messages)
+  const [history, setHistory] = useState<Turn[]>(saved.history)
   const [draft, setDraft] = useState('')
   const [live, setLive] = useState<LiveExchange | null>(null)
   const [error, setError] = useState('')
@@ -67,7 +98,7 @@ export default function App() {
   const [status, setStatus] = useState('')
   const textarea = useRef<HTMLTextAreaElement>(null)
   const latestQuestion = useRef<HTMLElement>(null)
-  const nextId = useRef(0)
+  const nextId = useRef(Math.max(-1, ...saved.messages.map((message) => message.id)) + 1)
   const requestInFlight = useRef(false)
 
   // The catalog only decorates the empty state, so a failed load leaves the generic copy in place.
@@ -84,6 +115,8 @@ export default function App() {
   }, [draft, ended])
 
   const pending = live !== null
+
+  useEffect(() => saveConversation({ messages, history }), [messages, history])
 
   // Bring each new exchange to the top of the view so long answers read from their start.
   useEffect(() => {
