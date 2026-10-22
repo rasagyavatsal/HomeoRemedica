@@ -153,6 +153,18 @@ it('rejects oversized citation text before generating an answer', async () => {
   expect(generator.generationPrompt).toBeNull()
 })
 
+it('answers without the model when retrieval finds no sources', async () => {
+  const retriever = new StubRetriever()
+  retriever.retrieve = async () => []
+  const generator = new StubGenerator()
+
+  const response = await new ChatService({ retriever, generator }).chat(request({ message: 'question' }))
+
+  expect(generator.generationPrompt).toBeNull()
+  expect(response.answer).toContain('No passages in the corpus matched this question.')
+  expect(response.sources).toEqual([])
+})
+
 it('rejects an oversized history budget', () => {
   const history = Array(5).fill({ role: 'user', content: 'x'.repeat(4_000) })
 

@@ -10,7 +10,7 @@ import {
   type Retriever,
 } from './contracts.ts'
 import { ChatFailure, type FailureKind, ProviderError, TokenExhaustionError, isTimeout } from './errors.ts'
-import { SAFETY_NOTICE, SYSTEM_INSTRUCTION, generationPrompt } from './generation.ts'
+import { NO_SOURCES_ANSWER, SAFETY_NOTICE, SYSTEM_INSTRUCTION, generationPrompt } from './generation.ts'
 
 /** Own the complete retrieve-and-generate sequence behind one narrow chat method. */
 export class ChatService {
@@ -59,16 +59,19 @@ export class ChatService {
       throw new ChatFailure({ stage: 'chat', kind: 'internal', cause: new RangeError('citation text is too long') })
     }
 
-    let generatedAnswer: string
-    try {
-      generatedAnswer = (
-        await this.#generator.generate(generationPrompt(request, sources, { maxChars: this.#promptCharLimit }), {
-          systemInstruction: SYSTEM_INSTRUCTION,
-        })
-      ).trim()
-    } catch (error) {
-      if (error instanceof ChatFailure) throw error
-      throw new ChatFailure({ stage: 'answer_generation', kind: generationFailureKind(error), cause: error })
+    // Without evidence the model could only decline, so skip the call.
+    let generatedAnswer = NO_SOURCES_ANSWER
+    if (sources.length) {
+      try {
+        generatedAnswer = (
+          await this.#generator.generate(generationPrompt(request, sources, { maxChars: this.#promptCharLimit }), {
+            systemInstruction: SYSTEM_INSTRUCTION,
+          })
+        ).trim()
+      } catch (error) {
+        if (error instanceof ChatFailure) throw error
+        throw new ChatFailure({ stage: 'answer_generation', kind: generationFailureKind(error), cause: error })
+      }
     }
     if (generatedAnswer.length > MAX_GENERATED_ANSWER_CHARS) {
       generatedAnswer = `${generatedAnswer.slice(0, MAX_GENERATED_ANSWER_CHARS).trimEnd()}…`

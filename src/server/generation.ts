@@ -18,6 +18,9 @@ export const SAFETY_NOTICE =
   'Historical materia medica reference only—not medical advice. ' +
   'For health decisions, consult a qualified clinician.'
 
+export const NO_SOURCES_ANSWER =
+  'No passages in the corpus matched this question. Try naming a remedy, symptom, or modality.'
+
 /** Call Z.AI's OpenAI-compatible chat completion endpoint. */
 export class ZaiChatClient implements AnswerGenerator {
   readonly model: string
