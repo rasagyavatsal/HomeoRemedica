@@ -97,7 +97,14 @@ export interface Retriever {
   retrieve(request: ChatRequest, options: { limit: number }): Promise<readonly RetrievedSource[]>
 }
 
+export interface GenerateOptions {
+  systemInstruction: string
+  /** Receives each piece of answer text as the provider streams it. */
+  onText?: ((text: string) => void) | undefined
+  signal?: AbortSignal | undefined
+}
+
 export interface AnswerGenerator {
   readonly model: string
-  generate(prompt: string, options: { systemInstruction: string }): Promise<string>
+  generate(prompt: string, options: GenerateOptions): Promise<string>
 }

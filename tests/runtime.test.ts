@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { loadCorpus, loadSettings } from '../src/server/runtime.ts'
 import { ConfigurationError, ProviderError, ProviderTimeoutError, TokenExhaustionError } from '../src/server/errors.ts'
 import { DEFAULT_ZAI_BASE_URL, ZaiChatClient } from '../src/server/generation.ts'
-import { fakeFetch, json, timeout } from './fakes.ts'
+import { fakeFetch, json, sse, stream, timeout } from './fakes.ts'
 
 describe('settings', () => {
   let directory: string
@@ -62,12 +62,21 @@ describe('Z.AI chat client', () => {
   const client = (fetch: ReturnType<typeof fakeFetch>) =>
     new ZaiChatClient({ apiKey: 'zai-key', model: 'glm-5.3-flash', maxOutputTokens: 4_096, fetch })
 
-  it('sends an OpenAI-compatible chat request', async () => {
-    const fetch = fakeFetch(json({ choices: [{ message: { content: 'Grounded answer.' } }] }))
+  const delta = (content: string, extra: Record<string, unknown> = {}) => ({ choices: [{ delta: { content }, ...extra }] })
 
-    const answer = await client(fetch).generate('Retrieved evidence', { systemInstruction: 'Use citations.' })
+  it('streams an OpenAI-compatible chat request', async () => {
+    const fetch = fakeFetch(
+      sse({ choices: [{ delta: { reasoning_content: 'Thinking.' } }] }, delta('Grounded '), delta('answer.', { finish_reason: 'stop' })),
+    )
+    const pieces: string[] = []
+
+    const answer = await client(fetch).generate('Retrieved evidence', {
+      systemInstruction: 'Use citations.',
+      onText: (text) => pieces.push(text),
+    })
 
     expect(answer).toBe('Grounded answer.')
+    expect(pieces).toEqual(['Grounded ', 'answer.'])
     expect(fetch.calls).toEqual([
       {
         url: `${DEFAULT_ZAI_BASE_URL}/chat/completions`,
@@ -83,7 +92,7 @@ describe('Z.AI chat client', () => {
           reasoning_effort: 'high',
           temperature: 1.0,
           max_tokens: 4_096,
-          stream: false,
+          stream: true,
         },
       },
     ])
@@ -92,7 +101,7 @@ describe('Z.AI chat client', () => {
   it.each(['', 'The patient is bruised and sore, especially after an injury.'])(
     'rejects length-limited responses (%j)',
     async (content) => {
-      const fetch = fakeFetch(json({ choices: [{ finish_reason: 'length', message: { content } }] }))
+      const fetch = fakeFetch(sse(delta(content, { finish_reason: 'length' })))
 
       await expect(client(fetch).generate('prompt', { systemInstruction: 'instruction' })).rejects.toThrow(
         TokenExhaustionError,
@@ -100,10 +109,18 @@ describe('Z.AI chat client', () => {
     },
   )
 
+  it('reads events split across chunks and CRLF line endings', async () => {
+    const fetch = fakeFetch(stream('data: {"choices":[{"delta":{"con', 'tent":"Split."}}]}\r\n\r\n', 'data: [DONE]\r\n'))
+
+    expect(await client(fetch).generate('prompt', { systemInstruction: 'instruction' })).toBe('Split.')
+  })
+
   it.each([
-    json({ choices: [] }),
-    json({ choices: [{ message: { content: '  ' } }] }),
-    new Response('not json', { status: 200 }),
+    sse({ choices: [] }),
+    sse({ error: { message: 'provider secret' } }),
+    sse(delta('  ')),
+    stream('data: not json\n\n'),
+    new Response(null, { status: 200 }),
   ])('rejects unusable responses', async (response) => {
     await expect(client(fakeFetch(response)).generate('prompt', { systemInstruction: 'instruction' })).rejects.toThrow(
       ProviderError,

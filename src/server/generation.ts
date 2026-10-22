@@ -1,6 +1,6 @@
-import type { AnswerGenerator, ChatRequest, RetrievedSource } from './contracts.ts'
+import type { AnswerGenerator, ChatRequest, GenerateOptions, RetrievedSource } from './contracts.ts'
 import { ConfigurationError, ProviderError, ProviderTimeoutError, TokenExhaustionError } from './errors.ts'
-import { type Fetch, isRecord, readJson, send } from './http.ts'
+import { type Fetch, isRecord, readEvents, send } from './http.ts'
 
 export const DEFAULT_ZAI_BASE_URL = 'https://api.z.ai/api/paas/v4'
 export const ZAI_REQUEST_TIMEOUT_MS = 60_000
@@ -17,7 +17,7 @@ medical help.`
 export const NO_SOURCES_ANSWER =
   'No passages in the corpus matched this question. Try naming a remedy, symptom, or modality.'
 
-/** Call Z.AI's OpenAI-compatible chat completion endpoint. */
+/** Stream from Z.AI's OpenAI-compatible chat completion endpoint. */
 export class ZaiChatClient implements AnswerGenerator {
   readonly model: string
   readonly #maxOutputTokens: number
@@ -52,7 +52,7 @@ export class ZaiChatClient implements AnswerGenerator {
     this.#timeoutMs = timeoutMs
   }
 
-  async generate(prompt: string, { systemInstruction }: { systemInstruction: string }): Promise<string> {
+  async generate(prompt: string, { systemInstruction, onText, signal }: GenerateOptions): Promise<string> {
     const payload = {
       model: this.model,
       messages: [
@@ -63,14 +63,14 @@ export class ZaiChatClient implements AnswerGenerator {
       reasoning_effort: 'high',
       temperature: 1.0,
       max_tokens: this.#maxOutputTokens,
-      stream: false,
+      stream: true,
     }
     const label = 'Z.AI chat'
     const response = await send(
       this.#fetch,
       this.#url,
       { method: 'POST', headers: this.#headers, body: JSON.stringify(payload) },
-      { label, timeoutMs: this.#timeoutMs },
+      { label, timeoutMs: this.#timeoutMs, signal },
     )
     if (response.status !== 200) {
       if (response.status === 408 || response.status === 504) {
@@ -78,15 +78,19 @@ export class ZaiChatClient implements AnswerGenerator {
       }
       throw new ProviderError(`${label} request failed with status ${response.status}`)
     }
-    const parsed = await readJson(response, label)
-    if (!isRecord(parsed)) throw new ProviderError('Z.AI returned an unexpected chat response shape')
-    const choices = parsed.choices
-    if (!Array.isArray(choices) || !isRecord(choices[0])) throw new ProviderError('Z.AI returned no chat choices')
-    const choice = choices[0]
-    if (choice.finish_reason === 'length') throw new TokenExhaustionError()
-    if (!isRecord(choice.message)) throw new ProviderError('Z.AI returned an invalid chat message')
-    const content = choice.message.content
-    if (typeof content !== 'string' || !content.trim()) throw new ProviderError('Z.AI returned an empty chat response')
+    let content = ''
+    for await (const event of readEvents(response, label)) {
+      // Reasoning arrives as `reasoning_content` deltas and is not part of the answer.
+      const choice = isRecord(event) && Array.isArray(event.choices) ? event.choices[0] : undefined
+      if (!isRecord(choice)) throw new ProviderError('Z.AI returned an unexpected chat stream event')
+      const text = isRecord(choice.delta) ? choice.delta.content : undefined
+      if (typeof text === 'string' && text) {
+        content += text
+        onText?.(text)
+      }
+      if (choice.finish_reason === 'length') throw new TokenExhaustionError()
+    }
+    if (!content.trim()) throw new ProviderError('Z.AI returned an empty chat response')
     return content
   }
 }
