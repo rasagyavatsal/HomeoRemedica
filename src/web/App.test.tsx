@@ -35,6 +35,22 @@ function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
 }
 
+/** A server-sent event response whose events the test sends one at a time. */
+function eventStream() {
+  const encoder = new TextEncoder()
+  let controller!: ReadableStreamDefaultController<Uint8Array>
+  const body = new ReadableStream<Uint8Array>({ start: (value) => { controller = value } })
+  return {
+    response: new Response(body, { headers: { 'Content-Type': 'text/event-stream' } }),
+    async send(event: string, data: unknown) {
+      await act(async () => controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`)))
+    },
+    async close() {
+      await act(async () => controller.close())
+    },
+  }
+}
+
 const fetchMock = vi.fn<typeof fetch>()
 
 beforeEach(() => {
@@ -155,6 +171,46 @@ describe('production chat interactions', () => {
     expect(screen.getByText('The original source passage.')).not.toBeVisible()
     await user.click(citation)
     expect(screen.getByText('The original source passage.')).toBeVisible()
+  })
+
+  it('shows the question and the answer while it streams', async () => {
+    const user = await ready()
+    const stream = eventStream()
+    fetchMock.mockImplementationOnce(async () => stream.response)
+    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'First question{Enter}')
+    expect(new Headers(chatCalls()[0][1]?.headers).get('Accept')).toBe('text/event-stream')
+    expect(screen.getByText('First question', { selector: '.user-content' })).toBeVisible()
+    expect(screen.getByText('Preparing an answer…')).toBeVisible()
+
+    await stream.send('sources', chatResponse().sources)
+    await stream.send('text', { text: 'Streamed ' })
+    expect(await screen.findByText('Streamed')).toBeVisible()
+    expect(screen.queryByText('Preparing an answer…')).not.toBeInTheDocument()
+    await stream.send('text', { text: 'claim [1].' })
+    expect(await screen.findByRole('button', { name: 'Source 1: Remedy, Book 1' })).toBeVisible()
+    expect(screen.getByRole('textbox', { name: 'Message' })).toBeDisabled()
+
+    await stream.send('done', chatResponse('Streamed claim [1].'))
+    await stream.close()
+    await waitFor(() => expect(screen.getByRole('textbox', { name: 'Message' })).toBeEnabled())
+    expect(screen.getAllByText('First question')).toHaveLength(1)
+    expect(screen.getByRole('textbox', { name: 'Message' })).toHaveValue('')
+  })
+
+  it('drops a partial answer when the stream reports an error', async () => {
+    const user = await ready()
+    const stream = eventStream()
+    fetchMock.mockImplementationOnce(async () => stream.response)
+    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'First question{Enter}')
+    await stream.send('text', { text: 'Partial answer' })
+    await screen.findByText('Partial answer')
+
+    await stream.send('error', { detail: 'Response limit reached. Please try again.' })
+    await stream.close()
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Response limit reached.')
+    expect(screen.queryByText('Partial answer')).not.toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Message' })).toHaveValue('First question')
   })
 
   it('asks a suggested question from the empty state', async () => {

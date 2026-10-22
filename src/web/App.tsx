@@ -11,6 +11,13 @@ interface Message extends Turn {
   sources?: readonly Source[]
 }
 
+/** The question in flight and the part of its answer streamed so far. */
+interface LiveExchange {
+  question: string
+  content: string
+  sources: readonly Source[]
+}
+
 const COMMANDS = [
   { name: '/clear', description: 'Start a new conversation' },
   { name: '/quit', description: 'End this session' },
@@ -54,13 +61,12 @@ export default function App() {
   const [messages, setMessages] = useState<Message[]>([])
   const [history, setHistory] = useState<Turn[]>([])
   const [draft, setDraft] = useState('')
-  const [pending, setPending] = useState(false)
+  const [live, setLive] = useState<LiveExchange | null>(null)
   const [error, setError] = useState('')
   const [ended, setEnded] = useState(false)
   const [status, setStatus] = useState('')
   const textarea = useRef<HTMLTextAreaElement>(null)
   const latestQuestion = useRef<HTMLElement>(null)
-  const progress = useRef<HTMLDivElement>(null)
   const nextId = useRef(0)
   const requestInFlight = useRef(false)
 
@@ -77,14 +83,12 @@ export default function App() {
     textarea.current.style.height = `${Math.min(textarea.current.scrollHeight, 200)}px`
   }, [draft, ended])
 
+  const pending = live !== null
+
   // Bring each new exchange to the top of the view so long answers read from their start.
   useEffect(() => {
     latestQuestion.current?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
-  }, [messages])
-
-  useEffect(() => {
-    if (pending) progress.current?.scrollIntoView?.({ behavior: 'smooth', block: 'end' })
-  }, [pending])
+  }, [messages, pending])
 
   function clearConversation() {
     if (requestInFlight.current) return
@@ -122,9 +126,12 @@ export default function App() {
     }
     requestInFlight.current = true
     setDraft(text)
-    setPending(true)
+    setLive({ question: message, content: '', sources: [] })
     try {
-      const response = await sendMessage(message, history)
+      const response = await sendMessage(message, history, {
+        onSources: (sources) => setLive((current) => current && { ...current, sources }),
+        onText: (text) => setLive((current) => current && { ...current, content: current.content + text }),
+      })
       setMessages((previous) => [...previous,
         { id: nextId.current++, role: 'user', content: message },
         { id: nextId.current++, role: 'assistant', content: response.answer, sources: response.sources },
@@ -135,7 +142,7 @@ export default function App() {
       setError(errorMessage(failure))
     } finally {
       requestInFlight.current = false
-      setPending(false)
+      setLive(null)
       requestAnimationFrame(() => textarea.current?.focus())
     }
   }
@@ -166,10 +173,10 @@ export default function App() {
       </header>
 
       <main className="main">
-        <div className={`conversation ${empty ? 'conversation-empty' : ''}`} aria-label="Conversation" role="log" aria-live="polite" aria-relevant="additions">
+        <div className={`conversation ${empty ? 'conversation-empty' : ''}`} aria-label="Conversation" role="log" aria-live="polite" aria-relevant="additions" aria-busy={pending}>
           {empty && !ended && <EmptyState books={books} onAsk={(question) => void submit(undefined, question)} />}
           {messages.map((message) => message.role === 'user' ? (
-            <article className="message message-user" key={message.id} ref={message.id === lastUserId ? latestQuestion : undefined}>
+            <article className="message message-user" key={message.id} ref={!live && message.id === lastUserId ? latestQuestion : undefined}>
               <h2 className="sr-only">You</h2>
               <div className="user-content">{message.content}</div>
             </article>
@@ -179,11 +186,24 @@ export default function App() {
               <Answer id={message.id} content={message.content} sources={message.sources ?? []} />
             </article>
           ))}
-          {pending && (
-            <div className="message message-assistant request-progress" ref={progress} role="status">
-              <span className="message-label"><span className="avatar avatar-pulse"><MarkIcon size={14} /></span>Preparing an answer…</span>
-              <div className="skeleton" aria-hidden="true"><span /><span /><span /></div>
-            </div>
+          {live && (
+            <>
+              <article className="message message-user" ref={latestQuestion}>
+                <h2 className="sr-only">You</h2>
+                <div className="user-content">{live.question}</div>
+              </article>
+              {live.content ? (
+                <article className="message message-assistant">
+                  <h2 className="message-label"><span className="avatar avatar-pulse"><MarkIcon size={14} /></span>HomeoRemedica</h2>
+                  <Answer id={nextId.current + 1} content={live.content} sources={live.sources} />
+                </article>
+              ) : (
+                <div className="message message-assistant request-progress" role="status">
+                  <span className="message-label"><span className="avatar avatar-pulse"><MarkIcon size={14} /></span>Preparing an answer…</span>
+                  <div className="skeleton" aria-hidden="true"><span /><span /><span /></div>
+                </div>
+              )}
+            </>
           )}
         </div>
 
