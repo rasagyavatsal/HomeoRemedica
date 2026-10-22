@@ -14,7 +14,6 @@ export interface QueryEmbedder {
 
 export interface SearchableRelease {
   readonly corpusVersion: string
-  readonly modelInputLimit: number
   search(
     query: string,
     embedding: readonly number[],
@@ -31,10 +30,6 @@ export class ProductionRetriever implements Retriever {
     this.#corpus = corpus
     this.#embedder = embedder
     this.corpusVersion = corpus.corpusVersion
-  }
-
-  get modelInputLimit(): number {
-    return this.#corpus.modelInputLimit
   }
 
   async retrieve(request: ChatRequest, { limit }: { limit: number }): Promise<readonly RetrievedSource[]> {

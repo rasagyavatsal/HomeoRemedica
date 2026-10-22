@@ -15,7 +15,6 @@ const request = (input: Record<string, unknown>): ChatRequest => ChatRequestSche
 
 class StubRetriever implements Retriever {
   readonly corpusVersion = '2026-08-15.v1'
-  readonly modelInputLimit = 8_192
   searchCall: { request: ChatRequest; limit: number } | null = null
   failure: unknown = null
 
@@ -168,7 +167,6 @@ it('production retriever embeds the conversation', async () => {
   let searchCall: unknown[] | null = null
   const corpus: SearchableRelease = {
     corpusVersion: 'local-v1',
-    modelInputLimit: 8192,
     async search(query, embedding, { limit }) {
       searchCall = [query, embedding, limit]
       return []
@@ -202,7 +200,6 @@ it.each([
 ])('production retriever classifies embedding failures (%s)', async (cause, kind) => {
   const corpus: SearchableRelease = {
     corpusVersion: 'local-v1',
-    modelInputLimit: 8192,
     search: async () => [],
   }
   const embedder = {

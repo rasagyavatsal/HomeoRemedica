@@ -3,7 +3,6 @@ import {
   type ChatRequest,
   type ChatResponse,
   type Citation,
-  DEFAULT_MODEL_INPUT_LIMIT_TOKENS,
   MAX_CITATION_TEXT_CHARS,
   MAX_GENERATED_ANSWER_CHARS,
   MAX_GENERATION_PROMPT_CHARS,
@@ -18,28 +17,25 @@ export class ChatService {
   readonly #retriever: Retriever
   readonly #generator: AnswerGenerator
   readonly #sourceLimit: number
-  readonly #generationCharLimit: number
+  readonly #promptCharLimit: number
 
+  // The default prompt limit, about 16,000 tokens at four characters per token, fits well within
+  // the answer model's context window without needing a tokenizer in the serving container.
   constructor({
     retriever,
     generator,
     sourceLimit = 8,
+    promptCharLimit = MAX_GENERATION_PROMPT_CHARS,
   }: {
     retriever: Retriever
     generator: AnswerGenerator
     sourceLimit?: number
+    promptCharLimit?: number
   }) {
     this.#retriever = retriever
     this.#generator = generator
     this.#sourceLimit = sourceLimit
-    const modelInputLimit = retriever.modelInputLimit ?? DEFAULT_MODEL_INPUT_LIMIT_TOKENS
-    if (!Number.isInteger(modelInputLimit) || modelInputLimit <= 0) {
-      throw new RangeError('corpus model input limit must be a positive integer')
-    }
-    // Four characters per token is intentionally conservative and keeps
-    // the prompt below the model's input budget without needing a tokenizer
-    // in the serving container.
-    this.#generationCharLimit = Math.min(MAX_GENERATION_PROMPT_CHARS, Math.max(512, modelInputLimit * 4))
+    this.#promptCharLimit = promptCharLimit
   }
 
   get corpusVersion(): string {
@@ -66,7 +62,7 @@ export class ChatService {
     let generatedAnswer: string
     try {
       generatedAnswer = (
-        await this.#generator.generate(generationPrompt(request, sources, { maxChars: this.#generationCharLimit }), {
+        await this.#generator.generate(generationPrompt(request, sources, { maxChars: this.#promptCharLimit }), {
           systemInstruction: SYSTEM_INSTRUCTION,
         })
       ).trim()

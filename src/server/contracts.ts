@@ -4,7 +4,6 @@ export const MAX_TURN_CHARS = 4_000
 export const MAX_HISTORY_TURNS = 20
 export const MAX_HISTORY_CHARS = 16_000
 export const MAX_RETRIEVAL_QUERY_CHARS = 8_000
-export const DEFAULT_MODEL_INPUT_LIMIT_TOKENS = 8_192
 export const MAX_CITATION_TEXT_CHARS = 8_000
 export const MAX_GENERATION_PROMPT_CHARS = 64_000
 export const MAX_GENERATED_ANSWER_CHARS = 12_000
@@ -95,7 +94,6 @@ export interface WebChatResponse extends ChatResponse {
 
 export interface Retriever {
   readonly corpusVersion: string
-  readonly modelInputLimit?: number
   retrieve(request: ChatRequest, options: { limit: number }): Promise<readonly RetrievedSource[]>
 }
 

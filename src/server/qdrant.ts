@@ -17,8 +17,6 @@ export const SPARSE_VECTOR = 'bm25'
 export const SPARSE_MODEL = 'qdrant/bm25'
 // Each ranking contributes this many candidates per requested source before fusion.
 export const PREFETCH_MULTIPLIER = 5
-// voyage-4 accepts 32,000 input tokens.
-export const MODEL_INPUT_LIMIT = 32_000
 export const QDRANT_TIMEOUT_MS = 30_000
 const LABEL = 'Qdrant'
 
@@ -37,7 +35,6 @@ export class CorpusError extends Error {
 
 export class QdrantCorpus {
   readonly corpusVersion: string
-  readonly modelInputLimit = MODEL_INPUT_LIMIT
   readonly #collectionUrl: string
   readonly #headers: Record<string, string>
   readonly #fetch: Fetch
