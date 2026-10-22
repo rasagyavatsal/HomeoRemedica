@@ -5,12 +5,14 @@ import { fileURLToPath } from 'node:url'
 
 import { serveStatic } from '@hono/node-server/serve-static'
 import { type Context, Hono } from 'hono'
+import { streamSSE } from 'hono/streaming'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
 
 import { BOOKS, CorpusError } from './qdrant.ts'
 import { type Settings, buildService, loadSettings } from './runtime.ts'
 import {
   type BookCatalog,
+  type ChatOptions,
   type ChatRequest,
   ChatRequestSchema,
   type ChatResponse,
@@ -20,7 +22,7 @@ import { advanceHistory } from './conversation.ts'
 import { ChatFailure, ConfigurationError, FAILURE_DETAILS, type FailureKind } from './errors.ts'
 
 export interface ChatHandler {
-  chat(request: ChatRequest): Promise<ChatResponse>
+  chat(request: ChatRequest, options?: ChatOptions): Promise<ChatResponse>
 }
 
 export interface AppDependencies {
@@ -107,19 +109,40 @@ export function createApp(
       return setupFailure(c, error, 'Failed to initialize production chat')
     }
 
+    const complete = (response: ChatResponse): WebChatResponse => ({
+      ...response,
+      history: advanceHistory(request.history, request.message, response.answer),
+    })
+
+    // Browsers ask for a stream: `sources`, then `text` pieces, then `done` or `error`.
+    if (c.req.header('Accept')?.includes('text/event-stream')) {
+      return streamSSE(c, async (stream) => {
+        const controller = new AbortController()
+        stream.onAbort(() => controller.abort())
+        let writes = Promise.resolve()
+        const send = (event: string, data: unknown) => {
+          writes = writes.then(() => stream.writeSSE({ event, data: JSON.stringify(data) }))
+        }
+        try {
+          const response = await service.chat(request, {
+            onSources: (sources) => send('sources', sources),
+            onText: (text) => send('text', { text }),
+            signal: controller.signal,
+          })
+          send('done', complete(response))
+        } catch (error) {
+          send('error', { detail: chatFailure(error).detail })
+        }
+        // A closed connection rejects the remaining writes; there is no one left to tell.
+        await writes.catch(() => {})
+      })
+    }
+
     try {
-      const response = await service.chat(request)
-      const body: WebChatResponse = {
-        ...response,
-        history: advanceHistory(request.history, request.message, response.answer),
-      }
-      return c.json(body)
+      return c.json(complete(await service.chat(request)))
     } catch (error) {
-      if (error instanceof ChatFailure) {
-        return c.json({ detail: FAILURE_DETAILS[error.kind] }, FAILURE_STATUS[error.kind])
-      }
-      console.error('Production chat failed', error)
-      return c.json({ detail: FAILURE_DETAILS.internal }, 500)
+      const { detail, status } = chatFailure(error)
+      return c.json({ detail }, status)
     }
   })
 
@@ -135,6 +158,12 @@ export function createApp(
   })
 
   return app
+}
+
+function chatFailure(error: unknown): { detail: string; status: ContentfulStatusCode } {
+  if (error instanceof ChatFailure) return { detail: FAILURE_DETAILS[error.kind], status: FAILURE_STATUS[error.kind] }
+  console.error('Production chat failed', error)
+  return { detail: FAILURE_DETAILS.internal, status: 500 }
 }
 
 function setupFailure(c: Context, error: unknown, logMessage: string) {

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { type AppDependencies, type ChatHandler, createApp, productionDependencies } from '../src/server/app.ts'
 import { BOOKS, CorpusError } from '../src/server/qdrant.ts'
 import type { Settings } from '../src/server/runtime.ts'
-import type { BookCatalog, BookSummary, ChatRequest, ChatResponse } from '../src/server/contracts.ts'
+import type { BookCatalog, BookSummary, ChatOptions, ChatRequest, ChatResponse } from '../src/server/contracts.ts'
 import { ChatFailure, ConfigurationError, type FailureKind } from '../src/server/errors.ts'
 
 const BOOK: BookSummary = { bookId: 'kent-lectures', title: "Kent's Lectures", author: 'Kent' }
@@ -14,10 +14,10 @@ class StubService implements ChatHandler {
   failure: unknown = null
   answer = 'Historical reference only. Kent describes irritability [1].'
 
-  async chat(request: ChatRequest): Promise<ChatResponse> {
+  async chat(request: ChatRequest, { onSources, onText }: ChatOptions = {}): Promise<ChatResponse> {
     this.requests.push(request)
     if (this.failure !== null) throw this.failure
-    return {
+    const response: ChatResponse = {
       answer: this.answer,
       corpusVersion: 'local-v1',
       model: 'test-model',
@@ -34,6 +34,9 @@ class StubService implements ChatHandler {
         },
       ],
     }
+    onSources?.(response.sources)
+    for (const word of this.answer.split(/(?<= )/)) onText?.(word)
+    return response
   }
 }
 
@@ -51,13 +54,25 @@ function setup(overrides: Partial<AppDependencies> = {}) {
     },
     { webDist: null },
   )
-  const post = (body: unknown) =>
+  const post = (body: unknown, headers: Record<string, string> = {}) =>
     app.request('/api/chat', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify(body),
     })
-  return { app, service, post }
+  const postStream = (body: unknown) => post(body, { Accept: 'text/event-stream' })
+  return { app, service, post, postStream }
+}
+
+/** Parse a server-sent event stream into `[event, data]` pairs. */
+async function events(response: Response): Promise<[string, any][]> {
+  return (await response.text())
+    .split('\n\n')
+    .filter(Boolean)
+    .map((block) => {
+      const field = (name: string) => block.match(new RegExp(`^${name}: ?(.*)$`, 'm'))?.[1] ?? ''
+      return [field('event'), JSON.parse(field('data'))]
+    })
 }
 
 // Response bodies are JSON shapes the assertions inspect directly.
@@ -118,6 +133,57 @@ it('forwards history and returns citations', async () => {
         text: 'A passage.',
       },
     ],
+  })
+})
+
+describe('streamed chat', () => {
+  it('sends sources, answer text, then the completed response', async () => {
+    const { service, postStream } = setup()
+    service.answer = 'Kent describes irritability [1].'
+
+    const response = await postStream({ message: 'What about irritability?' })
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('Content-Type')).toContain('text/event-stream')
+    const received = await events(response)
+    expect(received.map(([event]) => event)).toEqual(['sources', 'text', 'text', 'text', 'text', 'done'])
+    expect(received[0]![1][0].id).toBe('local-v1/kent-lectures/chunk-1')
+    expect(received.slice(1, -1).map(([, data]) => data.text).join('')).toBe(service.answer)
+    const done = received.at(-1)![1]
+    expect(done.answer).toBe(service.answer)
+    expect(done.history).toEqual([
+      { role: 'user', content: 'What about irritability?' },
+      { role: 'assistant', content: service.answer },
+    ])
+  })
+
+  it('reports chat failures as an error event without details', async () => {
+    const { service, postStream } = setup()
+    service.failure = new ChatFailure({ stage: 'answer_generation', kind: 'timeout', cause: new Error('private-secret') })
+
+    const response = await postStream({ message: 'question' })
+
+    const text = await response.clone().text()
+    expect(await events(response)).toEqual([['error', { detail: 'The request took too long. Please try again.' }]])
+    expect(text).not.toContain('private-secret')
+  })
+
+  it('reports unexpected errors as an internal error event', async () => {
+    quiet()
+    const { service, postStream } = setup()
+    service.failure = new TypeError('private-secret')
+
+    expect(await events(await postStream({ message: 'question' }))).toEqual([['error', { detail: INTERNAL }]])
+  })
+
+  it('rejects invalid requests with JSON before streaming', async () => {
+    const { service, postStream } = setup()
+
+    const response = await postStream({ message: '  ' })
+
+    expect(response.status).toBe(422)
+    expect(typeof (await read(response)).detail).toBe('string')
+    expect(service.requests).toEqual([])
   })
 })
 
