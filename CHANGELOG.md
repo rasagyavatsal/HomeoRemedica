@@ -7,6 +7,34 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [8.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v8.0.0...HomeoRemedica-v8.1.0) (2026-10-22)
+
+
+### Features
+
+* **server:** rate-limit chat requests per client ([fdcebf1](https://github.com/rasagyavatsal/HomeoRemedica/commit/fdcebf125f663116335901e561e9a3735664f29c))
+* **server:** report chat sources and answer text as they become available ([df414ae](https://github.com/rasagyavatsal/HomeoRemedica/commit/df414ae41fe14acc0405e708b58dbd0260d3d570))
+* **server:** skip answer generation when retrieval finds no sources ([de5b9b2](https://github.com/rasagyavatsal/HomeoRemedica/commit/de5b9b22e4c8d7c0da746032114019c6cf266f2d))
+* **server:** stream answers from Z.AI ([93d6310](https://github.com/rasagyavatsal/HomeoRemedica/commit/93d6310a58f5f7938f99808befc5408253a2612b))
+* **server:** stream chat responses as server-sent events ([8f7ce46](https://github.com/rasagyavatsal/HomeoRemedica/commit/8f7ce462fbbc482dd08de7340d6daf1b2275fdb1))
+* **web:** keep the conversation across page reloads ([6c3d460](https://github.com/rasagyavatsal/HomeoRemedica/commit/6c3d4601b3241fa7c7fa138c7f2781d8115e4dea))
+* **web:** list cited sources first and mark the rest as not cited ([53f2740](https://github.com/rasagyavatsal/HomeoRemedica/commit/53f274089073ee0799846ceaf342a24de56d3bfe))
+* **web:** show answers as they stream ([7960c0e](https://github.com/rasagyavatsal/HomeoRemedica/commit/7960c0e09f24383cf6131fe62dca4df9c843e006))
+
+
+### Bug Fixes
+
+* **server:** remove stray whitespace from the system instruction ([f934658](https://github.com/rasagyavatsal/HomeoRemedica/commit/f9346587e12df61089778286add460e25a0b1309))
+* **server:** search on recent questions instead of whole turns ([1870bbc](https://github.com/rasagyavatsal/HomeoRemedica/commit/1870bbc8482d86a2b3bd1faa3b43c52c28c049f7))
+* **server:** stop sizing the answer prompt from the embedding model's limit ([236802d](https://github.com/rasagyavatsal/HomeoRemedica/commit/236802dd8bf6ff88901d5e8277b0625bb18f4254))
+* show the safety notice once in the footer instead of in every answer ([60810f1](https://github.com/rasagyavatsal/HomeoRemedica/commit/60810f12cac24306f614d1f7a97bbfb5b52955ed))
+
+
+### Performance Improvements
+
+* **server:** lower answer reasoning effort from max to high ([3653202](https://github.com/rasagyavatsal/HomeoRemedica/commit/36532020e967bc65804ba4e88506c92d3f911319))
+* **server:** reject oversized citations before generating an answer ([14bf093](https://github.com/rasagyavatsal/HomeoRemedica/commit/14bf093b405ac7c7d35bccc698b41e1eb3875a5d))
+
 ## [8.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v7.1.0...HomeoRemedica-v8.0.0) (2026-10-19)
 
 
