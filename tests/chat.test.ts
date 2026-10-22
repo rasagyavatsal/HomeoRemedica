@@ -142,6 +142,18 @@ it('classifies token exhaustion without returning partial content', async () => 
   expect([error.stage, error.kind]).toEqual(['answer_generation', 'token_exhaustion'])
 })
 
+it('rejects oversized citation text before generating an answer', async () => {
+  const retriever = new StubRetriever()
+  const generator = new StubGenerator()
+  const sources = await retriever.retrieve(request({ message: 'question' }), { limit: 8 })
+  retriever.retrieve = async () => [{ ...sources[0]!, text: 'x'.repeat(8_001) }]
+
+  const error = await failure(new ChatService({ retriever, generator }).chat(request({ message: 'question' })))
+
+  expect([error.stage, error.kind]).toEqual(['chat', 'internal'])
+  expect(generator.generationPrompt).toBeNull()
+})
+
 it('rejects an oversized history budget', () => {
   const history = Array(5).fill({ role: 'user', content: 'x'.repeat(4_000) })
 

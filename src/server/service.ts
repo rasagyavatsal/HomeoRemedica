@@ -58,6 +58,10 @@ export class ChatService {
       if (error instanceof ChatFailure) throw error
       throw new ChatFailure({ stage: 'corpus_search', kind: isTimeout(error) ? 'timeout' : 'internal', cause: error })
     }
+    // Reject an unusable corpus before paying for an answer.
+    if (sources.some((source) => source.text.length > MAX_CITATION_TEXT_CHARS)) {
+      throw new ChatFailure({ stage: 'chat', kind: 'internal', cause: new RangeError('citation text is too long') })
+    }
 
     let generatedAnswer: string
     try {
@@ -72,9 +76,6 @@ export class ChatService {
     }
     if (generatedAnswer.length > MAX_GENERATED_ANSWER_CHARS) {
       generatedAnswer = `${generatedAnswer.slice(0, MAX_GENERATED_ANSWER_CHARS).trimEnd()}…`
-    }
-    if (sources.some((source) => source.text.length > MAX_CITATION_TEXT_CHARS)) {
-      throw new ChatFailure({ stage: 'chat', kind: 'internal', cause: new RangeError('citation text is too long') })
     }
     const corpusVersion = this.#retriever.corpusVersion
     const citations: Citation[] = sources.map((source) => ({
