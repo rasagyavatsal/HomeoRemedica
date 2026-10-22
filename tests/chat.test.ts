@@ -175,6 +175,34 @@ it('rejects book filters', () => {
   expect(() => request({ message: 'question', bookIds: ['kent'] })).toThrow(/unexpected request field/)
 })
 
+it('production retriever searches on recent questions only', async () => {
+  let embedded: string | null = null
+  const corpus: SearchableRelease = { corpusVersion: 'local-v1', search: async () => [] }
+  const embedder = {
+    async embedQuery(text: string) {
+      embedded = text
+      return [1.0, 0.0]
+    },
+  }
+
+  await new ProductionRetriever(corpus, embedder).retrieve(
+    request({
+      message: 'And its mental symptoms?',
+      history: [
+        { role: 'user', content: 'Tell me about Nux vomica.' },
+        { role: 'assistant', content: 'Nux vomica suits irritable patients [1].' },
+        { role: 'user', content: 'What about Sepia?' },
+        { role: 'assistant', content: 'Sepia is indifferent to loved ones [2].' },
+        { role: 'user', content: 'Compare it with Pulsatilla.' },
+        { role: 'assistant', content: 'Pulsatilla is mild and weepy [3].' },
+      ],
+    }),
+    { limit: 8 },
+  )
+
+  expect(embedded).toBe('What about Sepia?\nCompare it with Pulsatilla.\nAnd its mental symptoms?')
+})
+
 it('production retriever embeds the conversation', async () => {
   let searchCall: unknown[] | null = null
   const corpus: SearchableRelease = {

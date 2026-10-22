@@ -8,6 +8,8 @@ import {
 } from './contracts.ts'
 import { ChatFailure, ProviderError, isTimeout } from './errors.ts'
 
+const PREVIOUS_QUESTIONS = 2
+
 export interface QueryEmbedder {
   embedQuery(text: string): Promise<readonly number[]>
 }
@@ -33,9 +35,10 @@ export class ProductionRetriever implements Retriever {
   }
 
   async retrieve(request: ChatRequest, { limit }: { limit: number }): Promise<readonly RetrievedSource[]> {
-    const recent = [...request.history.slice(-4), { role: 'user', content: request.message }]
-    const query = recent
-      .map((turn) => turn.content)
+    // Earlier questions resolve follow-ups such as "what about its mental symptoms?". Answers are
+    // left out: they are long enough to drown the question in both rankings.
+    const questions = request.history.filter((turn) => turn.role === 'user').slice(-PREVIOUS_QUESTIONS)
+    const query = [...questions.map((turn) => turn.content), request.message]
       .join('\n')
       .slice(-MAX_RETRIEVAL_QUERY_CHARS)
     let embedding: readonly number[]
