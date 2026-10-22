@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { type AppDependencies, type ChatHandler, createApp, productionDependencies } from '../src/server/app.ts'
 import { BOOKS, CorpusError } from '../src/server/qdrant.ts'
+import { RateLimiter } from '../src/server/rate-limit.ts'
 import type { Settings } from '../src/server/runtime.ts'
 import type { BookCatalog, BookSummary, ChatOptions, ChatRequest, ChatResponse } from '../src/server/contracts.ts'
 import { ChatFailure, ConfigurationError, type FailureKind } from '../src/server/errors.ts'
@@ -44,7 +45,7 @@ const unexpected = (message: string) => () => {
   throw new Error(message)
 }
 
-function setup(overrides: Partial<AppDependencies> = {}) {
+function setup(overrides: Partial<AppDependencies> = {}, rateLimiter: RateLimiter | null = null) {
   const service = new StubService()
   const app = createApp(
     {
@@ -52,7 +53,7 @@ function setup(overrides: Partial<AppDependencies> = {}) {
       getService: async () => service,
       ...overrides,
     },
-    { webDist: null },
+    { webDist: null, rateLimiter },
   )
   const post = (body: unknown, headers: Record<string, string> = {}) =>
     app.request('/api/chat', {
@@ -349,6 +350,20 @@ it.each(['/api/books', '/api/chat'])('unexpected setup errors do not leak detail
 
   expect(response.status).toBe(500)
   expect(await read(response)).toEqual({ detail: INTERNAL })
+})
+
+it('rate-limits chat by the address Cloud Run appends', async () => {
+  const { service, post } = setup({}, new RateLimiter([{ limit: 1, windowMs: 60_000 }]))
+  const from = (forwardedFor: string) => post({ message: 'question' }, { 'X-Forwarded-For': forwardedFor })
+
+  expect((await from('203.0.113.1')).status).toBe(200)
+  const limited = await from('198.51.100.9, 203.0.113.1')
+  expect((await from('203.0.113.2')).status).toBe(200)
+
+  expect(limited.status).toBe(429)
+  expect(limited.headers.get('Retry-After')).toBe('60')
+  expect((await read(limited)).detail).toMatch(/Too many questions/)
+  expect(service.requests).toHaveLength(2)
 })
 
 it('returns JSON 404s for unknown API routes', async () => {

@@ -19,6 +19,7 @@ import {
   type WebChatResponse,
 } from './contracts.ts'
 import { advanceHistory } from './conversation.ts'
+import { RateLimiter } from './rate-limit.ts'
 import { ChatFailure, ConfigurationError, FAILURE_DETAILS, type FailureKind } from './errors.ts'
 
 export interface ChatHandler {
@@ -74,7 +75,7 @@ export function productionDependencies({
 
 export function createApp(
   dependencies: AppDependencies = productionDependencies(),
-  { webDist = WEB_DIST }: { webDist?: string | null } = {},
+  { webDist = WEB_DIST, rateLimiter = new RateLimiter() }: { webDist?: string | null; rateLimiter?: RateLimiter | null } = {},
 ): Hono {
   const app = new Hono()
 
@@ -87,6 +88,15 @@ export function createApp(
       return setupFailure(c, error, 'Failed to load the production book catalog')
     }
   })
+
+  if (rateLimiter) {
+    app.post('/api/chat', async (c, next) => {
+      const retryAfter = rateLimiter.take(clientAddress(c))
+      if (retryAfter === undefined) return next()
+      c.header('Retry-After', String(retryAfter))
+      return c.json({ detail: 'Too many questions in a short time. Please wait a minute and try again.' }, 429)
+    })
+  }
 
   app.post('/api/chat', async (c) => {
     let body: unknown
@@ -158,6 +168,12 @@ export function createApp(
   })
 
   return app
+}
+
+// Cloud Run appends the connecting address to X-Forwarded-For, so a client cannot forge the last
+// entry. Without a proxy in front, every client shares one limit.
+function clientAddress(c: Context): string {
+  return c.req.header('X-Forwarded-For')?.split(',').at(-1)?.trim() || 'direct'
 }
 
 function chatFailure(error: unknown): { detail: string; status: ContentfulStatusCode } {
