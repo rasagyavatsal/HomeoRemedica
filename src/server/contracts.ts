@@ -92,8 +92,6 @@ export interface ChatOptions {
 /** `GET /api/books` */
 export interface BookCatalog {
   books: readonly BookSummary[]
-  corpusVersion: string
-  model: string
 }
 
 /** `POST /api/chat`: the answer plus the trimmed history to send with the next question. */

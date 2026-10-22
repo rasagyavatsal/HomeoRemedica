@@ -4,7 +4,7 @@ import { type AppDependencies, type ChatHandler, createApp, productionDependenci
 import { BOOKS, CorpusError } from '../src/server/qdrant.ts'
 import { RateLimiter } from '../src/server/rate-limit.ts'
 import type { Settings } from '../src/server/runtime.ts'
-import type { BookCatalog, BookSummary, ChatOptions, ChatRequest, ChatResponse } from '../src/server/contracts.ts'
+import type { BookSummary, ChatOptions, ChatRequest, ChatResponse } from '../src/server/contracts.ts'
 import { ChatFailure, ConfigurationError, type FailureKind } from '../src/server/errors.ts'
 
 const BOOK: BookSummary = { bookId: 'kent-lectures', title: "Kent's Lectures", author: 'Kent' }
@@ -49,7 +49,6 @@ function setup(overrides: Partial<AppDependencies> = {}, rateLimiter: RateLimite
   const service = new StubService()
   const app = createApp(
     {
-      getCatalog: () => ({ books: [BOOK], corpusVersion: 'local-v1', model: 'test-model' }),
       getService: async () => service,
       ...overrides,
     },
@@ -84,10 +83,7 @@ function quiet() {
 }
 
 it('health needs neither corpus nor provider configuration', async () => {
-  const { app } = setup({
-    getCatalog: unexpected('health must not load the catalog'),
-    getService: unexpected('health must not initialize chat'),
-  })
+  const { app } = setup({ getService: unexpected('health must not initialize chat') })
 
   const response = await app.request('/api/health')
 
@@ -101,7 +97,7 @@ it('books uses only the local catalog', async () => {
   const response = await app.request('/api/books')
 
   expect(response.status).toBe(200)
-  expect(await read(response)).toEqual({ books: [BOOK], corpusVersion: 'local-v1', model: 'test-model' })
+  expect(await read(response)).toEqual({ books: BOOKS })
 })
 
 it('forwards history and returns citations', async () => {
@@ -304,18 +300,14 @@ it.each([new Error('private-secret'), new RangeError('private-secret')])(
   },
 )
 
-const request = (app: ReturnType<typeof setup>['app'], endpoint: string) =>
-  endpoint === '/api/books'
-    ? app.request(endpoint)
-    : app.request(endpoint, { method: 'POST', body: JSON.stringify({ message: 'question' }) })
+it('unavailable corpus has a safe, actionable detail', async () => {
+  const { post } = setup({
+    getService: async () => {
+      throw new CorpusError('could not reach Qdrant at /private/secret/path')
+    },
+  })
 
-it.each(['/api/books', '/api/chat'])('unavailable corpus has a safe, actionable detail on %s', async (endpoint) => {
-  const missingCorpus = () => {
-    throw new CorpusError('could not reach Qdrant at /private/secret/path')
-  }
-  const { app } = setup({ getCatalog: missingCorpus, getService: async () => missingCorpus() })
-
-  const response = await request(app, endpoint)
+  const response = await post({ message: 'question' })
 
   expect(response.status).toBe(503)
   const { detail } = await read(response)
@@ -339,14 +331,15 @@ it('missing provider configuration has a safe setup detail', async () => {
   expect(detail).not.toContain('private-secret')
 })
 
-it.each(['/api/books', '/api/chat'])('unexpected setup errors do not leak details on %s', async (endpoint) => {
+it('unexpected setup errors do not leak details', async () => {
   quiet()
-  const broken = () => {
-    throw new TypeError('private-secret')
-  }
-  const { app } = setup({ getCatalog: broken, getService: async () => broken() })
+  const { post } = setup({
+    getService: async () => {
+      throw new TypeError('private-secret')
+    },
+  })
 
-  const response = await request(app, endpoint)
+  const response = await post({ message: 'question' })
 
   expect(response.status).toBe(500)
   expect(await read(response)).toEqual({ detail: INTERNAL })
@@ -385,20 +378,6 @@ describe('production dependencies', () => {
     zaiApiKey: undefined,
     openrouterApiKey: undefined,
   }
-
-  it('caches the catalog without constructing chat providers', () => {
-    const dependencies = productionDependencies({
-      settings: () => settings,
-      build: unexpected('catalog must not initialize chat providers'),
-    })
-
-    const first: BookCatalog = dependencies.getCatalog()
-
-    expect(dependencies.getCatalog()).toBe(first)
-    expect(first.books).toBe(BOOKS)
-    expect(first.corpusVersion).toBe('materia_medica')
-    expect(first.model).toBe('catalog-model')
-  })
 
   it('builds the service once, even for concurrent requests', async () => {
     const stub = new StubService()

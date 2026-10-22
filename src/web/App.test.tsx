@@ -11,7 +11,7 @@ const books = Array.from({ length: 4 }, (_, index) => ({
   author: `Author ${index + 1}`,
 }))
 
-const catalog = { books, corpusVersion: 'release-1', model: 'test-model' }
+const catalog = { books }
 const firstHistory: Turn[] = [
   { role: 'user', content: 'First question' },
   { role: 'assistant', content: 'First answer' },
@@ -21,8 +21,8 @@ function chatResponse(answer = 'First answer', history = firstHistory): ChatResp
   return {
     answer,
     history,
-    model: catalog.model,
-    corpusVersion: catalog.corpusVersion,
+    model: 'test-model',
+    corpusVersion: 'release-1',
     sources: [{
       id: 'release-1/book-1/chunk-1', bookId: 'book-1', bookTitle: 'Book 1',
       author: 'Author 1', remedyName: 'Remedy', sectionTitle: 'Section',

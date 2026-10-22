@@ -27,7 +27,6 @@ export interface ChatHandler {
 }
 
 export interface AppDependencies {
-  getCatalog: () => BookCatalog
   getService: () => Promise<ChatHandler>
 }
 
@@ -41,7 +40,7 @@ const FAILURE_STATUS: Record<FailureKind, ContentfulStatusCode> = {
 // `npm start` serves the built frontend too. During development Vite serves both.
 export const WEB_DIST = fileURLToPath(new URL('../../dist', import.meta.url))
 
-/** Load the catalog and build the chat service once; a failed build is retried on the next request. */
+/** Build the chat service once; a failed build is retried on the next request. */
 export function productionDependencies({
   settings = loadSettings,
   build = buildService,
@@ -49,16 +48,8 @@ export function productionDependencies({
   settings?: () => Settings
   build?: (settings: Settings) => Promise<ChatHandler>
 } = {}): AppDependencies {
-  let catalog: BookCatalog | undefined
   let service: Promise<ChatHandler> | undefined
   return {
-    getCatalog() {
-      if (!catalog) {
-        const { qdrantCollection, model } = settings()
-        catalog = { books: BOOKS, corpusVersion: qdrantCollection, model }
-      }
-      return catalog
-    },
     getService() {
       // Share one in-flight build between concurrent requests. Conversation state stays in
       // the request and is never shared between browser sessions.
@@ -81,13 +72,7 @@ export function createApp(
 
   app.get('/api/health', (c) => c.json({ status: 'ok' }))
 
-  app.get('/api/books', (c) => {
-    try {
-      return c.json(dependencies.getCatalog())
-    } catch (error) {
-      return setupFailure(c, error, 'Failed to load the production book catalog')
-    }
-  })
+  app.get('/api/books', (c) => c.json({ books: BOOKS } satisfies BookCatalog))
 
   if (rateLimiter) {
     app.post('/api/chat', async (c, next) => {
