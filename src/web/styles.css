@@ -186,6 +186,10 @@ button, a, input, textarea, summary { -webkit-tap-highlight-color: transparent; 
 .source-list > li { scroll-margin: 90px 0 140px; transition: background-color 600ms ease; }
 .source-list > li + li { border-top: 1px solid var(--line); }
 .source-list > li.source-highlighted { background: var(--accent-soft); transition-duration: 0ms; }
+.source-uncited .source-number { background: var(--surface-sunken); color: var(--muted); }
+.source-uncited .source-heading { opacity: 0.7; }
+.source-tag { flex: none; margin: 2px 0 0 auto; padding: 1px 7px; border-radius: 999px; background: var(--surface-sunken); font-size: 11px; color: var(--muted); white-space: nowrap; }
+.source-tag + .source-chevron { margin-left: 0; }
 .source > summary { display: flex; align-items: flex-start; gap: 12px; padding: 13px 14px; list-style: none; transition: background-color 150ms ease; }
 .source > summary:hover { background: var(--surface-hover); }
 .source[open] > summary .source-chevron { transform: rotate(90deg); }

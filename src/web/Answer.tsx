@@ -8,17 +8,32 @@ const CITATION_HREF = '#cite-'
 const CODE_SPAN = /(```[\s\S]*?```|`[^`\n]*`)/
 const CITATION = /\[(\d+(?:\s*,\s*\d+)*)\](?![(:[])/g
 
-/** Turn `[1]` and `[1, 2]` labels into citation links, leaving code and unknown numbers untouched. */
-export function linkCitations(markdown: string, sourceCount: number): string {
+/** Replace each `[1]` or `[1, 2]` label outside code whose numbers all name a source. */
+function replaceCitations(markdown: string, sourceCount: number, replace: (numbers: number[]) => string): string {
   return markdown.split(CODE_SPAN).map((part, index) => index % 2 ? part : part.replace(CITATION, (label, list: string) => {
     const numbers = list.split(',').map((value) => Number(value.trim()))
     if (!numbers.every((value) => value >= 1 && value <= sourceCount)) return label
-    return numbers.map((value) => `[${value}](${CITATION_HREF}${value})`).join('')
+    return replace(numbers)
   })).join('')
 }
 
-function Sources({ sources, open, onOpenChange, openItems, onItemChange, highlighted, itemId }: {
+/** Turn `[1]` and `[1, 2]` labels into citation links, leaving code and unknown numbers untouched. */
+export function linkCitations(markdown: string, sourceCount: number): string {
+  return replaceCitations(markdown, sourceCount, (numbers) => numbers.map((value) => `[${value}](${CITATION_HREF}${value})`).join(''))
+}
+
+export function citedNumbers(markdown: string, sourceCount: number): ReadonlySet<number> {
+  const cited = new Set<number>()
+  replaceCitations(markdown, sourceCount, (numbers) => {
+    numbers.forEach((value) => cited.add(value))
+    return ''
+  })
+  return cited
+}
+
+function Sources({ sources, cited, open, onOpenChange, openItems, onItemChange, highlighted, itemId }: {
   sources: readonly Source[]
+  cited: ReadonlySet<number>
   open: boolean
   onOpenChange: (open: boolean) => void
   openItems: ReadonlySet<number>
@@ -26,6 +41,9 @@ function Sources({ sources, open, onOpenChange, openItems, onItemChange, highlig
   highlighted: number | null
   itemId: (number: number) => string
 }) {
+  // Sources the answer cites come first; the rest were retrieved but not used.
+  const numbers = sources.map((_, index) => index + 1)
+    .sort((a, b) => Number(cited.has(b)) - Number(cited.has(a)) || a - b)
   return (
     <details className="sources" open={open} onToggle={(event) => onOpenChange(event.currentTarget.open)}>
       <summary>
@@ -33,10 +51,12 @@ function Sources({ sources, open, onOpenChange, openItems, onItemChange, highlig
         <span className="sources-count">{sources.length}</span>
       </summary>
       <ol className="source-list">
-        {sources.map((source, index) => {
-          const number = index + 1
+        {numbers.map((number) => {
+          const source = sources[number - 1]!
+          const uncited = cited.size > 0 && !cited.has(number)
+          const className = [highlighted === number && 'source-highlighted', uncited && 'source-uncited'].filter(Boolean).join(' ')
           return (
-            <li key={source.id} id={itemId(number)} className={highlighted === number ? 'source-highlighted' : undefined}>
+            <li key={source.id} id={itemId(number)} className={className || undefined}>
               <details className="source" open={openItems.has(number)} onToggle={(event) => onItemChange(number, event.currentTarget.open)}>
                 <summary>
                   <span className="source-number">{number}</span>
@@ -44,6 +64,7 @@ function Sources({ sources, open, onOpenChange, openItems, onItemChange, highlig
                     <span className="source-remedy">{source.remedyName}<span className="source-section"> · {source.sectionTitle}</span></span>
                     <span className="source-book">{source.bookTitle}{source.author && <span className="source-author"> — {source.author}</span>}</span>
                   </span>
+                  {uncited && <span className="source-tag">Not cited</span>}
                   <span className="source-chevron"><ChevronIcon /></span>
                 </summary>
                 <div className="source-content">
@@ -133,7 +154,7 @@ export function Answer({ id, content, sources }: { id: number; content: string; 
       </div>
       <div className="answer-footer">
         {sources.length > 0 && (
-          <Sources sources={sources} open={sourcesOpen} onOpenChange={setSourcesOpen} openItems={openItems} onItemChange={setItemOpen} highlighted={highlighted} itemId={itemId} />
+          <Sources sources={sources} cited={citedNumbers(content, sources.length)} open={sourcesOpen} onOpenChange={setSourcesOpen} openItems={openItems} onItemChange={setItemOpen} highlighted={highlighted} itemId={itemId} />
         )}
         <div className="answer-actions"><CopyButton text={content} /></div>
       </div>

@@ -213,6 +213,19 @@ describe('production chat interactions', () => {
     expect(screen.getByRole('textbox', { name: 'Message' })).toHaveValue('First question')
   })
 
+  it('lists cited sources first and marks the rest as not cited', async () => {
+    const user = await ready()
+    const source = chatResponse().sources[0]!
+    const sources = [1, 2, 3].map((number) => ({ ...source, id: `chunk-${number}`, remedyName: `Remedy ${number}` }))
+    fetchMock.mockImplementationOnce(async () => jsonResponse({ ...chatResponse('Claim [3]. Another claim [1, 3].'), sources }))
+    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Question{Enter}')
+    await user.click(await screen.findByText('Sources'))
+
+    const items = screen.getAllByRole('listitem').filter((item) => item.closest('.source-list'))
+    expect(items.map((item) => item.querySelector('.source-number')?.textContent)).toEqual(['1', '3', '2'])
+    expect(items.map((item) => item.textContent?.includes('Not cited'))).toEqual([false, false, true])
+  })
+
   it('asks a suggested question from the empty state', async () => {
     const user = await ready()
     await user.click(screen.getByRole('button', { name: 'What are the keynote symptoms of Arsenicum album?' }))
