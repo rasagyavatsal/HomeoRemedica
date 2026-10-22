@@ -15,7 +15,7 @@
     "typecheck": "tsc -p tsconfig.server.json && tsc -p tsconfig.web.json",
     "test": "vitest run",
     "check": "npm run typecheck && npm test && npm run build",
-    "deploy": "gcloud run deploy homeoremedica --source . --region asia-south1 --project homeoremedica"
+    "deploy": "gcloud run deploy homeoremedica --source . --region asia-south1 --project homeoremedica --max-instances 3"
   },
   "dependencies": {
     "@hono/node-server": "2.1.5",

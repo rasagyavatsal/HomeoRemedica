@@ -149,7 +149,8 @@ npm run deploy
 ```
 
 `npm run deploy` builds the `Dockerfile` with Cloud Build and deploys it to the `homeoremedica`
-Cloud Run service in `asia-south1`. The service keeps its configuration between deploys:
+Cloud Run service in `asia-south1`, capped at three instances so the per-instance chat rate limits
+also bound total provider spend. The service keeps its configuration between deploys:
 `QDRANT_URL` is a plain environment variable, and `OPENROUTER_API_KEY`, `ZAI_API_KEY`, and
 `QDRANT_API_KEY` come from Secret Manager. Local `.env` files are not copied into the image.
 
