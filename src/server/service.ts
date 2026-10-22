@@ -1,5 +1,6 @@
 import {
   type AnswerGenerator,
+  type ChatOptions,
   type ChatRequest,
   type ChatResponse,
   type Citation,
@@ -46,7 +47,7 @@ export class ChatService {
     return this.#generator.model
   }
 
-  async chat(request: ChatRequest): Promise<ChatResponse> {
+  async chat(request: ChatRequest, { onSources, onText, signal }: ChatOptions = {}): Promise<ChatResponse> {
     let sources: readonly RetrievedSource[]
     try {
       sources = await this.#retriever.retrieve(request, { limit: this.#sourceLimit })
@@ -59,23 +60,6 @@ export class ChatService {
       throw new ChatFailure({ stage: 'chat', kind: 'internal', cause: new RangeError('citation text is too long') })
     }
 
-    // Without evidence the model could only decline, so skip the call.
-    let generatedAnswer = NO_SOURCES_ANSWER
-    if (sources.length) {
-      try {
-        generatedAnswer = (
-          await this.#generator.generate(generationPrompt(request, sources, { maxChars: this.#promptCharLimit }), {
-            systemInstruction: SYSTEM_INSTRUCTION,
-          })
-        ).trim()
-      } catch (error) {
-        if (error instanceof ChatFailure) throw error
-        throw new ChatFailure({ stage: 'answer_generation', kind: generationFailureKind(error), cause: error })
-      }
-    }
-    if (generatedAnswer.length > MAX_GENERATED_ANSWER_CHARS) {
-      generatedAnswer = `${generatedAnswer.slice(0, MAX_GENERATED_ANSWER_CHARS).trimEnd()}…`
-    }
     const corpusVersion = this.#retriever.corpusVersion
     const citations: Citation[] = sources.map((source) => ({
       id: `${corpusVersion}/${source.bookId}/${source.chunkId}`,
@@ -87,6 +71,38 @@ export class ChatService {
       passageIndexes: source.passageIndexes,
       text: source.text,
     }))
+    onSources?.(citations)
+
+    let generatedAnswer: string
+    if (!sources.length) {
+      // Without evidence the model could only decline, so skip the call.
+      generatedAnswer = NO_SOURCES_ANSWER
+      onText?.(generatedAnswer)
+    } else {
+      let streamed = 0
+      try {
+        generatedAnswer = (
+          await this.#generator.generate(generationPrompt(request, sources, { maxChars: this.#promptCharLimit }), {
+            systemInstruction: SYSTEM_INSTRUCTION,
+            signal,
+            // Stream no more than the answer limit; the final answer is authoritative.
+            onText:
+              onText &&
+              ((text) => {
+                const piece = text.slice(0, MAX_GENERATED_ANSWER_CHARS - streamed)
+                streamed += piece.length
+                if (piece) onText(piece)
+              }),
+          })
+        ).trim()
+      } catch (error) {
+        if (error instanceof ChatFailure) throw error
+        throw new ChatFailure({ stage: 'answer_generation', kind: generationFailureKind(error), cause: error })
+      }
+    }
+    if (generatedAnswer.length > MAX_GENERATED_ANSWER_CHARS) {
+      generatedAnswer = `${generatedAnswer.slice(0, MAX_GENERATED_ANSWER_CHARS).trimEnd()}…`
+    }
     return {
       answer: generatedAnswer,
       corpusVersion,

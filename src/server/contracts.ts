@@ -80,6 +80,15 @@ export interface ChatResponse {
   sources: readonly Citation[]
 }
 
+/** Optional progress callbacks for a chat request. */
+export interface ChatOptions {
+  /** Receives the citations once retrieval finishes, before any answer text. */
+  onSources?: ((sources: readonly Citation[]) => void) | undefined
+  /** Receives each piece of answer text as it is generated. */
+  onText?: ((text: string) => void) | undefined
+  signal?: AbortSignal | undefined
+}
+
 /** `GET /api/books` */
 export interface BookCatalog {
   books: readonly BookSummary[]

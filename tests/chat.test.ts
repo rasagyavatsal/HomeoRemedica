@@ -5,6 +5,7 @@ import {
   type AnswerGenerator,
   type ChatRequest,
   ChatRequestSchema,
+  type GenerateOptions,
   type RetrievedSource,
   type Retriever,
 } from '../src/server/contracts.ts'
@@ -40,13 +41,17 @@ class StubRetriever implements Retriever {
 class StubGenerator implements AnswerGenerator {
   readonly model = 'glm-5.3-flash'
   generationPrompt: string | null = null
+  signal: AbortSignal | undefined
   failure: unknown = null
+  pieces = ['Kent describes irritability ', 'and oversensitivity [1].']
 
-  async generate(prompt: string, { systemInstruction }: { systemInstruction: string }): Promise<string> {
+  async generate(prompt: string, { systemInstruction, onText, signal }: GenerateOptions): Promise<string> {
     this.generationPrompt = prompt
+    this.signal = signal
     expect(systemInstruction).toContain('medical advice')
     if (this.failure) throw this.failure
-    return 'Kent describes irritability and oversensitivity [1].'
+    for (const piece of this.pieces) onText?.(piece)
+    return this.pieces.join('')
   }
 }
 
@@ -78,6 +83,41 @@ it('grounds a conversation-aware answer in versioned sources', async () => {
   expect(response.corpusVersion).toBe('2026-08-15.v1')
   expect(response.model).toBe('glm-5.3-flash')
   expect(response.sources[0]?.id).toBe('2026-08-15.v1/kent-lectures/chk_1')
+})
+
+it('reports sources before streaming answer text', async () => {
+  const generator = new StubGenerator()
+  const events: string[] = []
+  const controller = new AbortController()
+
+  const response = await new ChatService({ retriever: new StubRetriever(), generator }).chat(request({ message: 'question' }), {
+    onSources: (sources) => events.push(`sources:${sources.map((source) => source.id).join()}`),
+    onText: (text) => events.push(`text:${text}`),
+    signal: controller.signal,
+  })
+
+  expect(events).toEqual([
+    'sources:2026-08-15.v1/kent-lectures/chk_1',
+    'text:Kent describes irritability ',
+    'text:and oversensitivity [1].',
+  ])
+  expect(response.sources.map((source) => source.id)).toEqual(['2026-08-15.v1/kent-lectures/chk_1'])
+  expect(generator.signal).toBe(controller.signal)
+})
+
+it('streams no more than the answer limit', async () => {
+  const generator = new StubGenerator()
+  generator.pieces = ['a'.repeat(11_000), 'b'.repeat(2_000), 'c']
+  let streamed = ''
+
+  const response = await new ChatService({ retriever: new StubRetriever(), generator }).chat(request({ message: 'question' }), {
+    onText: (text) => {
+      streamed += text
+    },
+  })
+
+  expect(streamed).toBe(`${'a'.repeat(11_000)}${'b'.repeat(1_000)}`)
+  expect(response.answer).toBe(`${streamed}…`)
 })
 
 it('classifies retrieval errors without exposing details', async () => {
@@ -154,10 +194,15 @@ it('answers without the model when retrieval finds no sources', async () => {
   retriever.retrieve = async () => []
   const generator = new StubGenerator()
 
-  const response = await new ChatService({ retriever, generator }).chat(request({ message: 'question' }))
+  const streamed: string[] = []
+
+  const response = await new ChatService({ retriever, generator }).chat(request({ message: 'question' }), {
+    onText: (text) => streamed.push(text),
+  })
 
   expect(generator.generationPrompt).toBeNull()
   expect(response.answer).toContain('No passages in the corpus matched this question.')
+  expect(streamed).toEqual([response.answer])
   expect(response.sources).toEqual([])
 })
 
