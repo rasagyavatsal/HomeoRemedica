@@ -60,7 +60,7 @@ export class ZaiChatClient implements AnswerGenerator {
         { role: 'user', content: prompt },
       ],
       thinking: { type: 'enabled' },
-      reasoning_effort: 'max',
+      reasoning_effort: 'high',
       temperature: 1.0,
       max_tokens: this.#maxOutputTokens,
       stream: false,

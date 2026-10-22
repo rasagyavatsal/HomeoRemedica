@@ -80,7 +80,7 @@ describe('Z.AI chat client', () => {
             { role: 'user', content: 'Retrieved evidence' },
           ],
           thinking: { type: 'enabled' },
-          reasoning_effort: 'max',
+          reasoning_effort: 'high',
           temperature: 1.0,
           max_tokens: 4_096,
           stream: false,
