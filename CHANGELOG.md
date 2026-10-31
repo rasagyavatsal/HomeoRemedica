@@ -7,6 +7,17 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [9.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v8.1.0...HomeoRemedica-v9.0.0) (2026-10-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* book IDs in /api/books and citations are now the Qdrant collection names (for example kent_lectures instead of kent), and the RAG_QDRANT_COLLECTION setting is removed.
+
+### Features
+
+* search the per-book Qdrant collections ([e612ea2](https://github.com/rasagyavatsal/HomeoRemedica/commit/e612ea2e1ce6238b48938823df52746e140ee716))
+
 ## [8.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v8.0.0...HomeoRemedica-v8.1.0) (2026-10-22)
 
 
