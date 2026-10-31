@@ -11,6 +11,8 @@ local.properties
 *.jks
 *.keystore
 keystore.properties
+*service-account*.json
+play-credentials*.json
 
 # Editor and OS files
 .idea/

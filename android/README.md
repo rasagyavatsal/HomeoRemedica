@@ -55,4 +55,16 @@ Debug builds allow plain HTTP to `10.0.2.2` and `localhost` only; release builds
 
 [release-please](https://github.com/googleapis/release-please) opens a release pull request from the
 Conventional Commits on `main`. It keeps the version in `version.txt`, which the build reads for
-`versionName` and `versionCode` (`major × 10000 + minor × 100 + patch`).
+`versionName`.
+
+[Gradle Play Publisher](https://github.com/Triple-T/gradle-play-publisher) uploads to Google Play. It sets
+`versionCode` to one more than the highest on Play, so upload with it rather than by hand. It needs:
+
+- `keystore.properties` with the Play upload key (copy `keystore.properties.example`).
+- A service account with release access to the app, its JSON key named by `homeoremedica.playCredentials`
+  in `~/.gradle/gradle.properties` or held in `ANDROID_PUBLISHER_CREDENTIALS`.
+
+```sh
+./gradlew publishBundle                # to internal testing
+./gradlew publishListing               # store listing in app/src/main/play
+```
