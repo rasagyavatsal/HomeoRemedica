@@ -19,6 +19,13 @@ class CitationsTest {
     }
 
     @Test
+    fun linksAdjacentLabels() {
+        assertEquals("Open air [1](#cite-1)[2](#cite-2)[5](#cite-5).", linkCitations("Open air [1][2][5].", 5))
+        assertEquals(setOf(1, 2, 5), citedNumbers("Open air [1][2][5].", 5))
+        assertEquals("Claim [1](#cite-1)[9].", linkCitations("Claim [1][9].", 5))
+    }
+
+    @Test
     fun leavesAListWithAnyUnknownNumberUntouched() {
         assertEquals("Claim [1, 4].", linkCitations("Claim [1, 4].", 3))
         assertEquals("Claim [0].", linkCitations("Claim [0].", 3))

@@ -6,7 +6,8 @@ import io.github.rasagyavatsal.homeoremedica.api.Citation
 
 const val CITATION_HREF = "#cite-"
 private val CODE_SPAN = Regex("```[\\s\\S]*?```|`[^`\\n]*`")
-private val CITATION = Regex("""\[(\d+(?:\s*,\s*\d+)*)](?![(:\[])""")
+// A label followed by `(`, `:` or `[` is Markdown link syntax, unless the `[` opens another label, as in `[1][2]`.
+private val CITATION = Regex("""\[(\d+(?:\s*,\s*\d+)*)](?![(:]|\[(?!\d+(?:\s*,\s*\d+)*]))""")
 
 /** Replace each `[1]` or `[1, 2]` label outside code whose numbers all name a source. */
 private fun replaceCitations(markdown: String, sourceCount: Int, replace: (List<Int>) -> String): String {

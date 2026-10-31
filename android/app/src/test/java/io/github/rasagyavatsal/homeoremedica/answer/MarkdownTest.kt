@@ -19,6 +19,14 @@ class MarkdownTest {
     }
 
     @Test
+    fun turnsAdjacentLabelsIntoCitations() {
+        assertEquals(
+            listOf(Paragraph(listOf(Text("Open air "), Citation(1), Citation(2), Citation(3), Text(".")))).toString(),
+            parseAnswer("Open air [1][2][3].", 3).joined().toString(),
+        )
+    }
+
+    @Test
     fun dropsRawHtml() {
         assertEquals(
             listOf(Paragraph(listOf(Strong(listOf(Text("Bold"))), Text(" and safe")))).toString(),
