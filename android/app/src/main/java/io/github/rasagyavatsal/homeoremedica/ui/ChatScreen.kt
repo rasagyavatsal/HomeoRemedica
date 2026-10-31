@@ -24,7 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -304,18 +304,19 @@ private fun Conversation(state: ChatState, wide: Boolean, bottomPadding: Dp) {
         contentPadding = PaddingValues(top = if (wide) 40.dp else 28.dp, bottom = bottomPadding + 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        items(state.messages, key = { it.id }) { message ->
+        itemsIndexed(state.messages, key = { _, message -> message.id }) { index, message ->
             if (message.role == Role.User) {
                 UserMessage(message.content, wide, itemModifier.rise(message.id))
             } else {
-                AssistantMessage(message.content, message.sources, wide, pending = false, modifier = itemModifier.rise(message.id))
+                val question = state.messages.getOrNull(index - 1)?.takeIf { it.role == Role.User }?.content.orEmpty()
+                AssistantMessage(question, message.content, message.sources, wide, pending = false, modifier = itemModifier.rise(message.id))
             }
         }
         if (live != null) {
             item(key = "live-question") { UserMessage(live.question, wide, itemModifier.rise("live-question" to live.question)) }
             item(key = "live-answer") {
                 if (live.content.isNotEmpty()) {
-                    AssistantMessage(live.content, live.sources, wide, pending = true, modifier = itemModifier)
+                    AssistantMessage(live.question, live.content, live.sources, wide, pending = true, modifier = itemModifier)
                 } else {
                     Progress(itemModifier.rise("progress" to live.question))
                 }
@@ -358,10 +359,17 @@ private fun AssistantLabel(text: String, pending: Boolean, color: Color, weight:
 }
 
 @Composable
-private fun AssistantMessage(content: String, sources: List<Citation>, wide: Boolean, pending: Boolean, modifier: Modifier) {
+private fun AssistantMessage(
+    question: String,
+    content: String,
+    sources: List<Citation>,
+    wide: Boolean,
+    pending: Boolean,
+    modifier: Modifier,
+) {
     Column(modifier) {
         AssistantLabel("HomeoRemedica", pending, Theme.colors.inkSoft, FontWeight.SemiBold)
-        Answer(content, sources, wide)
+        Answer(question, content, sources, wide)
     }
 }
 

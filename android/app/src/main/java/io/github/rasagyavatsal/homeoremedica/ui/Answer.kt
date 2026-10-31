@@ -1,6 +1,8 @@
 package io.github.rasagyavatsal.homeoremedica.ui
 
+import android.content.ActivityNotFoundException
 import android.content.ClipData
+import android.content.Intent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
@@ -40,6 +42,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -51,6 +54,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
+import io.github.rasagyavatsal.homeoremedica.BuildConfig
 import io.github.rasagyavatsal.homeoremedica.answer.citedNumbers
 import io.github.rasagyavatsal.homeoremedica.answer.label
 import io.github.rasagyavatsal.homeoremedica.answer.parseAnswer
@@ -65,7 +70,7 @@ import kotlinx.coroutines.launch
 // Ports the web app's answer view (src/web/Answer.tsx).
 
 @Composable
-fun Answer(content: String, sources: List<Citation>, wide: Boolean, modifier: Modifier = Modifier) {
+fun Answer(question: String, content: String, sources: List<Citation>, wide: Boolean, modifier: Modifier = Modifier) {
     var sourcesOpen by rememberSaveable { mutableStateOf(false) }
     var openItems by rememberSaveable { mutableStateOf(intArrayOf()) }
     var highlighted by remember { mutableIntStateOf(0) }
@@ -106,6 +111,7 @@ fun Answer(content: String, sources: List<Citation>, wide: Boolean, modifier: Mo
         Row(verticalAlignment = Alignment.Top) {
             if (sources.isNotEmpty()) SourcesToggle(sources.size, sourcesOpen) { sourcesOpen = !sourcesOpen }
             Spacer(Modifier.weight(1f))
+            ReportButton(question, content)
             CopyButton(content)
         }
         if (sources.isNotEmpty() && sourcesOpen) {
@@ -277,6 +283,44 @@ private fun SourceItem(
                 BasicText(source.id, style = TextStyle(color = colors.faint, fontFamily = Fonts.mono, fontSize = 10.5.sp))
             }
         }
+    }
+}
+
+private const val REPORT_EMAIL = "rasagyavatsal@outlook.com"
+
+/** Play requires a way to report AI answers: this drafts an email with the exchange, or shares it without an email app. */
+@Composable
+private fun ReportButton(question: String, answer: String) {
+    val colors = Theme.colors
+    val context = LocalContext.current
+    val interactions = remember { MutableInteractionSource() }
+    val pressed by interactions.pressed()
+    Box(
+        Modifier
+            .size(30.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(if (pressed) colors.surfaceHover else Color.Transparent)
+            .pressable(label = "Report answer", interactionSource = interactions) {
+                val subject = "Report: HomeoRemedica answer"
+                val body = "What is wrong with this answer?\n\n\n" +
+                    "---\nQuestion:\n$question\n\nAnswer:\n$answer\n\nApp version ${BuildConfig.VERSION_NAME}"
+                val email = Intent(Intent.ACTION_SENDTO, "mailto:".toUri())
+                    .putExtra(Intent.EXTRA_EMAIL, arrayOf(REPORT_EMAIL))
+                    .putExtra(Intent.EXTRA_SUBJECT, subject)
+                    .putExtra(Intent.EXTRA_TEXT, body)
+                try {
+                    context.startActivity(email)
+                } catch (_: ActivityNotFoundException) {
+                    val share = Intent(Intent.ACTION_SEND)
+                        .setType("text/plain")
+                        .putExtra(Intent.EXTRA_SUBJECT, subject)
+                        .putExtra(Intent.EXTRA_TEXT, "To: $REPORT_EMAIL\n\n$body")
+                    context.startActivity(Intent.createChooser(share, "Report answer"))
+                }
+            },
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(Icons.Flag, if (pressed) colors.ink else colors.muted, 15.dp, contentDescription = "Report answer")
     }
 }
 

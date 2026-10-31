@@ -45,6 +45,7 @@ object Icons {
         "M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2",
     )
     val Check = icon("Check", "m5 12.5 4.5 4.5L19 7.5")
+    val Flag = icon("Flag", "M5 21V4", "M5 4h12l-2.5 4.5L17 13H5")
     val Chevron = icon("Chevron", "m9 6 6 6-6 6")
     val Alert = icon("Alert", "M3 12a9 9 0 1 0 18 0a9 9 0 1 0-18 0", "M12 7.5v5.5m0 3.2v.1")
 }
