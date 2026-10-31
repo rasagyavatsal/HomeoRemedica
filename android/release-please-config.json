@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "package-name": "HomeoRemedica-android",
+      "pull-request-title-pattern": "chore${scope}: release${component} v${version}"
+    }
+  }
+}
