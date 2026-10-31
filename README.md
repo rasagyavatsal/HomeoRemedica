@@ -1,14 +1,14 @@
 # HomeoRemedica
 
 A TypeScript retrieval-augmented generation (RAG) application for searching historical homoeopathic
-literature and generating answers with source citations. It makes **5,846 chunks** from
-**four books**, covering **996 unique remedies**, searchable through a conversational web app.
-The source works are by Allen, Boericke, Clarke, and Kent. Historical reference only; not medical
+literature and generating answers with source citations. It makes **8,489 chunks** from
+**seven books**, covering **1,070 unique remedies**, searchable through a conversational web app.
+The source works are by Allen, Boericke, Clarke, Hahnemann, and Kent. Historical reference only; not medical
 advice.
 
 **Live app:** <https://homeoremedica-619837289655.asia-south1.run.app>
 
-The project covers hybrid search and answer generation. Search runs against a Qdrant collection
+The project covers hybrid search and answer generation. Search runs against Qdrant collections, one per book,
 built by the private [HomeoRemedica-dataset](https://github.com/rasagyavatsal/HomeoRemedica-dataset) repository; external APIs provide query embeddings and
 generated answers. A React frontend talks to the production pipeline through a Hono API server on Node.js.
 
@@ -17,8 +17,8 @@ Vitest
 
 ## Engineering highlights
 
-- **Hybrid retrieval:** fuses BM25 and voyage-4 vector rankings inside Qdrant through
-  reciprocal-rank fusion, with up to eight retrieved chunks per answer.
+- **Hybrid retrieval:** fuses BM25 and voyage-4 vector rankings from every book's collection
+  through reciprocal-rank fusion, with up to eight retrieved chunks per answer.
 - **Structured corpus:** preserves book, remedy, and section metadata on every chunk, so
   citations point to their source.
 - **Automated quality checks:** checks package boundaries, type-checks the server, tests against
@@ -27,15 +27,15 @@ Vitest
 ## Architecture
 
 The [HomeoRemedica-dataset](https://github.com/rasagyavatsal/HomeoRemedica-dataset) repository chunks the source texts and indexes them in Qdrant. The `production`
-pipeline searches that collection and generates the answer:
+pipeline searches those collections and generates the answer:
 
 ```mermaid
 flowchart TD
     A[Historical source texts] --> C[Chunks with source metadata]
-    C --> E[Qdrant collection: voyage-4 dense and BM25 sparse vectors]
+    C --> E[One Qdrant collection per book: voyage-4 dense and BM25 sparse vectors]
     Q[Web question and recent conversation] --> K[BM25 query encoding inside Qdrant]
     Q --> V[voyage-4 query embedding via OpenRouter]
-    K --> R[Reciprocal-rank fusion in Qdrant]
+    K --> R[Reciprocal-rank fusion across books]
     V --> R
     E --> R
     R --> P[Up to eight chunks with source metadata]
@@ -49,14 +49,14 @@ answers with `glm-5.3-flash` by default.
 
 | Design choice | Engineering benefit |
 | --- | --- |
-| Qdrant with named dense and sparse vectors | Keeps source metadata, keyword search, and vector search in one collection. |
-| Reciprocal-rank fusion | Combines keyword and semantic rankings without requiring their raw scores to share a scale. |
+| Qdrant with named dense and sparse vectors | Keeps source metadata, keyword search, and vector search together, in one collection per book. |
+| Reciprocal-rank fusion | Combines keyword and semantic rankings without requiring their raw scores to share a scale. Dense rankings are merged across books; BM25 rankings stay per book, because each collection has its own IDF. |
 | Same BM25 model at index and query time | Qdrant's server-side `qdrant/bm25` inference tokenizes queries exactly as the dataset indexed them, so the server needs no local model. |
 
 ## Quick start
 
 Requirements: Node.js 22.18+ on a supported even release (Node.js 24 recommended), npm, a Qdrant
-1.15.2+ cluster holding the `materia_medica` collection, and API keys for OpenRouter and Z.AI.
+1.15.2+ cluster holding the seven book collections, and API keys for OpenRouter and Z.AI.
 Node.js runs the TypeScript server directly, so the server has no build step.
 
 Run from the repository root:
@@ -67,7 +67,7 @@ cp .env.example .env
 ```
 
 Set `QDRANT_URL`, `QDRANT_API_KEY`, `OPENROUTER_API_KEY`, and `ZAI_API_KEY` in `.env`. The
-collection is built and updated by `scripts/embed_chunks.py` in the [HomeoRemedica-dataset](https://github.com/rasagyavatsal/HomeoRemedica-dataset)
+collections are built and updated by `scripts/embed.py` in the [HomeoRemedica-dataset](https://github.com/rasagyavatsal/HomeoRemedica-dataset)
 repository.
 
 ## Web app
@@ -96,7 +96,7 @@ npm start
 
 Open `http://127.0.0.1:8000`.
 
-The API initializes the Qdrant and provider clients lazily and checks that the collection exists,
+The API initializes the Qdrant and provider clients lazily and checks that every book's collection exists,
 so setup errors appear in the app. `GET /api/health` checks the server; `GET /api/books` lists the
 production books without requiring provider keys; `POST /api/chat` accepts `message` and
 `history`. Responses include the answer, source citations, corpus/model metadata,
@@ -114,7 +114,6 @@ The API reads environment variables and optional `.env` and `.env.local` files.
 | --- | --- | --- |
 | `QDRANT_URL` | Required for chat | Qdrant cluster URL. |
 | `QDRANT_API_KEY` | None | Qdrant API key, required by Qdrant Cloud. |
-| `RAG_QDRANT_COLLECTION` | `materia_medica` | Collection to search. |
 | `OPENROUTER_API_KEY` | Required for chat | Query embeddings. |
 | `ZAI_API_KEY` | Required for chat | Answer generation. |
 | `RAG_MODEL` | `glm-5.3-flash` | Answer model. |
@@ -122,7 +121,7 @@ The API reads environment variables and optional `.env` and `.env.local` files.
 | `HOST` | `127.0.0.1` | Address `npm start` listens on. |
 | `PORT` | `8000` | Port `npm start` listens on. |
 
-Each question retrieves up to eight chunks from Qdrant and sends the grounded prompt to Z.AI.
+Each question retrieves up to eight chunks from the book collections in Qdrant and sends the grounded prompt to Z.AI.
 OpenRouter supplies query embeddings.
 
 ## Development

@@ -31,6 +31,11 @@ export function citedNumbers(markdown: string, sourceCount: number): ReadonlySet
   return cited
 }
 
+/** The remedy, or the section for passages about principles rather than a remedy. */
+function sourceLabel(source: Source): string {
+  return source.remedyName ?? source.sectionTitle
+}
+
 function Sources({ sources, cited, open, onOpenChange, openItems, onItemChange, highlighted, itemId }: {
   sources: readonly Source[]
   cited: ReadonlySet<number>
@@ -61,7 +66,7 @@ function Sources({ sources, cited, open, onOpenChange, openItems, onItemChange, 
                 <summary>
                   <span className="source-number">{number}</span>
                   <span className="source-heading">
-                    <span className="source-remedy">{source.remedyName}<span className="source-section"> · {source.sectionTitle}</span></span>
+                    <span className="source-remedy">{sourceLabel(source)}{source.remedyName && source.sectionTitle && <span className="source-section"> · {source.sectionTitle}</span>}</span>
                     <span className="source-book">{source.bookTitle}{source.author && <span className="source-author"> — {source.author}</span>}</span>
                   </span>
                   {uncited && <span className="source-tag">Not cited</span>}
@@ -138,7 +143,7 @@ export function Answer({ id, content, sources }: { id: number; content: string; 
         const number = Number(href.slice(CITATION_HREF.length))
         const source = sources[number - 1]
         return (
-          <button type="button" className="citation" onClick={() => showSource(number)} aria-label={`Source ${number}: ${source?.remedyName}, ${source?.bookTitle}`} title={source ? `${source.remedyName} — ${source.bookTitle}` : undefined}>
+          <button type="button" className="citation" onClick={() => showSource(number)} aria-label={`Source ${number}: ${source ? `${sourceLabel(source)}, ${source.bookTitle}` : ''}`} title={source ? `${sourceLabel(source)} — ${source.bookTitle}` : undefined}>
             {children}
           </button>
         )

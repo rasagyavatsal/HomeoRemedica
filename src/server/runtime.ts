@@ -1,4 +1,4 @@
-/** Build the production chat service from the Qdrant collection. */
+/** Build the production chat service from the Qdrant collections. */
 
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -8,7 +8,7 @@ import { ConfigurationError } from './errors.ts'
 import { ZaiChatClient } from './generation.ts'
 import { ChatService } from './service.ts'
 import { VoyageQueryEmbedder } from './embeddings.ts'
-import { COLLECTION, QdrantCorpus } from './qdrant.ts'
+import { QdrantCorpus } from './qdrant.ts'
 import { ProductionRetriever } from './retrieval.ts'
 
 export const DEFAULT_MODEL = 'glm-5.3-flash'
@@ -17,7 +17,6 @@ export const MAX_OUTPUT_TOKENS = 4_096
 export interface Settings {
   qdrantUrl: string | undefined
   qdrantApiKey: string | undefined
-  qdrantCollection: string
   model: string
   maxOutputTokens: number
   zaiApiKey: string | undefined
@@ -45,7 +44,6 @@ export function loadSettings(
   return {
     qdrantUrl: value('QDRANT_URL'),
     qdrantApiKey: value('QDRANT_API_KEY'),
-    qdrantCollection: value('RAG_QDRANT_COLLECTION') ?? COLLECTION,
     model: value('RAG_MODEL') ?? DEFAULT_MODEL,
     maxOutputTokens: Number(maxOutputTokens),
     zaiApiKey: value('ZAI_API_KEY'),
@@ -82,6 +80,5 @@ export function loadCorpus(settings: Settings): QdrantCorpus {
   return new QdrantCorpus({
     url: settings.qdrantUrl,
     apiKey: settings.qdrantApiKey,
-    collection: settings.qdrantCollection,
   })
 }

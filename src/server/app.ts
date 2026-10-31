@@ -172,8 +172,8 @@ function setupFailure(c: Context, error: unknown, logMessage: string) {
     return c.json(
       {
         detail:
-          'The production corpus is unavailable. Check QDRANT_URL, QDRANT_API_KEY and ' +
-          'RAG_QDRANT_COLLECTION, then restart the API.',
+          'The production corpus is unavailable. Check QDRANT_URL, QDRANT_API_KEY and the ' +
+          'book collections in Qdrant, then restart the API.',
       },
       503,
     )

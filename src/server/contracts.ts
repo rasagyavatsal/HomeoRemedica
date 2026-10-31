@@ -55,7 +55,8 @@ export interface RetrievedSource {
   bookId: string
   bookTitle: string
   author: string | null
-  remedyName: string
+  /** Null for chunks about principles rather than a remedy, such as the Organon's. */
+  remedyName: string | null
   sectionTitle: string
   passageIndexes: readonly number[]
   text: string
@@ -67,7 +68,8 @@ export interface Citation {
   bookId: string
   bookTitle: string
   author: string | null
-  remedyName: string
+  /** Null for chunks about principles rather than a remedy, such as the Organon's. */
+  remedyName: string | null
   sectionTitle: string
   passageIndexes: readonly number[]
   text: string

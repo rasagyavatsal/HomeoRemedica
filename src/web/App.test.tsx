@@ -227,6 +227,17 @@ describe('production chat interactions', () => {
     expect(items.map((item) => item.textContent?.includes('Not cited'))).toEqual([false, false, true])
   })
 
+  it('names sources without a remedy by their section', async () => {
+    const user = await ready()
+    const source = { ...chatResponse().sources[0]!, remedyName: null, sectionTitle: 'Organon of Medicine: § 5' }
+    fetchMock.mockImplementationOnce(async () => jsonResponse({ ...chatResponse('Claim [1].'), sources: [source] }))
+    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Question{Enter}')
+    await user.click(await screen.findByText('Sources'))
+
+    expect(document.querySelector('.source-remedy')).toHaveTextContent(/^Organon of Medicine: § 5$/)
+    expect(screen.getByRole('button', { name: 'Source 1: Organon of Medicine: § 5, Book 1' })).toBeInTheDocument()
+  })
+
   it('restores the conversation after a reload until it is cleared', async () => {
     const user = await ready()
     await user.type(screen.getByRole('textbox', { name: 'Message' }), 'First question{Enter}')

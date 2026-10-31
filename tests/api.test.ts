@@ -7,7 +7,7 @@ import type { Settings } from '../src/server/runtime.ts'
 import type { BookSummary, ChatOptions, ChatRequest, ChatResponse } from '../src/server/contracts.ts'
 import { ChatFailure, ConfigurationError, type FailureKind } from '../src/server/errors.ts'
 
-const BOOK: BookSummary = { bookId: 'kent-lectures', title: "Kent's Lectures", author: 'Kent' }
+const BOOK: BookSummary = { bookId: 'kent_lectures', title: "Kent's Lectures", author: 'Kent' }
 const INTERNAL = 'Something went wrong while preparing the answer. Please try again.'
 
 class StubService implements ChatHandler {
@@ -24,7 +24,7 @@ class StubService implements ChatHandler {
       model: 'test-model',
       sources: [
         {
-          id: 'local-v1/kent-lectures/chunk-1',
+          id: 'local-v1/kent_lectures/chunk-1',
           bookId: BOOK.bookId,
           bookTitle: BOOK.title,
           author: BOOK.author,
@@ -120,7 +120,7 @@ it('forwards history and returns citations', async () => {
     history: [...history, { role: 'user', content: 'What about irritability?' }, { role: 'assistant', content: service.answer }],
     sources: [
       {
-        id: 'local-v1/kent-lectures/chunk-1',
+        id: 'local-v1/kent_lectures/chunk-1',
         bookId: BOOK.bookId,
         bookTitle: BOOK.title,
         author: BOOK.author,
@@ -144,7 +144,7 @@ describe('streamed chat', () => {
     expect(response.headers.get('Content-Type')).toContain('text/event-stream')
     const received = await events(response)
     expect(received.map(([event]) => event)).toEqual(['sources', 'text', 'text', 'text', 'text', 'done'])
-    expect(received[0]![1][0].id).toBe('local-v1/kent-lectures/chunk-1')
+    expect(received[0]![1][0].id).toBe('local-v1/kent_lectures/chunk-1')
     expect(received.slice(1, -1).map(([, data]) => data.text).join('')).toBe(service.answer)
     const done = received.at(-1)![1]
     expect(done.answer).toBe(service.answer)
@@ -372,7 +372,6 @@ describe('production dependencies', () => {
   const settings: Settings = {
     qdrantUrl: 'https://qdrant.example',
     qdrantApiKey: undefined,
-    qdrantCollection: 'materia_medica',
     model: 'catalog-model',
     maxOutputTokens: 4_096,
     zaiApiKey: undefined,

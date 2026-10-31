@@ -25,7 +25,7 @@ class StubRetriever implements Retriever {
     return [
       {
         chunkId: 'chk_1',
-        bookId: 'kent-lectures',
+        bookId: 'kent_lectures',
         bookTitle: "Kent's Lectures",
         author: 'James Tyler Kent',
         remedyName: 'NUX VOMICA',
@@ -82,7 +82,20 @@ it('grounds a conversation-aware answer in versioned sources', async () => {
   expect(response.answer).toBe('Kent describes irritability and oversensitivity [1].')
   expect(response.corpusVersion).toBe('2026-08-15.v1')
   expect(response.model).toBe('glm-5.3-flash')
-  expect(response.sources[0]?.id).toBe('2026-08-15.v1/kent-lectures/chk_1')
+  expect(response.sources[0]?.id).toBe('2026-08-15.v1/kent_lectures/chk_1')
+})
+
+it('names passages without a remedy by their section', async () => {
+  const retriever = new StubRetriever()
+  const [source] = await retriever.retrieve(request({ message: 'question' }), { limit: 1 })
+  retriever.retrieve = async () => [
+    { ...source!, bookTitle: 'Hahnemann, Organon of Medicine', remedyName: null, sectionTitle: 'Organon of Medicine: § 5' },
+  ]
+  const generator = new StubGenerator()
+
+  await new ChatService({ retriever, generator }).chat(request({ message: 'What is § 5 about?' }))
+
+  expect(generator.generationPrompt).toContain('[1] Hahnemann, Organon of Medicine — Organon of Medicine: § 5\n')
 })
 
 it('reports sources before streaming answer text', async () => {
@@ -97,11 +110,11 @@ it('reports sources before streaming answer text', async () => {
   })
 
   expect(events).toEqual([
-    'sources:2026-08-15.v1/kent-lectures/chk_1',
+    'sources:2026-08-15.v1/kent_lectures/chk_1',
     'text:Kent describes irritability ',
     'text:and oversensitivity [1].',
   ])
-  expect(response.sources.map((source) => source.id)).toEqual(['2026-08-15.v1/kent-lectures/chk_1'])
+  expect(response.sources.map((source) => source.id)).toEqual(['2026-08-15.v1/kent_lectures/chk_1'])
   expect(generator.signal).toBe(controller.signal)
 })
 
@@ -213,7 +226,7 @@ it('rejects an oversized history budget', () => {
 })
 
 it('rejects book filters', () => {
-  expect(() => request({ message: 'question', bookIds: ['kent'] })).toThrow(/unexpected request field/)
+  expect(() => request({ message: 'question', bookIds: ['kent_lectures'] })).toThrow(/unexpected request field/)
 })
 
 it('production retriever searches on recent questions only', async () => {

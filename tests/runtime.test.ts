@@ -29,7 +29,6 @@ describe('settings', () => {
     expect(settings).toEqual({
       qdrantUrl: 'https://qdrant.example',
       qdrantApiKey: 'qdrant-key',
-      qdrantCollection: 'materia_medica',
       model: 'glm-5.3-flash',
       maxOutputTokens: 4_096,
       zaiApiKey: 'zai-key',

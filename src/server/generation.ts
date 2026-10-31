@@ -126,7 +126,8 @@ export function generationPrompt(
   let available = Math.max(0, maxChars - prefix.length - suffix.length)
   const excerptParts: string[] = []
   for (const [index, source] of sources.entries()) {
-    const part = `[${index + 1}] ${source.bookTitle} — ${source.remedyName} — ${source.sectionTitle}\n${source.text}\n\n`
+    const heading = [source.bookTitle, source.remedyName, source.sectionTitle].filter(Boolean).join(' — ')
+    const part = `[${index + 1}] ${heading}\n${source.text}\n\n`
     if (available <= 0) break
     const clipped = part.slice(0, available)
     excerptParts.push(clipped)
