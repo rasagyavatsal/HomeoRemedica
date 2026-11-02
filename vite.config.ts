@@ -48,7 +48,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'web',
-          include: ['src/web/**/*.test.tsx'],
+          include: ['src/web/**/*.test.{ts,tsx}'],
           environment: 'jsdom',
           setupFiles: ['./src/web/test/setup.ts'],
         },

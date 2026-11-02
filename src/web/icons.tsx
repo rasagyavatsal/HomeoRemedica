@@ -23,3 +23,6 @@ export const CopyIcon = () => <Icon size={15}><rect x="8" y="8" width="12" heigh
 export const CheckIcon = ({ size = 15 }: { size?: number }) => <Icon size={size}><path d="m5 12.5 4.5 4.5L19 7.5" /></Icon>
 export const ChevronIcon = () => <Icon size={14}><path d="m9 6 6 6-6 6" /></Icon>
 export const AlertIcon = () => <Icon><circle cx="12" cy="12" r="9" /><path d="M12 7.5v5.5m0 3.2v.1" /></Icon>
+export const SidebarIcon = () => <Icon size={18}><rect x="3.5" y="4.5" width="17" height="15" rx="3" /><path d="M9.5 4.5v15" /></Icon>
+export const TrashIcon = () => <Icon size={15}><path d="M5 7h14M10 7V5h4v2m-7 0 .8 11.2a1 1 0 0 0 1 .8h6.4a1 1 0 0 0 1-.8L17 7" /></Icon>
+export const CloseIcon = () => <Icon size={18}><path d="m6 6 12 12M18 6 6 18" /></Icon>

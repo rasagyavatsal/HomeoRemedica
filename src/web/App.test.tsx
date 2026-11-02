@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { version } from '../../package.json'
@@ -54,6 +54,7 @@ function eventStream() {
 const fetchMock = vi.fn<typeof fetch>()
 
 beforeEach(() => {
+  localStorage.clear()
   sessionStorage.clear()
   fetchMock.mockReset()
   fetchMock.mockImplementation(async (url) => {
@@ -73,6 +74,19 @@ async function ready() {
 
 function chatCalls() {
   return fetchMock.mock.calls.filter(([url]) => url === '/api/chat')
+}
+
+function pastChats() {
+  return [...document.querySelectorAll<HTMLButtonElement>('.chat-link')]
+}
+
+async function ask(user: ReturnType<typeof userEvent.setup>, question: string, answer: string) {
+  fetchMock.mockImplementationOnce(async () => jsonResponse(chatResponse(answer, [
+    { role: 'user', content: question },
+    { role: 'assistant', content: answer },
+  ])))
+  await user.type(screen.getByRole('textbox', { name: 'Message' }), `${question}{Enter}`)
+  await screen.findByText(answer)
 }
 
 function chatBody(index: number) {
@@ -120,7 +134,7 @@ describe('production chat interactions', () => {
     await user.type(input, '/clear{Enter}')
     expect(screen.queryByText('First answer')).not.toBeInTheDocument()
     await user.type(input, '/books{Enter}')
-    expect(screen.getByRole('alert')).toHaveTextContent('Unknown command. Use /clear or /quit.')
+    expect(screen.getByRole('alert')).toHaveTextContent('Unknown command. Use /clear, /delete or /quit.')
     await user.clear(input)
     await user.type(input, '/exit{Enter}')
     expect(screen.getByText('Session ended.')).toBeVisible()
@@ -194,7 +208,7 @@ describe('production chat interactions', () => {
     await stream.send('done', chatResponse('Streamed claim [1].'))
     await stream.close()
     await waitFor(() => expect(screen.getByRole('textbox', { name: 'Message' })).toBeEnabled())
-    expect(screen.getAllByText('First question')).toHaveLength(1)
+    expect(screen.getAllByText('First question', { selector: '.user-content' })).toHaveLength(1)
     expect(screen.getByRole('textbox', { name: 'Message' })).toHaveValue('')
   })
 
@@ -238,7 +252,7 @@ describe('production chat interactions', () => {
     expect(screen.getByRole('button', { name: 'Source 1: Organon of Medicine: § 5, Book 1' })).toBeInTheDocument()
   })
 
-  it('restores the conversation after a reload until it is cleared', async () => {
+  it('reopens the open chat after a reload and keeps it after starting a new one', async () => {
     const user = await ready()
     await user.type(screen.getByRole('textbox', { name: 'Message' }), 'First question{Enter}')
     await screen.findByText('First answer')
@@ -254,12 +268,28 @@ describe('production chat interactions', () => {
     cleanup()
     await ready()
     expect(screen.queryByText('First answer')).not.toBeInTheDocument()
+    expect(pastChats().map((chat) => chat.textContent)).toEqual(['First question'])
+  })
+
+  it('moves the conversation an earlier version kept into the saved chats', async () => {
+    sessionStorage.setItem('homeoremedica:conversation', JSON.stringify({
+      messages: [{ id: 0, role: 'user', content: 'First question' }, { id: 1, role: 'assistant', content: 'First answer' }],
+      history: firstHistory,
+    }))
+    render(<App />)
+    const user = userEvent.setup()
+    expect(screen.getByText('First answer')).toBeVisible()
+    expect(pastChats().map((chat) => chat.textContent)).toEqual(['First question'])
+    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Second question{Enter}')
+    await waitFor(() => expect(chatCalls()).toHaveLength(1))
+    expect(chatBody(0).history).toEqual(firstHistory)
   })
 
   it('starts fresh when the saved conversation is unreadable', async () => {
     sessionStorage.setItem('homeoremedica:conversation', '{not json')
     await ready()
     expect(screen.getByRole('heading', { name: 'Ask the classical materia medica.' })).toBeVisible()
+    expect(screen.getByText('Your chats will appear here.')).toBeVisible()
   })
 
   it('asks a suggested question from the empty state', async () => {
@@ -281,5 +311,127 @@ describe('production chat interactions', () => {
     expect(screen.getByText(/drawn from historical texts/)).toBeVisible()
     expect(screen.queryByRole('list', { name: 'Books in the corpus' })).not.toBeInTheDocument()
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+})
+
+describe('past chats', () => {
+  it('lists each chat and continues the one that is opened', async () => {
+    const user = await ready()
+    await ask(user, 'Arsenicum keynotes', 'Arsenicum answer')
+    await user.click(screen.getByRole('button', { name: 'New chat' }))
+    expect(screen.queryByText('Arsenicum answer')).not.toBeInTheDocument()
+    await ask(user, 'Bryonia keynotes', 'Bryonia answer')
+    expect(pastChats().map((chat) => chat.textContent)).toEqual(['Bryonia keynotes', 'Arsenicum keynotes'])
+    expect(screen.getByRole('button', { name: 'Bryonia keynotes' })).toHaveAttribute('aria-current', 'page')
+
+    await user.click(screen.getByRole('button', { name: 'Arsenicum keynotes' }))
+    expect(screen.getByText('Arsenicum answer')).toBeVisible()
+    expect(screen.queryByText('Bryonia answer')).not.toBeInTheDocument()
+    await ask(user, 'Arsenicum follow-up', 'Follow-up answer')
+    expect(chatBody(2)).toEqual({
+      message: 'Arsenicum follow-up',
+      history: [{ role: 'user', content: 'Arsenicum keynotes' }, { role: 'assistant', content: 'Arsenicum answer' }],
+    })
+    expect(pastChats().map((chat) => chat.textContent)).toEqual(['Arsenicum keynotes', 'Bryonia keynotes'])
+    expect(screen.getByText('Today')).toBeVisible()
+  })
+
+  it('does not switch chats while an answer is in progress', async () => {
+    const user = await ready()
+    await ask(user, 'Arsenicum keynotes', 'Arsenicum answer')
+    await user.click(screen.getByRole('button', { name: 'New chat' }))
+    let resolveRequest: ((response: Response) => void) | undefined
+    fetchMock.mockImplementationOnce(() => new Promise((resolve) => { resolveRequest = resolve }))
+    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Bryonia keynotes{Enter}')
+    expect(screen.getByRole('button', { name: 'Arsenicum keynotes' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Delete chat: Arsenicum keynotes' })).toBeDisabled()
+    await act(async () => resolveRequest?.(jsonResponse(chatResponse('Bryonia answer'))))
+    expect(screen.getByRole('button', { name: 'Arsenicum keynotes' })).toBeEnabled()
+  })
+
+  it('deletes a chat from the list and with /delete', async () => {
+    const user = await ready()
+    await ask(user, 'Arsenicum keynotes', 'Arsenicum answer')
+    await user.click(screen.getByRole('button', { name: 'New chat' }))
+    await ask(user, 'Bryonia keynotes', 'Bryonia answer')
+
+    await user.click(screen.getByRole('button', { name: 'Delete chat: Arsenicum keynotes' }))
+    expect(pastChats().map((chat) => chat.textContent)).toEqual(['Bryonia keynotes'])
+    expect(screen.getByText('Bryonia answer')).toBeVisible()
+
+    await user.type(screen.getByRole('textbox', { name: 'Message' }), '/delete{Enter}')
+    expect(screen.queryByText('Bryonia answer')).not.toBeInTheDocument()
+    expect(pastChats()).toEqual([])
+    cleanup()
+    await ready()
+    expect(pastChats()).toEqual([])
+  })
+
+  it('asks before deleting all chats', async () => {
+    const user = await ready()
+    await ask(user, 'Arsenicum keynotes', 'Arsenicum answer')
+    await user.click(screen.getByRole('button', { name: 'Delete all chats' }))
+    await user.click(within(screen.getByRole('group', { name: 'Delete all chats?' })).getByRole('button', { name: 'Cancel' }))
+    expect(pastChats()).toHaveLength(1)
+
+    await user.click(screen.getByRole('button', { name: 'Delete all chats' }))
+    await user.click(screen.getByRole('button', { name: 'Delete' }))
+    expect(pastChats()).toEqual([])
+    expect(screen.queryByText('Arsenicum answer')).not.toBeInTheDocument()
+    expect(localStorage.getItem('homeoremedica:chats')).toBeNull()
+  })
+
+  it('shows chats saved in another tab', async () => {
+    await ready()
+    localStorage.setItem('homeoremedica:chats', JSON.stringify({
+      version: 1, chats: [{ id: 'other', title: 'Asked elsewhere', updatedAt: Date.now() }],
+    }))
+    act(() => { window.dispatchEvent(new StorageEvent('storage', { key: 'homeoremedica:chats' })) })
+    expect(pastChats().map((chat) => chat.textContent)).toEqual(['Asked elsewhere'])
+  })
+
+  it('removes a listed chat that can no longer be opened', async () => {
+    const user = await ready()
+    await ask(user, 'Arsenicum keynotes', 'Arsenicum answer')
+    await user.click(screen.getByRole('button', { name: 'New chat' }))
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith('homeoremedica:chat:')) localStorage.removeItem(key)
+    }
+    await user.click(screen.getByRole('button', { name: 'Arsenicum keynotes' }))
+    expect(screen.getByRole('alert')).toHaveTextContent('That chat could not be opened')
+    expect(pastChats()).toEqual([])
+  })
+
+  it('remembers a hidden sidebar', async () => {
+    const user = await ready()
+    await user.click(screen.getByRole('button', { name: 'Hide chats' }))
+    expect(screen.queryByRole('navigation', { name: 'Past chats' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'New chat' })).toBeInTheDocument()
+    cleanup()
+    await ready()
+    expect(screen.queryByRole('navigation', { name: 'Past chats' })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Show chats' }))
+    expect(screen.getByRole('navigation', { name: 'Past chats' })).toBeVisible()
+  })
+
+  it('opens chats in a drawer on narrow screens', async () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({ matches: false, media: query, addEventListener() {}, removeEventListener() {} }))
+    const user = await ready()
+    await ask(user, 'Arsenicum keynotes', 'Arsenicum answer')
+    await user.click(screen.getByRole('button', { name: 'New chat' }))
+    expect(screen.queryByRole('dialog', { name: 'Your chats' })).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Show chats' }))
+    const drawer = screen.getByRole('dialog', { name: 'Your chats' })
+    await waitFor(() => expect(within(drawer).getByRole('button', { name: 'Close chats' })).toHaveFocus())
+    expect(document.querySelector('.app-shell')).toHaveAttribute('inert')
+    await user.keyboard('{Escape}')
+    expect(screen.queryByRole('dialog', { name: 'Your chats' })).not.toBeInTheDocument()
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Show chats' })).toHaveFocus())
+
+    await user.click(screen.getByRole('button', { name: 'Show chats' }))
+    await user.click(screen.getByRole('button', { name: 'Arsenicum keynotes' }))
+    expect(screen.queryByRole('dialog', { name: 'Your chats' })).not.toBeInTheDocument()
+    expect(screen.getByText('Arsenicum answer')).toBeVisible()
   })
 })

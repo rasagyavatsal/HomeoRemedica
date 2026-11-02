@@ -83,9 +83,11 @@ npm run dev
 Open `http://127.0.0.1:5173`. The Vite dev server serves the frontend and the API from one
 process; edits to either reload automatically. Port 5173 must be available; Vite will report an
 error instead of switching to another port. Restart after changing `.env`.
-Send questions, inspect numbered sources, and clear the conversation. Enter sends; Shift+Enter
-adds a line. `/clear`, `/quit`, and `/exit` also work in the message box. The conversation is kept in the
-tab's session storage, so it survives a reload and ends when the tab closes or with `/clear`.
+Send questions, inspect numbered sources, and return to past chats from the sidebar. Enter sends;
+Shift+Enter adds a line. `/clear` starts a new chat, `/delete` deletes the open one, and `/quit` or
+`/exit` ends the session. Chats are saved in the browser's local storage, newest first and at most 50,
+so they survive closing the tab but stay on that device; nothing about them is stored on the server.
+A reload reopens the chat the tab had open. On narrow screens the sidebar opens as a drawer.
 
 To serve a built frontend and the API from one Node.js server:
 
