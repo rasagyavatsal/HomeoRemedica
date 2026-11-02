@@ -835,15 +835,11 @@ ul {
 
 .references {
   margin-top: var(--space-lg);
-  padding: var(--space-xs);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
   animation: fade-in var(--duration-slow) var(--ease-standard);
 }
 
 .references-label {
-  padding: var(--space-2xs) var(--space-xs) var(--space-xs);
+  padding-bottom: var(--space-xs);
   color: var(--color-text-subtle);
   font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
@@ -852,30 +848,34 @@ ul {
 }
 
 .references-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2xs);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: var(--space-xs);
   padding: 0;
   list-style: none;
 }
 
 .reference {
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
   gap: var(--space-xs);
   width: 100%;
-  padding: var(--space-2xs) var(--space-xs);
-  border: none;
-  border-radius: var(--radius-sm);
-  background: transparent;
+  height: 100%;
+  padding: var(--space-sm);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
   color: var(--color-text-muted);
   font-size: var(--text-sm);
   text-align: left;
-  transition: background var(--duration-fast) var(--ease-standard);
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
 }
 
 .reference:hover,
 .reference[data-active] {
+  border-color: var(--color-accent-border);
   background: var(--color-accent-soft);
 }
 
@@ -883,7 +883,6 @@ ul {
   display: grid;
   flex: none;
   place-items: center;
-  align-self: center;
   min-width: var(--citation-size);
   padding: 0 var(--space-2xs);
   height: var(--citation-size);
@@ -902,16 +901,21 @@ ul {
   color: var(--color-text-on-accent);
 }
 
+.reference-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+  min-width: 0;
+}
+
 .reference-heading {
   color: var(--color-text);
   font-weight: var(--weight-semibold);
 }
 
 .reference-book {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
 }
 
 /* ---- Answer prose ------------------------------------------------------- */

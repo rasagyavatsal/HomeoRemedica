@@ -116,8 +116,10 @@ function References({ sources, cited, active, onOpen }: ReferencesProps) {
               onClick={() => onOpen(number)}
             >
               <span className="reference-number">{number}</span>
-              <span className="reference-heading">{source.remedyName ?? source.sectionTitle}</span>
-              <span className="reference-book">{source.bookTitle}</span>
+              <span className="reference-text">
+                <span className="reference-heading">{source.remedyName ?? source.sectionTitle}</span>
+                <span className="reference-book">{source.bookTitle}</span>
+              </span>
             </button>
           </li>
         ))}
