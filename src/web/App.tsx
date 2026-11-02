@@ -6,7 +6,7 @@ import { errorMessage, getJson } from './api.ts'
 import { type Account, type AuthClient, connectAuth } from './auth.ts'
 import { AuthDialog } from './AuthDialog.tsx'
 import { Composer, type ComposerHandle } from './Composer.tsx'
-import { type Conversation, citedSources, newConversation } from './conversation.ts'
+import { type Conversation, newConversation } from './conversation.ts'
 import { CloseIcon, MenuIcon } from './icons.tsx'
 import { AccountLibrary, type ChatLibrary, LocalLibrary, moveIntoAccount, openChat, summarize } from './library.ts'
 import { Sidebar } from './Sidebar.tsx'
@@ -243,7 +243,8 @@ function Workspace({ library, place, notify: setNotice, account }: WorkspaceProp
     [chat.ask],
   )
 
-  const sourcesFor = openSources && conversation.messages.find((message) => message.id === openSources.messageId)
+  const openSource =
+    openSources && conversation.messages.find((message) => message.id === openSources.messageId)?.sources?.[openSources.source - 1]
   const sidebarShown = sidebarOpen && drawer
 
   useEffect(() => {
@@ -258,7 +259,7 @@ function Workspace({ library, place, notify: setNotice, account }: WorkspaceProp
   }, [openSources, sidebarShown])
 
   return (
-    <div className="app" data-sources={sourcesFor?.sources ? 'open' : undefined} data-sidebar={sidebarShown ? 'open' : undefined}>
+    <div className="app" data-sources={openSource ? 'open' : undefined} data-sidebar={sidebarShown ? 'open' : undefined}>
       <div className="sidebar-slot" inert={drawer && !sidebarOpen}>
         <Sidebar
           chats={chats}
@@ -304,15 +305,10 @@ function Workspace({ library, place, notify: setNotice, account }: WorkspaceProp
         </footer>
       </main>
 
-      {sourcesFor?.sources && (
+      {openSources && openSource && (
         <>
           <div className="scrim scrim-sources" onClick={closeSources} aria-hidden="true" />
-          <SourcesPanel
-            sources={sourcesFor.sources}
-            cited={citedSources(sourcesFor.content)}
-            active={openSources?.source}
-            onClose={closeSources}
-          />
+          <SourcesPanel key={openSource.id} source={openSource} number={openSources.source} onClose={closeSources} />
         </>
       )}
     </div>

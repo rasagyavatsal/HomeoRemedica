@@ -45,19 +45,19 @@ describe('asking', () => {
     expect(screen.getByRole('heading', { name: 'What is Pulsatilla like?' })).toBeInTheDocument()
     const references = await screen.findByRole('list', { name: 'References' })
     expect(within(references).getAllByRole('button')).toHaveLength(1)
-    expect(screen.queryByRole('region', { name: 'Sources' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Pulsatilla' })).not.toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Source 2' }))
 
-    const panel = screen.getByRole('region', { name: 'Sources' })
-    expect(within(panel).getByText('1 cited of 2 retrieved')).toBeInTheDocument()
-    expect(within(panel).getByRole('article', { name: 'Source 2: Pulsatilla' })).toHaveAttribute('data-active')
-    expect(within(panel).getByText('Retrieved but not cited')).toBeInTheDocument()
+    // Only the clicked passage is shown.
+    const panel = screen.getByRole('region', { name: 'Pulsatilla' })
+    expect(within(panel).getByText('Weeping, mild, changeable.')).toBeInTheDocument()
+    expect(within(panel).queryByText(sources[0].text)).not.toBeInTheDocument()
 
     await userEvent.keyboard('{Escape}')
-    expect(screen.queryByRole('region', { name: 'Sources' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Pulsatilla' })).not.toBeInTheDocument()
 
     await userEvent.click(within(references).getByRole('button', { name: /Pulsatilla/ }))
-    expect(screen.getByRole('region', { name: 'Sources' })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Pulsatilla' })).toBeInTheDocument()
   })
 
   it('sends the history the server returned with the last answer', async () => {
