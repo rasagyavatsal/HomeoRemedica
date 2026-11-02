@@ -123,6 +123,7 @@
   --layout-sidebar-width: 17rem;
   --layout-sources-width: 25rem;
   --layout-reading-width: 46rem;
+  --layout-dialog-width: 24rem;
   --layout-gutter: var(--space-lg);
   --layout-measure: 34rem;
   --layout-card-min: 16rem;

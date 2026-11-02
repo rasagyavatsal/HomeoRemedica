@@ -1,8 +1,8 @@
 /** Where saved chats live: this browser's storage, or the signed-in account. */
 
-import type { ChatSummary, ChatTurn, SavedMessage } from '../server/contracts.ts'
-import { ShownError } from './api.ts'
-import { type Conversation, savedMessages } from './conversation.ts'
+import type { ChatList, ChatSummary, ChatTurn, SavedChat, SavedConversation, SavedMessage } from '../server/contracts.ts'
+import { ApiError, ShownError, failure } from './api.ts'
+import { type Conversation, savedMessages, titleFrom } from './conversation.ts'
 
 export interface ChatLibrary {
   /** Saved chats, newest first. */
@@ -85,6 +85,80 @@ export class LocalLibrary implements ChatLibrary {
     }
     throw new ShownError('This chat is too long to save in this browser.')
   }
+}
+
+/** Chats saved to the signed-in account through the API. */
+export class AccountLibrary implements ChatLibrary {
+  readonly #token: () => Promise<string>
+
+  constructor(token: () => Promise<string>) {
+    this.#token = token
+  }
+
+  async #request(path: string, init: RequestInit = {}): Promise<Response> {
+    const headers = new Headers(init.headers)
+    headers.set('Authorization', `Bearer ${await this.#token()}`)
+    const response = await fetch(path, { ...init, headers })
+    if (!response.ok) throw await failure(response)
+    return response
+  }
+
+  async list(): Promise<ChatSummary[]> {
+    return ((await (await this.#request('/api/chats')).json()) as ChatList).chats
+  }
+
+  async open(id: string): Promise<Conversation | null> {
+    let chat: SavedConversation
+    try {
+      chat = (await (await this.#request(`/api/chats/${encodeURIComponent(id)}`)).json()) as SavedConversation
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) return null
+      throw error
+    }
+    const title = chat.messages.find((message) => message.role === 'user')?.content ?? ''
+    return { id, title: titleFrom(title), updatedAt: 0, messages: chat.messages, history: chat.history }
+  }
+
+  async save(conversation: Conversation): Promise<ChatSummary> {
+    const chat: SavedChat = {
+      title: conversation.title,
+      updatedAt: conversation.updatedAt,
+      messages: savedMessages(conversation.messages),
+      history: conversation.history,
+    }
+    const response = await this.#request(`/api/chats/${encodeURIComponent(conversation.id)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(chat),
+    })
+    return (await response.json()) as ChatSummary
+  }
+
+  async remove(id: string): Promise<void> {
+    await this.#request(`/api/chats/${encodeURIComponent(id)}`, { method: 'DELETE' })
+  }
+
+  /** Delete every chat and then the account itself. */
+  async deleteAccount(): Promise<void> {
+    await this.#request('/api/account', { method: 'DELETE' })
+  }
+}
+
+/**
+ * Move the chats saved in this browser into the account, removing each from the browser once
+ * it is saved. Resolves with how many could not be moved; they stay in the browser.
+ */
+export async function moveIntoAccount(local: LocalLibrary, account: ChatLibrary): Promise<number> {
+  let failed = 0
+  for (const chat of local.all()) {
+    try {
+      await account.save(chat)
+      await local.remove(chat.id)
+    } catch {
+      failed++
+    }
+  }
+  return failed
 }
 
 function isStoredChat(value: unknown): value is StoredChat {
