@@ -160,6 +160,7 @@
   --color-surface-raised: light-dark(var(--paper-0), var(--paper-850));
   --color-surface-sunken: light-dark(var(--paper-150), var(--paper-950));
   --color-surface-hover: light-dark(var(--paper-150), var(--paper-850));
+  --color-surface-raised-hover: light-dark(var(--paper-150), var(--paper-800));
   --color-surface-selected: light-dark(var(--paper-200), var(--paper-800));
 
   --color-text: light-dark(var(--paper-900), var(--paper-100));
