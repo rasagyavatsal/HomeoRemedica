@@ -1264,9 +1264,10 @@ ul {
     width: min(var(--layout-sidebar-width), calc(100vw - var(--space-2xl)));
     transform: translateX(-100%);
     visibility: hidden;
+    /* Closing: leaves on the exit curve, then hides once it is off screen. */
     transition:
-      transform var(--duration-slow) var(--ease-standard),
-      visibility 0s linear var(--duration-slow);
+      transform var(--duration-base) var(--ease-exit),
+      visibility 0s linear var(--duration-base);
   }
 
   .app[data-sidebar='open'] .sidebar-slot {
