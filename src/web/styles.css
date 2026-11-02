@@ -1085,8 +1085,8 @@ ul {
   display: none;
 }
 
-/* Narrower windows show the sources over the chat. */
-@media (max-width: 68rem) {
+/* Only phone-width windows show the sources over the chat; wider ones keep them beside it. */
+@media (max-width: 40rem) {
   .sources {
     position: fixed;
     inset: 0 0 0 auto;

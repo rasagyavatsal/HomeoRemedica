@@ -121,7 +121,7 @@
 
   /* Layout */
   --layout-sidebar-width: 17rem;
-  --layout-sources-width: 25rem;
+  --layout-sources-width: clamp(18rem, 32vw, 25rem);
   --layout-reading-width: 46rem;
   --layout-dialog-width: 24rem;
   --layout-gutter: var(--space-lg);
@@ -133,7 +133,7 @@
   --code-size: 0.875em;
   --opacity-disabled: 0.55;
   /* Breakpoints (media queries cannot read custom properties, so styles.css repeats these):
-     sources overlay below 68rem, sidebar drawer below 52rem, compact spacing below 40rem. */
+     sidebar drawer below 52rem; sources overlay and compact spacing below 40rem. */
 
   /* Motion */
   --duration-fast: 120ms;
