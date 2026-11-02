@@ -39,14 +39,14 @@ export const MoonIcon = icon(<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10
 export const MonitorIcon = icon(<path d="M4 5h16v11H4zM9 20h6m-3-4v4" />)
 export const UserIcon =icon(<path d="M16 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM4 21a8 8 0 0 1 16 0" />)
 
-export function LeafMark(props: IconProps) {
+/** The potency drop: a drop with a ring and centre cut out, after the rings of a dilution. */
+export function DropMark(props: IconProps) {
   return (
-    <svg className="leaf-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false" {...props}>
-      <rect width="24" height="24" rx="6" fill="currentColor" />
-      <path d="M12 20V8" stroke="var(--color-text-on-accent)" strokeWidth="1.6" strokeLinecap="round" />
+    <svg className="brand-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false" {...props}>
       <path
-        d="M12 12.5c-3.6 0-5.6-2.1-5.6-5.6 3.5 0 5.6 2 5.6 5.6Zm0 2.4c3.1 0 4.8-1.8 4.8-4.8-3 0-4.8 1.7-4.8 4.8Z"
-        fill="var(--color-text-on-accent)"
+        d="M12 2C12 2 4.5 10.25 4.5 15.25A7.5 7.5 0 0 0 19.5 15.25C19.5 10.25 12 2 12 2ZM7.2 15.25a4.8 4.8 0 1 0 9.6 0a4.8 4.8 0 1 0-9.6 0ZM8.3 15.25a3.7 3.7 0 1 0 7.4 0a3.7 3.7 0 1 0-7.4 0ZM10.7 15.25a1.3 1.3 0 1 0 2.6 0a1.3 1.3 0 1 0-2.6 0Z"
+        fill="currentColor"
+        fillRule="evenodd"
       />
     </svg>
   )

@@ -1,7 +1,7 @@
 import { type ReactNode, useState } from 'react'
 
 import type { ChatSummary } from '../server/contracts.ts'
-import { CloseIcon, LeafMark, PlusIcon, SearchIcon, TrashIcon } from './icons.tsx'
+import { CloseIcon, DropMark, PlusIcon, SearchIcon, TrashIcon } from './icons.tsx'
 import { ThemeToggle } from './ThemeToggle.tsx'
 
 interface SidebarProps {
@@ -29,7 +29,7 @@ export function Sidebar({ chats, activeId, place, onNew, onOpen, onDelete, onClo
     <nav className="sidebar" aria-label="Chats">
       <div className="sidebar-header">
         <div className="brand">
-          <LeafMark />
+          <DropMark />
           <span className="brand-name">HomeoRemedica</span>
         </div>
         <div className="sidebar-tools">
