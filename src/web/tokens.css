@@ -70,7 +70,7 @@
   /* ---- 2. Semantic tokens ----------------------------------------------- */
 
   /* Typography */
-  --font-reading: var(--font-serif-stack);
+  --font-reading: var(--font-sans-stack);
   --font-ui: var(--font-sans-stack);
   --font-code: var(--font-mono-stack);
 

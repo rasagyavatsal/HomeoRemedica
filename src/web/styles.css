@@ -910,8 +910,6 @@ ul {
 .reference-book {
   min-width: 0;
   overflow: hidden;
-  font-family: var(--font-reading);
-  font-style: italic;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
