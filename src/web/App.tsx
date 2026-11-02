@@ -232,6 +232,13 @@ export default function App() {
     latestQuestion.current?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
   }, [messages, pending])
 
+  /** Focus the message box after the next render, unless a drawer or dialog has opened since. */
+  function focusComposerSoon() {
+    requestAnimationFrame(() => {
+      if (!textarea.current?.closest('[inert]') && !document.querySelector('dialog[open]')) textarea.current?.focus()
+    })
+  }
+
   function closeDrawer() {
     setDrawerOpen(false)
     requestAnimationFrame(() => sidebarToggle.current?.focus())
@@ -336,7 +343,7 @@ export default function App() {
     setStatus(status)
     setDrawerOpen(false)
     window.scrollTo?.({ top: 0 })
-    requestAnimationFrame(() => textarea.current?.focus())
+    focusComposerSoon()
   }
 
   function startNewChat() {
@@ -448,7 +455,7 @@ export default function App() {
     } finally {
       requestInFlight.current = false
       setLive(null)
-      requestAnimationFrame(() => textarea.current?.focus())
+      focusComposerSoon()
     }
   }
 

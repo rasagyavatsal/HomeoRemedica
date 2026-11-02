@@ -418,11 +418,17 @@ describe('past chats', () => {
     vi.stubGlobal('matchMedia', (query: string) => ({ matches: false, media: query, addEventListener() {}, removeEventListener() {} }))
     const user = await ready()
     await ask(user, 'Arsenicum keynotes', 'Arsenicum answer')
+    // Hold the next frame, as a slow device would, so the drawer opens before it runs.
+    const frames: FrameRequestCallback[] = []
+    const nextFrame = window.requestAnimationFrame
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => frames.push(callback))
     await user.click(screen.getByRole('button', { name: 'New chat' }))
     expect(screen.queryByRole('dialog', { name: 'Your chats' })).not.toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Show chats' }))
     const drawer = screen.getByRole('dialog', { name: 'Your chats' })
+    act(() => frames.splice(0).forEach((frame) => frame(0)))
+    vi.stubGlobal('requestAnimationFrame', nextFrame)
     await waitFor(() => expect(within(drawer).getByRole('button', { name: 'Close chats' })).toHaveFocus())
     expect(document.querySelector('.app-shell')).toHaveAttribute('inert')
     await user.keyboard('{Escape}')
