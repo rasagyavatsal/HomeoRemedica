@@ -434,16 +434,25 @@ ul {
   color: var(--color-danger);
 }
 
+/* Same height as a chat row: the label takes the chat link's padding and the buttons fit inside it. */
 .chat-item-confirm {
-  flex-wrap: wrap;
-  gap: var(--space-xs);
-  padding: var(--space-xs) var(--space-sm);
+  gap: var(--space-2xs);
+  padding: 0 var(--space-2xs) 0 var(--space-sm);
   background: var(--color-danger-soft);
   font-size: var(--text-sm);
 }
 
 .chat-item-confirm > span {
   flex: 1;
+  overflow: hidden;
+  min-width: 0;
+  padding: var(--space-xs) 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-item-confirm .button {
+  min-height: var(--control-xs);
 }
 
 .chat-item-confirm:hover {

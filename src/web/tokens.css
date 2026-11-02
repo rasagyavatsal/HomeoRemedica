@@ -113,6 +113,7 @@
   --focus-ring-offset: 2px;
 
   /* Control sizes */
+  --control-xs: 1.5rem;
   --control-sm: 1.75rem;
   --control-md: 2.25rem;
   --control-lg: 2.75rem;
