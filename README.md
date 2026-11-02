@@ -113,8 +113,10 @@ production books without requiring provider keys; `POST /api/chat` accepts `mess
 and the trimmed history to send with the next question. With `Accept: text/event-stream`, the
 chat endpoint streams server-sent events instead: `sources` once retrieval finishes, `text` pieces
 as the answer is generated, then `done` with the full response or `error` with a safe `detail`.
-Each client may send 10 questions a minute and 100 an hour to each server instance; further
-requests get `429` with `Retry-After`.
+Each client may send 10 questions a minute and 100 an hour to each server instance, and each
+instance answers at most 1,000 questions a day from all clients together; further requests get
+`429` with `Retry-After`. IPv6 clients are limited by their /64, since one connection usually
+holds that whole block.
 
 `GET /api/config` gives the browser the public Firebase settings, or `auth: null` without accounts.
 The saved-chat endpoints need a Firebase ID token as `Authorization: Bearer <token>`:

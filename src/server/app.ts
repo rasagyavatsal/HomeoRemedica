@@ -25,7 +25,7 @@ import {
   type WebChatResponse,
 } from './contracts.ts'
 import { advanceHistory } from './conversation.ts'
-import { RateLimiter } from './rate-limit.ts'
+import { RateLimiter, TOTAL_CHAT_RATE_LIMITS, clientKey } from './rate-limit.ts'
 import { ChatFailure, ConfigurationError, FAILURE_DETAILS, type FailureKind } from './errors.ts'
 
 export interface ChatHandler {
@@ -85,7 +85,11 @@ export function productionDependencies({
 
 export function createApp(
   dependencies: AppDependencies = productionDependencies(),
-  { webDist = WEB_DIST, rateLimiter = new RateLimiter() }: { webDist?: string | null; rateLimiter?: RateLimiter | null } = {},
+  {
+    webDist = WEB_DIST,
+    rateLimiter = new RateLimiter(),
+    totalRateLimiter = new RateLimiter(TOTAL_CHAT_RATE_LIMITS),
+  }: { webDist?: string | null; rateLimiter?: RateLimiter | null; totalRateLimiter?: RateLimiter | null } = {},
 ): Hono {
   const app = new Hono()
 
@@ -157,14 +161,20 @@ export function createApp(
     return c.body(null, 204)
   })
 
-  if (rateLimiter) {
-    app.post('/api/chat', async (c, next) => {
-      const retryAfter = rateLimiter.take(clientAddress(c))
-      if (retryAfter === undefined) return next()
+  // Check the client first, so a client over its own limit does not use up everyone's.
+  app.post('/api/chat', async (c, next) => {
+    const limits = [
+      [rateLimiter, clientKey(clientAddress(c)), 'Too many questions in a short time. Please wait a minute and try again.'],
+      [totalRateLimiter, 'all', 'HomeoRemedica has answered all the questions it can for now. Please try again later.'],
+    ] as const
+    for (const [limiter, key, detail] of limits) {
+      const retryAfter = limiter?.take(key)
+      if (retryAfter === undefined) continue
       c.header('Retry-After', String(retryAfter))
-      return c.json({ detail: 'Too many questions in a short time. Please wait a minute and try again.' }, 429)
-    })
-  }
+      return c.json({ detail }, 429)
+    }
+    return next()
+  })
 
   app.post('/api/chat', async (c) => {
     let body: unknown

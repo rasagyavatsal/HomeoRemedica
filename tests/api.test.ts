@@ -45,14 +45,18 @@ const unexpected = (message: string) => () => {
   throw new Error(message)
 }
 
-function setup(overrides: Partial<AppDependencies> = {}, rateLimiter: RateLimiter | null = null) {
+function setup(
+  overrides: Partial<AppDependencies> = {},
+  rateLimiter: RateLimiter | null = null,
+  totalRateLimiter: RateLimiter | null = null,
+) {
   const service = new StubService()
   const app = createApp(
     {
       getService: async () => service,
       ...overrides,
     },
-    { webDist: null, rateLimiter },
+    { webDist: null, rateLimiter, totalRateLimiter },
   )
   const post = (body: unknown, headers: Record<string, string> = {}) =>
     app.request('/api/chat', {
@@ -356,6 +360,34 @@ it('rate-limits chat by the address Cloud Run appends', async () => {
   expect(limited.status).toBe(429)
   expect(limited.headers.get('Retry-After')).toBe('60')
   expect((await read(limited)).detail).toMatch(/Too many questions/)
+  expect(service.requests).toHaveLength(2)
+})
+
+it('rate-limits an IPv6 client by its /64', async () => {
+  const { post } = setup({}, new RateLimiter([{ limit: 1, windowMs: 60_000 }]))
+  const from = (forwardedFor: string) => post({ message: 'question' }, { 'X-Forwarded-For': forwardedFor })
+
+  expect((await from('2001:db8:1:2::1')).status).toBe(200)
+  expect((await from('2001:db8:1:2:ffff::9')).status).toBe(429)
+  expect((await from('2001:db8:1:3::1')).status).toBe(200)
+})
+
+it('caps chat across all clients without counting a client over its own limit', async () => {
+  const { service, post } = setup(
+    {},
+    new RateLimiter([{ limit: 1, windowMs: 60_000 }]),
+    new RateLimiter([{ limit: 2, windowMs: 60 * 60_000 }]),
+  )
+  const from = (forwardedFor: string) => post({ message: 'question' }, { 'X-Forwarded-For': forwardedFor })
+
+  expect((await from('203.0.113.1')).status).toBe(200)
+  expect((await from('203.0.113.1')).status).toBe(429)
+  expect((await from('203.0.113.2')).status).toBe(200)
+  const limited = await from('203.0.113.3')
+
+  expect(limited.status).toBe(429)
+  expect(limited.headers.get('Retry-After')).toBe('3600')
+  expect((await read(limited)).detail).toMatch(/try again later/)
   expect(service.requests).toHaveLength(2)
 })
 

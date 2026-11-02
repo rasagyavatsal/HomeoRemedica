@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest'
 
-import { RateLimiter } from '../src/server/rate-limit.ts'
+import { RateLimiter, clientKey } from '../src/server/rate-limit.ts'
 
 function limiter() {
   let now = 0
@@ -40,4 +40,13 @@ it('does not count rejected requests', () => {
   advance(1_000)
 
   expect(rateLimiter.take('a')).toBeUndefined()
+})
+
+it('keys IPv4 clients by address and IPv6 clients by /64', () => {
+  expect(clientKey('203.0.113.7')).toBe('203.0.113.7')
+  expect(clientKey('2001:DB8:0:1::7')).toBe('2001:db8:0:1::/64')
+  expect(clientKey('2001:0db8:0000:0001:ffff:0000:0000:0001')).toBe('2001:db8:0:1::/64')
+  expect(clientKey('::1')).toBe('0:0:0:0::/64')
+  expect(clientKey('::ffff:203.0.113.7')).toBe('203.0.113.7')
+  expect(clientKey('direct')).toBe('direct')
 })
