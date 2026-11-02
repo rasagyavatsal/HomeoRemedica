@@ -1,4 +1,4 @@
-import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { type CSSProperties, type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
 import type { ChatSummary, ClientConfig } from '../server/contracts.ts'
 import { AccountControls } from './AccountControls.tsx'
@@ -13,7 +13,7 @@ import { Sidebar } from './Sidebar.tsx'
 import { SourcesPanel } from './SourcesPanel.tsx'
 import { Thread } from './Thread.tsx'
 import { useChat } from './useChat.ts'
-import { Welcome } from './Welcome.tsx'
+import { TAGLINE_WORDS, Welcome } from './Welcome.tsx'
 
 export default function App() {
   const local = useMemo(() => new LocalLibrary(), [])
@@ -276,7 +276,7 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
           </div>
         </div>
 
-        <footer className="composer-area">
+        <footer className="composer-area" style={{ '--tagline-words': TAGLINE_WORDS } as CSSProperties}>
           <div className="reading">
             <Composer ref={composer} busy={chat.busy} onAsk={chat.ask} onStop={chat.stop} />
             <p className="disclaimer">Historical reference only — not medical advice. For symptoms, see a qualified practitioner.</p>

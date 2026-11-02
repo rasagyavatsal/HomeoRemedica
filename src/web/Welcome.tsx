@@ -2,6 +2,9 @@ import { type CSSProperties, Fragment } from 'react'
 
 const TAGLINE = 'Ask the classical homoeopathic literature.'
 
+/** How many words the tagline staggers in, so the composer can follow the last one. */
+export const TAGLINE_WORDS = TAGLINE.split(' ').length
+
 /** The empty chat: what the app is for. */
 export function Welcome() {
   return (

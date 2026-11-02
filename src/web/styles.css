@@ -1085,7 +1085,7 @@ ul {
 /* On an empty chat the question box follows the tagline in. */
 .main:has(.welcome) .composer {
   animation: rise-in var(--duration-reveal) var(--ease-standard) both;
-  animation-delay: calc(5 * var(--duration-word-stagger));
+  animation-delay: calc(var(--tagline-words) * var(--duration-word-stagger));
 }
 
 .composer-field {
