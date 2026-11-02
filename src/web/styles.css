@@ -123,6 +123,10 @@ ul {
   background: var(--color-surface-hover);
 }
 
+.dialog .button-quiet:hover:not(:disabled) {
+  background: var(--color-surface-raised-hover);
+}
+
 .button-danger {
   background: var(--color-danger);
   color: var(--color-text-on-accent);
