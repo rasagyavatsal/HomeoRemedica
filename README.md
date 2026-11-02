@@ -113,10 +113,10 @@ production books without requiring provider keys; `POST /api/chat` accepts `mess
 and the trimmed history to send with the next question. With `Accept: text/event-stream`, the
 chat endpoint streams server-sent events instead: `sources` once retrieval finishes, `text` pieces
 as the answer is generated, then `done` with the full response or `error` with a safe `detail`.
-Each client may send 10 questions a minute and 100 an hour to each server instance, and each
-instance answers at most 1,000 questions a day from all clients together; further requests get
-`429` with `Retry-After`. IPv6 clients are limited by their /64, since one connection usually
-holds that whole block.
+Each client may send 10 questions a minute and 100 an hour, and the server answers at most 1,000
+questions a day from all clients together; further requests get `429` with `Retry-After`. The
+counts are kept in the server's memory, so they start again when it restarts. IPv6 clients are
+limited by their /64, since one connection usually holds that whole block.
 
 `GET /api/config` gives the browser the public Firebase settings, or `auth: null` without accounts.
 The saved-chat endpoints need a Firebase ID token as `Authorization: Bearer <token>`:
@@ -176,8 +176,8 @@ npm run deploy
 ```
 
 `npm run deploy` builds the `Dockerfile` with Cloud Build and deploys it to the `homeoremedica`
-Cloud Run service in `asia-south1`, capped at three instances so the per-instance chat rate limits
-also bound total provider spend. The service keeps its configuration between deploys:
+Cloud Run service in `asia-south1`, capped at one instance so the in-memory chat rate limits
+hold exactly and bound total provider spend. The service keeps its configuration between deploys:
 `QDRANT_URL` is a plain environment variable, and `OPENROUTER_API_KEY`, `ZAI_API_KEY`, and
 `QDRANT_API_KEY` come from Secret Manager. `FIREBASE_PROJECT_ID` and `FIREBASE_API_KEY` are plain
 environment variables; the service account reaches Firestore and Firebase Authentication through
