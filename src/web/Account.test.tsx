@@ -120,7 +120,7 @@ it('moves this device’s chats into the account at sign-in', async () => {
   await userEvent.type(within(dialog).getByLabelText('Password'), 'secret123')
   await userEvent.click(within(dialog).getByRole('button', { name: 'Sign in' }))
 
-  expect(await screen.findByRole('button', { name: 'Sign out' })).toBeInTheDocument()
+  expect(await screen.findByRole('button', { name: 'alice@example.com' })).toBeInTheDocument()
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   expect(await within(sidebar()).findByRole('button', { name: 'Saved before signing in' })).toBeInTheDocument()
   expect(store.get('alice')?.get('local-1')?.title).toBe('Saved before signing in')
@@ -155,7 +155,8 @@ it('signs out to a fresh chat on this device', async () => {
   await userEvent.type(screen.getByRole('textbox', { name: 'Your question' }), 'Private?{Enter}')
   await screen.findByText('Private answer.')
 
-  await userEvent.click(screen.getByRole('button', { name: 'Sign out' }))
+  await userEvent.click(screen.getByRole('button', { name: 'alice@example.com' }))
+  await userEvent.click(screen.getByRole('menuitem', { name: 'Sign out' }))
 
   expect(await screen.findByRole('button', { name: 'Sign in to sync chats' })).toBeInTheDocument()
   expect(screen.queryByText('Private answer.')).not.toBeInTheDocument()
@@ -168,13 +169,31 @@ it('deletes the account after confirmation', async () => {
   render(<App />)
   await screen.findByText('alice@example.com')
 
-  await userEvent.click(screen.getByRole('button', { name: 'Delete account…' }))
+  await userEvent.click(screen.getByRole('button', { name: 'alice@example.com' }))
+  await userEvent.click(screen.getByRole('menuitem', { name: 'Delete account…' }))
   const dialog = screen.getByRole('dialog', { name: 'Delete your account?' })
   await userEvent.click(within(dialog).getByRole('button', { name: 'Delete account' }))
 
   expect(await screen.findByText('Your account and its chats were deleted.')).toBeInTheDocument()
   expect(requests).toContain('DELETE /api/account')
   expect(screen.getByRole('button', { name: 'Sign in to sync chats' })).toBeInTheDocument()
+})
+
+it('closes the account menu on Escape or a click outside it', async () => {
+  fake.account = ALICE
+  serve()
+  render(<App />)
+  const account = await screen.findByRole('button', { name: 'alice@example.com' })
+
+  await userEvent.click(account)
+  expect(screen.getByRole('menuitem', { name: 'Sign out' })).toHaveFocus()
+  await userEvent.keyboard('{Escape}')
+  expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+  expect(account).toHaveFocus()
+
+  await userEvent.click(account)
+  await userEvent.click(screen.getByRole('textbox', { name: 'Your question' }))
+  expect(screen.queryByRole('menu')).not.toBeInTheDocument()
 })
 
 it('explains a failed sign-in and offers a password reset', async () => {

@@ -473,20 +473,27 @@ ul {
   width: 100%;
 }
 
-.text-button-danger {
-  align-self: flex-start;
-  color: var(--color-text-subtle);
-  font-size: var(--text-xs);
-}
-
-.text-button-danger:hover {
-  color: var(--color-danger);
-}
-
 .account {
+  position: relative;
+}
+
+.account-trigger {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
+  width: 100%;
+  padding: var(--space-2xs);
+  margin: calc(var(--space-2xs) * -1) 0;
+  border: none;
+  border-radius: var(--radius-md);
+  background: none;
+  text-align: left;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.account-trigger:hover,
+.account-trigger[aria-expanded='true'] {
+  background: var(--color-surface-hover);
 }
 
 .account-avatar {
@@ -509,6 +516,58 @@ ul {
   font-size: var(--text-sm);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Opens upwards from the sidebar footer. */
+.account-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + var(--space-xs));
+  left: 0;
+  z-index: var(--layer-menu);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-2xs);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-md);
+  animation: rise-in var(--duration-fast) var(--ease-standard);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: var(--control-md);
+  padding: 0 var(--space-xs);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-size: var(--text-sm);
+  text-align: left;
+}
+
+.menu-item .icon {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  color: var(--color-text-muted);
+}
+
+.menu-item:hover,
+.menu-item:focus-visible {
+  background: var(--color-surface-hover);
+  outline: none;
+}
+
+.menu-item-danger,
+.menu-item-danger .icon {
+  color: var(--color-danger);
+}
+
+.menu-item-danger:hover,
+.menu-item-danger:focus-visible {
+  background: var(--color-danger-soft);
 }
 
 /* ---- Dialogs and forms -------------------------------------------------- */
