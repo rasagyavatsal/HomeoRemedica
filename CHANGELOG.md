@@ -7,6 +7,31 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [9.3.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.2.0...HomeoRemedica-v9.3.0) (2026-11-02)
+
+
+### Features
+
+* **web:** move sign out and account deletion into an account menu ([67f96c5](https://github.com/rasagyavatsal/HomeoRemedica/commit/67f96c5b441af063548ab1f459e91d0d69d5f964))
+* **web:** replace example questions with a centred tagline ([7359987](https://github.com/rasagyavatsal/HomeoRemedica/commit/7359987dd7e395379391a47b2421c521e02082e7))
+* **web:** show answer references as a grid of cards ([8c15c85](https://github.com/rasagyavatsal/HomeoRemedica/commit/8c15c85203a398daeb3e6a0d8d185de197b1c9e3))
+* **web:** stagger the tagline in and bring the composer in after it ([da978ec](https://github.com/rasagyavatsal/HomeoRemedica/commit/da978ec17466322efc5969f55562e15f9b0da562))
+
+
+### Bug Fixes
+
+* **deploy:** cap Cloud Run at one instance ([d1530f8](https://github.com/rasagyavatsal/HomeoRemedica/commit/d1530f8c89fc96e7d40da94506e13169c85214c8))
+* **deps:** patch grpc-js, glob and minimatch advisories ([fc5626d](https://github.com/rasagyavatsal/HomeoRemedica/commit/fc5626dd27519279442ae76767f15a7f7b2701be))
+* require a verified email and limit messages saved per account ([85244f0](https://github.com/rasagyavatsal/HomeoRemedica/commit/85244f0c5c66742dd4edfbfc2a7d7cfadcddc828))
+* **server:** limit IPv6 clients by /64 and cap daily chat questions ([6801304](https://github.com/rasagyavatsal/HomeoRemedica/commit/680130454471b27103d5722b17de4f6db25e5d42))
+* **web:** close the chat drawer on the exit curve ([338df48](https://github.com/rasagyavatsal/HomeoRemedica/commit/338df48ba881f9627c37b731bba9fb1e89a4dba2))
+* **web:** match the delete-chat confirmation to the chat row height ([f4187aa](https://github.com/rasagyavatsal/HomeoRemedica/commit/f4187aaa4374228aa054e160413abd2849f6b897))
+* **web:** restore the gap between dialog titles and content ([eb6b9d7](https://github.com/rasagyavatsal/HomeoRemedica/commit/eb6b9d7b68b655a527285332b71a77691f906829))
+* **web:** show a hover colour on account menu items in dark mode ([771398f](https://github.com/rasagyavatsal/HomeoRemedica/commit/771398f44f1bd73ee066aaa848f7df7ffdcf5ac3))
+* **web:** show a hover colour on outline buttons in dark mode ([71bc4d1](https://github.com/rasagyavatsal/HomeoRemedica/commit/71bc4d14c8624ab986ad02417ed0f1543b5f1281))
+* **web:** show a hover colour on quiet dialog buttons in dark mode ([38c0532](https://github.com/rasagyavatsal/HomeoRemedica/commit/38c0532d2cc4df7f7f9b6416ffcfc4f1407285ab))
+* **web:** time the composer reveal from the tagline's word count ([5f3bec3](https://github.com/rasagyavatsal/HomeoRemedica/commit/5f3bec3e637d2310ff654204ed8dfc06f9146e41))
+
 ## [9.2.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.1.0...HomeoRemedica-v9.2.0) (2026-11-02)
 
 
