@@ -116,3 +116,51 @@ describe('asking', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: 'Send question' })).toBeDisabled())
   })
 })
+
+describe('saved chats', () => {
+  it('lists an answered chat, reopens it after a reload and starts new ones', async () => {
+    serve({ chat: [() => answerStream('Keynotes [1].', [citation(1)])] })
+    const { unmount } = render(<App />)
+
+    await ask('Pulsatilla keynotes?')
+    await screen.findByText(/Keynotes/)
+    const chats = screen.getByRole('navigation', { name: 'Chats' })
+    expect(within(chats).getByRole('button', { name: 'Pulsatilla keynotes?' })).toHaveAttribute('aria-current', 'page')
+
+    unmount()
+    render(<App />)
+    expect(await screen.findByRole('heading', { name: 'Pulsatilla keynotes?' })).toBeInTheDocument()
+    expect(screen.getByText(/Keynotes/)).toBeInTheDocument()
+
+    const sidebar = screen.getByRole('navigation', { name: 'Chats' })
+    await userEvent.click(within(sidebar).getByRole('button', { name: 'New chat' }))
+    expect(screen.getByRole('heading', { name: 'Ask the classical materia medica' })).toBeInTheDocument()
+    await userEvent.click(within(sidebar).getByRole('button', { name: 'Pulsatilla keynotes?' }))
+    expect(await screen.findByRole('heading', { name: 'Pulsatilla keynotes?' })).toBeInTheDocument()
+  })
+
+  it('deletes a chat after confirmation', async () => {
+    serve({ chat: [() => answerStream('Answer.', [citation(1)])] })
+    render(<App />)
+    await ask('Delete me?')
+    await screen.findByText('Answer.')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Delete “Delete me?”' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+    expect(await screen.findByText('Your chats will appear here.')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Ask the classical materia medica' })).toBeInTheDocument()
+    expect(localStorage.getItem('homeoremedica.library.v1')).toBe('[]')
+  })
+
+  it('saves a stopped answer', async () => {
+    serve({ chat: [(init) => pending(init?.signal)] })
+    render(<App />)
+
+    await ask('Slow?')
+    await userEvent.click(screen.getByRole('button', { name: 'Stop answering' }))
+
+    const chats = screen.getByRole('navigation', { name: 'Chats' })
+    expect(within(chats).getByRole('button', { name: 'Slow?' })).toBeInTheDocument()
+  })
+})

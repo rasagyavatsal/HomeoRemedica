@@ -5,8 +5,13 @@ import type { BookCatalog, BookSummary, ChatTurn, Citation, WebChatResponse } fr
 const FALLBACK_DETAIL = 'Something went wrong. Please try again.'
 const INTERRUPTED_DETAIL = 'The answer stopped before it finished. Please try again.'
 
+/** An error whose message is written for the reader. */
+export class ShownError extends Error {
+  override name = 'ShownError'
+}
+
 /** A failed request, with a message that is safe to show. */
-export class ApiError extends Error {
+export class ApiError extends ShownError {
   override name = 'ApiError'
   readonly status: number
 
@@ -28,7 +33,7 @@ export async function failure(response: Response): Promise<ApiError> {
 
 /** A message to show for any error a request may throw. */
 export function errorMessage(error: unknown): string {
-  if (error instanceof ApiError) return error.message
+  if (error instanceof ShownError) return error.message
   if (error instanceof TypeError) return 'The server could not be reached. Check your connection and try again.'
   return FALLBACK_DETAIL
 }
