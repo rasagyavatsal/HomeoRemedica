@@ -1,3 +1,5 @@
+import type { Accounts, ChatStore } from '../src/server/accounts.ts'
+import type { ChatSummary, SavedChat, SavedConversation } from '../src/server/contracts.ts'
 import type { Fetch } from '../src/server/http.ts'
 
 export interface FetchCall {
@@ -47,4 +49,58 @@ export function stream(...chunks: string[]): Response {
 
 export function timeout(): Error {
   return new DOMException('timeout secret', 'TimeoutError')
+}
+
+/** Chats kept in memory, keyed by user and chat. */
+export class MemoryChatStore implements ChatStore {
+  readonly users = new Map<string, Map<string, SavedChat>>()
+  failure: Error | null = null
+
+  #chats(userId: string) {
+    if (this.failure) throw this.failure
+    let chats = this.users.get(userId)
+    if (!chats) this.users.set(userId, (chats = new Map()))
+    return chats
+  }
+
+  async list(userId: string): Promise<ChatSummary[]> {
+    return [...this.#chats(userId)]
+      .map(([id, { title, updatedAt }]) => ({ id, title, updatedAt }))
+      .sort((a, b) => b.updatedAt - a.updatedAt)
+  }
+
+  async get(userId: string, chatId: string): Promise<SavedConversation | null> {
+    const chat = this.#chats(userId).get(chatId)
+    return chat ? { messages: chat.messages, history: chat.history } : null
+  }
+
+  async put(userId: string, chatId: string, chat: SavedChat): Promise<ChatSummary> {
+    this.#chats(userId).set(chatId, chat)
+    return { id: chatId, title: chat.title, updatedAt: chat.updatedAt }
+  }
+
+  async delete(userId: string, chatId: string) {
+    this.#chats(userId).delete(chatId)
+  }
+
+  async deleteAll(userId: string) {
+    this.#chats(userId)
+    this.users.delete(userId)
+  }
+}
+
+/** Accounts whose ID tokens are `token-<userId>`. */
+export function fakeAccounts(chats = new MemoryChatStore()): Accounts & { chats: MemoryChatStore; deleted: string[] } {
+  const deleted: string[] = []
+  return {
+    config: { apiKey: 'public-key', authDomain: 'test.firebaseapp.com', projectId: 'test' },
+    chats,
+    deleted,
+    async userId(idToken) {
+      return idToken.match(/^token-(.+)$/)?.[1]
+    },
+    async deleteUser(userId) {
+      deleted.push(userId)
+    },
+  }
 }

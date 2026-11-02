@@ -376,6 +376,9 @@ describe('production dependencies', () => {
     maxOutputTokens: 4_096,
     zaiApiKey: undefined,
     openrouterApiKey: undefined,
+    firebaseProjectId: undefined,
+    firebaseApiKey: undefined,
+    firebaseAuthDomain: undefined,
   }
 
   it('builds the service once, even for concurrent requests', async () => {

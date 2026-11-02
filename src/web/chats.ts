@@ -1,4 +1,4 @@
-/** Past chats saved in this browser's localStorage. Nothing here reaches the server. */
+/** Past chats saved in this browser's localStorage. Chats saved to an account go through `api.ts`. */
 
 import type { Source, Turn } from './api'
 
@@ -19,6 +19,19 @@ export interface ChatSummary {
 }
 
 export interface StoredChat extends ChatSummary, Conversation {}
+
+/** Where saved chats live: this device, or the signed-in account. */
+export interface ChatStore {
+  /** Saved chats, newest first. */
+  list(): Promise<ChatSummary[]>
+  /** A saved chat, or null when it no longer exists. */
+  load(id: string): Promise<Conversation | null>
+  /** Save a chat, returning the list with it at the top. */
+  save(chat: StoredChat): Promise<ChatSummary[]>
+  /** Delete one chat, returning the list without it. */
+  delete(id: string): Promise<ChatSummary[]>
+  deleteAll(): Promise<void>
+}
 
 /** The list of chats, newest first. Other tabs watch this key to refresh their sidebars. */
 export const INDEX_KEY = 'homeoremedica:chats'
@@ -159,4 +172,30 @@ export function migrateLegacyConversation() {
   const id = crypto.randomUUID()
   saveChat({ id, title: chatTitle(legacy.messages), updatedAt: Date.now(), ...legacy })
   rememberOpenChat(id)
+}
+
+export const deviceChats: ChatStore = {
+  list: async () => listChats(),
+  load: async (id) => loadChat(id),
+  save: async (chat) => saveChat(chat),
+  delete: async (id) => deleteChat(id),
+  deleteAll: async () => deleteAllChats(),
+}
+
+/**
+ * Move the chats saved on this device into `account`, returning how many could not be moved.
+ * Those stay on the device and are tried again at the next sign-in.
+ */
+export async function moveDeviceChats(account: ChatStore): Promise<number> {
+  let failed = 0
+  for (const summary of listChats()) {
+    const chat = loadChat(summary.id)
+    try {
+      if (chat) await account.save({ ...summary, ...chat })
+      deleteChat(summary.id)
+    } catch {
+      failed++
+    }
+  }
+  return failed
 }

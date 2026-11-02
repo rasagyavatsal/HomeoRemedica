@@ -1,4 +1,13 @@
-import type { BookCatalog, BookSummary, ChatTurn, Citation, WebChatResponse } from '../server/contracts.ts'
+import type {
+  BookCatalog,
+  BookSummary,
+  ChatList,
+  ChatTurn,
+  Citation,
+  ClientConfig,
+  WebChatResponse,
+} from '../server/contracts.ts'
+import type { ChatStore, ChatSummary, Conversation } from './chats'
 
 // The browser shares the server's contract types; only types cross this boundary.
 export type Book = BookSummary
@@ -33,6 +42,67 @@ async function readResponse<T>(response: Response): Promise<T> {
 export async function loadBooks(signal?: AbortSignal): Promise<BooksResponse> {
   const response = await fetch('/api/books', { signal })
   return readResponse<BooksResponse>(response)
+}
+
+/** The server's sign-in settings; a server without accounts, or an unreachable one, has none. */
+export async function loadConfig(signal?: AbortSignal): Promise<ClientConfig> {
+  const response = await fetch('/api/config', { signal })
+  const config = await readResponse<Partial<ClientConfig>>(response)
+  return { auth: config.auth ?? null }
+}
+
+/** Gives a current ID token for the signed-in account. */
+export type TokenSource = () => Promise<string>
+
+async function accountRequest(token: TokenSource, method: string, path: string, body?: unknown): Promise<Response> {
+  const headers: Record<string, string> = { Authorization: `Bearer ${await token()}` }
+  if (body !== undefined) headers['Content-Type'] = 'application/json'
+  return fetch(path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) })
+}
+
+async function expectSuccess(response: Response) {
+  if (!response.ok) await readResponse(response)
+}
+
+/** Chats saved to the signed-in account. */
+export function accountChats(token: TokenSource): ChatStore {
+  let chats: ChatSummary[] = []
+  // Saves run one at a time, so an earlier copy of a chat never overwrites a later one.
+  let saving = Promise.resolve()
+  const chatPath = (id: string) => `/api/chats/${encodeURIComponent(id)}`
+  return {
+    async list() {
+      chats = (await readResponse<ChatList>(await accountRequest(token, 'GET', '/api/chats'))).chats
+      return chats
+    },
+    async load(id) {
+      const response = await accountRequest(token, 'GET', chatPath(id))
+      return response.status === 404 ? null : readResponse<Conversation>(response)
+    },
+    async save({ id, title, updatedAt, messages, history }) {
+      const save = saving.then(async () => {
+        await expectSuccess(await accountRequest(token, 'PUT', chatPath(id), { title, updatedAt, messages, history }))
+      })
+      saving = save.catch(() => {})
+      await save
+      chats = [{ id, title, updatedAt }, ...chats.filter((chat) => chat.id !== id)]
+      return chats
+    },
+    async delete(id) {
+      await expectSuccess(await accountRequest(token, 'DELETE', chatPath(id)))
+      chats = chats.filter((chat) => chat.id !== id)
+      return chats
+    },
+    async deleteAll() {
+      await expectSuccess(await accountRequest(token, 'DELETE', '/api/chats'))
+      chats = []
+    },
+  }
+}
+
+/** Delete the signed-in account and every chat saved to it. */
+export async function deleteAccount(token: TokenSource): Promise<void> {
+  await expectSuccess(await accountRequest(token, 'DELETE', '/api/account'))
 }
 
 export interface StreamHandlers {

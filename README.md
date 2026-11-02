@@ -13,7 +13,7 @@ built by the private [HomeoRemedica-dataset](https://github.com/rasagyavatsal/Ho
 generated answers. A React frontend talks to the production pipeline through a Hono API server on Node.js.
 
 **Stack:** TypeScript · Node.js · Hono · Zod · React · Vite · Qdrant · OpenRouter · Z.AI ·
-Vitest
+Firebase Authentication · Firestore · Vitest
 
 ## Engineering highlights
 
@@ -85,9 +85,15 @@ process; edits to either reload automatically. Port 5173 must be available; Vite
 error instead of switching to another port. Restart after changing `.env`.
 Send questions, inspect numbered sources, and return to past chats from the sidebar. Enter sends;
 Shift+Enter adds a line. `/clear` starts a new chat, `/delete` deletes the open one, and `/quit` or
-`/exit` ends the session. Chats are saved in the browser's local storage, newest first and at most 50,
-so they survive closing the tab but stay on that device; nothing about them is stored on the server.
-A reload reopens the chat the tab had open. On narrow screens the sidebar opens as a drawer.
+`/exit` ends the session. Signed out, chats are saved in the browser's local storage, newest first
+and at most 50, so they survive closing the tab but stay on that device. A reload reopens the chat
+the tab had open. On narrow screens the sidebar opens as a drawer.
+
+When the server has accounts configured, people can sign up or sign in with an email and password
+or with Google. Signed in, each chat is saved to the account after every answer and opens on any
+device; chats already in the browser move into the account at sign-in. The sidebar offers sign-out
+and deleting the account, which removes its chats too. Locally, saved chats need Application Default
+Credentials that can reach the project's Firestore (`gcloud auth application-default login`).
 
 To serve a built frontend and the API from one Node.js server:
 
@@ -108,6 +114,13 @@ as the answer is generated, then `done` with the full response or `error` with a
 Each client may send 10 questions a minute and 100 an hour to each server instance; further
 requests get `429` with `Retry-After`.
 
+`GET /api/config` gives the browser the public Firebase settings, or `auth: null` without accounts.
+The saved-chat endpoints need a Firebase ID token as `Authorization: Bearer <token>`:
+`GET /api/chats` lists the user's chats, `GET`, `PUT` and `DELETE /api/chats/:id` open, save and
+delete one, `DELETE /api/chats` deletes them all, and `DELETE /api/account` deletes the chats and
+then the sign-in. Firestore keeps each chat under `users/{uid}/chats/{chatId}`, one document per
+message; its security rules deny all browser access, so only the server reads or writes it.
+
 ## Configuration
 
 The API reads environment variables and optional `.env` and `.env.local` files.
@@ -120,6 +133,9 @@ The API reads environment variables and optional `.env` and `.env.local` files.
 | `ZAI_API_KEY` | Required for chat | Answer generation. |
 | `RAG_MODEL` | `glm-5.3-flash` | Answer model. |
 | `RAG_MAX_OUTPUT_TOKENS` | `4096` | Output token limit, from 1 to 4096. |
+| `FIREBASE_PROJECT_ID` | None | Firebase project for accounts; with `FIREBASE_API_KEY`, turns on sign-in and saved chats. |
+| `FIREBASE_API_KEY` | None | Public browser API key for Firebase Authentication. |
+| `FIREBASE_AUTH_DOMAIN` | `<project>.firebaseapp.com` | Domain that hosts the Google sign-in pop-up. |
 | `HOST` | `127.0.0.1` | Address `npm start` listens on. |
 | `PORT` | `8000` | Port `npm start` listens on. |
 
@@ -157,7 +173,9 @@ npm run deploy
 Cloud Run service in `asia-south1`, capped at three instances so the per-instance chat rate limits
 also bound total provider spend. The service keeps its configuration between deploys:
 `QDRANT_URL` is a plain environment variable, and `OPENROUTER_API_KEY`, `ZAI_API_KEY`, and
-`QDRANT_API_KEY` come from Secret Manager. Local `.env` files are not copied into the image.
+`QDRANT_API_KEY` come from Secret Manager. `FIREBASE_PROJECT_ID` and `FIREBASE_API_KEY` are plain
+environment variables; the service account reaches Firestore and Firebase Authentication through
+its own Google identity, so accounts need no secret. Local `.env` files are not copied into the image.
 
 ## License
 

@@ -1,23 +1,25 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent, KeyboardEvent } from 'react'
 import { version } from '../../package.json'
-import { loadBooks, sendMessage } from './api'
+import { type AccountClient, type User, loadAccountClient } from './account'
+import { accountChats, deleteAccount, loadBooks, loadConfig, sendMessage } from './api'
 import type { Book, Source, Turn } from './api'
 import { Answer } from './Answer'
+import { AuthDialog } from './AuthDialog'
 import {
+  type ChatStore,
   type ChatSummary,
   type Conversation,
   INDEX_KEY,
   type Message,
   chatTitle,
-  deleteAllChats,
-  deleteChat,
+  deviceChats,
   listChats,
   loadChat,
   migrateLegacyConversation,
+  moveDeviceChats,
   openChatId,
   rememberOpenChat,
-  saveChat,
 } from './chats'
 import { AlertIcon, ArrowUpIcon, MarkIcon, PlusIcon, SidebarIcon } from './icons'
 import { Sidebar } from './Sidebar'
@@ -51,12 +53,15 @@ interface OpenChat extends Conversation {
   id: string | null
 }
 
-/** Reopen the chat this tab had open before a reload. */
-function restoreOpenChat(): OpenChat {
+/**
+ * Reopen the chat this tab had open before a reload. A chat saved to an account opens once
+ * the sign-in is restored, so its id is kept as `unopened` until then.
+ */
+function restoreOpenChat(): OpenChat & { unopened: string | null } {
   migrateLegacyConversation()
   const id = openChatId()
   const saved = id === null ? null : loadChat(id)
-  return saved ? { id, ...saved } : { id: null, messages: [], history: [] }
+  return saved ? { id, ...saved, unopened: null } : { id: null, messages: [], history: [], unopened: id }
 }
 
 function nextMessageId(messages: readonly Message[]) {
@@ -138,6 +143,18 @@ export default function App() {
   const latestQuestion = useRef<HTMLElement>(null)
   const nextId = useRef(nextMessageId(saved.messages))
   const requestInFlight = useRef(false)
+  const [accountClient, setAccountClient] = useState<AccountClient | null>(null)
+  const [user, setUser] = useState<User | null>(null)
+  const [signingIn, setSigningIn] = useState(false)
+  const [loadingChats, setLoadingChats] = useState(false)
+  const [restoring, setRestoring] = useState(saved.unopened !== null)
+  const store = useRef<ChatStore>(deviceChats)
+  const unopened = useRef(saved.unopened)
+  const currentUser = useRef<User | null>(null)
+  // The account callbacks are registered once, so they read the open chat through refs.
+  const openChatRef = useRef({ chatId, messages })
+  openChatRef.current = { chatId, messages }
+  const opening = useRef(0)
 
   // The catalog only decorates the empty state, so a failed load leaves the generic copy in place.
   useEffect(() => {
@@ -157,15 +174,47 @@ export default function App() {
   const sidebarVisible = wide ? !sidebarHidden : drawerOpen
   const canStartNew = messages.length > 0 || draft !== '' || ended
 
-  useEffect(() => rememberOpenChat(chatId), [chatId])
+  useEffect(() => {
+    if (unopened.current === null) rememberOpenChat(chatId)
+  }, [chatId])
 
   // Chats asked or deleted in another tab show up in this tab's list.
   useEffect(() => {
     const refresh = (event: StorageEvent) => {
-      if (event.key === null || event.key === INDEX_KEY) setChats(listChats())
+      if (store.current === deviceChats && (event.key === null || event.key === INDEX_KEY)) setChats(listChats())
     }
     window.addEventListener('storage', refresh)
     return () => window.removeEventListener('storage', refresh)
+  }, [])
+
+  // An account's chats can change on other devices, so refresh the list when the tab is shown again.
+  useEffect(() => {
+    if (!user) return
+    const refresh = () => {
+      const account = store.current
+      if (document.visibilityState === 'visible') account.list().then((chats) => store.current === account && setChats(chats), () => {})
+    }
+    document.addEventListener('visibilitychange', refresh)
+    return () => document.removeEventListener('visibilitychange', refresh)
+  }, [user])
+
+  // Offer sign-in when the server has accounts. Without them, chats stay on this device.
+  useEffect(() => {
+    let stop = () => {}
+    let cancelled = false
+    loadConfig()
+      .then(async ({ auth }) => {
+        if (!auth) return finishRestoring()
+        const client = await loadAccountClient(auth)
+        if (cancelled) return
+        setAccountClient(client)
+        stop = client.onUserChanged((next) => void changeUser(client, next))
+      })
+      .catch(() => finishRestoring())
+    return () => {
+      cancelled = true
+      stop()
+    }
   }, [])
 
   // The drawer closes with Escape and gives focus back to the button that opened it.
@@ -197,9 +246,86 @@ export default function App() {
     saveSidebarHidden(!sidebarHidden)
   }
 
+  function finishRestoring() {
+    if (unopened.current !== null) {
+      unopened.current = null
+      rememberOpenChat(openChatRef.current.chatId)
+    }
+    setRestoring(false)
+  }
+
+  /** Switch to the chats of a newly signed-in user, or back to this device's after signing out. */
+  async function changeUser(client: AccountClient, next: User | null) {
+    const previous = currentUser.current
+    if (previous?.id === next?.id) {
+      finishRestoring()
+      return
+    }
+    currentUser.current = next
+    setUser(next)
+    setSigningIn(false)
+    opening.current++
+    // A different user must not see the chat that was open.
+    if (previous) showChat({ id: null, messages: [], history: [] }, next ? 'Signed in.' : 'Signed out.')
+    if (!next) {
+      store.current = deviceChats
+      setChats(listChats())
+      finishRestoring()
+      return
+    }
+    const account = accountChats(() => client.idToken())
+    store.current = account
+    setChats([])
+    setLoadingChats(true)
+    try {
+      const failed = await moveDeviceChats(account)
+      const chats = await account.list()
+      if (store.current !== account) return
+      setChats(chats)
+      if (failed) setError('Some chats on this device could not be saved to your account. They will be tried again next time you sign in.')
+      const id = unopened.current
+      const { chatId: openId, messages: openMessages } = openChatRef.current
+      if (id && openId === null && !openMessages.length && chats.some((chat) => chat.id === id)) {
+        const chat = await account.load(id)
+        if (chat && store.current === account && openChatRef.current.chatId === null) showChat({ id, ...chat }, 'Opened chat.')
+      }
+    } catch (failure) {
+      if (store.current === account) setError(errorMessage(failure))
+    } finally {
+      if (store.current === account) setLoadingChats(false)
+      finishRestoring()
+    }
+  }
+
+  async function signOut() {
+    if (!accountClient || requestInFlight.current) return
+    try {
+      await accountClient.signOut()
+    } catch (failure) {
+      setError(errorMessage(failure))
+    }
+  }
+
+  async function removeAccount() {
+    if (!accountClient || requestInFlight.current) return
+    setError('')
+    try {
+      await deleteAccount(() => accountClient.idToken())
+      await accountClient.signOut()
+      setStatus('Account deleted.')
+    } catch (failure) {
+      setError(errorMessage(failure))
+    }
+  }
+
   /** Show a chat, or an empty new chat when `chat` has no id. */
   function showChat(chat: OpenChat, status: string) {
     if (requestInFlight.current) return
+    if (unopened.current !== null) {
+      unopened.current = null
+      setRestoring(false)
+      rememberOpenChat(chat.id)
+    }
     setChatId(chat.id)
     setMessages(chat.messages)
     setHistory(chat.history)
@@ -217,33 +343,60 @@ export default function App() {
     showChat({ id: null, messages: [], history: [] }, 'Started a new chat.')
   }
 
-  function openChat(id: string) {
+  async function openChat(id: string) {
     if (id === chatId) {
       setDrawerOpen(false)
       return
     }
-    const chat = loadChat(id)
-    if (chat) {
-      showChat({ id, ...chat }, 'Opened chat.')
-    } else {
-      setChats(deleteChat(id))
-      setError('That chat could not be opened, so it was removed from the list.')
+    const account = store.current
+    // Only the latest click opens, however long each chat takes to load.
+    const attempt = ++opening.current
+    try {
+      const chat = await account.load(id)
+      if (attempt !== opening.current) return
+      if (chat) {
+        showChat({ id, ...chat }, 'Opened chat.')
+      } else {
+        setChats(await account.delete(id))
+        setError('That chat could not be opened, so it was removed from the list.')
+      }
+    } catch (failure) {
+      if (attempt === opening.current) setError(errorMessage(failure))
     }
   }
 
-  function removeChat(id: string) {
+  async function removeChat(id: string) {
     if (requestInFlight.current) return
-    setChats(deleteChat(id))
     if (id === chatId) startNewChat()
-    setStatus('Chat deleted.')
+    try {
+      setChats(await store.current.delete(id))
+      setStatus('Chat deleted.')
+    } catch (failure) {
+      setError(errorMessage(failure))
+    }
   }
 
-  function removeAllChats() {
+  async function removeAllChats() {
     if (requestInFlight.current) return
-    deleteAllChats()
-    setChats([])
     if (chatId !== null) startNewChat()
-    setStatus('All chats deleted.')
+    try {
+      await store.current.deleteAll()
+      setChats([])
+      setStatus('All chats deleted.')
+    } catch (failure) {
+      setError(errorMessage(failure))
+    }
+  }
+
+  /** Save a chat after each answer. The chat stays on screen even when saving fails. */
+  async function persist(chat: Parameters<ChatStore['save']>[0]) {
+    const target = store.current
+    try {
+      const chats = await target.save(chat)
+      if (store.current === target) setChats(chats)
+    } catch (failure) {
+      if (store.current === target) setError(`This chat could not be saved. ${errorMessage(failure)}`)
+    }
   }
 
   function runCommand(command: string) {
@@ -252,7 +405,7 @@ export default function App() {
       startNewChat()
     } else if (command === '/delete') {
       if (chatId === null) startNewChat()
-      else removeChat(chatId)
+      else void removeChat(chatId)
     } else if (command === '/quit' || command === '/exit') {
       setEnded(true)
       setDraft('')
@@ -288,8 +441,8 @@ export default function App() {
       setMessages(updated)
       setHistory(response.history)
       setChatId(id)
-      setChats(saveChat({ id, title: chatTitle(updated), updatedAt: Date.now(), messages: updated, history: response.history }))
       setDraft('')
+      void persist({ id, title: chatTitle(updated), updatedAt: Date.now(), messages: updated, history: response.history })
     } catch (failure) {
       setError(errorMessage(failure))
     } finally {
@@ -309,6 +462,7 @@ export default function App() {
   const commandMatches = /^\/\S*$/.test(draft) ? COMMANDS.filter((command) => command.name.startsWith(draft)) : []
   const lastUserId = messages.findLast((message) => message.role === 'user')?.id
   const empty = !messages.length && !pending
+  const canSignIn = accountClient !== null && !user
 
   return (
     <div className={`app-layout ${sidebarVisible && wide ? 'with-sidebar' : ''}`}>
@@ -321,10 +475,16 @@ export default function App() {
           canStartNew={canStartNew}
           drawer={drawer}
           onNew={startNewChat}
-          onOpen={openChat}
-          onDelete={removeChat}
-          onDeleteAll={removeAllChats}
+          onOpen={(id) => void openChat(id)}
+          onDelete={(id) => void removeChat(id)}
+          onDeleteAll={() => void removeAllChats()}
           onClose={closeDrawer}
+          user={user}
+          canSignIn={canSignIn}
+          loading={loadingChats}
+          onSignIn={() => setSigningIn(true)}
+          onSignOut={() => void signOut()}
+          onDeleteAccount={() => void removeAccount()}
         />
       )}
       {drawer && <div className="sidebar-backdrop" onClick={closeDrawer} aria-hidden="true" />}
@@ -339,18 +499,19 @@ export default function App() {
               <span>Homeo<span className="wordmark-accent">Remedica</span></span>
             </a>
           </div>
-          {!(sidebarVisible && wide) && (
-            <div className="header-actions">
+          <div className="header-actions">
+            {!(sidebarVisible && wide) && (
               <button className="button quiet" type="button" onClick={startNewChat} disabled={pending || !canStartNew} aria-label="New chat" title="New chat">
                 <PlusIcon /><span className="button-text">New chat</span>
               </button>
-            </div>
-          )}
+            )}
+            {canSignIn && <button className="button" type="button" onClick={() => setSigningIn(true)}>Sign in</button>}
+          </div>
         </header>
 
         <main className="main">
           <div className={`conversation ${empty ? 'conversation-empty' : ''}`} aria-label="Conversation" role="log" aria-live="polite" aria-relevant="additions" aria-busy={pending}>
-            {empty && !ended && <EmptyState books={books} onAsk={(question) => void submit(undefined, question)} />}
+            {empty && !ended && !restoring && <EmptyState books={books} onAsk={(question) => void submit(undefined, question)} />}
             {messages.map((message) => message.role === 'user' ? (
               <article className="message message-user" key={message.id} ref={!live && message.id === lastUserId ? latestQuestion : undefined}>
                 <h2 className="sr-only">You</h2>
@@ -417,6 +578,7 @@ export default function App() {
           </div>
         </main>
       </div>
+      {signingIn && accountClient && <AuthDialog client={accountClient} onClose={() => setSigningIn(false)} />}
     </div>
   )
 }

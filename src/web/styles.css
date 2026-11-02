@@ -146,6 +146,9 @@ button, a, input, textarea, summary { -webkit-tap-highlight-color: transparent; 
 .text-button.danger, .text-button.danger:hover:enabled { color: var(--danger); }
 .text-button:disabled { opacity: .45; }
 .delete-all-confirm { display: flex; align-items: center; gap: 12px; color: var(--ink-soft); }
+.account-email { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 500; color: var(--ink-soft); }
+.account-actions { display: flex; align-items: center; gap: 8px; }
+.account-actions, .account-confirm { margin-top: 6px; }
 .sidebar-drawer {
   position: fixed; inset: 0 auto 0 0; z-index: 30; width: min(300px, 86vw);
   box-shadow: var(--shadow-md); animation: slide-in 220ms var(--ease) both;
@@ -303,6 +306,31 @@ button, a, input, textarea, summary { -webkit-tap-highlight-color: transparent; 
 @keyframes slide-in { from { transform: translateX(-100%); } to { transform: none; } }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 
+/* Sign-in dialog */
+.auth-dialog {
+  width: min(400px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 22px 24px 20px;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--ink);
+  box-shadow: var(--shadow-md); animation: rise 220ms var(--ease) both;
+}
+.auth-dialog::backdrop { background: rgb(0 0 0 / 32%); }
+.auth-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.auth-head h2 { margin: 0; font-family: var(--serif); font-size: 22px; font-weight: 600; letter-spacing: -.2px; }
+.auth-lede { margin: 6px 0 18px; font-size: 14px; line-height: 1.5; color: var(--muted); }
+.auth-google { width: 100%; justify-content: center; }
+.auth-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; font-size: 12px; color: var(--faint); }
+.auth-divider::before, .auth-divider::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+.auth-form { display: grid; gap: 12px; }
+.auth-form label { display: grid; gap: 5px; font-size: 13px; font-weight: 500; color: var(--ink-soft); }
+.auth-form input { padding: 9px 12px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--bg); font-size: 15px; }
+.auth-form input:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
+.auth-submit { justify-content: center; margin-top: 4px; }
+.auth-error, .auth-notice { margin: 0; padding: 9px 12px; border-radius: 10px; font-size: 13px; line-height: 1.5; }
+.auth-error { background: var(--danger-soft); color: var(--danger); }
+.auth-notice { background: var(--accent-soft); color: var(--accent); }
+.auth-switch { margin: 16px 0 0; font-size: 13px; color: var(--muted); text-align: center; }
+.auth-switch .text-button { font-size: 13px; }
+.auth-privacy { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.5; color: var(--faint); }
+
 /* Small screens */
 @media (max-width: 640px) {
   .header { padding: 10px 16px; }
@@ -322,6 +350,8 @@ button, a, input, textarea, summary { -webkit-tap-highlight-color: transparent; 
   .composer-area { padding: 14px 12px max(10px, env(safe-area-inset-bottom)); }
   .composer { padding: 8px 8px 8px 14px; border-radius: 18px; }
   .composer textarea { font-size: 16px; }
+  .auth-dialog { padding: 18px 16px 16px; }
+  .auth-form input { font-size: 16px; }
   .composer-footer { font-size: 11px; gap: 10px; }
 }
 

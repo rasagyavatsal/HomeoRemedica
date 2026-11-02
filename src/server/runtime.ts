@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { parseEnv } from 'node:util'
 
+import { type Accounts, firebaseAccounts } from './accounts.ts'
 import { ConfigurationError } from './errors.ts'
 import { ZaiChatClient } from './generation.ts'
 import { ChatService } from './service.ts'
@@ -21,6 +22,10 @@ export interface Settings {
   maxOutputTokens: number
   zaiApiKey: string | undefined
   openrouterApiKey: string | undefined
+  /** Accounts are offered only when both Firebase settings are set. */
+  firebaseProjectId: string | undefined
+  firebaseApiKey: string | undefined
+  firebaseAuthDomain: string | undefined
 }
 
 /**
@@ -48,6 +53,9 @@ export function loadSettings(
     maxOutputTokens: Number(maxOutputTokens),
     zaiApiKey: value('ZAI_API_KEY'),
     openrouterApiKey: value('OPENROUTER_API_KEY'),
+    firebaseProjectId: value('FIREBASE_PROJECT_ID'),
+    firebaseApiKey: value('FIREBASE_API_KEY'),
+    firebaseAuthDomain: value('FIREBASE_AUTH_DOMAIN'),
   }
 }
 
@@ -81,4 +89,11 @@ export function loadCorpus(settings: Settings): QdrantCorpus {
     url: settings.qdrantUrl,
     apiKey: settings.qdrantApiKey,
   })
+}
+
+/** Sign-in and saved chats, or null when Firebase is not configured. */
+export function loadAccounts(settings: Settings): Accounts | null {
+  const { firebaseProjectId: projectId, firebaseApiKey: apiKey } = settings
+  if (!projectId || !apiKey) return null
+  return firebaseAccounts({ apiKey, projectId, authDomain: settings.firebaseAuthDomain ?? `${projectId}.firebaseapp.com` })
 }

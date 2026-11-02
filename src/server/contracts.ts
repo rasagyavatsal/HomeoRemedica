@@ -101,6 +101,79 @@ export interface WebChatResponse extends ChatResponse {
   history: ChatTurn[]
 }
 
+/** The public Firebase settings the browser signs in with. */
+export interface AuthConfig {
+  apiKey: string
+  authDomain: string
+  projectId: string
+}
+
+/** `GET /api/config`: `auth` is null when this server has no accounts. */
+export interface ClientConfig {
+  auth: AuthConfig | null
+}
+
+export const MAX_SAVED_MESSAGES = 400
+export const MAX_CHAT_TITLE_CHARS = 200
+export const MAX_SAVED_SOURCES = 20
+const MAX_SOURCE_FIELD_CHARS = 500
+
+function field() {
+  return z.string().max(MAX_SOURCE_FIELD_CHARS)
+}
+
+const SavedCitationSchema = z.strictObject({
+  id: field(),
+  bookId: field(),
+  bookTitle: field(),
+  author: field().nullable(),
+  remedyName: field().nullable(),
+  sectionTitle: field(),
+  passageIndexes: z.array(z.number().int().nonnegative()).max(1_000),
+  text: z.string().max(MAX_CITATION_TEXT_CHARS),
+})
+
+export const SavedMessageSchema = z.strictObject({
+  id: z.number().int().nonnegative(),
+  role: z.enum(['user', 'assistant']),
+  content: z.string().max(MAX_GENERATED_ANSWER_CHARS),
+  sources: z.array(SavedCitationSchema).max(MAX_SAVED_SOURCES).optional(),
+})
+
+/** `PUT /api/chats/:id`: the whole chat, as the browser shows it. */
+export const SavedChatSchema = z.strictObject(
+  {
+    title: z.string().min(1).max(MAX_CHAT_TITLE_CHARS),
+    updatedAt: z.number().int().nonnegative(),
+    messages: z
+      .array(SavedMessageSchema)
+      .min(1)
+      .max(MAX_SAVED_MESSAGES, { error: `a chat must not exceed ${MAX_SAVED_MESSAGES} messages` }),
+    history: z.array(ChatTurnSchema).max(MAX_HISTORY_TURNS),
+  },
+  { error: (issue) => (issue.code === 'unrecognized_keys' ? 'unexpected chat field' : undefined) },
+)
+
+export type SavedMessage = z.output<typeof SavedMessageSchema>
+export type SavedChat = z.output<typeof SavedChatSchema>
+
+export interface ChatSummary {
+  id: string
+  title: string
+  updatedAt: number
+}
+
+/** `GET /api/chats`, newest first. */
+export interface ChatList {
+  chats: ChatSummary[]
+}
+
+/** `GET /api/chats/:id` */
+export interface SavedConversation {
+  messages: SavedMessage[]
+  history: ChatTurn[]
+}
+
 export interface Retriever {
   readonly corpusVersion: string
   retrieve(request: ChatRequest, options: { limit: number }): Promise<readonly RetrievedSource[]>

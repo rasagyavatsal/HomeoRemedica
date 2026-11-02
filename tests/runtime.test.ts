@@ -33,6 +33,9 @@ describe('settings', () => {
       maxOutputTokens: 4_096,
       zaiApiKey: 'zai-key',
       openrouterApiKey: undefined,
+      firebaseProjectId: undefined,
+      firebaseApiKey: undefined,
+      firebaseAuthDomain: undefined,
     })
   })
 
