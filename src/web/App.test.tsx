@@ -40,7 +40,6 @@ describe('asking', () => {
     serve({ chat: [() => answerStream('Pulsatilla is mild and weepy [2].', sources)] })
     render(<App />)
 
-    expect(await screen.findByText('Boericke, Materia Medica')).toBeInTheDocument()
     await ask('What is Pulsatilla like?')
 
     expect(screen.getByRole('heading', { name: 'What is Pulsatilla like?' })).toBeInTheDocument()
@@ -134,7 +133,7 @@ describe('saved chats', () => {
 
     const sidebar = screen.getByRole('navigation', { name: 'Chats' })
     await userEvent.click(within(sidebar).getByRole('button', { name: 'New chat' }))
-    expect(screen.getByRole('heading', { name: 'Ask the classical materia medica' })).toBeInTheDocument()
+    expect(screen.getByRole('list', { name: 'Example questions' })).toBeInTheDocument()
     await userEvent.click(within(sidebar).getByRole('button', { name: 'Pulsatilla keynotes?' }))
     expect(await screen.findByRole('heading', { name: 'Pulsatilla keynotes?' })).toBeInTheDocument()
   })
@@ -149,7 +148,7 @@ describe('saved chats', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
 
     expect(await screen.findByText('Your chats will appear here.')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Ask the classical materia medica' })).toBeInTheDocument()
+    expect(screen.getByRole('list', { name: 'Example questions' })).toBeInTheDocument()
     expect(localStorage.getItem('homeoremedica.library.v1')).toBe('[]')
   })
 

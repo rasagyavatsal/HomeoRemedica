@@ -1,6 +1,6 @@
 /** Browser client for the HomeoRemedica API. */
 
-import type { BookCatalog, BookSummary, ChatTurn, Citation, WebChatResponse } from '../server/contracts.ts'
+import type { ChatTurn, Citation, WebChatResponse } from '../server/contracts.ts'
 
 const FALLBACK_DETAIL = 'Something went wrong. Please try again.'
 const INTERRUPTED_DETAIL = 'The answer stopped before it finished. Please try again.'
@@ -42,10 +42,6 @@ export async function getJson<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(path, init)
   if (!response.ok) throw await failure(response)
   return (await response.json()) as T
-}
-
-export async function loadBooks(): Promise<readonly BookSummary[]> {
-  return (await getJson<BookCatalog>('/api/books')).books
 }
 
 export interface ChatQuestion {
