@@ -7,6 +7,32 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [9.2.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.1.0...HomeoRemedica-v9.2.0) (2026-11-02)
+
+
+### Features
+
+* add accounts and save chats to Firestore ([c72d70e](https://github.com/rasagyavatsal/HomeoRemedica/commit/c72d70ebc2521105a210abc1faf4a2d40c3d90c1))
+* **web:** add a system, light and dark theme toggle ([d5465c6](https://github.com/rasagyavatsal/HomeoRemedica/commit/d5465c6bc7fc0e778ef22b207022ecc819168ec6))
+* **web:** add subtle motion to the chat ([b0fc54c](https://github.com/rasagyavatsal/HomeoRemedica/commit/b0fc54cff2baee141b2b558931e3d1fdcac8b4a0))
+* **web:** drop the new chat button from the top bar ([e89b0d2](https://github.com/rasagyavatsal/HomeoRemedica/commit/e89b0d2c8a6e26a79185c7c85007d350c69889a7))
+* **web:** list references under each answer ([b8fe050](https://github.com/rasagyavatsal/HomeoRemedica/commit/b8fe0501fe768580e3b1eac7d9f5796cde799efe))
+* **web:** replace the leaf logo with the potency drop ([fd84c96](https://github.com/rasagyavatsal/HomeoRemedica/commit/fd84c961cbc77a06eea34511054a8e430fa5fc91))
+* **web:** rewrite the chat interface from scratch ([f8896b5](https://github.com/rasagyavatsal/HomeoRemedica/commit/f8896b5331ab01173b6599c6974dabc17dee61c8))
+* **web:** save chats in this browser and list them in a sidebar ([3c84326](https://github.com/rasagyavatsal/HomeoRemedica/commit/3c84326ae7e6add80721cb3df3c7d3b086150d11))
+* **web:** set questions, answers and references apart in the chat ([db3fd2c](https://github.com/rasagyavatsal/HomeoRemedica/commit/db3fd2c6107791179c1da0c1de186f5e06ec7134))
+* **web:** show only example questions in an empty chat ([02a3d49](https://github.com/rasagyavatsal/HomeoRemedica/commit/02a3d496626b2d52172937df7eb4afabb494022b))
+* **web:** show only the clicked passage in the sources panel ([02827d7](https://github.com/rasagyavatsal/HomeoRemedica/commit/02827d7e4be9f6f291fa3cd529bec202d85082ee))
+* **web:** sign in and keep chats in the account ([826442f](https://github.com/rasagyavatsal/HomeoRemedica/commit/826442f3cc9fe5e4e732f894359732eb8eda419e))
+
+
+### Bug Fixes
+
+* **web:** ignore skipped theme crossfades ([b82c045](https://github.com/rasagyavatsal/HomeoRemedica/commit/b82c045d4eaf7d95abdb51a4ed93fc497d658afa))
+* **web:** keep citation buttons mounted across renders ([f91da5b](https://github.com/rasagyavatsal/HomeoRemedica/commit/f91da5b24c86ffaf32cd90ab9a79f0b872d63d9c))
+* **web:** keep focus in the chats drawer on slow devices ([c9a5fa1](https://github.com/rasagyavatsal/HomeoRemedica/commit/c9a5fa12c0d41854f7693a0689559c1d6eb75449))
+* **web:** keep the sources panel beside the chat ([edb7f75](https://github.com/rasagyavatsal/HomeoRemedica/commit/edb7f75f2d3990bcc1b3f8982321d4c061191305))
+
 ## [9.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.0.0...HomeoRemedica-v9.1.0) (2026-11-02)
 
 
