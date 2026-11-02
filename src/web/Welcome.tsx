@@ -8,7 +8,13 @@ export const TAGLINE_WORDS = TAGLINE.split(' ').length
 /** The empty chat: what the app is for. */
 export function Welcome() {
   return (
-    <div className="welcome">
+    <div className="welcome" style={{ '--tagline-words': TAGLINE_WORDS } as CSSProperties}>
+      {/* Decoration only: soft light drifting behind the tagline. */}
+      <div className="welcome-glows" aria-hidden="true">
+        <span className="welcome-glow" />
+        <span className="welcome-glow" />
+        <span className="welcome-glow" />
+      </div>
       <h1 className="tagline">
         {TAGLINE.split(' ').map((word, index) => (
           <Fragment key={index}>
