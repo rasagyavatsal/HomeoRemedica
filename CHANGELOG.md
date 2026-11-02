@@ -7,6 +7,13 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [9.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.0.0...HomeoRemedica-v9.1.0) (2026-11-02)
+
+
+### Features
+
+* **web:** save chats in local storage and list them in a sidebar ([58eaf2b](https://github.com/rasagyavatsal/HomeoRemedica/commit/58eaf2b3ea47dc00690752c1593113287013f034))
+
 ## [9.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v8.1.0...HomeoRemedica-v9.0.0) (2026-10-31)
 
 
