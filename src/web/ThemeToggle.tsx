@@ -9,7 +9,7 @@ export function ThemeToggle() {
   const [theme, cycle] = useTheme()
   const Icon = ICONS[theme]
   return (
-    <button type="button" className="icon-button theme-toggle" onClick={cycle} aria-label={LABELS[theme]} title={`${LABELS[theme]} (click to change)`}>
+    <button type="button" className="icon-button theme-toggle" onClick={cycle} aria-label={LABELS[theme]} title={LABELS[theme]}>
       <Icon key={theme} />
     </button>
   )

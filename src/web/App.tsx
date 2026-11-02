@@ -67,15 +67,6 @@ export default function App() {
   }, [notice])
 
   const library = account === undefined ? null : account ? accountLibrary : local
-  const place =
-    account === undefined
-      ? ''
-      : account
-        ? 'Chats are saved to your account.'
-        : auth
-          ? 'Chats are saved on this device. Sign in to keep them on every device.'
-          : 'Chats are saved on this device.'
-
   const signOut = () => {
     auth?.signOut().catch((error: unknown) => setNotice(`Signing out failed. ${errorMessage(error)}`))
   }
@@ -94,7 +85,6 @@ export default function App() {
       <Workspace
         key={uid ?? 'guest'}
         library={library}
-        place={place}
         notify={setNotice}
         account={
           auth && (
@@ -129,15 +119,13 @@ interface OpenSources {
 interface WorkspaceProps {
   /** Where chats are saved; null while that is being worked out. */
   library: ChatLibrary | null
-  /** Where `library` keeps chats, in a sentence. */
-  place: string
   notify: (message: string) => void
   /** Sign-in or account controls for the sidebar. */
   account?: ReactNode
 }
 
 /** The chats in one library and the open conversation. */
-function Workspace({ library, place, notify: setNotice, account }: WorkspaceProps) {
+function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
   const [chats, setChats] = useState<ChatSummary[] | null>(null)
   const [reopen] = useState(() => openChat.get())
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -264,7 +252,6 @@ function Workspace({ library, place, notify: setNotice, account }: WorkspaceProp
         <Sidebar
           chats={chats}
           activeId={conversation.id}
-          place={place}
           onNew={startNew}
           onOpen={openSaved}
           onDelete={remove}

@@ -8,8 +8,6 @@ interface SidebarProps {
   /** Saved chats, newest first; null while they load. */
   chats: readonly ChatSummary[] | null
   activeId: string
-  /** Where the chats are kept, such as "On this device". */
-  place: string
   onNew: () => void
   onOpen: (id: string) => void
   onDelete: (id: string) => void
@@ -20,7 +18,7 @@ interface SidebarProps {
 
 const SEARCH_FROM = 6
 
-export function Sidebar({ chats, activeId, place, onNew, onOpen, onDelete, onClose, footer }: SidebarProps) {
+export function Sidebar({ chats, activeId, onNew, onOpen, onDelete, onClose, footer }: SidebarProps) {
   const [query, setQuery] = useState('')
   const [confirming, setConfirming] = useState<string | null>(null)
   const filtered = chats?.filter((chat) => chat.title.toLowerCase().includes(query.trim().toLowerCase())) ?? []
@@ -113,10 +111,7 @@ export function Sidebar({ chats, activeId, place, onNew, onOpen, onDelete, onClo
         )}
       </div>
 
-      <div className="sidebar-footer">
-        <p className="sidebar-place">{place}</p>
-        {footer}
-      </div>
+      {footer && <div className="sidebar-footer">{footer}</div>}
     </nav>
   )
 }

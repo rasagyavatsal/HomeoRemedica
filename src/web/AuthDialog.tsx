@@ -12,12 +12,6 @@ const TITLES: Record<Mode, string> = {
   reset: 'Reset your password',
 }
 
-const DESCRIPTIONS: Record<Mode, string> = {
-  'sign-in': 'Keep your chats on every device you use.',
-  'sign-up': 'Keep your chats on every device you use. Chats on this device move into the account.',
-  reset: 'We will email you a link to choose a new password.',
-}
-
 export function AuthDialog({ auth, onClose }: { auth: AuthClient; onClose: () => void }) {
   const [mode, setMode] = useState<Mode>('sign-in')
   const [email, setEmail] = useState('')
@@ -53,7 +47,7 @@ export function AuthDialog({ auth, onClose }: { auth: AuthClient; onClose: () =>
   }
 
   return (
-    <Dialog title={TITLES[mode]} description={DESCRIPTIONS[mode]} onClose={onClose}>
+    <Dialog title={TITLES[mode]} onClose={onClose}>
       {mode !== 'reset' && (
         <>
           <button

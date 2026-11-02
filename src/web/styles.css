@@ -467,11 +467,6 @@ ul {
   border-top: var(--border-width) solid var(--color-border);
 }
 
-.sidebar-place {
-  color: var(--color-text-subtle);
-  font-size: var(--text-xs);
-}
-
 /* ---- Account ------------------------------------------------------------ */
 
 .button-block {

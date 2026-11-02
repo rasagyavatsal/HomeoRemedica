@@ -120,7 +120,7 @@ it('moves this device’s chats into the account at sign-in', async () => {
   await userEvent.type(within(dialog).getByLabelText('Password'), 'secret123')
   await userEvent.click(within(dialog).getByRole('button', { name: 'Sign in' }))
 
-  expect(await screen.findByText('Chats are saved to your account.')).toBeInTheDocument()
+  expect(await screen.findByRole('button', { name: 'Sign out' })).toBeInTheDocument()
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   expect(await within(sidebar()).findByRole('button', { name: 'Saved before signing in' })).toBeInTheDocument()
   expect(store.get('alice')?.get('local-1')?.title).toBe('Saved before signing in')
@@ -200,6 +200,6 @@ it('keeps chats on this device when the server has no accounts', async () => {
   )
   render(<App />)
 
-  expect(await screen.findByText('Chats are saved on this device.')).toBeInTheDocument()
+  expect(await within(sidebar()).findByText('Your chats will appear here.')).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Sign in to sync chats' })).not.toBeInTheDocument()
 })
