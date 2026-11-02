@@ -9,6 +9,16 @@
     <meta name="description" content="Ask questions of seven classical materia medica texts and get answers that cite their sources." />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%233d6b4f'/%3E%3Cpath d='M12 20V8' stroke='%23fff' stroke-width='1.6' stroke-linecap='round'/%3E%3Cpath d='M12 12.5c-3.6 0-5.6-2.1-5.6-5.6 3.5 0 5.6 2 5.6 5.6Zm0 2.4c3.1 0 4.8-1.8 4.8-4.8-3 0-4.8 1.7-4.8 4.8Z' fill='%23fff'/%3E%3C/svg%3E" />
     <title>HomeoRemedica</title>
+    <script>
+      // Apply a saved theme before first paint; src/web/theme.ts keeps it in step afterwards.
+      try {
+        const theme = localStorage.getItem('homeoremedica.theme')
+        if (theme === 'light' || theme === 'dark') {
+          document.documentElement.dataset.theme = theme
+          for (const meta of document.querySelectorAll('meta[name="theme-color"]')) meta.content = theme === 'dark' ? '#141412' : '#f7f5f0'
+        }
+      } catch {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

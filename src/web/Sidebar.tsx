@@ -2,6 +2,7 @@ import { type ReactNode, useState } from 'react'
 
 import type { ChatSummary } from '../server/contracts.ts'
 import { CloseIcon, LeafMark, PlusIcon, SearchIcon, TrashIcon } from './icons.tsx'
+import { ThemeToggle } from './ThemeToggle.tsx'
 
 interface SidebarProps {
   /** Saved chats, newest first; null while they load. */
@@ -31,9 +32,12 @@ export function Sidebar({ chats, activeId, place, onNew, onOpen, onDelete, onClo
           <LeafMark />
           <span className="brand-name">HomeoRemedica</span>
         </div>
-        <button type="button" className="icon-button sidebar-close" onClick={onClose} aria-label="Close chats">
-          <CloseIcon />
-        </button>
+        <div className="sidebar-tools">
+          <ThemeToggle />
+          <button type="button" className="icon-button sidebar-close" onClick={onClose} aria-label="Close chats">
+            <CloseIcon />
+          </button>
+        </div>
       </div>
 
       <div className="sidebar-actions">

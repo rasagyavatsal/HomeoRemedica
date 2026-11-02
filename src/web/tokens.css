@@ -149,82 +149,53 @@
   --layer-scrim: 20;
   --layer-toast: 50;
 
-  /* Colour roles: light theme */
-  color-scheme: light;
-  --color-canvas: var(--paper-100);
-  --color-surface: var(--paper-50);
-  --color-surface-raised: var(--paper-0);
-  --color-surface-sunken: var(--paper-150);
-  --color-surface-hover: var(--paper-150);
-  --color-surface-selected: var(--paper-200);
+  /* Colour roles: light-dark() picks a value by color-scheme, which follows the system unless
+     the reader chose a theme (data-theme on <html>). */
+  color-scheme: light dark;
+  --color-canvas: light-dark(var(--paper-100), var(--paper-950));
+  --color-surface: light-dark(var(--paper-50), var(--paper-900));
+  --color-surface-raised: light-dark(var(--paper-0), var(--paper-850));
+  --color-surface-sunken: light-dark(var(--paper-150), var(--paper-950));
+  --color-surface-hover: light-dark(var(--paper-150), var(--paper-850));
+  --color-surface-selected: light-dark(var(--paper-200), var(--paper-800));
 
-  --color-text: var(--paper-900);
-  --color-text-muted: var(--paper-600);
+  --color-text: light-dark(var(--paper-900), var(--paper-100));
+  --color-text-muted: light-dark(var(--paper-600), var(--paper-400));
   --color-text-subtle: var(--paper-500);
-  --color-text-on-accent: var(--paper-0);
+  --color-text-on-accent: light-dark(var(--paper-0), var(--paper-950));
 
-  --color-border: var(--paper-200);
-  --color-border-strong: var(--paper-300);
+  --color-border: light-dark(var(--paper-200), var(--paper-800));
+  --color-border-strong: light-dark(var(--paper-300), var(--paper-700));
 
-  --color-accent: var(--herb-600);
-  --color-accent-hover: var(--herb-700);
-  --color-accent-text: var(--herb-700);
-  --color-accent-soft: var(--herb-50);
-  --color-accent-soft-hover: var(--herb-100);
-  --color-accent-border: var(--herb-200);
+  --color-accent: light-dark(var(--herb-600), var(--herb-300));
+  --color-accent-hover: light-dark(var(--herb-700), var(--herb-200));
+  --color-accent-text: light-dark(var(--herb-700), var(--herb-300));
+  --color-accent-soft: light-dark(var(--herb-50), var(--herb-900));
+  --color-accent-soft-hover: light-dark(var(--herb-100), var(--herb-800));
+  --color-accent-border: light-dark(var(--herb-200), var(--herb-800));
 
-  --color-danger: var(--rust-600);
-  --color-danger-hover: var(--rust-500);
-  --color-danger-soft: var(--rust-100);
-  --color-warning-text: var(--ochre-600);
-  --color-warning-soft: var(--ochre-100);
+  --color-danger: light-dark(var(--rust-600), var(--rust-300));
+  --color-danger-hover: light-dark(var(--rust-500), var(--rust-100));
+  --color-danger-soft: light-dark(var(--rust-100), var(--rust-900));
+  --color-warning-text: light-dark(var(--ochre-600), var(--ochre-300));
+  --color-warning-soft: light-dark(var(--ochre-100), var(--ochre-900));
 
-  --color-focus: var(--herb-500);
-  --color-scrim: rgb(20 20 18 / 0.32);
+  --color-focus: light-dark(var(--herb-500), var(--herb-300));
+  --color-scrim: light-dark(rgb(20 20 18 / 0.32), rgb(0 0 0 / 0.55));
 
-  --shadow-sm: 0 1px 2px rgb(30 28 24 / 0.06);
-  --shadow-md: 0 2px 6px rgb(30 28 24 / 0.06), 0 8px 24px rgb(30 28 24 / 0.08);
-  --shadow-lg: 0 12px 40px rgb(30 28 24 / 0.18);
+  --shadow-sm: 0 1px 2px light-dark(rgb(30 28 24 / 0.06), rgb(0 0 0 / 0.4));
+  --shadow-md:
+    0 2px 6px light-dark(rgb(30 28 24 / 0.06), rgb(0 0 0 / 0.35)),
+    0 8px 24px light-dark(rgb(30 28 24 / 0.08), rgb(0 0 0 / 0.35));
+  --shadow-lg: 0 12px 40px light-dark(rgb(30 28 24 / 0.18), rgb(0 0 0 / 0.55));
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --color-canvas: var(--paper-950);
-    --color-surface: var(--paper-900);
-    --color-surface-raised: var(--paper-850);
-    --color-surface-sunken: var(--paper-950);
-    --color-surface-hover: var(--paper-850);
-    --color-surface-selected: var(--paper-800);
+:root[data-theme='light'] {
+  color-scheme: light;
+}
 
-    --color-text: var(--paper-100);
-    --color-text-muted: var(--paper-400);
-    --color-text-subtle: var(--paper-500);
-    --color-text-on-accent: var(--paper-950);
-
-    --color-border: var(--paper-800);
-    --color-border-strong: var(--paper-700);
-
-    --color-accent: var(--herb-300);
-    --color-accent-hover: var(--herb-200);
-    --color-accent-text: var(--herb-300);
-    --color-accent-soft: var(--herb-900);
-    --color-accent-soft-hover: var(--herb-800);
-    --color-accent-border: var(--herb-800);
-
-    --color-danger: var(--rust-300);
-    --color-danger-hover: var(--rust-100);
-    --color-danger-soft: var(--rust-900);
-    --color-warning-text: var(--ochre-300);
-    --color-warning-soft: var(--ochre-900);
-
-    --color-focus: var(--herb-300);
-    --color-scrim: rgb(0 0 0 / 0.55);
-
-    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
-    --shadow-md: 0 2px 6px rgb(0 0 0 / 0.35), 0 8px 24px rgb(0 0 0 / 0.35);
-    --shadow-lg: 0 12px 40px rgb(0 0 0 / 0.55);
-  }
+:root[data-theme='dark'] {
+  color-scheme: dark;
 }
 
 @media (prefers-reduced-motion: reduce) {

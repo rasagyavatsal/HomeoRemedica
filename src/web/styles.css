@@ -275,6 +275,12 @@ ul {
   padding: var(--space-xs) var(--space-xs) var(--space-xs) var(--space-md);
 }
 
+.sidebar-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
 .sidebar-close,
 .topbar-menu {
   display: none;
