@@ -188,6 +188,15 @@ describe('production chat interactions', () => {
     expect(screen.getByText('The original source passage.')).toBeVisible()
   })
 
+  it('keeps citation buttons mounted when the page updates', async () => {
+    const user = await ready()
+    fetchMock.mockImplementationOnce(async () => jsonResponse(chatResponse('Supported claim [1].')))
+    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Question{Enter}')
+    const citation = await screen.findByRole('button', { name: 'Source 1: Remedy, Book 1' })
+    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Next')
+    expect(citation).toBeInTheDocument()
+  })
+
   it('shows the question and the answer while it streams', async () => {
     const user = await ready()
     const stream = eventStream()

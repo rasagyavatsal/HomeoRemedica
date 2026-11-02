@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import type { Source } from './api'
@@ -137,20 +137,24 @@ export function Answer({ id, content, sources }: { id: number; content: string; 
     requestAnimationFrame(() => document.getElementById(itemId(number))?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest' }))
   }
 
-  const components: Components = {
+  const show = useRef(showSource)
+  show.current = showSource
+
+  // New component functions would remount every citation, and lose its focus, on each render.
+  const components = useMemo<Components>(() => ({
     a({ href, children }) {
       if (href?.startsWith(CITATION_HREF)) {
         const number = Number(href.slice(CITATION_HREF.length))
         const source = sources[number - 1]
         return (
-          <button type="button" className="citation" onClick={() => showSource(number)} aria-label={`Source ${number}: ${source ? `${sourceLabel(source)}, ${source.bookTitle}` : ''}`} title={source ? `${sourceLabel(source)} — ${source.bookTitle}` : undefined}>
+          <button type="button" className="citation" onClick={() => show.current(number)} aria-label={`Source ${number}: ${source ? `${sourceLabel(source)}, ${source.bookTitle}` : ''}`} title={source ? `${sourceLabel(source)} — ${source.bookTitle}` : undefined}>
             {children}
           </button>
         )
       }
       return <a href={href} target="_blank" rel="noreferrer noopener">{children}</a>
     },
-  }
+  }), [sources])
 
   return (
     <>
