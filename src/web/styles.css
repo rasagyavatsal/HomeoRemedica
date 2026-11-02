@@ -771,7 +771,13 @@ ul {
   text-align: center;
   text-wrap: balance;
   color: var(--color-text);
-  animation: rise-in var(--duration-slow) var(--ease-standard) both;
+}
+
+/* The words settle in one after another. */
+.tagline-word {
+  display: inline-block;
+  animation: rise-in var(--duration-reveal) var(--ease-standard) both;
+  animation-delay: calc(var(--word-index) * var(--duration-word-stagger));
 }
 
 /* ---- Thread ------------------------------------------------------------- */
@@ -1074,6 +1080,12 @@ ul {
   box-shadow:
     var(--shadow-md),
     0 0 0 calc(var(--focus-ring-width) + 1px) var(--color-accent-soft);
+}
+
+/* On an empty chat the question box follows the tagline in. */
+.main:has(.welcome) .composer {
+  animation: rise-in var(--duration-reveal) var(--ease-standard) both;
+  animation-delay: calc(5 * var(--duration-word-stagger));
 }
 
 .composer-field {
