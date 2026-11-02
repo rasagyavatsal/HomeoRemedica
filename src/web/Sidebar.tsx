@@ -28,7 +28,9 @@ export function Sidebar({ chats, activeId, onNew, onOpen, onDelete, onClose, foo
       <div className="sidebar-header">
         <div className="brand">
           <DropMark />
-          <span className="brand-name">HomeoRemedica</span>
+          <span className="brand-name">
+            <span className="brand-name-accent">Homeo</span>Remedica
+          </span>
         </div>
         <div className="sidebar-tools">
           <ThemeToggle />

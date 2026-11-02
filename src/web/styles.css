@@ -232,6 +232,10 @@ ul {
   font-weight: var(--weight-semibold);
 }
 
+.brand-name-accent {
+  color: var(--color-accent-text);
+}
+
 .topbar-title {
   flex: 1;
   overflow: hidden;
