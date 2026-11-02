@@ -29,7 +29,8 @@ export function applyTheme(theme: Theme): void {
     }
   }
   const still = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-  if (document.startViewTransition && !still) document.startViewTransition(update)
+  // A skipped crossfade (a hidden tab, or another change mid-fade) still applies the theme.
+  if (document.startViewTransition && !still) document.startViewTransition(update).ready.catch(() => {})
   else update()
   try {
     if (theme === 'system') localStorage.removeItem(THEME_KEY)
