@@ -682,23 +682,26 @@ ul {
   list-style: none;
 }
 
+/* Questions sit in a bubble to the right; answers read as prose across the column. */
 .question {
-  margin-top: var(--space-xl);
-  padding-top: var(--space-lg);
-  border-top: var(--border-width) solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-2xl);
 }
 
 .question:first-child {
   margin-top: 0;
-  padding-top: 0;
-  border-top: none;
 }
 
 .question-text {
-  font-family: var(--font-reading);
-  font-size: var(--text-xl);
+  max-width: 85%;
+  padding: var(--space-sm) var(--space-md);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-raised);
+  font-size: var(--text-md);
   font-weight: var(--weight-regular);
-  line-height: var(--leading-tight);
+  line-height: var(--leading-snug);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -765,12 +768,27 @@ ul {
 }
 
 .references {
+  margin-top: var(--space-lg);
+  padding: var(--space-xs);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.references-label {
+  padding: var(--space-2xs) var(--space-xs) var(--space-xs);
+  color: var(--color-text-subtle);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.references-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-2xs);
-  margin-top: var(--space-md);
-  padding: var(--space-sm) 0 0;
-  border-top: var(--border-width) solid var(--color-border);
+  padding: 0;
   list-style: none;
 }
 

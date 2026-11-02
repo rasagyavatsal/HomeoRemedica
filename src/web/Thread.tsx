@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useId } from 'react'
 
 import { Answer } from './Answer.tsx'
 import type { Citation } from '../server/contracts.ts'
@@ -99,23 +99,29 @@ interface ReferencesProps {
 function References({ sources, cited, active, onOpen }: ReferencesProps) {
   const numbered = sources.map((source, index) => ({ source, number: index + 1 }))
   const listed = cited.size ? numbered.filter(({ number }) => cited.has(number)) : numbered
+  const labelId = useId()
   return (
-    <ol className="references" aria-label="References">
-      {listed.map(({ source, number }) => (
-        <li key={source.id}>
-          <button
-            type="button"
-            className="reference"
-            data-active={number === active || undefined}
-            aria-pressed={number === active}
-            onClick={() => onOpen(number)}
-          >
-            <span className="reference-number">{number}</span>
-            <span className="reference-heading">{source.remedyName ?? source.sectionTitle}</span>
-            <span className="reference-book">{source.bookTitle}</span>
-          </button>
-        </li>
-      ))}
-    </ol>
+    <div className="references">
+      <p id={labelId} className="references-label">
+        References
+      </p>
+      <ol className="references-list" aria-labelledby={labelId}>
+        {listed.map(({ source, number }) => (
+          <li key={source.id}>
+            <button
+              type="button"
+              className="reference"
+              data-active={number === active || undefined}
+              aria-pressed={number === active}
+              onClick={() => onOpen(number)}
+            >
+              <span className="reference-number">{number}</span>
+              <span className="reference-heading">{source.remedyName ?? source.sectionTitle}</span>
+              <span className="reference-book">{source.bookTitle}</span>
+            </button>
+          </li>
+        ))}
+      </ol>
+    </div>
   )
 }
