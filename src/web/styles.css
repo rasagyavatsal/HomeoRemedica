@@ -892,7 +892,7 @@ ul {
 
 .references-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(var(--layout-reference-min), 1fr));
   gap: var(--space-xs);
   padding: 0;
   list-style: none;
@@ -1079,7 +1079,7 @@ ul {
   border-color: var(--color-accent);
   box-shadow:
     var(--shadow-md),
-    0 0 0 calc(var(--focus-ring-width) + 1px) var(--color-accent-soft);
+    0 0 0 calc(var(--focus-ring-width) + var(--border-width)) var(--color-accent-soft);
 }
 
 /* On an empty chat the question box follows the tagline in. */
