@@ -7,7 +7,7 @@ import { type Account, type AuthClient, connectAuth } from './auth.ts'
 import { AuthDialog } from './AuthDialog.tsx'
 import { Composer, type ComposerHandle } from './Composer.tsx'
 import { type Conversation, citedSources, newConversation } from './conversation.ts'
-import { CloseIcon, MenuIcon, PlusIcon } from './icons.tsx'
+import { CloseIcon, MenuIcon } from './icons.tsx'
 import { AccountLibrary, type ChatLibrary, LocalLibrary, moveIntoAccount, openChat, summarize } from './library.ts'
 import { Sidebar } from './Sidebar.tsx'
 import { SourcesPanel } from './SourcesPanel.tsx'
@@ -280,9 +280,6 @@ function Workspace({ library, place, notify: setNotice, account }: WorkspaceProp
             <MenuIcon />
           </button>
           <p className="topbar-title">{conversation.title || 'New chat'}</p>
-          <button type="button" className="icon-button" onClick={startNew} aria-label="New chat" title="New chat">
-            <PlusIcon />
-          </button>
         </header>
 
         <div className="scroller" ref={scroller}>
