@@ -83,16 +83,18 @@ npm run dev
 Open `http://127.0.0.1:5173`. The Vite dev server serves the frontend and the API from one
 process; edits to either reload automatically. Port 5173 must be available; Vite will report an
 error instead of switching to another port. Restart after changing `.env`.
-Send questions, inspect numbered sources, and return to past chats from the sidebar. Enter sends;
-Shift+Enter adds a line. `/clear` starts a new chat, `/delete` deletes the open one, and `/quit` or
-`/exit` ends the session. Signed out, chats are saved in the browser's local storage, newest first
-and at most 50, so they survive closing the tab but stay on that device. A reload reopens the chat
-the tab had open. On narrow screens the sidebar opens as a drawer.
+Answers stream in as they are written. Each numbered label in an answer opens its passage in the
+sources panel, which lists the cited passages first and the rest that were retrieved after them.
+Enter sends; Shift+Enter adds a line; a question can be stopped while it is answered, and a failed
+one asked again. Signed out, answered and stopped chats are saved in the browser's local storage,
+newest first and at most 50, so they survive closing the tab but stay on that device. A reload
+reopens the chat the tab had open. The sidebar groups chats by age, searches them, and deletes one
+after confirmation; on narrow screens it opens as a drawer, and the sources panel slides over the chat.
 
 When the server has accounts configured, people can sign up or sign in with an email and password
-or with Google. Signed in, each chat is saved to the account after every answer and opens on any
-device; chats already in the browser move into the account at sign-in. The sidebar offers sign-out
-and deleting the account, which removes its chats too. Locally, saved chats need Application Default
+or with Google, and request a password-reset email. Signed in, each chat is saved to the account
+after every answer and opens on any device; chats already in the browser move into the account at
+sign-in. The sidebar offers sign-out and deleting the account, which removes its chats too. Locally, saved chats need Application Default
 Credentials that can reach the project's Firestore (`gcloud auth application-default login`).
 
 To serve a built frontend and the API from one Node.js server:
@@ -156,7 +158,9 @@ never reaches the browser bundle.
 
 - `src/server/` — request contracts, the chat service, Qdrant retrieval, provider clients, and
   the Hono API, which also serves the built frontend.
-- `src/web/` — minimal React chat interface; it shares the server's contract types.
+- `src/web/` — React chat interface; it shares the server's contract types. `tokens.css` defines
+  its design tokens: primitive scales, then the semantic roles that the light and dark themes
+  remap, which are the only values `styles.css` uses.
 - `tests/` — server test suite. Frontend tests sit next to the components in `src/web/`.
 
 ## Deployment
