@@ -1,161 +1,134 @@
-import type {
-  BookCatalog,
-  BookSummary,
-  ChatList,
-  ChatTurn,
-  Citation,
-  ClientConfig,
-  WebChatResponse,
-} from '../server/contracts.ts'
-import type { ChatStore, ChatSummary, Conversation } from './chats'
+/** Browser client for the HomeoRemedica API. */
 
-// The browser shares the server's contract types; only types cross this boundary.
-export type Book = BookSummary
-export type Turn = ChatTurn
-export type Source = Citation
-export type BooksResponse = BookCatalog
-export type ChatResponse = WebChatResponse
+import type { BookCatalog, BookSummary, ChatTurn, Citation, WebChatResponse } from '../server/contracts.ts'
 
-interface ValidationDetail {
-  msg?: string
-}
+const FALLBACK_DETAIL = 'Something went wrong. Please try again.'
+const INTERRUPTED_DETAIL = 'The answer stopped before it finished. Please try again.'
 
-async function readResponse<T>(response: Response): Promise<T> {
-  const body: unknown = await response.json().catch(() => null)
-  if (!response.ok) {
-    const detail = body && typeof body === 'object' && 'detail' in body
-      ? body.detail
-      : undefined
-    if (typeof detail === 'string') throw new Error(detail)
-    if (Array.isArray(detail)) {
-      const message = detail.map((item: ValidationDetail) => item?.msg).filter(Boolean).join(' ')
-      if (message) throw new Error(message)
-    }
-    throw new Error('The request could not be completed. Please try again.')
-  }
-  if (!body || typeof body !== 'object') {
-    throw new Error('The API returned an invalid response. Please try again.')
-  }
-  return body as T
-}
+/** A failed request, with a message that is safe to show. */
+export class ApiError extends Error {
+  override name = 'ApiError'
+  readonly status: number
 
-export async function loadBooks(signal?: AbortSignal): Promise<BooksResponse> {
-  const response = await fetch('/api/books', { signal })
-  return readResponse<BooksResponse>(response)
-}
-
-/** The server's sign-in settings; a server without accounts, or an unreachable one, has none. */
-export async function loadConfig(signal?: AbortSignal): Promise<ClientConfig> {
-  const response = await fetch('/api/config', { signal })
-  const config = await readResponse<Partial<ClientConfig>>(response)
-  return { auth: config.auth ?? null }
-}
-
-/** Gives a current ID token for the signed-in account. */
-export type TokenSource = () => Promise<string>
-
-async function accountRequest(token: TokenSource, method: string, path: string, body?: unknown): Promise<Response> {
-  const headers: Record<string, string> = { Authorization: `Bearer ${await token()}` }
-  if (body !== undefined) headers['Content-Type'] = 'application/json'
-  return fetch(path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) })
-}
-
-async function expectSuccess(response: Response) {
-  if (!response.ok) await readResponse(response)
-}
-
-/** Chats saved to the signed-in account. */
-export function accountChats(token: TokenSource): ChatStore {
-  let chats: ChatSummary[] = []
-  // Saves run one at a time, so an earlier copy of a chat never overwrites a later one.
-  let saving = Promise.resolve()
-  const chatPath = (id: string) => `/api/chats/${encodeURIComponent(id)}`
-  return {
-    async list() {
-      chats = (await readResponse<ChatList>(await accountRequest(token, 'GET', '/api/chats'))).chats
-      return chats
-    },
-    async load(id) {
-      const response = await accountRequest(token, 'GET', chatPath(id))
-      return response.status === 404 ? null : readResponse<Conversation>(response)
-    },
-    async save({ id, title, updatedAt, messages, history }) {
-      const save = saving.then(async () => {
-        await expectSuccess(await accountRequest(token, 'PUT', chatPath(id), { title, updatedAt, messages, history }))
-      })
-      saving = save.catch(() => {})
-      await save
-      chats = [{ id, title, updatedAt }, ...chats.filter((chat) => chat.id !== id)]
-      return chats
-    },
-    async delete(id) {
-      await expectSuccess(await accountRequest(token, 'DELETE', chatPath(id)))
-      chats = chats.filter((chat) => chat.id !== id)
-      return chats
-    },
-    async deleteAll() {
-      await expectSuccess(await accountRequest(token, 'DELETE', '/api/chats'))
-      chats = []
-    },
+  constructor(message: string, status: number) {
+    super(message)
+    this.status = status
   }
 }
 
-/** Delete the signed-in account and every chat saved to it. */
-export async function deleteAccount(token: TokenSource): Promise<void> {
-  await expectSuccess(await accountRequest(token, 'DELETE', '/api/account'))
+export async function failure(response: Response): Promise<ApiError> {
+  let detail: unknown
+  try {
+    detail = ((await response.json()) as { detail?: unknown }).detail
+  } catch {
+    // Not JSON, such as a proxy's error page.
+  }
+  return new ApiError(typeof detail === 'string' && detail ? detail : FALLBACK_DETAIL, response.status)
+}
+
+/** A message to show for any error a request may throw. */
+export function errorMessage(error: unknown): string {
+  if (error instanceof ApiError) return error.message
+  if (error instanceof TypeError) return 'The server could not be reached. Check your connection and try again.'
+  return FALLBACK_DETAIL
+}
+
+export async function getJson<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(path, init)
+  if (!response.ok) throw await failure(response)
+  return (await response.json()) as T
+}
+
+export async function loadBooks(): Promise<readonly BookSummary[]> {
+  return (await getJson<BookCatalog>('/api/books')).books
+}
+
+export interface ChatQuestion {
+  message: string
+  history: readonly ChatTurn[]
 }
 
 export interface StreamHandlers {
-  onSources?: (sources: readonly Source[]) => void
+  /** Receives the retrieved passages before any answer text. */
+  onSources?: (sources: Citation[]) => void
+  /** Receives each piece of the answer as it is generated. */
   onText?: (text: string) => void
 }
 
-/** Ask a question, reporting sources and answer text as the server streams them. */
-export async function sendMessage(
-  message: string,
-  history: Turn[],
+/** Ask a question and stream the answer; resolves with the complete response. */
+export async function streamChat(
+  question: ChatQuestion,
   { onSources, onText }: StreamHandlers = {},
-): Promise<ChatResponse> {
+  signal?: AbortSignal,
+): Promise<WebChatResponse> {
   const response = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
-    body: JSON.stringify({ message, history }),
+    body: JSON.stringify(question),
+    signal,
   })
-  // Errors raised before streaming starts, and servers that do not stream, answer with JSON.
-  if (!response.ok || !response.body || !response.headers.get('Content-Type')?.includes('text/event-stream')) {
-    return readResponse<ChatResponse>(response)
-  }
+  if (!response.ok) throw await failure(response)
+  if (!response.body) throw new ApiError(INTERRUPTED_DETAIL, response.status)
+
   for await (const { event, data } of readEvents(response.body)) {
-    if (event === 'sources') onSources?.(data as Source[])
-    else if (event === 'text') onText?.((data as { text: string }).text)
-    else if (event === 'done') return data as ChatResponse
-    else if (event === 'error') {
-      const detail = (data as { detail?: unknown }).detail
-      throw new Error(typeof detail === 'string' ? detail : 'The request could not be completed. Please try again.')
+    const payload: unknown = JSON.parse(data)
+    switch (event) {
+      case 'sources':
+        onSources?.(payload as Citation[])
+        break
+      case 'text':
+        onText?.((payload as { text: string }).text)
+        break
+      case 'done':
+        return payload as WebChatResponse
+      case 'error':
+        throw new ApiError((payload as { detail?: string }).detail || FALLBACK_DETAIL, response.status)
     }
   }
-  throw new Error('The answer was interrupted. Please try again.')
+  throw new ApiError(INTERRUPTED_DETAIL, response.status)
 }
 
-async function* readEvents(body: ReadableStream<Uint8Array>): AsyncGenerator<{ event: string; data: unknown }> {
-  const reader = body.getReader()
-  const decoder = new TextDecoder()
+export interface ServerEvent {
+  event: string
+  data: string
+}
+
+/** Parse a server-sent event stream. */
+export async function* readEvents(body: ReadableStream<Uint8Array>): AsyncGenerator<ServerEvent> {
+  // TypeScript's DOM types reject the decoder's BufferSource input for a byte stream.
+  const reader = body.pipeThrough(new TextDecoderStream() as ReadableWritablePair<string, Uint8Array>).getReader()
   let buffer = ''
-  for (;;) {
-    const { value, done } = await reader.read()
-    buffer += decoder.decode(value, { stream: !done })
-    const blocks = buffer.split(/\r?\n\r?\n/)
-    // Keep a partial last event for the next chunk.
-    buffer = done ? '' : blocks.pop() ?? ''
-    for (const block of blocks) {
-      let event = 'message'
-      const data: string[] = []
-      for (const line of block.split(/\r?\n/)) {
-        if (line.startsWith('event:')) event = line.slice(6).trim()
-        else if (line.startsWith('data:')) data.push(line.slice(5).replace(/^ /, ''))
+  try {
+    for (;;) {
+      const { value, done } = await reader.read()
+      if (done) break
+      buffer += value
+      // An event ends at a blank line. Hold back a trailing \r: its \n may be in the next chunk.
+      const usable = buffer.endsWith('\r') ? buffer.slice(0, -1) : buffer
+      const blocks = usable.replace(/\r\n?/g, '\n').split('\n\n')
+      buffer = (blocks.pop() ?? '') + buffer.slice(usable.length)
+      for (const block of blocks) {
+        const parsed = parseEvent(block)
+        if (parsed) yield parsed
       }
-      if (data.length) yield { event, data: JSON.parse(data.join('\n')) }
     }
-    if (done) return
+    const last = parseEvent(buffer.replace(/\r\n?/g, '\n'))
+    if (last) yield last
+  } finally {
+    await reader.cancel().catch(() => {})
   }
+}
+
+function parseEvent(block: string): ServerEvent | undefined {
+  let event = 'message'
+  const data: string[] = []
+  for (const line of block.split('\n')) {
+    if (!line || line.startsWith(':')) continue
+    const colon = line.indexOf(':')
+    const field = colon === -1 ? line : line.slice(0, colon)
+    const value = colon === -1 ? '' : line.slice(colon + 1).replace(/^ /, '')
+    if (field === 'event') event = value
+    else if (field === 'data') data.push(value)
+  }
+  return data.length ? { event, data: data.join('\n') } : undefined
 }

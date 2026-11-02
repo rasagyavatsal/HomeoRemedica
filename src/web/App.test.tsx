@@ -1,452 +1,118 @@
-import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { version } from '../../package.json'
-import App from './App'
-import type { ChatResponse, Turn } from './api'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const books = Array.from({ length: 4 }, (_, index) => ({
-  bookId: `book-${index + 1}`,
-  title: `Book ${index + 1}`,
-  author: `Author ${index + 1}`,
-}))
+import App from './App.tsx'
+import { answerStream, citation, json, pending } from './test/fakes.ts'
 
-const catalog = { books }
-const firstHistory: Turn[] = [
-  { role: 'user', content: 'First question' },
-  { role: 'assistant', content: 'First answer' },
-]
+type Route = (init: RequestInit | undefined) => Response | Promise<Response>
 
-function chatResponse(answer = 'First answer', history = firstHistory): ChatResponse {
-  return {
-    answer,
-    history,
-    model: 'test-model',
-    corpusVersion: 'release-1',
-    sources: [{
-      id: 'release-1/book-1/chunk-1', bookId: 'book-1', bookTitle: 'Book 1',
-      author: 'Author 1', remedyName: 'Remedy', sectionTitle: 'Section',
-      passageIndexes: [1], text: 'The original source passage.',
-    }],
-  }
+/** Answer requests by path; `/api/chat` takes one handler per question, in order. */
+function serve({ chat = [] as Route[] } = {}) {
+  const asked: unknown[] = []
+  vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
+    const path = String(input)
+    if (path === '/api/books') return json({ books: [{ bookId: 'boericke_mm', title: 'Boericke, Materia Medica', author: null }] })
+    if (path === '/api/config') return json({ auth: null })
+    if (path === '/api/chat') {
+      asked.push(JSON.parse(init?.body as string))
+      const next = chat.shift()
+      if (!next) throw new Error('unexpected question')
+      return next(init)
+    }
+    return json({ detail: 'Not Found' }, 404)
+  })
+  return asked
 }
 
-function jsonResponse(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
+async function ask(question: string) {
+  await userEvent.type(screen.getByRole('textbox', { name: 'Your question' }), `${question}{Enter}`)
 }
-
-/** A server-sent event response whose events the test sends one at a time. */
-function eventStream() {
-  const encoder = new TextEncoder()
-  let controller!: ReadableStreamDefaultController<Uint8Array>
-  const body = new ReadableStream<Uint8Array>({ start: (value) => { controller = value } })
-  return {
-    response: new Response(body, { headers: { 'Content-Type': 'text/event-stream' } }),
-    async send(event: string, data: unknown) {
-      await act(async () => controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`)))
-    },
-    async close() {
-      await act(async () => controller.close())
-    },
-  }
-}
-
-const fetchMock = vi.fn<typeof fetch>()
 
 beforeEach(() => {
   localStorage.clear()
   sessionStorage.clear()
-  fetchMock.mockReset()
-  fetchMock.mockImplementation(async (url) => {
-    if (url === '/api/books') return jsonResponse(catalog)
-    return jsonResponse(chatResponse())
-  })
-  vi.stubGlobal('fetch', fetchMock)
 })
 
-afterEach(() => vi.unstubAllGlobals())
-
-async function ready() {
-  render(<App />)
-  await screen.findByRole('list', { name: 'Books in the corpus' })
-  return userEvent.setup()
-}
-
-function chatCalls() {
-  return fetchMock.mock.calls.filter(([url]) => url === '/api/chat')
-}
-
-function pastChats() {
-  return [...document.querySelectorAll<HTMLButtonElement>('.chat-link')]
-}
-
-async function ask(user: ReturnType<typeof userEvent.setup>, question: string, answer: string) {
-  fetchMock.mockImplementationOnce(async () => jsonResponse(chatResponse(answer, [
-    { role: 'user', content: question },
-    { role: 'assistant', content: answer },
-  ])))
-  await user.type(screen.getByRole('textbox', { name: 'Message' }), `${question}{Enter}`)
-  await screen.findByText(answer)
-}
-
-function chatBody(index: number) {
-  return JSON.parse(String(chatCalls()[index][1]?.body)) as { message: string; history: Turn[] }
-}
-
-describe('production chat interactions', () => {
-  it('uses server-trimmed history for later questions', async () => {
-    const user = await ready()
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'First question{Enter}')
-    await screen.findByText('First answer')
-    expect(chatBody(0)).toEqual({ message: 'First question', history: [] })
-
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Second question{Enter}')
-    await waitFor(() => expect(chatCalls()).toHaveLength(2))
-    expect(chatBody(1)).toEqual({ message: 'Second question', history: firstHistory })
-
-    await user.click(screen.getAllByText('Sources')[0])
-    await user.click(screen.getAllByText('Book 1')[0])
-    expect(screen.getAllByText('The original source passage.')[0]).toBeVisible()
-  })
-
-  it('retains a failed draft and history, and allows retry without duplicate turns', async () => {
-    const user = await ready()
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'First question{Enter}')
-    await screen.findByText('First answer')
-    fetchMock.mockImplementationOnce(async () => jsonResponse({ detail: 'The request took too long. Please try again.' }, 504))
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Retry question{Enter}')
-    expect(await screen.findByRole('alert')).toHaveTextContent('The request took too long.')
-    expect(screen.getByRole('textbox', { name: 'Message' })).toHaveValue('Retry question')
-    expect(screen.getAllByText('First answer')).toHaveLength(1)
-
-    await user.click(screen.getByRole('button', { name: 'Send message' }))
-    await waitFor(() => expect(chatCalls()).toHaveLength(3))
-    expect(chatBody(2)).toEqual(chatBody(1))
-    await waitFor(() => expect(screen.getByRole('textbox', { name: 'Message' })).toHaveValue(''))
-    expect(screen.getAllByText('Retry question')).toHaveLength(1)
-  })
-
-  it('handles CLI commands locally and clears request history', async () => {
-    const user = await ready()
-    const input = screen.getByRole('textbox', { name: 'Message' })
-    await user.type(input, 'First question{Enter}')
-    await screen.findByText('First answer')
-    await user.type(input, '/clear{Enter}')
-    expect(screen.queryByText('First answer')).not.toBeInTheDocument()
-    await user.type(input, '/books{Enter}')
-    expect(screen.getByRole('alert')).toHaveTextContent('Unknown command. Use /clear, /delete or /quit.')
-    await user.clear(input)
-    await user.type(input, '/exit{Enter}')
-    expect(screen.getByText('Session ended.')).toBeVisible()
-    expect(chatCalls()).toHaveLength(1)
-    await user.click(screen.getByRole('button', { name: 'Start new chat' }))
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'New question{Enter}')
-    await waitFor(() => expect(chatCalls()).toHaveLength(2))
-    expect(chatBody(1).history).toEqual([])
-  })
-
-  it('supports multiline drafts, blocks duplicate requests, and preserves the draft during progress', async () => {
-    const user = await ready()
-    let resolveRequest: ((response: Response) => void) | undefined
-    fetchMock.mockImplementationOnce(() => new Promise((resolve) => { resolveRequest = resolve }))
-    const input = screen.getByRole('textbox', { name: 'Message' })
-    await user.type(input, 'First line{Shift>}{Enter}{/Shift}Second line')
-    expect(chatCalls()).toHaveLength(0)
-    expect(input).toHaveValue('First line\nSecond line')
-    await user.keyboard('{Enter}')
-    expect(screen.getByText('Preparing an answer…')).toBeVisible()
-    expect(input).toBeDisabled()
-    expect(input).toHaveValue('First line\nSecond line')
-    fireEvent.submit(input.closest('form')!)
-    expect(chatCalls()).toHaveLength(1)
-    expect(chatBody(0).message).toBe('First line\nSecond line')
-    await act(async () => resolveRequest?.(jsonResponse(chatResponse())))
-    expect(input).toBeEnabled()
-    expect(input).toHaveValue('')
-  })
-
-  it('shows validation errors and renders Markdown without inserting HTML', async () => {
-    const user = await ready()
-    fetchMock.mockImplementationOnce(async () => jsonResponse({ detail: [{ msg: 'Message is too long.' }] }, 422))
-    const input = screen.getByRole('textbox', { name: 'Message' })
-    await user.type(input, 'Question{Enter}')
-    expect(await screen.findByRole('alert')).toHaveTextContent('Message is too long.')
-    fetchMock.mockImplementationOnce(async () => jsonResponse(chatResponse('**Answer** <script>alert(1)</script>')))
-    await user.click(screen.getByRole('button', { name: 'Send message' }))
-    expect(await screen.findByText('Answer')).toHaveProperty('tagName', 'STRONG')
-    expect(document.querySelector('.answer script')).toBeNull()
-  })
-
-  it('links numbered citations to their sources and leaves unknown numbers as text', async () => {
-    const user = await ready()
-    fetchMock.mockImplementationOnce(async () => jsonResponse(chatResponse('Supported claim [1]. Unsupported claim [9].')))
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Question{Enter}')
-    const citation = await screen.findByRole('button', { name: 'Source 1: Remedy, Book 1' })
-    expect(screen.getByText('Unsupported claim [9].', { exact: false })).toBeVisible()
-    expect(screen.getByText('The original source passage.')).not.toBeVisible()
-    await user.click(citation)
-    expect(screen.getByText('The original source passage.')).toBeVisible()
-  })
-
-  it('keeps citation buttons mounted when the page updates', async () => {
-    const user = await ready()
-    fetchMock.mockImplementationOnce(async () => jsonResponse(chatResponse('Supported claim [1].')))
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Question{Enter}')
-    const citation = await screen.findByRole('button', { name: 'Source 1: Remedy, Book 1' })
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Next')
-    expect(citation).toBeInTheDocument()
-  })
-
-  it('shows the question and the answer while it streams', async () => {
-    const user = await ready()
-    const stream = eventStream()
-    fetchMock.mockImplementationOnce(async () => stream.response)
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'First question{Enter}')
-    expect(new Headers(chatCalls()[0][1]?.headers).get('Accept')).toBe('text/event-stream')
-    expect(screen.getByText('First question', { selector: '.user-content' })).toBeVisible()
-    expect(screen.getByText('Preparing an answer…')).toBeVisible()
-
-    await stream.send('sources', chatResponse().sources)
-    await stream.send('text', { text: 'Streamed ' })
-    expect(await screen.findByText('Streamed')).toBeVisible()
-    expect(screen.queryByText('Preparing an answer…')).not.toBeInTheDocument()
-    await stream.send('text', { text: 'claim [1].' })
-    expect(await screen.findByRole('button', { name: 'Source 1: Remedy, Book 1' })).toBeVisible()
-    expect(screen.getByRole('textbox', { name: 'Message' })).toBeDisabled()
-
-    await stream.send('done', chatResponse('Streamed claim [1].'))
-    await stream.close()
-    await waitFor(() => expect(screen.getByRole('textbox', { name: 'Message' })).toBeEnabled())
-    expect(screen.getAllByText('First question', { selector: '.user-content' })).toHaveLength(1)
-    expect(screen.getByRole('textbox', { name: 'Message' })).toHaveValue('')
-  })
-
-  it('drops a partial answer when the stream reports an error', async () => {
-    const user = await ready()
-    const stream = eventStream()
-    fetchMock.mockImplementationOnce(async () => stream.response)
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'First question{Enter}')
-    await stream.send('text', { text: 'Partial answer' })
-    await screen.findByText('Partial answer')
-
-    await stream.send('error', { detail: 'Response limit reached. Please try again.' })
-    await stream.close()
-
-    expect(await screen.findByRole('alert')).toHaveTextContent('Response limit reached.')
-    expect(screen.queryByText('Partial answer')).not.toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: 'Message' })).toHaveValue('First question')
-  })
-
-  it('lists cited sources first and marks the rest as not cited', async () => {
-    const user = await ready()
-    const source = chatResponse().sources[0]!
-    const sources = [1, 2, 3].map((number) => ({ ...source, id: `chunk-${number}`, remedyName: `Remedy ${number}` }))
-    fetchMock.mockImplementationOnce(async () => jsonResponse({ ...chatResponse('Claim [3]. Another claim [1, 3].'), sources }))
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Question{Enter}')
-    await user.click(await screen.findByText('Sources'))
-
-    const items = screen.getAllByRole('listitem').filter((item) => item.closest('.source-list'))
-    expect(items.map((item) => item.querySelector('.source-number')?.textContent)).toEqual(['1', '3', '2'])
-    expect(items.map((item) => item.textContent?.includes('Not cited'))).toEqual([false, false, true])
-  })
-
-  it('names sources without a remedy by their section', async () => {
-    const user = await ready()
-    const source = { ...chatResponse().sources[0]!, remedyName: null, sectionTitle: 'Organon of Medicine: § 5' }
-    fetchMock.mockImplementationOnce(async () => jsonResponse({ ...chatResponse('Claim [1].'), sources: [source] }))
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Question{Enter}')
-    await user.click(await screen.findByText('Sources'))
-
-    expect(document.querySelector('.source-remedy')).toHaveTextContent(/^Organon of Medicine: § 5$/)
-    expect(screen.getByRole('button', { name: 'Source 1: Organon of Medicine: § 5, Book 1' })).toBeInTheDocument()
-  })
-
-  it('reopens the open chat after a reload and keeps it after starting a new one', async () => {
-    const user = await ready()
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'First question{Enter}')
-    await screen.findByText('First answer')
-    cleanup()
-
+describe('asking', () => {
+  it('streams an answer and opens the source a citation points to', async () => {
+    const sources = [citation(1), citation(2, { remedyName: 'Pulsatilla', text: 'Weeping, mild, changeable.' })]
+    serve({ chat: [() => answerStream('Pulsatilla is mild and weepy [2].', sources)] })
     render(<App />)
-    expect(screen.getByText('First answer')).toBeVisible()
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Second question{Enter}')
-    await waitFor(() => expect(chatCalls()).toHaveLength(2))
-    expect(chatBody(1).history).toEqual(firstHistory)
 
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), '/clear{Enter}')
-    cleanup()
-    await ready()
-    expect(screen.queryByText('First answer')).not.toBeInTheDocument()
-    expect(pastChats().map((chat) => chat.textContent)).toEqual(['First question'])
+    expect(await screen.findByText('Boericke, Materia Medica')).toBeInTheDocument()
+    await ask('What is Pulsatilla like?')
+
+    expect(screen.getByRole('heading', { name: 'What is Pulsatilla like?' })).toBeInTheDocument()
+    await userEvent.click(await screen.findByRole('button', { name: 'Source 2' }))
+
+    const panel = screen.getByRole('region', { name: 'Sources' })
+    expect(within(panel).getByText('1 cited of 2 retrieved')).toBeInTheDocument()
+    expect(within(panel).getByRole('article', { name: 'Source 2: Pulsatilla' })).toHaveAttribute('data-active')
+    expect(within(panel).getByText('Retrieved but not cited')).toBeInTheDocument()
+
+    await userEvent.keyboard('{Escape}')
+    expect(screen.queryByRole('region', { name: 'Sources' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /2 sources · 1 cited/ })).toBeInTheDocument()
   })
 
-  it('moves the conversation an earlier version kept into the saved chats', async () => {
-    sessionStorage.setItem('homeoremedica:conversation', JSON.stringify({
-      messages: [{ id: 0, role: 'user', content: 'First question' }, { id: 1, role: 'assistant', content: 'First answer' }],
-      history: firstHistory,
-    }))
-    render(<App />)
-    const user = userEvent.setup()
-    expect(screen.getByText('First answer')).toBeVisible()
-    expect(pastChats().map((chat) => chat.textContent)).toEqual(['First question'])
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Second question{Enter}')
-    await waitFor(() => expect(chatCalls()).toHaveLength(1))
-    expect(chatBody(0).history).toEqual(firstHistory)
-  })
-
-  it('starts fresh when the saved conversation is unreadable', async () => {
-    sessionStorage.setItem('homeoremedica:conversation', '{not json')
-    await ready()
-    expect(screen.getByRole('heading', { name: 'Ask the classical materia medica.' })).toBeVisible()
-    expect(screen.getByText('Your chats will appear here.')).toBeVisible()
-  })
-
-  it('asks a suggested question from the empty state', async () => {
-    const user = await ready()
-    await user.click(screen.getByRole('button', { name: 'What are the keynote symptoms of Arsenicum album?' }))
-    await screen.findByText('First answer')
-    expect(chatBody(0)).toEqual({ message: 'What are the keynote symptoms of Arsenicum album?', history: [] })
-  })
-
-  it('shows the app version', async () => {
-    await ready()
-    expect(screen.getByText(`v${version}`)).toBeVisible()
-  })
-
-  it('keeps the empty state usable when the book catalog fails', async () => {
-    fetchMock.mockImplementationOnce(async () => jsonResponse({ detail: 'Corpus unavailable.' }, 503))
-    render(<App />)
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/books', expect.anything()))
-    expect(screen.getByText(/drawn from historical texts/)).toBeVisible()
-    expect(screen.queryByRole('list', { name: 'Books in the corpus' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
-  })
-})
-
-describe('past chats', () => {
-  it('lists each chat and continues the one that is opened', async () => {
-    const user = await ready()
-    await ask(user, 'Arsenicum keynotes', 'Arsenicum answer')
-    await user.click(screen.getByRole('button', { name: 'New chat' }))
-    expect(screen.queryByText('Arsenicum answer')).not.toBeInTheDocument()
-    await ask(user, 'Bryonia keynotes', 'Bryonia answer')
-    expect(pastChats().map((chat) => chat.textContent)).toEqual(['Bryonia keynotes', 'Arsenicum keynotes'])
-    expect(screen.getByRole('button', { name: 'Bryonia keynotes' })).toHaveAttribute('aria-current', 'page')
-
-    await user.click(screen.getByRole('button', { name: 'Arsenicum keynotes' }))
-    expect(screen.getByText('Arsenicum answer')).toBeVisible()
-    expect(screen.queryByText('Bryonia answer')).not.toBeInTheDocument()
-    await ask(user, 'Arsenicum follow-up', 'Follow-up answer')
-    expect(chatBody(2)).toEqual({
-      message: 'Arsenicum follow-up',
-      history: [{ role: 'user', content: 'Arsenicum keynotes' }, { role: 'assistant', content: 'Arsenicum answer' }],
+  it('sends the history the server returned with the last answer', async () => {
+    const asked = serve({
+      chat: [() => answerStream('First answer.', [citation(1)], 'First?'), () => answerStream('Second answer.', [citation(1)])],
     })
-    expect(pastChats().map((chat) => chat.textContent)).toEqual(['Arsenicum keynotes', 'Bryonia keynotes'])
-    expect(screen.getByText('Today')).toBeVisible()
+    render(<App />)
+
+    await ask('First?')
+    await screen.findByText('First answer.')
+    await ask('Second?')
+    await screen.findByText('Second answer.')
+
+    expect(asked).toEqual([
+      { message: 'First?', history: [] },
+      {
+        message: 'Second?',
+        history: [
+          { role: 'user', content: 'First?' },
+          { role: 'assistant', content: 'First answer.' },
+        ],
+      },
+    ])
   })
 
-  it('does not switch chats while an answer is in progress', async () => {
-    const user = await ready()
-    await ask(user, 'Arsenicum keynotes', 'Arsenicum answer')
-    await user.click(screen.getByRole('button', { name: 'New chat' }))
-    let resolveRequest: ((response: Response) => void) | undefined
-    fetchMock.mockImplementationOnce(() => new Promise((resolve) => { resolveRequest = resolve }))
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), 'Bryonia keynotes{Enter}')
-    expect(screen.getByRole('button', { name: 'Arsenicum keynotes' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'Delete chat: Arsenicum keynotes' })).toBeDisabled()
-    await act(async () => resolveRequest?.(jsonResponse(chatResponse('Bryonia answer'))))
-    expect(screen.getByRole('button', { name: 'Arsenicum keynotes' })).toBeEnabled()
+  it('suggests questions in an empty chat', async () => {
+    const asked = serve({ chat: [() => answerStream('Keynotes.', [citation(1)])] })
+    render(<App />)
+
+    await userEvent.click(screen.getByRole('button', { name: 'What are the keynotes of Pulsatilla?' }))
+
+    expect(await screen.findByText('Keynotes.')).toBeInTheDocument()
+    expect(asked).toEqual([{ message: 'What are the keynotes of Pulsatilla?', history: [] }])
   })
 
-  it('deletes a chat from the list and with /delete', async () => {
-    const user = await ready()
-    await ask(user, 'Arsenicum keynotes', 'Arsenicum answer')
-    await user.click(screen.getByRole('button', { name: 'New chat' }))
-    await ask(user, 'Bryonia keynotes', 'Bryonia answer')
+  it('shows a failure and asks again on request', async () => {
+    serve({
+      chat: [() => json({ detail: 'Too many questions in a short time.' }, 429), () => answerStream('Recovered.', [citation(1)])],
+    })
+    render(<App />)
 
-    await user.click(screen.getByRole('button', { name: 'Delete chat: Arsenicum keynotes' }))
-    expect(pastChats().map((chat) => chat.textContent)).toEqual(['Bryonia keynotes'])
-    expect(screen.getByText('Bryonia answer')).toBeVisible()
+    await ask('Hello?')
+    expect(await screen.findByRole('alert')).toHaveTextContent('Too many questions in a short time.')
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }))
 
-    await user.type(screen.getByRole('textbox', { name: 'Message' }), '/delete{Enter}')
-    expect(screen.queryByText('Bryonia answer')).not.toBeInTheDocument()
-    expect(pastChats()).toEqual([])
-    cleanup()
-    await ready()
-    expect(pastChats()).toEqual([])
+    expect(await screen.findByText('Recovered.')).toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { name: 'Hello?' })).toHaveLength(1)
   })
 
-  it('asks before deleting all chats', async () => {
-    const user = await ready()
-    await ask(user, 'Arsenicum keynotes', 'Arsenicum answer')
-    await user.click(screen.getByRole('button', { name: 'Delete all chats' }))
-    await user.click(within(screen.getByRole('group', { name: 'Delete all chats?' })).getByRole('button', { name: 'Cancel' }))
-    expect(pastChats()).toHaveLength(1)
+  it('stops an answer in progress', async () => {
+    serve({ chat: [(init) => pending(init?.signal)] })
+    render(<App />)
 
-    await user.click(screen.getByRole('button', { name: 'Delete all chats' }))
-    await user.click(screen.getByRole('button', { name: 'Delete' }))
-    expect(pastChats()).toEqual([])
-    expect(screen.queryByText('Arsenicum answer')).not.toBeInTheDocument()
-    expect(localStorage.getItem('homeoremedica:chats')).toBeNull()
-  })
+    await ask('Slow?')
+    expect(screen.getByRole('status')).toHaveTextContent('Searching the books…')
+    await userEvent.click(screen.getByRole('button', { name: 'Stop answering' }))
 
-  it('shows chats saved in another tab', async () => {
-    await ready()
-    localStorage.setItem('homeoremedica:chats', JSON.stringify({
-      version: 1, chats: [{ id: 'other', title: 'Asked elsewhere', updatedAt: Date.now() }],
-    }))
-    act(() => { window.dispatchEvent(new StorageEvent('storage', { key: 'homeoremedica:chats' })) })
-    expect(pastChats().map((chat) => chat.textContent)).toEqual(['Asked elsewhere'])
-  })
-
-  it('removes a listed chat that can no longer be opened', async () => {
-    const user = await ready()
-    await ask(user, 'Arsenicum keynotes', 'Arsenicum answer')
-    await user.click(screen.getByRole('button', { name: 'New chat' }))
-    for (const key of Object.keys(localStorage)) {
-      if (key.startsWith('homeoremedica:chat:')) localStorage.removeItem(key)
-    }
-    await user.click(screen.getByRole('button', { name: 'Arsenicum keynotes' }))
-    expect(screen.getByRole('alert')).toHaveTextContent('That chat could not be opened')
-    expect(pastChats()).toEqual([])
-  })
-
-  it('remembers a hidden sidebar', async () => {
-    const user = await ready()
-    await user.click(screen.getByRole('button', { name: 'Hide chats' }))
-    expect(screen.queryByRole('navigation', { name: 'Past chats' })).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'New chat' })).toBeInTheDocument()
-    cleanup()
-    await ready()
-    expect(screen.queryByRole('navigation', { name: 'Past chats' })).not.toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Show chats' }))
-    expect(screen.getByRole('navigation', { name: 'Past chats' })).toBeVisible()
-  })
-
-  it('opens chats in a drawer on narrow screens', async () => {
-    vi.stubGlobal('matchMedia', (query: string) => ({ matches: false, media: query, addEventListener() {}, removeEventListener() {} }))
-    const user = await ready()
-    await ask(user, 'Arsenicum keynotes', 'Arsenicum answer')
-    // Hold the next frame, as a slow device would, so the drawer opens before it runs.
-    const frames: FrameRequestCallback[] = []
-    const nextFrame = window.requestAnimationFrame
-    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => frames.push(callback))
-    await user.click(screen.getByRole('button', { name: 'New chat' }))
-    expect(screen.queryByRole('dialog', { name: 'Your chats' })).not.toBeInTheDocument()
-
-    await user.click(screen.getByRole('button', { name: 'Show chats' }))
-    const drawer = screen.getByRole('dialog', { name: 'Your chats' })
-    act(() => frames.splice(0).forEach((frame) => frame(0)))
-    vi.stubGlobal('requestAnimationFrame', nextFrame)
-    await waitFor(() => expect(within(drawer).getByRole('button', { name: 'Close chats' })).toHaveFocus())
-    expect(document.querySelector('.app-shell')).toHaveAttribute('inert')
-    await user.keyboard('{Escape}')
-    expect(screen.queryByRole('dialog', { name: 'Your chats' })).not.toBeInTheDocument()
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Show chats' })).toHaveFocus())
-
-    await user.click(screen.getByRole('button', { name: 'Show chats' }))
-    await user.click(screen.getByRole('button', { name: 'Arsenicum keynotes' }))
-    expect(screen.queryByRole('dialog', { name: 'Your chats' })).not.toBeInTheDocument()
-    expect(screen.getByText('Arsenicum answer')).toBeVisible()
+    expect(screen.getByText('Stopped.')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Send question' })).toBeDisabled())
   })
 })
