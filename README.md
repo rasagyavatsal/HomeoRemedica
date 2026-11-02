@@ -124,6 +124,10 @@ The saved-chat endpoints need a Firebase ID token as `Authorization: Bearer <tok
 delete one, `DELETE /api/chats` deletes them all, and `DELETE /api/account` deletes the chats and
 then the sign-in. Firestore keeps each chat under `users/{uid}/chats/{chatId}`, one document per
 message; its security rules deny all browser access, so only the server reads or writes it.
+Saving needs a verified email address; Google sign-ins always have one, and email sign-ups are sent
+a verification link, keeping their chats in the browser until it is followed. Accounts keep any
+number of chats, but each may save at most 1,000 new messages an hour and 5,000 a day; a save
+over that gets `429` with `Retry-After`.
 
 ## Configuration
 

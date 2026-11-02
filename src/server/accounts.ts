@@ -13,16 +13,23 @@ export interface ChatStore {
   /** The user's chats, newest first. */
   list(userId: string): Promise<ChatSummary[]>
   get(userId: string, chatId: string): Promise<SavedConversation | null>
-  put(userId: string, chatId: string, chat: SavedChat): Promise<ChatSummary>
+  /** Save the whole chat; resolves with how many messages had to be written. */
+  put(userId: string, chatId: string, chat: SavedChat): Promise<number>
   delete(userId: string, chatId: string): Promise<void>
   deleteAll(userId: string): Promise<void>
+}
+
+export interface User {
+  id: string
+  /** Whether the user has shown they own their email address; Google sign-ins always have. */
+  verified: boolean
 }
 
 export interface Accounts {
   readonly config: AuthConfig
   readonly chats: ChatStore
   /** The user a Firebase ID token belongs to, or undefined when it is invalid or expired. */
-  userId(idToken: string): Promise<string | undefined>
+  user(idToken: string): Promise<User | undefined>
   /** Remove the sign-in itself; delete the user's chats first. */
   deleteUser(userId: string): Promise<void>
 }
@@ -33,9 +40,10 @@ export function firebaseAccounts(config: AuthConfig): Accounts {
   return {
     config,
     chats: new FirestoreChatStore(firestore(app)),
-    async userId(idToken) {
+    async user(idToken) {
       try {
-        return (await auth.verifyIdToken(idToken)).uid
+        const token = await auth.verifyIdToken(idToken)
+        return { id: token.uid, verified: token.email_verified === true }
       } catch (error) {
         // A bad or expired token means "sign in again"; anything else is a server problem.
         if (isAuthError(error)) return undefined
@@ -98,16 +106,16 @@ export class FirestoreChatStore implements ChatStore {
     return { messages: messages.docs.map((doc) => doc.data() as SavedMessage), history: summary.get('history') }
   }
 
-  async put(userId: string, chatId: string, { title, updatedAt, messages, history }: SavedChat): Promise<ChatSummary> {
+  async put(userId: string, chatId: string, { title, updatedAt, messages, history }: SavedChat): Promise<number> {
     const chat = this.#chats(userId).doc(chatId)
     const message = (index: number) => chat.collection('messages').doc(String(index).padStart(4, '0'))
-    await this.#db.runTransaction(async (transaction) => {
+    return this.#db.runTransaction(async (transaction) => {
       const stored: number = (await transaction.get(chat)).get('messageCount') ?? 0
       for (let index = stored; index < messages.length; index++) transaction.set(message(index), messages[index]!)
       for (let index = messages.length; index < stored; index++) transaction.delete(message(index))
       transaction.set(chat, { title, updatedAt, history, messageCount: messages.length })
+      return Math.max(0, messages.length - stored)
     })
-    return { id: chatId, title, updatedAt }
   }
 
   async delete(userId: string, chatId: string): Promise<void> {

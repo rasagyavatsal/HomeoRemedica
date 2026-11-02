@@ -3,18 +3,19 @@ import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
 import { errorMessage } from './api.ts'
 import type { Account } from './auth.ts'
 import { Dialog } from './Dialog.tsx'
-import { SignOutIcon, TrashIcon, UserIcon } from './icons.tsx'
+import { MailIcon, SignOutIcon, TrashIcon, UserIcon } from './icons.tsx'
 
 interface AccountControlsProps {
   /** The signed-in account, null when signed out, or undefined while that is unknown. */
   account: Account | null | undefined
   onSignIn: () => void
   onSignOut: () => void
+  onResendVerification: () => void
   onDeleteAccount: () => Promise<void>
 }
 
 /** The sidebar's sign-in button, or the signed-in account and what can be done with it. */
-export function AccountControls({ account, onSignIn, onSignOut, onDeleteAccount }: AccountControlsProps) {
+export function AccountControls({ account, onSignIn, onSignOut, onResendVerification, onDeleteAccount }: AccountControlsProps) {
   const [deleting, setDeleting] = useState(false)
 
   if (account === undefined) return null
@@ -29,14 +30,30 @@ export function AccountControls({ account, onSignIn, onSignOut, onDeleteAccount 
   const label = account.email ?? account.name ?? 'Signed in'
   return (
     <>
-      <AccountMenu label={label} onSignOut={onSignOut} onDelete={() => setDeleting(true)} />
+      <AccountMenu
+        label={label}
+        onSignOut={onSignOut}
+        onResend={account.verified ? undefined : onResendVerification}
+        onDelete={() => setDeleting(true)}
+      />
       {deleting && <DeleteAccountDialog onDelete={onDeleteAccount} onClose={() => setDeleting(false)} />}
     </>
   )
 }
 
 /** The signed-in account, which opens a menu to sign out or delete the account. */
-function AccountMenu({ label, onSignOut, onDelete }: { label: string; onSignOut: () => void; onDelete: () => void }) {
+function AccountMenu({
+  label,
+  onSignOut,
+  onResend,
+  onDelete,
+}: {
+  label: string
+  onSignOut: () => void
+  /** Offered until the email address is verified. */
+  onResend: (() => void) | undefined
+  onDelete: () => void
+}) {
   const [open, setOpen] = useState(false)
   const root = useRef<HTMLDivElement>(null)
   const trigger = useRef<HTMLButtonElement>(null)
@@ -94,6 +111,11 @@ function AccountMenu({ label, onSignOut, onDelete }: { label: string; onSignOut:
       </button>
       {open && (
         <div ref={menu} className="account-menu" role="menu" aria-label="Account" onKeyDown={onKeyDown}>
+          {onResend && (
+            <button type="button" role="menuitem" className="menu-item" onClick={() => choose(onResend)}>
+              <MailIcon /> Resend verification email
+            </button>
+          )}
           <button type="button" role="menuitem" className="menu-item" onClick={() => choose(onSignOut)}>
             <SignOutIcon /> Sign out
           </button>

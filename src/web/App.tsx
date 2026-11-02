@@ -3,7 +3,7 @@ import { type CSSProperties, type ReactNode, useCallback, useEffect, useLayoutEf
 import type { ChatSummary, ClientConfig } from '../server/contracts.ts'
 import { AccountControls } from './AccountControls.tsx'
 import { errorMessage, getJson } from './api.ts'
-import { type Account, type AuthClient, connectAuth } from './auth.ts'
+import { type Account, type AuthClient, authErrorMessage, connectAuth } from './auth.ts'
 import { AuthDialog } from './AuthDialog.tsx'
 import { Composer, type ComposerHandle } from './Composer.tsx'
 import { type Conversation, newConversation } from './conversation.ts'
@@ -43,8 +43,9 @@ export default function App() {
     }
   }, [])
 
-  // Signed in: move this browser's chats into the account before showing the account's.
-  const uid = account?.uid
+  // Signed in with a verified email: move this browser's chats into the account before showing
+  // the account's. Until the email is verified, chats stay in this browser.
+  const uid = account?.verified ? account.uid : undefined
   useEffect(() => {
     setAccountLibrary(null)
     if (!uid || !auth) return
@@ -60,20 +61,44 @@ export default function App() {
     }
   }, [uid, auth, local])
 
+  // The verification link may be followed in another tab or on another device.
+  const unverified = account && !account.verified ? account.uid : undefined
+  useEffect(() => {
+    if (!unverified || !auth) return
+    setNotice('Verify your email address to sync your chats. The link is in your inbox.')
+    const check = () => {
+      if (document.visibilityState === 'visible') auth.refresh().catch(() => {})
+    }
+    document.addEventListener('visibilitychange', check)
+    window.addEventListener('focus', check)
+    return () => {
+      document.removeEventListener('visibilitychange', check)
+      window.removeEventListener('focus', check)
+    }
+  }, [unverified, auth])
+
   useEffect(() => {
     if (!notice) return
     const timer = setTimeout(() => setNotice(null), 8000)
     return () => clearTimeout(timer)
   }, [notice])
 
-  const library = account === undefined ? null : account ? accountLibrary : local
+  const library = account === undefined ? null : uid ? accountLibrary : local
   const signOut = () => {
     auth?.signOut().catch((error: unknown) => setNotice(`Signing out failed. ${errorMessage(error)}`))
   }
 
+  const resendVerification = () => {
+    auth
+      ?.sendVerification()
+      .then(() => setNotice(`A new verification link was sent to ${account?.email ?? 'your email address'}.`))
+      .catch((error: unknown) => setNotice(authErrorMessage(error) ?? 'The link could not be sent. Please try again.'))
+  }
+
+  // An unverified account has no account library yet, but can still be deleted.
   const deleteAccount = async () => {
-    if (!accountLibrary || !auth) return
-    await accountLibrary.deleteAccount()
+    if (!auth) return
+    await (accountLibrary ?? new AccountLibrary(() => auth.token())).deleteAccount()
     openChat.set(null)
     await auth.signOut().catch(() => {})
     setNotice('Your account and its chats were deleted.')
@@ -92,6 +117,7 @@ export default function App() {
               account={account}
               onSignIn={() => setSigningIn(true)}
               onSignOut={signOut}
+              onResendVerification={resendVerification}
               onDeleteAccount={deleteAccount}
             />
           )

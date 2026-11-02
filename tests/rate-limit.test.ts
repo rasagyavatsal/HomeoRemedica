@@ -42,6 +42,20 @@ it('does not count rejected requests', () => {
   expect(rateLimiter.take('a')).toBeUndefined()
 })
 
+it('counts work by its size once it is done', () => {
+  const { rateLimiter, advance } = limiter()
+
+  expect(rateLimiter.wait('a')).toBeUndefined()
+  rateLimiter.add('a', 2)
+  expect(rateLimiter.wait('a')).toBe(1)
+  expect(rateLimiter.wait('b')).toBeUndefined()
+
+  advance(1_000)
+  expect(rateLimiter.wait('a')).toBeUndefined()
+  rateLimiter.add('a', 5)
+  expect(rateLimiter.wait('a')).toBe(9)
+})
+
 it('keys IPv4 clients by address and IPv6 clients by /64', () => {
   expect(clientKey('203.0.113.7')).toBe('203.0.113.7')
   expect(clientKey('2001:DB8:0:1::7')).toBe('2001:db8:0:1::/64')

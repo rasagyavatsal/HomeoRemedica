@@ -7,6 +7,8 @@ export interface Account {
   uid: string
   email: string | null
   name: string | null
+  /** Chats sync only once the email address is verified; Google sign-ins always are. */
+  verified: boolean
 }
 
 export interface AuthClient {
@@ -15,8 +17,13 @@ export interface AuthClient {
   /** A current ID token for the API. */
   token(): Promise<string>
   signIn(email: string, password: string): Promise<void>
+  /** Create the account and send its email verification link. */
   signUp(email: string, password: string): Promise<void>
   signInWithGoogle(): Promise<void>
+  /** Send the signed-in account another email verification link. */
+  sendVerification(): Promise<void>
+  /** Check whether the email address has been verified since sign-in, perhaps in another tab. */
+  refresh(): Promise<void>
   resetPassword(email: string): Promise<void>
   signOut(): Promise<void>
 }
@@ -27,9 +34,10 @@ export async function connectAuth(config: AuthConfig): Promise<AuthClient> {
   auth.useDeviceLanguage()
 
   return {
+    // ID token changes include sign-in, sign-out, and the refresh after an email is verified.
     subscribe: (listener) =>
-      firebase.onAuthStateChanged(auth, (user) =>
-        listener(user && { uid: user.uid, email: user.email, name: user.displayName }),
+      firebase.onIdTokenChanged(auth, (user) =>
+        listener(user && { uid: user.uid, email: user.email, name: user.displayName, verified: user.emailVerified }),
       ),
     async token() {
       const user = auth.currentUser
@@ -40,10 +48,24 @@ export async function connectAuth(config: AuthConfig): Promise<AuthClient> {
       await firebase.signInWithEmailAndPassword(auth, email, password)
     },
     async signUp(email, password) {
-      await firebase.createUserWithEmailAndPassword(auth, email, password)
+      const { user } = await firebase.createUserWithEmailAndPassword(auth, email, password)
+      // The account exists either way; a link that fails to send can be sent again from the menu.
+      await firebase.sendEmailVerification(user).catch(() => {})
     },
     async signInWithGoogle() {
       await firebase.signInWithPopup(auth, new firebase.GoogleAuthProvider())
+    },
+    async sendVerification() {
+      const user = auth.currentUser
+      if (!user) throw new ShownError('Please sign in again.')
+      await firebase.sendEmailVerification(user)
+    },
+    async refresh() {
+      const user = auth.currentUser
+      if (!user || user.emailVerified) return
+      await user.reload()
+      // A new ID token carries the verified email to the API and tells subscribers.
+      if (user.emailVerified) await user.getIdToken(true)
     },
     resetPassword: (email) => firebase.sendPasswordResetEmail(auth, email),
     signOut: () => firebase.signOut(auth),

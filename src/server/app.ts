@@ -20,12 +20,13 @@ import {
   type ChatRequest,
   ChatRequestSchema,
   type ChatResponse,
+  type ChatSummary,
   type ClientConfig,
   SavedChatSchema,
   type WebChatResponse,
 } from './contracts.ts'
 import { advanceHistory } from './conversation.ts'
-import { RateLimiter, TOTAL_CHAT_RATE_LIMITS, clientKey } from './rate-limit.ts'
+import { CHAT_SAVE_RATE_LIMITS, RateLimiter, TOTAL_CHAT_RATE_LIMITS, clientKey } from './rate-limit.ts'
 import { ChatFailure, ConfigurationError, FAILURE_DETAILS, type FailureKind } from './errors.ts'
 
 export interface ChatHandler {
@@ -39,7 +40,7 @@ export interface AppDependencies {
 }
 
 interface SignedIn {
-  Variables: { accounts: Accounts; userId: string }
+  Variables: { accounts: Accounts; userId: string; verified: boolean }
 }
 
 const FAILURE_STATUS: Record<FailureKind, ContentfulStatusCode> = {
@@ -89,7 +90,14 @@ export function createApp(
     webDist = WEB_DIST,
     rateLimiter = new RateLimiter(),
     totalRateLimiter = new RateLimiter(TOTAL_CHAT_RATE_LIMITS),
-  }: { webDist?: string | null; rateLimiter?: RateLimiter | null; totalRateLimiter?: RateLimiter | null } = {},
+    saveRateLimiter = new RateLimiter(CHAT_SAVE_RATE_LIMITS),
+  }: {
+    webDist?: string | null
+    rateLimiter?: RateLimiter | null
+    totalRateLimiter?: RateLimiter | null
+    /** Counts the messages each user saves. */
+    saveRateLimiter?: RateLimiter | null
+  } = {},
 ): Hono {
   const app = new Hono()
 
@@ -103,10 +111,11 @@ export function createApp(
     const accounts = dependencies.getAccounts?.() ?? null
     if (!accounts) return c.json({ detail: 'Accounts are not available on this server.' }, 503)
     const token = c.req.header('Authorization')?.match(/^Bearer (\S+)$/)?.[1]
-    const userId = token ? await accounts.userId(token) : undefined
-    if (!userId) return c.json({ detail: 'Please sign in again.' }, 401)
+    const user = token ? await accounts.user(token) : undefined
+    if (!user) return c.json({ detail: 'Please sign in again.' }, 401)
     c.set('accounts', accounts)
-    c.set('userId', userId)
+    c.set('userId', user.id)
+    c.set('verified', user.verified)
     await next()
   })
 
@@ -135,6 +144,13 @@ export function createApp(
     chatId,
     bodyLimit({ maxSize: MAX_SAVED_CHAT_BYTES, onError: (c) => c.json({ detail: 'This chat is too long to save.' }, 413) }),
     async (c) => {
+      // Only a verified email can save, so made-up addresses cannot multiply the save limit.
+      if (!c.var.verified) return c.json({ detail: 'Verify your email address to save chats to your account.' }, 403)
+      const retryAfter = saveRateLimiter?.wait(c.var.userId)
+      if (retryAfter !== undefined) {
+        c.header('Retry-After', String(retryAfter))
+        return c.json({ detail: 'Too many messages saved in a short time. Please try again later.' }, 429)
+      }
       let body: unknown
       try {
         body = await c.req.json()
@@ -145,7 +161,11 @@ export function createApp(
       if (!parsed.success) return c.json({ detail: parsed.error.issues[0]?.message ?? 'invalid chat' }, 422)
       // A browser clock set in the future would keep a chat at the top of every list.
       const chat = { ...parsed.data, updatedAt: Math.min(parsed.data.updatedAt, Date.now()) }
-      return c.json(await c.var.accounts.chats.put(c.var.userId, c.req.param('id'), chat))
+      const id = c.req.param('id')
+      const written = await c.var.accounts.chats.put(c.var.userId, id, chat)
+      // A save resends the whole chat, so count only the messages the store had to write.
+      saveRateLimiter?.add(c.var.userId, written)
+      return c.json({ id, title: chat.title, updatedAt: chat.updatedAt } satisfies ChatSummary)
     },
   )
 

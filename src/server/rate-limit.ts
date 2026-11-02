@@ -16,6 +16,13 @@ export const CHAT_RATE_LIMITS: readonly RateLimit[] = [
 // Questions from every client together, so many addresses cannot run up provider spend.
 export const TOTAL_CHAT_RATE_LIMITS: readonly RateLimit[] = [{ limit: 1_000, windowMs: 24 * 60 * 60_000 }]
 
+// Messages each signed-in user may save. Asking questions at the chat limits adds about 200 an
+// hour; the rest leaves room for moving a browser's chats into the account at sign-in.
+export const CHAT_SAVE_RATE_LIMITS: readonly RateLimit[] = [
+  { limit: 1_000, windowMs: 60 * 60_000 },
+  { limit: 5_000, windowMs: 24 * 60 * 60_000 },
+]
+
 // Forget expired clients once this many are tracked.
 const PRUNE_THRESHOLD = 10_000
 
@@ -36,15 +43,30 @@ export class RateLimiter {
 
   /** Count a request from `client`, or return the seconds it must wait when over a limit. */
   take(client: string): number | undefined {
+    const retryAfter = this.wait(client)
+    if (retryAfter === undefined) this.add(client)
+    return retryAfter
+  }
+
+  /** The seconds `client` must wait while it is over a limit, or undefined when it may go ahead. */
+  wait(client: string): number | undefined {
     const now = this.#now()
+    const exceeded = this.#windows(client, now).filter((window, index) => window.count >= this.#limits[index]!.limit)
+    if (!exceeded.length) return undefined
+    return Math.ceil(Math.max(...exceeded.map((window) => window.resetAt - now)) / 1_000)
+  }
+
+  /** Count `amount` against `client`, for work whose size is known only once it is done. */
+  add(client: string, amount = 1) {
+    for (const window of this.#windows(client, this.#now())) window.count += amount
+  }
+
+  #windows(client: string, now: number): Window[] {
     if (this.#clients.size >= PRUNE_THRESHOLD) this.#prune(now)
     const windows = (this.#clients.get(client) ?? []).map((window) => (window.resetAt > now ? window : undefined))
     const current = this.#limits.map(({ windowMs }, index) => windows[index] ?? { count: 0, resetAt: now + windowMs })
     this.#clients.set(client, current)
-    const exceeded = current.filter((window, index) => window.count >= this.#limits[index]!.limit)
-    if (exceeded.length) return Math.ceil(Math.max(...exceeded.map((window) => window.resetAt - now)) / 1_000)
-    for (const window of current) window.count++
-    return undefined
+    return current
   }
 
   #prune(now: number) {

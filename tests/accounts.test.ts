@@ -2,15 +2,19 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { createApp } from '../src/server/app.ts'
 import { MAX_SAVED_MESSAGES, type SavedChat } from '../src/server/contracts.ts'
+import { RateLimiter } from '../src/server/rate-limit.ts'
 import { fakeAccounts } from './fakes.ts'
 
 const unexpected = () => {
   throw new Error('saved chats must not initialize chat')
 }
 
-function setup() {
+function setup(saveRateLimiter: RateLimiter | null = null) {
   const accounts = fakeAccounts()
-  const app = createApp({ getService: unexpected, getAccounts: () => accounts }, { webDist: null, rateLimiter: null })
+  const app = createApp(
+    { getService: unexpected, getAccounts: () => accounts },
+    { webDist: null, rateLimiter: null, saveRateLimiter },
+  )
   const request = (method: string, path: string, { user = 'alice', body }: { user?: string | null; body?: unknown } = {}) =>
     app.request(path, {
       method,
@@ -119,6 +123,39 @@ describe('saved chats', () => {
     expect(response.status).toBe(422)
     expect(typeof (await read(response)).detail).toBe('string')
     expect(accounts.chats.users.size).toBe(0)
+  })
+
+  it('saves only for a verified email, but still lists and deletes', async () => {
+    const { request, accounts } = setup()
+
+    const response = await request('PUT', '/api/chats/chat-1', { user: 'bob-unverified', body: chat('Question') })
+
+    expect(response.status).toBe(403)
+    expect((await read(response)).detail).toMatch(/Verify your email address/)
+    expect(accounts.chats.users.get('bob')?.size ?? 0).toBe(0)
+    expect(await read(await request('GET', '/api/chats', { user: 'bob-unverified' }))).toEqual({ chats: [] })
+    expect((await request('DELETE', '/api/account', { user: 'bob-unverified' })).status).toBe(204)
+    expect(accounts.deleted).toEqual(['bob'])
+  })
+
+  it('limits each user by the new messages they save, not by their chats', async () => {
+    const { request } = setup(new RateLimiter([{ limit: 5, windowMs: 60 * 60_000 }]))
+    const long = (messages: number): SavedChat => ({
+      ...chat('Question'),
+      messages: Array.from({ length: messages }, (_, id) => ({ id, role: id % 2 ? 'assistant' : 'user', content: 'Text' })),
+    })
+
+    // Saving the same chat again writes no new messages.
+    for (let save = 0; save < 3; save++) {
+      expect((await request('PUT', '/api/chats/chat-1', { body: long(4) })).status).toBe(200)
+    }
+    expect((await request('PUT', '/api/chats/chat-2', { body: chat('Second') })).status).toBe(200)
+    const limited = await request('PUT', '/api/chats/chat-3', { body: chat('Third') })
+    expect((await request('PUT', '/api/chats/chat-1', { user: 'carol', body: chat('Carol') })).status).toBe(200)
+
+    expect(limited.status).toBe(429)
+    expect(limited.headers.get('Retry-After')).toBe('3600')
+    expect((await read(limited)).detail).toMatch(/Too many messages saved/)
   })
 
   it('rejects chat ids that are not plain identifiers', async () => {

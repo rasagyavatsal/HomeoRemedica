@@ -37,6 +37,7 @@ export const SignOutIcon = icon(<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h
 export const SunIcon = icon(<path d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.7-5.7 1.4-1.4M4.9 19.1l1.4-1.4m11.4 0 1.4 1.4M4.9 4.9l1.4 1.4M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" />)
 export const MoonIcon = icon(<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />)
 export const MonitorIcon = icon(<path d="M4 5h16v11H4zM9 20h6m-3-4v4" />)
+export const MailIcon = icon(<path d="M4 6h16v12H4zM4 7l8 6 8-6" />)
 export const UserIcon =icon(<path d="M16 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM4 21a8 8 0 0 1 16 0" />)
 
 /** The potency drop: a drop with a ring and centre cut out, after the rings of a dilution. */

@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, it, vi } from 'vitest'
 
@@ -8,7 +8,7 @@ import type { Account, AuthClient } from './auth.ts'
 import { LocalLibrary } from './library.ts'
 import { answerStream, citation, json } from './test/fakes.ts'
 
-const ALICE: Account = { uid: 'alice', email: 'alice@example.com', name: null }
+const ALICE: Account = { uid: 'alice', email: 'alice@example.com', name: null, verified: true }
 
 /** A fake Firebase client whose sign-in succeeds unless `failWith` is set. */
 const fake = vi.hoisted(() => {
@@ -16,6 +16,7 @@ const fake = vi.hoisted(() => {
     account: null as Account | null,
     listeners: new Set<(account: Account | null) => void>(),
     failWith: null as { code: string } | null,
+    verificationsSent: 0,
     set(account: Account | null) {
       state.account = account
       for (const listener of state.listeners) listener(account)
@@ -29,7 +30,7 @@ vi.mock('./auth.ts', async (original) => ({
   connectAuth: async (): Promise<AuthClient> => {
     const signIn = async () => {
       if (fake.failWith) throw fake.failWith
-      fake.set({ uid: 'alice', email: 'alice@example.com', name: null })
+      fake.set({ uid: 'alice', email: 'alice@example.com', name: null, verified: true })
     }
     return {
       subscribe(listener) {
@@ -39,8 +40,15 @@ vi.mock('./auth.ts', async (original) => ({
       },
       token: async () => `token-${fake.account?.uid}`,
       signIn,
-      signUp: signIn,
+      signUp: async () => {
+        fake.verificationsSent++
+        fake.set({ uid: 'alice', email: 'alice@example.com', name: null, verified: false })
+      },
       signInWithGoogle: signIn,
+      sendVerification: async () => {
+        fake.verificationsSent++
+      },
+      refresh: async () => {},
       resetPassword: async () => {},
       signOut: async () => fake.set(null),
     }
@@ -97,6 +105,7 @@ beforeEach(() => {
   fake.account = null
   fake.listeners.clear()
   fake.failWith = null
+  fake.verificationsSent = 0
 })
 
 it('moves this device’s chats into the account at sign-in', async () => {
@@ -145,6 +154,38 @@ it('saves answers to the account and reopens them', async () => {
   unmount()
   render(<App />)
   expect(await screen.findByRole('heading', { name: 'Synced?' })).toBeInTheDocument()
+})
+
+it('keeps chats on this device until a new account’s email is verified', async () => {
+  const { store, requests } = serve([() => answerStream('Kept answer.', [citation(1)], 'Kept?')])
+  render(<App />)
+
+  await userEvent.click(await screen.findByRole('button', { name: 'Sign in to sync chats' }))
+  const dialog = screen.getByRole('dialog', { name: 'Sign in' })
+  await userEvent.click(within(dialog).getByRole('button', { name: 'Create an account' }))
+  await userEvent.type(within(dialog).getByLabelText('Email'), 'alice@example.com')
+  await userEvent.type(within(dialog).getByLabelText('Password'), 'secret123')
+  await userEvent.click(within(dialog).getByRole('button', { name: 'Create an account' }))
+
+  expect(await screen.findByText(/Verify your email address to sync your chats/)).toBeInTheDocument()
+  expect(fake.verificationsSent).toBe(1)
+  await userEvent.type(screen.getByRole('textbox', { name: 'Your question' }), 'Kept?{Enter}')
+  await screen.findByText('Kept answer.')
+  await waitFor(async () => expect(await new LocalLibrary().list()).toHaveLength(1))
+  expect(requests.filter((request) => request.includes('/api/chats'))).toEqual([])
+
+  await userEvent.click(screen.getByRole('button', { name: 'alice@example.com' }))
+  await userEvent.click(screen.getByRole('menuitem', { name: 'Resend verification email' }))
+  expect(await screen.findByText('A new verification link was sent to alice@example.com.')).toBeInTheDocument()
+  expect(fake.verificationsSent).toBe(2)
+
+  act(() => fake.set(ALICE))
+
+  expect(await within(sidebar()).findByRole('button', { name: 'Kept?' })).toBeInTheDocument()
+  await waitFor(() => expect([...(store.get('alice')?.values() ?? [])].map((chat) => chat.title)).toEqual(['Kept?']))
+  expect(await new LocalLibrary().list()).toEqual([])
+  await userEvent.click(screen.getByRole('button', { name: 'alice@example.com' }))
+  expect(screen.queryByRole('menuitem', { name: 'Resend verification email' })).not.toBeInTheDocument()
 })
 
 it('signs out to a fresh chat on this device', async () => {

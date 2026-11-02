@@ -74,9 +74,11 @@ export class MemoryChatStore implements ChatStore {
     return chat ? { messages: chat.messages, history: chat.history } : null
   }
 
-  async put(userId: string, chatId: string, chat: SavedChat): Promise<ChatSummary> {
-    this.#chats(userId).set(chatId, chat)
-    return { id: chatId, title: chat.title, updatedAt: chat.updatedAt }
+  async put(userId: string, chatId: string, chat: SavedChat): Promise<number> {
+    const chats = this.#chats(userId)
+    const stored = chats.get(chatId)?.messages.length ?? 0
+    chats.set(chatId, chat)
+    return Math.max(0, chat.messages.length - stored)
   }
 
   async delete(userId: string, chatId: string) {
@@ -89,15 +91,16 @@ export class MemoryChatStore implements ChatStore {
   }
 }
 
-/** Accounts whose ID tokens are `token-<userId>`. */
+/** Accounts whose ID tokens are `token-<userId>`, or `token-<userId>-unverified` before email verification. */
 export function fakeAccounts(chats = new MemoryChatStore()): Accounts & { chats: MemoryChatStore; deleted: string[] } {
   const deleted: string[] = []
   return {
     config: { apiKey: 'public-key', authDomain: 'test.firebaseapp.com', projectId: 'test' },
     chats,
     deleted,
-    async userId(idToken) {
-      return idToken.match(/^token-(.+)$/)?.[1]
+    async user(idToken) {
+      const match = idToken.match(/^token-(.+?)(-unverified)?$/)
+      return match ? { id: match[1]!, verified: !match[2] } : undefined
     },
     async deleteUser(userId) {
       deleted.push(userId)
