@@ -115,7 +115,10 @@ ul {
   background: var(--color-surface-raised);
 }
 
-.button-outline:hover:not(:disabled),
+.button-outline:hover:not(:disabled) {
+  background: var(--color-surface-raised-hover);
+}
+
 .button-quiet:hover:not(:disabled) {
   background: var(--color-surface-hover);
 }
