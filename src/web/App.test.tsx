@@ -83,14 +83,10 @@ describe('asking', () => {
     ])
   })
 
-  it('suggests questions in an empty chat', async () => {
-    const asked = serve({ chat: [() => answerStream('Keynotes.', [citation(1)])] })
+  it('shows the tagline in an empty chat', () => {
     render(<App />)
 
-    await userEvent.click(screen.getByRole('button', { name: 'What are the keynotes of Pulsatilla?' }))
-
-    expect(await screen.findByText('Keynotes.')).toBeInTheDocument()
-    expect(asked).toEqual([{ message: 'What are the keynotes of Pulsatilla?', history: [] }])
+    expect(screen.getByRole('heading', { level: 1, name: 'Ask the classical homoeopathic literature.' })).toBeInTheDocument()
   })
 
   it('shows a failure and asks again on request', async () => {
@@ -138,7 +134,7 @@ describe('saved chats', () => {
 
     const sidebar = screen.getByRole('navigation', { name: 'Chats' })
     await userEvent.click(within(sidebar).getByRole('button', { name: 'New chat' }))
-    expect(screen.getByRole('list', { name: 'Example questions' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Ask the classical homoeopathic literature.' })).toBeInTheDocument()
     await userEvent.click(within(sidebar).getByRole('button', { name: 'Pulsatilla keynotes?' }))
     expect(await screen.findByRole('heading', { name: 'Pulsatilla keynotes?' })).toBeInTheDocument()
   })
@@ -153,7 +149,7 @@ describe('saved chats', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
 
     expect(await screen.findByText('Your chats will appear here.')).toBeInTheDocument()
-    expect(screen.getByRole('list', { name: 'Example questions' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Ask the classical homoeopathic literature.' })).toBeInTheDocument()
     expect(localStorage.getItem('homeoremedica.library.v1')).toBe('[]')
   })
 

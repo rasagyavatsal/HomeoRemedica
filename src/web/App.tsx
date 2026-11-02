@@ -223,14 +223,6 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
   }, [])
   const closeSources = useCallback(() => setOpenSources(null), [])
 
-  const ask = useCallback(
-    (question: string) => {
-      chat.ask(question)
-      composer.current?.focus()
-    },
-    [chat.ask],
-  )
-
   const openSource =
     openSources && conversation.messages.find((message) => message.id === openSources.messageId)?.sources?.[openSources.source - 1]
   const sidebarShown = sidebarOpen && drawer
@@ -279,7 +271,7 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
                 onRetry={chat.retry}
               />
             ) : (
-              <Welcome onAsk={ask} />
+              <Welcome />
             )}
           </div>
         </div>

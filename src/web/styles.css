@@ -170,8 +170,7 @@ ul {
 @media (prefers-reduced-motion: no-preference) {
   .button:active:not(:disabled),
   .icon-button:active,
-  .send-button:active:not(:disabled),
-  .suggestion:active {
+  .send-button:active:not(:disabled) {
     transform: scale(0.96);
   }
 }
@@ -751,61 +750,28 @@ ul {
 
 /* ---- Welcome ------------------------------------------------------------ */
 
-.welcome {
-  padding: var(--space-3xl) 0 var(--space-xl);
-}
-
-.suggestions {
+.scroller:has(.welcome) {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(var(--layout-card-min), 100%), 1fr));
-  gap: var(--space-xs);
-  margin-top: var(--space-xl);
-  padding: 0;
-  list-style: none;
 }
 
-.suggestion {
-  width: 100%;
-  height: 100%;
-  padding: var(--space-sm) var(--space-md);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
+.scroller:has(.welcome) > .reading {
+  display: grid;
+  align-items: center;
+}
+
+.welcome {
+  padding: var(--space-xl) 0;
+}
+
+.tagline {
+  font-family: var(--font-reading);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-tight);
+  text-align: center;
+  text-wrap: balance;
   color: var(--color-text);
-  text-align: left;
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    border-color var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-base) var(--ease-standard),
-    transform var(--duration-base) var(--ease-standard);
-}
-
-.suggestion:hover {
-  border-color: var(--color-accent-border);
-  background: var(--color-accent-soft);
-  box-shadow: var(--shadow-sm);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .suggestion:hover {
-    transform: translateY(calc(var(--space-3xs) * -1));
-  }
-}
-
-.suggestions > li {
   animation: rise-in var(--duration-slow) var(--ease-standard) both;
-}
-
-.suggestions > li:nth-child(2) {
-  animation-delay: var(--duration-stagger);
-}
-
-.suggestions > li:nth-child(3) {
-  animation-delay: calc(var(--duration-stagger) * 2);
-}
-
-.suggestions > li:nth-child(4) {
-  animation-delay: calc(var(--duration-stagger) * 3);
 }
 
 /* ---- Thread ------------------------------------------------------------- */
@@ -1322,10 +1288,6 @@ ul {
 @media (max-width: 40rem) {
   :root {
     --layout-gutter: var(--space-md);
-  }
-
-  .welcome {
-    padding-top: var(--space-xl);
   }
 }
 
