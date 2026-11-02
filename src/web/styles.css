@@ -764,36 +764,68 @@ ul {
   color: var(--color-text);
 }
 
-.sources-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
+.references {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
   margin-top: var(--space-md);
-  padding: var(--space-2xs) var(--space-sm);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-pill);
-  background: var(--color-surface);
+  padding: var(--space-sm) 0 0;
+  border-top: var(--border-width) solid var(--color-border);
+  list-style: none;
+}
+
+.reference {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  width: 100%;
+  padding: var(--space-2xs) var(--space-xs);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    border-color var(--duration-fast) var(--ease-standard);
+  text-align: left;
+  transition: background var(--duration-fast) var(--ease-standard);
 }
 
-.sources-toggle .icon {
-  width: var(--icon-sm);
-  height: var(--icon-sm);
+.reference:hover,
+.reference[data-active] {
+  background: var(--color-accent-soft);
 }
 
-.sources-toggle:hover,
-.sources-toggle[data-open] {
-  border-color: var(--color-accent-border);
+.reference-number {
+  display: grid;
+  flex: none;
+  place-items: center;
+  align-self: center;
+  min-width: var(--citation-size);
+  padding: 0 var(--space-2xs);
+  height: var(--citation-size);
+  border-radius: var(--radius-sm);
   background: var(--color-accent-soft);
   color: var(--color-accent-text);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
 }
 
-.sources-toggle-detail {
-  color: var(--color-text-subtle);
+.reference[data-active] .reference-number {
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+}
+
+.reference-heading {
+  color: var(--color-text);
+  font-weight: var(--weight-semibold);
+}
+
+.reference-book {
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--font-reading);
+  font-style: italic;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ---- Answer prose ------------------------------------------------------- */

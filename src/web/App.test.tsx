@@ -43,7 +43,10 @@ describe('asking', () => {
     await ask('What is Pulsatilla like?')
 
     expect(screen.getByRole('heading', { name: 'What is Pulsatilla like?' })).toBeInTheDocument()
-    await userEvent.click(await screen.findByRole('button', { name: 'Source 2' }))
+    const references = await screen.findByRole('list', { name: 'References' })
+    expect(within(references).getAllByRole('button')).toHaveLength(1)
+    expect(screen.queryByRole('region', { name: 'Sources' })).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Source 2' }))
 
     const panel = screen.getByRole('region', { name: 'Sources' })
     expect(within(panel).getByText('1 cited of 2 retrieved')).toBeInTheDocument()
@@ -52,7 +55,9 @@ describe('asking', () => {
 
     await userEvent.keyboard('{Escape}')
     expect(screen.queryByRole('region', { name: 'Sources' })).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /2 sources · 1 cited/ })).toBeInTheDocument()
+
+    await userEvent.click(within(references).getByRole('button', { name: /Pulsatilla/ }))
+    expect(screen.getByRole('region', { name: 'Sources' })).toBeInTheDocument()
   })
 
   it('sends the history the server returned with the last answer', async () => {

@@ -1,14 +1,21 @@
 import { memo, useCallback } from 'react'
 
 import { Answer } from './Answer.tsx'
+import type { Citation } from '../server/contracts.ts'
 import { type Message, citedSources } from './conversation.ts'
-import { AlertIcon, BookIcon, RetryIcon } from './icons.tsx'
+import { AlertIcon, RetryIcon } from './icons.tsx'
+
+/** The reference open in the sources panel. */
+interface OpenReference {
+  messageId: number
+  source: number
+}
 
 interface ThreadProps {
   messages: readonly Message[]
-  /** The answer whose sources are open, if any. */
-  openSources: number | undefined
-  onSources: (messageId: number, source?: number) => void
+  /** The reference open in the sources panel, if any. */
+  openSources: OpenReference | undefined
+  onSources: (messageId: number, source: number) => void
   onRetry: () => void
 }
 
@@ -24,7 +31,7 @@ export function Thread({ messages, openSources, onSources, onRetry }: ThreadProp
           <li key={message.id} className="reply">
             <Reply
               message={message}
-              sourcesOpen={openSources === message.id}
+              activeSource={openSources?.messageId === message.id ? openSources.source : undefined}
               onSources={onSources}
               onRetry={index === messages.length - 1 ? onRetry : undefined}
             />
@@ -37,12 +44,13 @@ export function Thread({ messages, openSources, onSources, onRetry }: ThreadProp
 
 interface ReplyProps {
   message: Message
-  sourcesOpen: boolean
-  onSources: (messageId: number, source?: number) => void
+  /** This answer's source open in the sources panel, if any. */
+  activeSource: number | undefined
+  onSources: (messageId: number, source: number) => void
   onRetry: (() => void) | undefined
 }
 
-const Reply = memo(function Reply({ message, sourcesOpen, onSources, onRetry }: ReplyProps) {
+const Reply = memo(function Reply({ message, activeSource, onSources, onRetry }: ReplyProps) {
   const { id, content, sources, status } = message
   const cite = useCallback((number: number) => onSources(id, number), [id, onSources])
 
@@ -61,7 +69,6 @@ const Reply = memo(function Reply({ message, sourcesOpen, onSources, onRetry }: 
   }
 
   const waiting = status === 'streaming' && !content
-  const cited = citedSources(content)
   return (
     <>
       {waiting ? (
@@ -73,24 +80,42 @@ const Reply = memo(function Reply({ message, sourcesOpen, onSources, onRetry }: 
         <Answer content={content} sourceCount={sources?.length ?? 0} onCite={cite} />
       )}
       {status === 'stopped' && <p className="reply-note">{content ? 'Stopped before the answer finished.' : 'Stopped.'}</p>}
-      {sources && sources.length > 0 && (
-        <button
-          type="button"
-          className="sources-toggle"
-          data-open={sourcesOpen || undefined}
-          aria-expanded={sourcesOpen}
-          onClick={() => onSources(id)}
-        >
-          <BookIcon />
-          {sources.length} {sources.length === 1 ? 'source' : 'sources'}
-          {cited.size > 0 && (
-            <>
-              {' '}
-              <span className="sources-toggle-detail">· {cited.size} cited</span>
-            </>
-          )}
-        </button>
+      {/* Listed once the answer is done, so the list does not shift while it streams. */}
+      {sources && sources.length > 0 && status !== 'streaming' && (
+        <References sources={sources} cited={citedSources(content)} active={activeSource} onOpen={cite} />
       )}
     </>
   )
 })
+
+interface ReferencesProps {
+  sources: readonly Citation[]
+  cited: ReadonlySet<number>
+  active: number | undefined
+  onOpen: (number: number) => void
+}
+
+/** The passages an answer cites, or every passage it retrieved if it cites none. */
+function References({ sources, cited, active, onOpen }: ReferencesProps) {
+  const numbered = sources.map((source, index) => ({ source, number: index + 1 }))
+  const listed = cited.size ? numbered.filter(({ number }) => cited.has(number)) : numbered
+  return (
+    <ol className="references" aria-label="References">
+      {listed.map(({ source, number }) => (
+        <li key={source.id}>
+          <button
+            type="button"
+            className="reference"
+            data-active={number === active || undefined}
+            aria-pressed={number === active}
+            onClick={() => onOpen(number)}
+          >
+            <span className="reference-number">{number}</span>
+            <span className="reference-heading">{source.remedyName ?? source.sectionTitle}</span>
+            <span className="reference-book">{source.bookTitle}</span>
+          </button>
+        </li>
+      ))}
+    </ol>
+  )
+}

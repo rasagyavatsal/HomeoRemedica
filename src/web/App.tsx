@@ -120,10 +120,10 @@ export default function App() {
   )
 }
 
-/** Which answer's sources are open, and the source to show. */
+/** The reference open in the sources panel: an answer and one of its sources. */
 interface OpenSources {
   messageId: number
-  source?: number
+  source: number
 }
 
 interface WorkspaceProps {
@@ -229,10 +229,9 @@ function Workspace({ library, place, notify: setNotice, account }: WorkspaceProp
     }
   }
 
-  const showSources = useCallback((messageId: number, source?: number) => {
-    setOpenSources((open) =>
-      source === undefined && open?.messageId === messageId && open.source === undefined ? null : { messageId, source },
-    )
+  // Clicking the open reference again closes the panel.
+  const showSources = useCallback((messageId: number, source: number) => {
+    setOpenSources((open) => (open?.messageId === messageId && open.source === source ? null : { messageId, source }))
   }, [])
   const closeSources = useCallback(() => setOpenSources(null), [])
 
@@ -287,7 +286,7 @@ function Workspace({ library, place, notify: setNotice, account }: WorkspaceProp
             {conversation.messages.length ? (
               <Thread
                 messages={conversation.messages}
-                openSources={openSources?.messageId}
+                openSources={openSources ?? undefined}
                 onSources={showSources}
                 onRetry={chat.retry}
               />
