@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import type { Feedback, Rating } from '../server/contracts.ts'
+import type { AnswerRatings, Feedback, Rating } from '../server/contracts.ts'
 import { errorMessage } from './api.ts'
 import { type Conversation, type Message, citedSources } from './conversation.ts'
 
-/** An answer's ratings: its own, and each source's by its number in the answer, from 1. */
-export interface AnswerRatings {
-  answer: Rating | null
-  sources: Readonly<Record<number, Rating>>
+/** Where ratings are saved, and loaded from when a chat opens. */
+export interface FeedbackClient {
+  rate(id: string, feedback: Feedback): Promise<void>
+  /** The ratings saved for a chat's answers, by message id. */
+  ratings(chatId: string): Promise<Record<number, AnswerRatings>>
 }
 
 /** The answer itself, or one of its sources by number. */
@@ -59,13 +60,13 @@ export interface FeedbackControls {
 }
 
 /**
- * Ratings of the open chat's answers, sent with `send` as they change. A rating shows at once and
- * is undone if it cannot be saved.
+ * Ratings of the open chat's answers, loaded when the chat opens and saved as they change. A
+ * rating shows at once and is undone if it cannot be saved.
  */
 export function useFeedback(
   conversation: Conversation,
   /** Null where ratings cannot be saved, such as without a verified account. */
-  send: ((id: string, feedback: Feedback) => Promise<void>) | null,
+  client: FeedbackClient | null,
   onError: (message: string) => void,
 ): FeedbackControls {
   const [all, setAll] = useState<ReadonlyMap<string, AnswerRatings>>(() => new Map())
@@ -73,10 +74,35 @@ export function useFeedback(
   const latest = useRef(all)
   const saved = useRef(new Map<string, AnswerRatings>())
   const queues = useRef(new Map<string, Promise<void>>())
+  // Chats whose saved ratings were loaded, or are loading.
+  const loaded = useRef(new Set<string>())
   const chat = useRef(conversation)
   useEffect(() => {
     chat.current = conversation
   })
+
+  // A chat opened with answers may have saved ratings; a new chat has none. Ratings given while
+  // they load win over the loaded ones.
+  useEffect(() => {
+    const chatId = conversation.id
+    if (!client || !chat.current.messages.length || loaded.current.has(chatId)) return
+    loaded.current.add(chatId)
+    client.ratings(chatId).then(
+      (ratings) => {
+        const next = new Map(latest.current)
+        for (const [messageId, answer] of Object.entries(ratings)) {
+          const id = feedbackId(chatId, Number(messageId))
+          if (next.has(id)) continue
+          next.set(id, answer)
+          saved.current.set(id, answer)
+        }
+        latest.current = next
+        setAll(next)
+      },
+      // Try again the next time the chat opens.
+      () => loaded.current.delete(chatId),
+    )
+  }, [client, conversation.id])
 
   const show = useCallback((id: string, ratings: AnswerRatings) => {
     const next = new Map(latest.current).set(id, ratings)
@@ -86,7 +112,7 @@ export function useFeedback(
 
   const rate = useCallback<RateHandler>(
     (messageId, target, rating) => {
-      if (!send) return
+      if (!client) return
       const { id: chatId, messages } = chat.current
       const id = feedbackId(chatId, messageId)
       const next = rated(latest.current.get(id) ?? UNRATED, target, rating)
@@ -97,7 +123,7 @@ export function useFeedback(
         const ratings = latest.current.get(id) ?? UNRATED
         if (same(ratings, saved.current.get(id) ?? UNRATED)) return
         try {
-          await send(id, feedbackFor(messages, messageId, ratings)!)
+          await client.rate(id, feedbackFor(messages, messageId, ratings)!)
           saved.current.set(id, ratings)
         } catch (error) {
           show(id, saved.current.get(id) ?? UNRATED)
@@ -106,7 +132,7 @@ export function useFeedback(
       })
       queues.current.set(id, request)
     },
-    [send, onError, show],
+    [client, onError, show],
   )
 
   const ratings = useMemo(() => {

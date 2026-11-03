@@ -199,6 +199,26 @@ export const FeedbackSchema = z.strictObject(
 export type Rating = z.output<typeof RatingSchema>
 export type Feedback = z.output<typeof FeedbackSchema>
 
+/** An answer's ratings: its own, and each source's by its number in the answer, from 1. */
+export interface AnswerRatings {
+  answer: Rating | null
+  sources: Record<number, Rating>
+}
+
+/** `GET /api/chats/:id/feedback`: the user's ratings of the chat's answers, by message id. */
+export interface ChatRatings {
+  ratings: Record<number, AnswerRatings>
+}
+
+/** The ratings in an answer's feedback. */
+export function answerRatings({ rating, sources }: Pick<Feedback, 'rating' | 'sources'>): AnswerRatings {
+  const rated: Record<number, Rating> = {}
+  for (const [index, source] of sources.entries()) {
+    if (source.rating) rated[index + 1] = source.rating
+  }
+  return { answer: rating, sources: rated }
+}
+
 export interface Retriever {
   readonly corpusVersion: string
   retrieve(request: ChatRequest, options: { limit: number }): Promise<readonly RetrievedSource[]>

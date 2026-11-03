@@ -19,9 +19,12 @@ export interface ChatStore {
   deleteAll(userId: string): Promise<void>
 }
 
+/** Feedback for message `messageId` of chat `chatId` is saved as `${chatId}-${messageId}`. */
 export interface FeedbackStore {
   /** Save the user's ratings of one answer, replacing any saved before. */
   put(userId: string, feedbackId: string, feedback: Feedback): Promise<void>
+  /** The ratings the user saved for a chat's answers, by message id. */
+  list(userId: string, chatId: string): Promise<Map<number, Pick<Feedback, 'rating' | 'sources'>>>
 }
 
 export interface User {
@@ -147,12 +150,30 @@ export class FirestoreFeedbackStore implements FeedbackStore {
     this.#db = db
   }
 
+  #feedback(userId: string) {
+    return this.#db.collection('users').doc(userId).collection('feedback')
+  }
+
   async put(userId: string, feedbackId: string, feedback: Feedback): Promise<void> {
-    await this.#db
-      .collection('users')
-      .doc(userId)
-      .collection('feedback')
-      .doc(feedbackId)
-      .set({ ...feedback, updatedAt: FieldValue.serverTimestamp() })
+    await this.#feedback(userId).doc(feedbackId).set({ ...feedback, updatedAt: FieldValue.serverTimestamp() })
+  }
+
+  async list(userId: string, chatId: string): Promise<Map<number, Pick<Feedback, 'rating' | 'sources'>>> {
+    // Every id from `${chatId}-` up to it followed by the highest character; the long question
+    // and answer stay behind.
+    const prefix = `${chatId}-`
+    const snapshot = await this.#feedback(userId)
+      .orderBy(FieldPath.documentId())
+      .startAt(prefix)
+      .endAt(`${prefix}\uf8ff`)
+      .select('rating', 'sources')
+      .get()
+    const ratings = new Map<number, Pick<Feedback, 'rating' | 'sources'>>()
+    for (const doc of snapshot.docs) {
+      // Another chat's id may begin with this one's, but its message part is not a number.
+      const messageId = doc.id.slice(prefix.length)
+      if (/^\d+$/.test(messageId)) ratings.set(Number(messageId), { rating: doc.get('rating'), sources: doc.get('sources') })
+    }
+    return ratings
   }
 }

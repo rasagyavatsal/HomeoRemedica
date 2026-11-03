@@ -171,8 +171,8 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
   const chat = useChat(save)
   const { conversation } = chat
   // Ratings are kept with the account, so only a verified account can give them.
-  const sendFeedback = useMemo(() => (library instanceof AccountLibrary ? library.rate.bind(library) : null), [library])
-  const feedback = useFeedback(conversation, sendFeedback, setNotice)
+  const ratingClient = library instanceof AccountLibrary ? library : null
+  const feedback = useFeedback(conversation, ratingClient, setNotice)
   const scroller = useFollow(conversation.messages)
   // The open chat, for callbacks that finish after it may have changed.
   const current = useRef(conversation)
@@ -300,7 +300,7 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
                 onSources={showSources}
                 onRetry={chat.retry}
                 ratings={feedback.ratings}
-                onRate={sendFeedback ? feedback.rate : undefined}
+                onRate={ratingClient ? feedback.rate : undefined}
               />
             ) : (
               <Welcome />
@@ -326,7 +326,7 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
             onClose={closeSources}
             rating={feedback.ratings.get(openSources.messageId)?.sources[openSources.source] ?? null}
             onRate={
-              sendFeedback && !openMessage?.status
+              ratingClient && !openMessage?.status
                 ? (rating) => feedback.rate(openSources.messageId, openSources.source, rating)
                 : undefined
             }

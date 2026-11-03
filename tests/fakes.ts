@@ -100,6 +100,17 @@ export class MemoryFeedbackStore implements FeedbackStore {
     if (this.failure) throw this.failure
     this.saved.set(`${userId}/${feedbackId}`, feedback)
   }
+
+  async list(userId: string, chatId: string) {
+    if (this.failure) throw this.failure
+    const prefix = `${userId}/${chatId}-`
+    const ratings = new Map<number, Feedback>()
+    for (const [key, feedback] of this.saved) {
+      const messageId = key.slice(prefix.length)
+      if (key.startsWith(prefix) && /^\d+$/.test(messageId)) ratings.set(Number(messageId), feedback)
+    }
+    return ratings
+  }
 }
 
 /** Accounts whose ID tokens are `token-<userId>`, or `token-<userId>-unverified` before email verification. */

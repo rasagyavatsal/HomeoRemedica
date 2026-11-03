@@ -1,11 +1,11 @@
 import { memo, useCallback, useId } from 'react'
 
 import { Answer } from './Answer.tsx'
-import type { Citation } from '../server/contracts.ts'
+import type { AnswerRatings, Citation } from '../server/contracts.ts'
 import { type Message, citedSources } from './conversation.ts'
 import { AlertIcon, RetryIcon } from './icons.tsx'
 import { RatingButtons } from './Rating.tsx'
-import type { AnswerRatings, RateHandler } from './useFeedback.ts'
+import type { RateHandler } from './useFeedback.ts'
 
 /** The reference open in the sources panel. */
 interface OpenReference {

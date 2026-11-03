@@ -20,8 +20,10 @@ import {
   type ChatRequest,
   ChatRequestSchema,
   type ChatResponse,
+  type ChatRatings,
   type ChatSummary,
   type ClientConfig,
+  answerRatings,
   FeedbackSchema,
   SavedChatSchema,
   type WebChatResponse,
@@ -174,6 +176,12 @@ export function createApp(
       return c.json({ id, title: chat.title, updatedAt: chat.updatedAt } satisfies ChatSummary)
     },
   )
+
+  app.get('/api/chats/:id/feedback', signedIn, chatId, async (c) => {
+    const saved = await c.var.accounts.feedback.list(c.var.userId, c.req.param('id'))
+    const ratings = Object.fromEntries([...saved].map(([messageId, feedback]) => [messageId, answerRatings(feedback)]))
+    return c.json({ ratings } satisfies ChatRatings)
+  })
 
   app.delete('/api/chats/:id', signedIn, chatId, async (c) => {
     await c.var.accounts.chats.delete(c.var.userId, c.req.param('id'))

@@ -227,6 +227,25 @@ describe('feedback', () => {
     expect(accounts.feedback.saved.size).toBe(0)
   })
 
+  it('returns a chat’s ratings by message, with sources by number', async () => {
+    const { request } = setup()
+    await request('PUT', '/api/feedback/chat-1-1', { body: feedback() })
+    await request('PUT', '/api/feedback/chat-1-3', {
+      body: feedback({ rating: null, sources: [{ id: 'a', cited: true, rating: null }, { id: 'b', cited: false, rating: 'down' }] }),
+    })
+    // Another chat whose id begins with this one's, and another user's rating.
+    await request('PUT', '/api/feedback/chat-1-2-1', { body: feedback() })
+    await request('PUT', '/api/feedback/chat-1-5', { user: 'bob', body: feedback() })
+
+    const response = await request('GET', '/api/chats/chat-1/feedback')
+
+    expect(await read(response)).toEqual({
+      ratings: { 1: { answer: 'up', sources: { 1: 'up' } }, 3: { answer: null, sources: { 2: 'down' } } },
+    })
+    expect(await read(await request('GET', '/api/chats/chat-9/feedback'))).toEqual({ ratings: {} })
+    expect((await request('GET', '/api/chats/chat-1/feedback', { user: null })).status).toBe(401)
+  })
+
   it('limits how many ratings each user sends', async () => {
     const { request } = setup(null, new RateLimiter([{ limit: 2, windowMs: 60_000 }]))
 

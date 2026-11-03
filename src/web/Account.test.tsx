@@ -2,7 +2,7 @@ import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, it, vi } from 'vitest'
 
-import type { Feedback, SavedChat } from '../server/contracts.ts'
+import type { AnswerRatings, Feedback, SavedChat } from '../server/contracts.ts'
 import App from './App.tsx'
 import type { Account, AuthClient } from './auth.ts'
 import { LocalLibrary } from './library.ts'
@@ -73,8 +73,19 @@ function serve(chat: (() => Response)[] = []) {
     if (!token || token === 'undefined') return json({ detail: 'Please sign in again.' }, 401)
     const chats = store.get(token) ?? new Map<string, SavedChat>()
     store.set(token, chats)
-    const id = path.match(/^\/api\/chats\/(.+)$/)?.[1]
+    const ratedChat = path.match(/^\/api\/chats\/(.+)\/feedback$/)?.[1]
+    const id = ratedChat ? undefined : path.match(/^\/api\/chats\/(.+)$/)?.[1]
     const feedbackId = path.match(/^\/api\/feedback\/(.+)$/)?.[1]
+
+    if (ratedChat) {
+      const prefix = `${token}/${ratedChat}-`
+      const ratings = [...feedback].filter(([key]) => key.startsWith(prefix))
+      const rated = ({ rating, sources }: Feedback): AnswerRatings => ({
+        answer: rating,
+        sources: Object.fromEntries(sources.flatMap((source, index) => (source.rating ? [[index + 1, source.rating]] : []))),
+      })
+      return json({ ratings: Object.fromEntries(ratings.map(([key, saved]) => [key.slice(prefix.length), rated(saved)])) })
+    }
 
     if (feedbackId && method === 'PUT') {
       if (server.feedbackFails) return json({ detail: 'Ratings are down.' }, 500)
@@ -232,6 +243,33 @@ it('rates answers and their passages', async () => {
   await userEvent.click(within(answer).getByRole('button', { name: 'Helpful' }))
   await waitFor(() => expect(feedback.get(id!)?.rating).toBeNull())
   expect(feedback.size).toBe(1)
+})
+
+it('shows saved ratings when a chat is opened again', async () => {
+  fake.account = ALICE
+  const { feedback } = serve([() => answerStream('Kept answer [1].', [citation(1)], 'Kept?')])
+  const { unmount } = render(<App />)
+  await screen.findByText('alice@example.com')
+  await userEvent.type(screen.getByRole('textbox', { name: 'Your question' }), 'Kept?{Enter}')
+  await screen.findByText(/Kept answer/)
+  await userEvent.click(within(screen.getByRole('group', { name: 'Rate this answer' })).getByRole('button', { name: 'Not helpful' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Source 1' }))
+  await userEvent.click(within(screen.getByRole('group', { name: 'Rate this passage' })).getByRole('button', { name: 'Relevant' }))
+  await waitFor(() => expect([...feedback.values()][0]?.sources[0]?.rating).toBe('up'))
+
+  unmount()
+  render(<App />)
+  await screen.findByRole('heading', { name: 'Kept?' })
+
+  const answer = await screen.findByRole('group', { name: 'Rate this answer' })
+  await waitFor(() => expect(within(answer).getByRole('button', { name: 'Not helpful' })).toHaveAttribute('aria-pressed', 'true'))
+  await userEvent.click(screen.getByRole('button', { name: 'Source 1' }))
+  const passage = screen.getByRole('group', { name: 'Rate this passage' })
+  expect(within(passage).getByRole('button', { name: 'Relevant' })).toHaveAttribute('aria-pressed', 'true')
+
+  // A new rating keeps the loaded ones.
+  await userEvent.click(within(answer).getByRole('button', { name: 'Helpful' }))
+  await waitFor(() => expect([...feedback.values()][0]).toMatchObject({ rating: 'up', sources: [{ rating: 'up' }] }))
 })
 
 it('undoes a rating that could not be saved', async () => {
