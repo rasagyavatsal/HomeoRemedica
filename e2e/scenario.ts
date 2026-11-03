@@ -7,7 +7,7 @@ export const E2E_URL = `http://127.0.0.1:${E2E_PORT}`
 export const PROJECT_ID = 'demo-homeoremedica'
 export const API_KEY = 'e2e-api-key'
 export const AUTH_EMULATOR = '127.0.0.1:9099'
-export const FIRESTORE_EMULATOR = '127.0.0.1:8085'
+export const FIRESTORE_EMULATOR = '127.0.0.1:8086'
 
 /** Questions each test client may ask a minute; tests ask from their own address. */
 export const CHAT_LIMIT = 5

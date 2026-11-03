@@ -21,6 +21,8 @@ export default defineConfig({
       command: `npx --yes firebase-tools@15.32.1 emulators:start --config e2e/firebase.json --project ${PROJECT_ID} --only auth,firestore`,
       url: 'http://127.0.0.1:9099/',
       wait: { stdout: /All emulators ready/ },
+      // The CLI stops the emulators it started only when interrupted.
+      gracefulShutdown: { signal: 'SIGINT', timeout: 10_000 },
       reuseExistingServer: !CI,
       timeout: 120_000,
     },
