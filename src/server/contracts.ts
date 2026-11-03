@@ -26,22 +26,44 @@ export const ChatRequestSchema = z
   .strictObject(
     {
       message: text('message'),
-      history: z
-        .array(ChatTurnSchema)
-        .max(MAX_HISTORY_TURNS, { error: `history must not exceed ${MAX_HISTORY_TURNS} turns` })
-        .default([]),
+      history: historySchema().default([]),
+      summary: text('summary').optional(),
     },
     { error: (issue) => (issue.code === 'unrecognized_keys' ? 'unexpected request field' : undefined) },
   )
-  .refine((request) => historyChars(request.history) <= MAX_HISTORY_CHARS, {
+  .refine((request) => contextChars(request.history, request.summary) <= MAX_HISTORY_CHARS, {
     error: `history must not exceed ${MAX_HISTORY_CHARS} characters`,
   })
 
+function historySchema() {
+  return z.array(ChatTurnSchema).max(MAX_HISTORY_TURNS, { error: `history must not exceed ${MAX_HISTORY_TURNS} turns` })
+}
+
+/** The latest exchange, which compaction keeps word for word so follow-ups still resolve. */
+export const KEPT_TURNS = 2
+
+/** `POST /api/chat/compact`: the context to condense into a summary. */
+export const CompactRequestSchema = z
+  .strictObject(
+    { history: historySchema(), summary: text('summary').optional() },
+    { error: (issue) => (issue.code === 'unrecognized_keys' ? 'unexpected request field' : undefined) },
+  )
+  .refine((request) => contextChars(request.history, request.summary) <= MAX_HISTORY_CHARS, {
+    error: `history must not exceed ${MAX_HISTORY_CHARS} characters`,
+  })
+  .refine((request) => request.history.length > KEPT_TURNS, { error: 'there is nothing to compact' })
+
 export type ChatTurn = z.output<typeof ChatTurnSchema>
 export type ChatRequest = z.output<typeof ChatRequestSchema>
+export type CompactRequest = z.output<typeof CompactRequestSchema>
 
 export function historyChars(history: readonly ChatTurn[]): number {
   return history.reduce((total, turn) => total + turn.content.length, 0)
+}
+
+/** The characters the model reads from earlier in the chat: the summary and the history. */
+export function contextChars(history: readonly ChatTurn[], summary: string | undefined): number {
+  return historyChars(history) + (summary?.length ?? 0)
 }
 
 export interface BookSummary {
@@ -101,6 +123,12 @@ export interface WebChatResponse extends ChatResponse {
   history: ChatTurn[]
 }
 
+/** `POST /api/chat/compact`: the summary and history to send with the next question. */
+export interface CompactResponse {
+  summary: string
+  history: ChatTurn[]
+}
+
 /** The public Firebase settings the browser signs in with. */
 export interface AuthConfig {
   apiKey: string
@@ -152,6 +180,8 @@ export const SavedChatSchema = z.strictObject(
       .min(1)
       .max(MAX_SAVED_MESSAGES, { error: `a chat must not exceed ${MAX_SAVED_MESSAGES} messages` }),
     history: z.array(ChatTurnSchema).max(MAX_HISTORY_TURNS),
+    /** What compacting the chat condensed its earlier turns into. */
+    summary: z.string().max(MAX_TURN_CHARS).optional(),
   },
   { error: (issue) => (issue.code === 'unrecognized_keys' ? 'unexpected chat field' : undefined) },
 )
@@ -174,6 +204,7 @@ export interface ChatList {
 export interface SavedConversation {
   messages: SavedMessage[]
   history: ChatTurn[]
+  summary?: string
 }
 
 const RatingSchema = z.enum(['up', 'down'])

@@ -71,7 +71,7 @@ export class MemoryChatStore implements ChatStore {
 
   async get(userId: string, chatId: string): Promise<SavedConversation | null> {
     const chat = this.#chats(userId).get(chatId)
-    return chat ? { messages: chat.messages, history: chat.history } : null
+    return chat ? { messages: chat.messages, history: chat.history, summary: chat.summary } : null
   }
 
   async put(userId: string, chatId: string, chat: SavedChat): Promise<number> {

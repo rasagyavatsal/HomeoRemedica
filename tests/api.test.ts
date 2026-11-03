@@ -4,7 +4,7 @@ import { type AppDependencies, type ChatHandler, createApp, productionDependenci
 import { BOOKS, CorpusError } from '../src/server/qdrant.ts'
 import { RateLimiter } from '../src/server/rate-limit.ts'
 import type { Settings } from '../src/server/runtime.ts'
-import type { BookSummary, ChatOptions, ChatRequest, ChatResponse } from '../src/server/contracts.ts'
+import type { BookSummary, ChatOptions, ChatRequest, ChatResponse, CompactRequest, CompactResponse } from '../src/server/contracts.ts'
 import { ChatFailure, ConfigurationError, type FailureKind } from '../src/server/errors.ts'
 
 const BOOK: BookSummary = { bookId: 'kent_lectures', title: "Kent's Lectures", author: 'Kent' }
@@ -12,6 +12,7 @@ const INTERNAL = 'Something went wrong while preparing the answer. Please try ag
 
 class StubService implements ChatHandler {
   readonly requests: ChatRequest[] = []
+  readonly compactions: CompactRequest[] = []
   failure: unknown = null
   answer = 'Historical reference only. Kent describes irritability [1].'
 
@@ -38,6 +39,12 @@ class StubService implements ChatHandler {
     onSources?.(response.sources)
     for (const word of this.answer.split(/(?<= )/)) onText?.(word)
     return response
+  }
+
+  async compact(request: CompactRequest): Promise<CompactResponse> {
+    this.compactions.push(request)
+    if (this.failure !== null) throw this.failure
+    return { summary: 'The user asked about Nux vomica.', history: request.history.slice(-2) }
   }
 }
 
@@ -234,6 +241,82 @@ it('limits history characters and truncates the answer only in history', async (
     { role: 'assistant', content: service.answer.slice(0, 4_000).trim() },
   ])
   expect(body.history.reduce((total: number, turn: { content: string }) => total + turn.content.length, 0)).toBeLessThanOrEqual(16_000)
+})
+
+it('counts a compacted chat’s summary against the history limit', async () => {
+  const { service, post } = setup()
+  const history = [...'abc'].map((character) => ({ role: 'user', content: character.repeat(4_000) }))
+  const summary = 's'.repeat(3_990)
+
+  const response = await post({ message: 'New question?', history, summary })
+
+  expect(response.status).toBe(200)
+  expect(service.requests[0]?.summary).toBe(summary)
+  // Without the summary the new exchange would fit beside all three turns.
+  expect((await read(response)).history).toEqual([
+    ...history.slice(1),
+    { role: 'user', content: 'New question?' },
+    { role: 'assistant', content: service.answer },
+  ])
+})
+
+describe('compaction', () => {
+  const history = [
+    { role: 'user', content: 'Tell me about Nux vomica.' },
+    { role: 'assistant', content: 'Nux vomica suits irritable patients [1].' },
+    { role: 'user', content: 'What about Sepia?' },
+    { role: 'assistant', content: 'Sepia is indifferent to loved ones [2].' },
+  ]
+  const compact = (app: ReturnType<typeof setup>['app'], body: unknown, headers: Record<string, string> = {}) =>
+    app.request('/api/chat/compact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...headers },
+      body: JSON.stringify(body),
+    })
+
+  it('returns the summary and the history to keep', async () => {
+    const { app, service } = setup()
+
+    const response = await compact(app, { history, summary: 'Earlier summary.' })
+
+    expect(response.status).toBe(200)
+    expect(service.compactions).toEqual([{ history, summary: 'Earlier summary.' }])
+    expect(await read(response)).toEqual({ summary: 'The user asked about Nux vomica.', history: history.slice(2) })
+  })
+
+  it.each([
+    { history: history.slice(2) },
+    { history: [] },
+    { history, summary: '  ' },
+    { history, unexpected: 'field' },
+  ])('rejects %j', async (payload) => {
+    const { app, service } = setup()
+
+    const response = await compact(app, payload)
+
+    expect(response.status).toBe(422)
+    expect(service.compactions).toEqual([])
+  })
+
+  it('has friendly failure details', async () => {
+    const { app, service } = setup()
+    service.failure = new ChatFailure({ stage: 'compaction', kind: 'timeout', cause: new Error('private-secret') })
+
+    const response = await compact(app, { history })
+
+    expect(response.status).toBe(504)
+    expect(await read(response)).toEqual({ detail: 'The request took too long. Please try again.' })
+  })
+
+  it('counts as a question against the rate limit', async () => {
+    const { app, post } = setup({}, new RateLimiter([{ limit: 1, windowMs: 60_000 }]))
+
+    expect((await post({ message: 'question' })).status).toBe(200)
+    const limited = await compact(app, { history })
+
+    expect(limited.status).toBe(429)
+    expect((await read(limited)).detail).toMatch(/Too many questions/)
+  })
 })
 
 describe('invalid requests are rejected before chat', () => {

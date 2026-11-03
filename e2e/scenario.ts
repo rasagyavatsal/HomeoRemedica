@@ -16,6 +16,8 @@ export const CHAT_LIMIT = 5
 export const SLOW = '[slow]'
 /** A question containing this fails the first time it is asked and is answered after that. */
 export const FAIL_ONCE = '[fail once]'
+/** A compacted chat's summary begins with this, then lists the questions it condensed. */
+export const SUMMARY_PREFIX = 'Earlier, the user asked:'
 
 /** Every answer cites the first two sources and not the third. */
 export const SOURCES = [

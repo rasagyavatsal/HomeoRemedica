@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import { ProductionRetriever, type SearchableRelease } from '../src/server/retrieval.ts'
 import {
@@ -223,6 +223,77 @@ it('rejects an oversized history budget', () => {
   const history = Array(5).fill({ role: 'user', content: 'x'.repeat(4_000) })
 
   expect(() => request({ message: 'current question', history })).toThrow(/history must not exceed/)
+})
+
+it('gives the model a compacted chat’s summary before its history', async () => {
+  const generator = new StubGenerator()
+
+  await new ChatService({ retriever: new StubRetriever(), generator }).chat(
+    request({
+      message: 'And its mental symptoms?',
+      history: [{ role: 'user', content: 'What about Sepia?' }],
+      summary: 'The user asked about Nux vomica.',
+    }),
+  )
+
+  expect(generator.generationPrompt).toContain(
+    '<summary>The user asked about Nux vomica.</summary>\n<user>What about Sepia?</user>\n<latest_user_message>',
+  )
+})
+
+describe('compaction', () => {
+  const history = [
+    { role: 'user' as const, content: 'Tell me about Nux vomica.' },
+    { role: 'assistant' as const, content: 'Nux vomica suits irritable patients [1].' },
+    { role: 'user' as const, content: 'What about Sepia?' },
+    { role: 'assistant' as const, content: 'Sepia is indifferent to loved ones [2].' },
+  ]
+
+  /** A generator that records its one call and answers with `summary`. */
+  function summarizer(summary: string | Error) {
+    const calls: { prompt: string; systemInstruction: string }[] = []
+    const generator: AnswerGenerator = {
+      model: 'glm-5.3-flash',
+      async generate(prompt, { systemInstruction }) {
+        calls.push({ prompt, systemInstruction })
+        if (summary instanceof Error) throw summary
+        return summary
+      },
+    }
+    return { calls, service: new ChatService({ retriever: new StubRetriever(), generator }) }
+  }
+
+  it('condenses the earlier summary and all but the latest exchange', async () => {
+    const { calls, service } = summarizer('  The user asked about Nux vomica.  ')
+
+    const response = await service.compact({ history, summary: 'Earlier, Arnica.' })
+
+    expect(response).toEqual({ summary: 'The user asked about Nux vomica.', history: history.slice(2) })
+    expect(calls[0]?.systemInstruction).toContain('untrusted data')
+    expect(calls[0]?.prompt).toContain(
+      '<summary>Earlier, Arnica.</summary>\n<user>Tell me about Nux vomica.</user>\n' +
+        '<assistant>Nux vomica suits irritable patients [1].</assistant>\n</conversation>',
+    )
+    expect(calls[0]?.prompt).not.toContain('Sepia')
+  })
+
+  it('keeps the summary within one turn', async () => {
+    const { service } = summarizer('s'.repeat(5_000))
+
+    const { summary } = await service.compact({ history })
+
+    expect(summary).toHaveLength(4_000)
+    expect(summary.endsWith('…')).toBe(true)
+  })
+
+  it('classifies provider errors', async () => {
+    const { service } = summarizer(new ProviderTimeoutError('provider secret'))
+
+    const error = await failure(service.compact({ history }))
+
+    expect([error.stage, error.kind]).toEqual(['compaction', 'timeout'])
+    expect(error.message).not.toContain('provider secret')
+  })
 })
 
 it('rejects book filters', () => {

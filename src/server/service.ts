@@ -4,14 +4,18 @@ import {
   type ChatRequest,
   type ChatResponse,
   type Citation,
+  type CompactRequest,
+  type CompactResponse,
+  KEPT_TURNS,
   MAX_CITATION_TEXT_CHARS,
   MAX_GENERATED_ANSWER_CHARS,
   MAX_GENERATION_PROMPT_CHARS,
+  MAX_TURN_CHARS,
   type RetrievedSource,
   type Retriever,
 } from './contracts.ts'
 import { ChatFailure, type FailureKind, ProviderError, TokenExhaustionError, isTimeout } from './errors.ts'
-import { NO_SOURCES_ANSWER, SYSTEM_INSTRUCTION, generationPrompt } from './generation.ts'
+import { COMPACTION_INSTRUCTION, NO_SOURCES_ANSWER, SYSTEM_INSTRUCTION, compactionPrompt, generationPrompt } from './generation.ts'
 
 /** Own the complete retrieve-and-generate sequence behind one narrow chat method. */
 export class ChatService {
@@ -109,6 +113,25 @@ export class ChatService {
       model: this.#generator.model,
       sources: citations,
     }
+  }
+
+  /** Condense all but the latest exchange, and any earlier summary, into a new summary. */
+  async compact({ history, summary }: CompactRequest, { signal }: { signal?: AbortSignal } = {}): Promise<CompactResponse> {
+    const older = { history: history.slice(0, -KEPT_TURNS), summary }
+    let condensed: string
+    try {
+      condensed = (
+        await this.#generator.generate(compactionPrompt(older, { maxChars: this.#promptCharLimit }), {
+          systemInstruction: COMPACTION_INSTRUCTION,
+          signal,
+        })
+      ).trim()
+    } catch (error) {
+      if (error instanceof ChatFailure) throw error
+      throw new ChatFailure({ stage: 'compaction', kind: generationFailureKind(error), cause: error })
+    }
+    if (condensed.length > MAX_TURN_CHARS) condensed = `${condensed.slice(0, MAX_TURN_CHARS - 1).trimEnd()}…`
+    return { summary: condensed, history: history.slice(-KEPT_TURNS) }
   }
 }
 

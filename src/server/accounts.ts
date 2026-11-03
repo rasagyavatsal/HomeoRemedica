@@ -110,22 +110,26 @@ export class FirestoreChatStore implements ChatStore {
 
   async get(userId: string, chatId: string): Promise<SavedConversation | null> {
     const chat = this.#chats(userId).doc(chatId)
-    const [summary, messages] = await Promise.all([
+    const [stored, messages] = await Promise.all([
       chat.get(),
       chat.collection('messages').orderBy(FieldPath.documentId()).get(),
     ])
-    if (!summary.exists) return null
-    return { messages: messages.docs.map((doc) => doc.data() as SavedMessage), history: summary.get('history') }
+    if (!stored.exists) return null
+    return {
+      messages: messages.docs.map((doc) => doc.data() as SavedMessage),
+      history: stored.get('history'),
+      summary: stored.get('summary'),
+    }
   }
 
-  async put(userId: string, chatId: string, { title, updatedAt, messages, history }: SavedChat): Promise<number> {
+  async put(userId: string, chatId: string, { title, updatedAt, messages, history, summary }: SavedChat): Promise<number> {
     const chat = this.#chats(userId).doc(chatId)
     const message = (index: number) => chat.collection('messages').doc(String(index).padStart(4, '0'))
     return this.#db.runTransaction(async (transaction) => {
       const stored: number = (await transaction.get(chat)).get('messageCount') ?? 0
       for (let index = stored; index < messages.length; index++) transaction.set(message(index), messages[index]!)
       for (let index = messages.length; index < stored; index++) transaction.delete(message(index))
-      transaction.set(chat, { title, updatedAt, history, messageCount: messages.length })
+      transaction.set(chat, { title, updatedAt, history, summary, messageCount: messages.length })
       return Math.max(0, messages.length - stored)
     })
   }

@@ -1,4 +1,4 @@
-export type ChatStage = 'embedding' | 'corpus_search' | 'answer_generation' | 'chat'
+export type ChatStage = 'embedding' | 'corpus_search' | 'answer_generation' | 'compaction' | 'chat'
 export type FailureKind = 'timeout' | 'provider' | 'token_exhaustion' | 'internal'
 
 export const FAILURE_DETAILS: Record<FailureKind, string> = {

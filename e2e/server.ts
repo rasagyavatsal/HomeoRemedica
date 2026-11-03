@@ -9,7 +9,7 @@ import { serve } from '@hono/node-server'
 
 import { firebaseAccounts } from '../src/server/accounts.ts'
 import { type ChatHandler, createApp } from '../src/server/app.ts'
-import type { ChatOptions, ChatRequest, ChatResponse } from '../src/server/contracts.ts'
+import type { ChatOptions, ChatRequest, ChatResponse, CompactRequest, CompactResponse } from '../src/server/contracts.ts'
 import { ChatFailure } from '../src/server/errors.ts'
 import { RateLimiter } from '../src/server/rate-limit.ts'
 import {
@@ -22,6 +22,7 @@ import {
   PROJECT_ID,
   SLOW,
   SOURCES,
+  SUMMARY_PREFIX,
   answerTo,
 } from './scenario.ts'
 
@@ -47,6 +48,12 @@ class ScriptedChat implements ChatHandler {
       onText?.(word)
     }
     return { answer, corpusVersion: 'e2e', model: 'scripted', sources: SOURCES }
+  }
+
+  async compact({ history }: CompactRequest, { signal }: { signal?: AbortSignal } = {}): Promise<CompactResponse> {
+    await sleep(50, undefined, { signal })
+    const questions = history.slice(0, -2).filter((turn) => turn.role === 'user')
+    return { summary: `${SUMMARY_PREFIX} ${questions.map((turn) => turn.content).join(' ')}`, history: history.slice(-2) }
   }
 }
 

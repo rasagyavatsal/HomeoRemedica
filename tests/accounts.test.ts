@@ -93,6 +93,15 @@ describe('saved chats', () => {
     expect(await read(await request('GET', '/api/chats'))).toEqual({ chats: [] })
   })
 
+  it('keeps a compacted chat’s summary', async () => {
+    const { request } = setup()
+    const compacted = { ...chat('Arsenicum keynotes'), summary: 'The user asked about Arnica.' }
+
+    expect((await request('PUT', '/api/chats/chat-1', { body: compacted })).status).toBe(200)
+
+    expect((await read(await request('GET', '/api/chats/chat-1'))).summary).toBe('The user asked about Arnica.')
+  })
+
   it('keeps each user to their own chats', async () => {
     const { request } = setup()
     await request('PUT', '/api/chats/chat-1', { body: chat('Private question') })

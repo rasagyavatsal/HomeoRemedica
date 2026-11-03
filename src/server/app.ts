@@ -23,6 +23,9 @@ import {
   type ChatRatings,
   type ChatSummary,
   type ClientConfig,
+  type CompactRequest,
+  CompactRequestSchema,
+  type CompactResponse,
   answerRatings,
   FeedbackSchema,
   SavedChatSchema,
@@ -34,6 +37,7 @@ import { ChatFailure, ConfigurationError, FAILURE_DETAILS, type FailureKind } fr
 
 export interface ChatHandler {
   chat(request: ChatRequest, options?: ChatOptions): Promise<ChatResponse>
+  compact(request: CompactRequest, options?: { signal?: AbortSignal }): Promise<CompactResponse>
 }
 
 export interface AppDependencies {
@@ -223,8 +227,9 @@ export function createApp(
     return c.body(null, 204)
   })
 
-  // Check the client first, so a client over its own limit does not use up everyone's.
-  app.post('/api/chat', async (c, next) => {
+  // Check the client first, so a client over its own limit does not use up everyone's. Compacting
+  // costs a model call too, so it counts as a question.
+  const questionLimits = createMiddleware(async (c, next) => {
     const limits = [
       [rateLimiter, clientKey(clientAddress(c)), 'Too many questions in a short time. Please wait a minute and try again.'],
       [totalRateLimiter, 'all', 'HomeoRemedica has answered all the questions it can for now. Please try again later.'],
@@ -235,8 +240,10 @@ export function createApp(
       c.header('Retry-After', String(retryAfter))
       return c.json({ detail }, 429)
     }
-    return next()
+    await next()
   })
+  app.post('/api/chat', questionLimits)
+  app.post('/api/chat/compact', questionLimits)
 
   app.post('/api/chat', async (c) => {
     let body: unknown
@@ -261,7 +268,7 @@ export function createApp(
 
     const complete = (response: ChatResponse): WebChatResponse => ({
       ...response,
-      history: advanceHistory(request.history, request.message, response.answer),
+      history: advanceHistory(request.history, request.message, response.answer, request.summary),
     })
 
     // Browsers ask for a stream: `sources`, then `text` pieces, then `done` or `error`.
@@ -290,6 +297,30 @@ export function createApp(
 
     try {
       return c.json(complete(await service.chat(request)))
+    } catch (error) {
+      const { detail, status } = chatFailure(error)
+      return c.json({ detail }, status)
+    }
+  })
+
+  app.post('/api/chat/compact', async (c) => {
+    let body: unknown
+    try {
+      body = await c.req.json()
+    } catch {
+      return c.json({ detail: 'request body must be valid JSON' }, 422)
+    }
+    const parsed = CompactRequestSchema.safeParse(body)
+    if (!parsed.success) return c.json({ detail: parsed.error.issues[0]?.message ?? 'invalid request' }, 422)
+
+    let service: ChatHandler
+    try {
+      service = await dependencies.getService()
+    } catch (error) {
+      return setupFailure(c, error, 'Failed to initialize production chat')
+    }
+    try {
+      return c.json(await service.compact(parsed.data, { signal: c.req.raw.signal }))
     } catch (error) {
       const { detail, status } = chatFailure(error)
       return c.json({ detail }, status)
