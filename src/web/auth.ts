@@ -63,9 +63,10 @@ export async function connectAuth(config: AuthConfig): Promise<AuthClient> {
     async refresh() {
       const user = auth.currentUser
       if (!user || user.emailVerified) return
+      // Fetch a new ID token first: reload() tells subscribers the email is verified, and the
+      // API calls they start must already carry the verified claim.
+      await user.getIdToken(true)
       await user.reload()
-      // A new ID token carries the verified email to the API and tells subscribers.
-      if (user.emailVerified) await user.getIdToken(true)
     },
     resetPassword: (email) => firebase.sendPasswordResetEmail(auth, email),
     signOut: () => firebase.signOut(auth),
