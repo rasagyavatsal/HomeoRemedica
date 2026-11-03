@@ -46,3 +46,8 @@ CLAUDE.md
 
 # Logs
 *.log
+
+# Playwright output
+test-results/
+playwright-report/
+blob-report/
