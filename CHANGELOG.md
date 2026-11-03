@@ -7,6 +7,28 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [9.4.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.3.0...HomeoRemedica-v9.4.0) (2026-11-03)
+
+
+### Features
+
+* **retrieval:** rank remedies by support across books for symptom questions ([5164e6b](https://github.com/rasagyavatsal/HomeoRemedica/commit/5164e6bdab58ae1e3669250f491510151d7c6eee))
+* **server:** keep reasons and a comment with each answer's feedback ([3c9401a](https://github.com/rasagyavatsal/HomeoRemedica/commit/3c9401a9ed101ed709df714cfa8726585bb13d2c))
+* **server:** save ratings of answers and their sources ([13baac2](https://github.com/rasagyavatsal/HomeoRemedica/commit/13baac2c098933c3b17dd566c9f8870aa406d28c))
+* **web:** ask for a comment and reasons after an answer is rated ([9970527](https://github.com/rasagyavatsal/HomeoRemedica/commit/99705273c698b33cb0e9afb55cfad442b6032576))
+* **web:** colour "Homeo" in the brand name with the accent green ([ed6f972](https://github.com/rasagyavatsal/HomeoRemedica/commit/ed6f97205b4d6a2f9a654ba8de5fad5e50e9c3fb))
+* **web:** connect to the Firebase Auth emulator when the server names one ([fd84dbd](https://github.com/rasagyavatsal/HomeoRemedica/commit/fd84dbd54956bf11c0273f95d7c548c0506dc7e3))
+* **web:** drift ambient glows behind the welcome tagline ([01cc4a3](https://github.com/rasagyavatsal/HomeoRemedica/commit/01cc4a3066806cf434a597934065ffddd5152b83))
+* **web:** rate answers and passages with animated thumbs ([4bed5f1](https://github.com/rasagyavatsal/HomeoRemedica/commit/4bed5f150dae222f835969bce2410aaf6bfd1225))
+
+
+### Bug Fixes
+
+* show saved ratings when a chat is opened again ([03cd5aa](https://github.com/rasagyavatsal/HomeoRemedica/commit/03cd5aa709172019a999b8d60f5668c96670ac65))
+* **web:** keep the open chat when the app learns who is signed in ([86721fc](https://github.com/rasagyavatsal/HomeoRemedica/commit/86721fcb349c749150ae182d561d337b587159ca))
+* **web:** move pre-verification chats into the account after verifying ([3989a24](https://github.com/rasagyavatsal/HomeoRemedica/commit/3989a245a897f4ceaf21bb2512f96a6ac9bcf878)), closes [#54](https://github.com/rasagyavatsal/HomeoRemedica/issues/54)
+* **web:** save chats answered before the chat library loads ([12cd4ae](https://github.com/rasagyavatsal/HomeoRemedica/commit/12cd4ae1f7a3007118e28ebf5c94bb6fc0691814))
+
 ## [9.3.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.2.0...HomeoRemedica-v9.3.0) (2026-11-02)
 
 
