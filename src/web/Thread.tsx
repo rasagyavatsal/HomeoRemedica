@@ -4,6 +4,8 @@ import { Answer } from './Answer.tsx'
 import type { Citation } from '../server/contracts.ts'
 import { type Message, citedSources } from './conversation.ts'
 import { AlertIcon, RetryIcon } from './icons.tsx'
+import { RatingButtons } from './Rating.tsx'
+import type { AnswerRatings, RateHandler } from './useFeedback.ts'
 
 /** The reference open in the sources panel. */
 interface OpenReference {
@@ -17,9 +19,13 @@ interface ThreadProps {
   openSources: OpenReference | undefined
   onSources: (messageId: number, source: number) => void
   onRetry: () => void
+  /** Ratings by message id. */
+  ratings?: ReadonlyMap<number, AnswerRatings>
+  /** Rates an answer or one of its sources; answers cannot be rated without it. */
+  onRate?: RateHandler | undefined
 }
 
-export function Thread({ messages, openSources, onSources, onRetry }: ThreadProps) {
+export function Thread({ messages, openSources, onSources, onRetry, ratings, onRate }: ThreadProps) {
   return (
     <ol className="thread" aria-label="Conversation">
       {messages.map((message, index) =>
@@ -34,6 +40,8 @@ export function Thread({ messages, openSources, onSources, onRetry }: ThreadProp
               activeSource={openSources?.messageId === message.id ? openSources.source : undefined}
               onSources={onSources}
               onRetry={index === messages.length - 1 ? onRetry : undefined}
+              ratings={ratings?.get(message.id)}
+              onRate={onRate}
             />
           </li>
         ),
@@ -48,9 +56,11 @@ interface ReplyProps {
   activeSource: number | undefined
   onSources: (messageId: number, source: number) => void
   onRetry: (() => void) | undefined
+  ratings: AnswerRatings | undefined
+  onRate: RateHandler | undefined
 }
 
-const Reply = memo(function Reply({ message, activeSource, onSources, onRetry }: ReplyProps) {
+const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, ratings, onRate }: ReplyProps) {
   const { id, content, sources, status } = message
   const cite = useCallback((number: number) => onSources(id, number), [id, onSources])
 
@@ -83,6 +93,17 @@ const Reply = memo(function Reply({ message, activeSource, onSources, onRetry }:
       {/* Listed once the answer is done, so the list does not shift while it streams. */}
       {sources && sources.length > 0 && status !== 'streaming' && (
         <References sources={sources} cited={citedSources(content)} active={activeSource} onOpen={cite} />
+      )}
+      {onRate && !status && content && (
+        <div className="reply-actions">
+          <RatingButtons
+            rating={ratings?.answer ?? null}
+            onRate={(rating) => onRate(id, 'answer', rating)}
+            label="Rate this answer"
+            up="Helpful"
+            down="Not helpful"
+          />
+        </div>
       )}
     </>
   )

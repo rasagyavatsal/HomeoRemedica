@@ -13,6 +13,7 @@ import { Sidebar } from './Sidebar.tsx'
 import { SourcesPanel } from './SourcesPanel.tsx'
 import { Thread } from './Thread.tsx'
 import { useChat } from './useChat.ts'
+import { useFeedback } from './useFeedback.ts'
 import { TAGLINE_WORDS, Welcome } from './Welcome.tsx'
 
 export default function App() {
@@ -169,6 +170,9 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
   )
   const chat = useChat(save)
   const { conversation } = chat
+  // Ratings are kept with the account, so only a verified account can give them.
+  const sendFeedback = useMemo(() => (library instanceof AccountLibrary ? library.rate.bind(library) : null), [library])
+  const feedback = useFeedback(conversation, sendFeedback, setNotice)
   const scroller = useFollow(conversation.messages)
   // The open chat, for callbacks that finish after it may have changed.
   const current = useRef(conversation)
@@ -249,8 +253,8 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
   }, [])
   const closeSources = useCallback(() => setOpenSources(null), [])
 
-  const openSource =
-    openSources && conversation.messages.find((message) => message.id === openSources.messageId)?.sources?.[openSources.source - 1]
+  const openMessage = openSources && conversation.messages.find((message) => message.id === openSources.messageId)
+  const openSource = openSources && openMessage?.sources?.[openSources.source - 1]
   const sidebarShown = sidebarOpen && drawer
 
   useEffect(() => {
@@ -295,6 +299,8 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
                 openSources={openSources ?? undefined}
                 onSources={showSources}
                 onRetry={chat.retry}
+                ratings={feedback.ratings}
+                onRate={sendFeedback ? feedback.rate : undefined}
               />
             ) : (
               <Welcome />
@@ -313,7 +319,18 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
       {openSources && openSource && (
         <>
           <div className="scrim scrim-sources" onClick={closeSources} aria-hidden="true" />
-          <SourcesPanel key={openSource.id} source={openSource} number={openSources.source} onClose={closeSources} />
+          <SourcesPanel
+            key={openSource.id}
+            source={openSource}
+            number={openSources.source}
+            onClose={closeSources}
+            rating={feedback.ratings.get(openSources.messageId)?.sources[openSources.source] ?? null}
+            onRate={
+              sendFeedback && !openMessage?.status
+                ? (rating) => feedback.rate(openSources.messageId, openSources.source, rating)
+                : undefined
+            }
+          />
         </>
       )}
     </div>

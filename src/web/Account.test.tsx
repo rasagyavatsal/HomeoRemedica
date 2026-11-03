@@ -2,7 +2,7 @@ import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, it, vi } from 'vitest'
 
-import type { SavedChat } from '../server/contracts.ts'
+import type { Feedback, SavedChat } from '../server/contracts.ts'
 import App from './App.tsx'
 import type { Account, AuthClient } from './auth.ts'
 import { LocalLibrary } from './library.ts'
@@ -58,7 +58,9 @@ vi.mock('./auth.ts', async (original) => ({
 /** The API with accounts, keeping each user's chats in memory. */
 function serve(chat: (() => Response)[] = []) {
   const store = new Map<string, Map<string, SavedChat>>()
+  const feedback = new Map<string, Feedback>()
   const requests: string[] = []
+  const server = { store, feedback, requests, feedbackFails: false }
   vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
     const path = String(input)
     const method = init?.method ?? 'GET'
@@ -72,6 +74,13 @@ function serve(chat: (() => Response)[] = []) {
     const chats = store.get(token) ?? new Map<string, SavedChat>()
     store.set(token, chats)
     const id = path.match(/^\/api\/chats\/(.+)$/)?.[1]
+    const feedbackId = path.match(/^\/api\/feedback\/(.+)$/)?.[1]
+
+    if (feedbackId && method === 'PUT') {
+      if (server.feedbackFails) return json({ detail: 'Ratings are down.' }, 500)
+      feedback.set(`${token}/${feedbackId}`, JSON.parse(init?.body as string) as Feedback)
+      return new Response(null, { status: 204 })
+    }
 
     if (path === '/api/chats') {
       const list = [...chats].map(([chatId, { title, updatedAt }]) => ({ id: chatId, title, updatedAt }))
@@ -92,7 +101,7 @@ function serve(chat: (() => Response)[] = []) {
     }
     return json({ detail: 'Not Found' }, 404)
   })
-  return { store, requests }
+  return server
 }
 
 function sidebar() {
@@ -186,6 +195,71 @@ it('keeps chats on this device until a new account’s email is verified', async
   expect(await new LocalLibrary().list()).toEqual([])
   await userEvent.click(screen.getByRole('button', { name: 'alice@example.com' }))
   expect(screen.queryByRole('menuitem', { name: 'Resend verification email' })).not.toBeInTheDocument()
+})
+
+it('rates answers and their passages', async () => {
+  fake.account = ALICE
+  const { feedback } = serve([() => answerStream('Rated answer [2].', [citation(1), citation(2)], 'Rated?')])
+  render(<App />)
+  await screen.findByText('alice@example.com')
+  await userEvent.type(screen.getByRole('textbox', { name: 'Your question' }), 'Rated?{Enter}')
+  await screen.findByText(/Rated answer/)
+
+  const answer = screen.getByRole('group', { name: 'Rate this answer' })
+  await userEvent.click(within(answer).getByRole('button', { name: 'Helpful' }))
+  expect(within(answer).getByRole('button', { name: 'Helpful' })).toHaveAttribute('aria-pressed', 'true')
+  await userEvent.click(screen.getByRole('button', { name: 'Source 2' }))
+  const passage = screen.getByRole('group', { name: 'Rate this passage' })
+  await userEvent.click(within(passage).getByRole('button', { name: 'Not relevant' }))
+
+  await waitFor(() =>
+    expect([...feedback.values()]).toEqual([
+      {
+        question: 'Rated?',
+        answer: 'Rated answer [2].',
+        rating: 'up',
+        sources: [
+          { id: citation(1).id, cited: false, rating: null },
+          { id: citation(2).id, cited: true, rating: 'down' },
+        ],
+      },
+    ]),
+  )
+  const [id] = feedback.keys()
+  expect(id).toMatch(/^alice\/[\w-]+-1$/)
+
+  // Pressing the chosen thumb again takes the rating back.
+  await userEvent.click(within(answer).getByRole('button', { name: 'Helpful' }))
+  await waitFor(() => expect(feedback.get(id!)?.rating).toBeNull())
+  expect(feedback.size).toBe(1)
+})
+
+it('undoes a rating that could not be saved', async () => {
+  fake.account = ALICE
+  const server = serve([() => answerStream('Answer.', [citation(1)], 'Question?')])
+  server.feedbackFails = true
+  render(<App />)
+  await screen.findByText('alice@example.com')
+  await userEvent.type(screen.getByRole('textbox', { name: 'Your question' }), 'Question?{Enter}')
+  await screen.findByText('Answer.')
+
+  const helpful = within(screen.getByRole('group', { name: 'Rate this answer' })).getByRole('button', { name: 'Helpful' })
+  await userEvent.click(helpful)
+
+  expect(await screen.findByText('Your rating could not be saved. Ratings are down.')).toBeInTheDocument()
+  expect(helpful).toHaveAttribute('aria-pressed', 'false')
+})
+
+it('offers ratings only to a verified account', async () => {
+  serve([() => answerStream('Guest answer [1].', [citation(1)], 'Guest?')])
+  render(<App />)
+  await screen.findByRole('button', { name: 'Sign in to sync chats' })
+  await userEvent.type(screen.getByRole('textbox', { name: 'Your question' }), 'Guest?{Enter}')
+  await screen.findByText(/Guest answer/)
+  await userEvent.click(screen.getByRole('button', { name: 'Source 1' }))
+
+  expect(screen.queryByRole('group', { name: 'Rate this answer' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('group', { name: 'Rate this passage' })).not.toBeInTheDocument()
 })
 
 it('signs out to a fresh chat on this device', async () => {

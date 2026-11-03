@@ -1,6 +1,6 @@
 /** Where saved chats live: this browser's storage, or the signed-in account. */
 
-import type { ChatList, ChatSummary, ChatTurn, SavedChat, SavedConversation, SavedMessage } from '../server/contracts.ts'
+import type { ChatList, ChatSummary, ChatTurn, Feedback, SavedChat, SavedConversation, SavedMessage } from '../server/contracts.ts'
 import { ApiError, ShownError, failure } from './api.ts'
 import { type Conversation, savedMessages, titleFrom } from './conversation.ts'
 
@@ -136,6 +136,15 @@ export class AccountLibrary implements ChatLibrary {
 
   async remove(id: string): Promise<void> {
     await this.#request(`/api/chats/${encodeURIComponent(id)}`, { method: 'DELETE' })
+  }
+
+  /** Save the ratings of one answer, replacing any sent for it before. */
+  async rate(id: string, feedback: Feedback): Promise<void> {
+    await this.#request(`/api/feedback/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(feedback),
+    })
   }
 
   /** Delete every chat and then the account itself. */

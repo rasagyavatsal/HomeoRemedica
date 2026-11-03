@@ -1025,6 +1025,169 @@ ul {
   line-height: var(--leading-snug);
 }
 
+/* ---- Ratings ------------------------------------------------------------ */
+
+.reply-actions {
+  margin-top: var(--space-md);
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3xs);
+}
+
+/* Settles in just after the answer finishes, once the reader reaches the end. */
+.reply-actions .rating {
+  animation: rise-in var(--duration-slow) var(--ease-standard) var(--duration-reveal) backwards;
+}
+
+.rating-button {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: var(--control-sm);
+  height: var(--control-sm);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-text-subtle);
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard);
+}
+
+.rating-button .icon {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  fill: currentColor;
+  fill-opacity: 0;
+  transition: fill-opacity var(--duration-base) var(--ease-standard);
+}
+
+.rating-button:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+}
+
+.rating-button[data-choice='up'][aria-pressed='true'] {
+  color: var(--color-accent);
+}
+
+.rating-button[data-choice='down'][aria-pressed='true'] {
+  color: var(--color-text);
+}
+
+.rating-button[aria-pressed='true'] .icon {
+  fill-opacity: 0.22;
+}
+
+/* Once rated, the other thumb steps back. */
+.rating[data-rated] .rating-button[aria-pressed='false']:not(:hover) {
+  opacity: 0.45;
+}
+
+.rating-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.rating-burst::before {
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid var(--color-accent);
+  border-radius: var(--radius-pill);
+  content: '';
+  opacity: 0;
+  animation: rating-ring 520ms var(--ease-standard);
+}
+
+.rating-burst i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin: -2px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  opacity: 0;
+  animation: rating-spark 560ms var(--ease-standard);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rating-button[data-choice='up'][aria-pressed='true'] .icon {
+    animation: rating-pop 440ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .rating-button[data-choice='down'][aria-pressed='true'] .icon {
+    animation: rating-dip 380ms var(--ease-standard);
+  }
+
+  /* The newest answer's thumb waves once, a little after it appears, until the answer is rated. */
+  .reply:last-child .rating:not([data-rated]) [data-choice='up'] .icon {
+    transform-origin: 30% 85%;
+    animation: rating-wave 900ms var(--ease-standard) 1.8s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rating-burst {
+    display: none;
+  }
+}
+
+@keyframes rating-pop {
+  35% {
+    transform: scale(1.32) rotate(-14deg);
+  }
+}
+
+@keyframes rating-dip {
+  40% {
+    transform: translateY(2px) scale(0.88) rotate(8deg);
+  }
+}
+
+@keyframes rating-wave {
+  20% {
+    transform: rotate(-16deg);
+  }
+  40% {
+    transform: rotate(10deg);
+  }
+  60% {
+    transform: rotate(-6deg);
+  }
+  80% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes rating-ring {
+  from {
+    opacity: 0.7;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes rating-spark {
+  from {
+    opacity: 1;
+    transform: rotate(calc(var(--spark) * 60deg)) translateY(-6px) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: rotate(calc(var(--spark) * 60deg)) translateY(-17px) scale(0.3);
+  }
+}
+
 /* ---- Answer prose ------------------------------------------------------- */
 
 .prose {
@@ -1237,6 +1400,13 @@ ul {
 .source-meta {
   display: flex;
   gap: var(--space-sm);
+}
+
+.sources-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2xs);
 }
 
 .source-number {
