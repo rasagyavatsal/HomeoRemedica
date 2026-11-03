@@ -1,10 +1,10 @@
-/** Signed-in users and the chats saved to their accounts, kept in Firebase. */
+/** Signed-in users, the chats saved to their accounts and their ratings of answers, kept in Firebase. */
 
 import { type App, initializeApp } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
-import { FieldPath, type Firestore, getFirestore } from 'firebase-admin/firestore'
+import { FieldPath, FieldValue, type Firestore, getFirestore } from 'firebase-admin/firestore'
 
-import type { AuthConfig, ChatSummary, SavedChat, SavedConversation, SavedMessage } from './contracts.ts'
+import type { AuthConfig, ChatSummary, Feedback, SavedChat, SavedConversation, SavedMessage } from './contracts.ts'
 
 /** The most recent chats `list` returns. */
 export const MAX_LISTED_CHATS = 200
@@ -19,6 +19,11 @@ export interface ChatStore {
   deleteAll(userId: string): Promise<void>
 }
 
+export interface FeedbackStore {
+  /** Save the user's ratings of one answer, replacing any saved before. */
+  put(userId: string, feedbackId: string, feedback: Feedback): Promise<void>
+}
+
 export interface User {
   id: string
   /** Whether the user has shown they own their email address; Google sign-ins always have. */
@@ -28,6 +33,7 @@ export interface User {
 export interface Accounts {
   readonly config: AuthConfig
   readonly chats: ChatStore
+  readonly feedback: FeedbackStore
   /** The user a Firebase ID token belongs to, or undefined when it is invalid or expired. */
   user(idToken: string): Promise<User | undefined>
   /** Remove the sign-in itself; delete the user's chats first. */
@@ -37,9 +43,12 @@ export interface Accounts {
 export function firebaseAccounts(config: AuthConfig): Accounts {
   const app = initializeApp({ projectId: config.projectId }, `accounts-${config.projectId}`)
   const auth = getAuth(app)
+  // One instance for both stores: `firestore` applies settings, which may only happen once.
+  const db = firestore(app)
   return {
     config,
-    chats: new FirestoreChatStore(firestore(app)),
+    chats: new FirestoreChatStore(db),
+    feedback: new FirestoreFeedbackStore(db),
     async user(idToken) {
       try {
         const token = await auth.verifyIdToken(idToken)
@@ -124,5 +133,26 @@ export class FirestoreChatStore implements ChatStore {
 
   async deleteAll(userId: string): Promise<void> {
     await this.#db.recursiveDelete(this.#db.collection('users').doc(userId))
+  }
+}
+
+/**
+ * Ratings under `users/{userId}/feedback/{feedbackId}`, one document per answer. They sit beside
+ * the user's chats, so `FirestoreChatStore.deleteAll` deletes them with the account.
+ */
+export class FirestoreFeedbackStore implements FeedbackStore {
+  readonly #db: Firestore
+
+  constructor(db: Firestore) {
+    this.#db = db
+  }
+
+  async put(userId: string, feedbackId: string, feedback: Feedback): Promise<void> {
+    await this.#db
+      .collection('users')
+      .doc(userId)
+      .collection('feedback')
+      .doc(feedbackId)
+      .set({ ...feedback, updatedAt: FieldValue.serverTimestamp() })
   }
 }

@@ -22,11 +22,12 @@ import {
   type ChatResponse,
   type ChatSummary,
   type ClientConfig,
+  FeedbackSchema,
   SavedChatSchema,
   type WebChatResponse,
 } from './contracts.ts'
 import { advanceHistory } from './conversation.ts'
-import { CHAT_SAVE_RATE_LIMITS, RateLimiter, TOTAL_CHAT_RATE_LIMITS, clientKey } from './rate-limit.ts'
+import { CHAT_SAVE_RATE_LIMITS, FEEDBACK_RATE_LIMITS, RateLimiter, TOTAL_CHAT_RATE_LIMITS, clientKey } from './rate-limit.ts'
 import { ChatFailure, ConfigurationError, FAILURE_DETAILS, type FailureKind } from './errors.ts'
 
 export interface ChatHandler {
@@ -57,6 +58,8 @@ const ACCOUNT_FAILURE = 'Your saved chats could not be reached. Please try again
 const CHAT_ID = /^[A-Za-z0-9_-]{1,64}$/
 // A long chat with every answer's sources fits well within this.
 const MAX_SAVED_CHAT_BYTES = 8_000_000
+// A question, the longest answer and the ids of its sources.
+const MAX_FEEDBACK_BYTES = 64_000
 
 /** Build the chat service once; a failed build is retried on the next request. */
 export function productionDependencies({
@@ -91,12 +94,15 @@ export function createApp(
     rateLimiter = new RateLimiter(),
     totalRateLimiter = new RateLimiter(TOTAL_CHAT_RATE_LIMITS),
     saveRateLimiter = new RateLimiter(CHAT_SAVE_RATE_LIMITS),
+    feedbackRateLimiter = new RateLimiter(FEEDBACK_RATE_LIMITS),
   }: {
     webDist?: string | null
     rateLimiter?: RateLimiter | null
     totalRateLimiter?: RateLimiter | null
     /** Counts the messages each user saves. */
     saveRateLimiter?: RateLimiter | null
+    /** Counts the ratings each user sends. */
+    feedbackRateLimiter?: RateLimiter | null
   } = {},
 ): Hono {
   const app = new Hono()
@@ -173,6 +179,34 @@ export function createApp(
     await c.var.accounts.chats.delete(c.var.userId, c.req.param('id'))
     return c.body(null, 204)
   })
+
+  // One document per answer, so rating it again replaces the earlier ratings.
+  app.put(
+    '/api/feedback/:id',
+    signedIn,
+    bodyLimit({ maxSize: MAX_FEEDBACK_BYTES, onError: (c) => c.json({ detail: 'This feedback is too long to send.' }, 413) }),
+    async (c) => {
+      const id = c.req.param('id')
+      if (!CHAT_ID.test(id)) return c.json({ detail: 'Not Found' }, 404)
+      // As with saving, only a verified email counts, so made-up addresses cannot flood the ratings.
+      if (!c.var.verified) return c.json({ detail: 'Verify your email address to rate answers.' }, 403)
+      const retryAfter = feedbackRateLimiter?.take(c.var.userId)
+      if (retryAfter !== undefined) {
+        c.header('Retry-After', String(retryAfter))
+        return c.json({ detail: 'Too many ratings in a short time. Please try again later.' }, 429)
+      }
+      let body: unknown
+      try {
+        body = await c.req.json()
+      } catch {
+        return c.json({ detail: 'request body must be valid JSON' }, 422)
+      }
+      const parsed = FeedbackSchema.safeParse(body)
+      if (!parsed.success) return c.json({ detail: parsed.error.issues[0]?.message ?? 'invalid feedback' }, 422)
+      await c.var.accounts.feedback.put(c.var.userId, id, parsed.data)
+      return c.body(null, 204)
+    },
+  )
 
   // Delete the chats first, so a failure leaves an account the user can still sign in to.
   app.delete('/api/account', signedIn, async (c) => {

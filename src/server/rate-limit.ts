@@ -23,6 +23,13 @@ export const CHAT_SAVE_RATE_LIMITS: readonly RateLimit[] = [
   { limit: 5_000, windowMs: 24 * 60 * 60_000 },
 ]
 
+// Ratings each signed-in user may send. Every click on a thumb sends one, so a person rating
+// every answer and source stays far below these.
+export const FEEDBACK_RATE_LIMITS: readonly RateLimit[] = [
+  { limit: 60, windowMs: 60_000 },
+  { limit: 2_000, windowMs: 24 * 60 * 60_000 },
+]
+
 // Forget expired clients once this many are tracked.
 const PRUNE_THRESHOLD = 10_000
 

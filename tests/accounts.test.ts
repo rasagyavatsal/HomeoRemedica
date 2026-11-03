@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { createApp } from '../src/server/app.ts'
-import { MAX_SAVED_MESSAGES, type SavedChat } from '../src/server/contracts.ts'
+import { type Feedback, MAX_SAVED_MESSAGES, type SavedChat } from '../src/server/contracts.ts'
 import { RateLimiter } from '../src/server/rate-limit.ts'
 import { fakeAccounts } from './fakes.ts'
 
@@ -9,11 +9,11 @@ const unexpected = () => {
   throw new Error('saved chats must not initialize chat')
 }
 
-function setup(saveRateLimiter: RateLimiter | null = null) {
+function setup(saveRateLimiter: RateLimiter | null = null, feedbackRateLimiter: RateLimiter | null = null) {
   const accounts = fakeAccounts()
   const app = createApp(
     { getService: unexpected, getAccounts: () => accounts },
-    { webDist: null, rateLimiter: null, saveRateLimiter },
+    { webDist: null, rateLimiter: null, saveRateLimiter, feedbackRateLimiter },
   )
   const request = (method: string, path: string, { user = 'alice', body }: { user?: string | null; body?: unknown } = {}) =>
     app.request(path, {
@@ -174,6 +174,69 @@ describe('saved chats', () => {
 
     expect(response.status).toBe(500)
     expect(await read(response)).toEqual({ detail: 'Your saved chats could not be reached. Please try again.' })
+  })
+})
+
+function feedback(overrides: Partial<Feedback> = {}): Feedback {
+  return {
+    question: 'Arsenicum keynotes?',
+    answer: 'Restlessness and anxiety [1].',
+    rating: 'up',
+    sources: [
+      { id: 'v1/boericke_mm/1', cited: true, rating: 'up' },
+      { id: 'v1/boericke_mm/2', cited: false, rating: null },
+    ],
+    ...overrides,
+  }
+}
+
+describe('feedback', () => {
+  it('saves a rating, and rating the answer again replaces it', async () => {
+    const { request, accounts } = setup()
+
+    expect((await request('PUT', '/api/feedback/chat-1-1', { body: feedback() })).status).toBe(204)
+    expect((await request('PUT', '/api/feedback/chat-1-1', { body: feedback({ rating: 'down' }) })).status).toBe(204)
+    await request('PUT', '/api/feedback/chat-1-1', { user: 'bob', body: feedback({ rating: null }) })
+
+    expect(accounts.feedback.saved.get('alice/chat-1-1')).toEqual(feedback({ rating: 'down' }))
+    expect(accounts.feedback.saved.get('bob/chat-1-1')?.rating).toBeNull()
+  })
+
+  it('needs a sign-in with a verified email', async () => {
+    const { request, accounts } = setup()
+
+    expect((await request('PUT', '/api/feedback/chat-1-1', { user: null, body: feedback() })).status).toBe(401)
+    const unverified = await request('PUT', '/api/feedback/chat-1-1', { user: 'bob-unverified', body: feedback() })
+    expect(unverified.status).toBe(403)
+    expect((await read(unverified)).detail).toMatch(/Verify your email address/)
+    expect(accounts.feedback.saved.size).toBe(0)
+  })
+
+  it('rejects malformed feedback and ids', async () => {
+    const { request, accounts } = setup()
+
+    for (const body of [
+      { ...feedback(), rating: 'meh' },
+      { ...feedback(), question: '' },
+      { ...feedback(), extra: true },
+      { ...feedback(), sources: [{ id: 'v1/boericke_mm/1', rating: 'up' }] },
+    ]) {
+      expect((await request('PUT', '/api/feedback/chat-1-1', { body })).status).toBe(422)
+    }
+    expect((await request('PUT', '/api/feedback/a.b', { body: feedback() })).status).toBe(404)
+    expect(accounts.feedback.saved.size).toBe(0)
+  })
+
+  it('limits how many ratings each user sends', async () => {
+    const { request } = setup(null, new RateLimiter([{ limit: 2, windowMs: 60_000 }]))
+
+    await request('PUT', '/api/feedback/chat-1-1', { body: feedback() })
+    await request('PUT', '/api/feedback/chat-1-1', { body: feedback() })
+    const limited = await request('PUT', '/api/feedback/chat-1-1', { body: feedback() })
+
+    expect(limited.status).toBe(429)
+    expect(limited.headers.get('Retry-After')).toBe('60')
+    expect((await request('PUT', '/api/feedback/chat-1-1', { user: 'carol', body: feedback() })).status).toBe(204)
   })
 })
 

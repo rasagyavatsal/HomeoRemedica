@@ -174,6 +174,31 @@ export interface SavedConversation {
   history: ChatTurn[]
 }
 
+const RatingSchema = z.enum(['up', 'down'])
+
+const RatedSourceSchema = z.strictObject({
+  /** The citation id, `corpusVersion/bookId/chunkId`. */
+  id: field(),
+  /** Whether the answer cites this source. */
+  cited: z.boolean(),
+  rating: RatingSchema.nullable(),
+})
+
+/** `PUT /api/feedback/:id`: a user's rating of one answer and of its sources. */
+export const FeedbackSchema = z.strictObject(
+  {
+    question: z.string().min(1).max(MAX_TURN_CHARS),
+    answer: z.string().min(1).max(MAX_GENERATED_ANSWER_CHARS),
+    rating: RatingSchema.nullable(),
+    /** In the order they were retrieved, so a source's position is its rank. */
+    sources: z.array(RatedSourceSchema).max(MAX_SAVED_SOURCES),
+  },
+  { error: (issue) => (issue.code === 'unrecognized_keys' ? 'unexpected feedback field' : undefined) },
+)
+
+export type Rating = z.output<typeof RatingSchema>
+export type Feedback = z.output<typeof FeedbackSchema>
+
 export interface Retriever {
   readonly corpusVersion: string
   retrieve(request: ChatRequest, options: { limit: number }): Promise<readonly RetrievedSource[]>

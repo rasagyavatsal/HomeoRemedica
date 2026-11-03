@@ -1,5 +1,5 @@
-import type { Accounts, ChatStore } from '../src/server/accounts.ts'
-import type { ChatSummary, SavedChat, SavedConversation } from '../src/server/contracts.ts'
+import type { Accounts, ChatStore, FeedbackStore } from '../src/server/accounts.ts'
+import type { ChatSummary, Feedback, SavedChat, SavedConversation } from '../src/server/contracts.ts'
 import type { Fetch } from '../src/server/http.ts'
 
 export interface FetchCall {
@@ -91,12 +91,27 @@ export class MemoryChatStore implements ChatStore {
   }
 }
 
+/** Ratings kept in memory, keyed by `userId/feedbackId`. */
+export class MemoryFeedbackStore implements FeedbackStore {
+  readonly saved = new Map<string, Feedback>()
+  failure: Error | null = null
+
+  async put(userId: string, feedbackId: string, feedback: Feedback) {
+    if (this.failure) throw this.failure
+    this.saved.set(`${userId}/${feedbackId}`, feedback)
+  }
+}
+
 /** Accounts whose ID tokens are `token-<userId>`, or `token-<userId>-unverified` before email verification. */
-export function fakeAccounts(chats = new MemoryChatStore()): Accounts & { chats: MemoryChatStore; deleted: string[] } {
+export function fakeAccounts(
+  chats = new MemoryChatStore(),
+  feedback = new MemoryFeedbackStore(),
+): Accounts & { chats: MemoryChatStore; feedback: MemoryFeedbackStore; deleted: string[] } {
   const deleted: string[] = []
   return {
     config: { apiKey: 'public-key', authDomain: 'test.firebaseapp.com', projectId: 'test' },
     chats,
+    feedback,
     deleted,
     async user(idToken) {
       const match = idToken.match(/^token-(.+?)(-unverified)?$/)
