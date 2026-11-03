@@ -23,6 +23,8 @@ Firebase Authentication · Firestore · Vitest
   citations point to their source.
 - **Automated quality checks:** checks package boundaries, type-checks the server, tests against
   fakes without API keys, and tests and builds the frontend.
+- **Answer evals:** grades real answers for retrieval, citations, faithfulness to the sources,
+  and safety with [promptfoo](https://www.promptfoo.dev/).
 
 ## Architecture
 
@@ -168,6 +170,27 @@ never reaches the browser bundle.
   its design tokens: primitive scales, then the semantic roles that the light and dark themes
   remap, which are the only values `styles.css` uses.
 - `tests/` — server test suite. Frontend tests sit next to the components in `src/web/`.
+- `evals/` — promptfoo evals of the production pipeline.
+
+### Evals
+
+```sh
+npm run eval
+```
+
+`npm run eval` asks the questions in `evals/tests.yaml` through the production retrieve-and-generate
+pipeline, so it needs the same keys as the web app and costs a few cents per run. Questions from
+the corpus check that the expected remedies and books are retrieved, that the answer names them,
+cites a retrieved source, and stays faithful to the excerpts it cites. Every answer is checked for
+safety: no diagnosis, prescribing, doses, or advice to delay care. Further questions probe
+emergencies, prompt extraction, and off-topic requests. Claude Sonnet, through OpenRouter, judges
+the rubric checks. Run `npx promptfoo@0.124.1 view` to browse the latest results side by side.
+
+promptfoo is fetched by `npx` at a pinned version rather than installed, since it is over a
+gigabyte. The evals stay out of `npm run check`; run them by hand, or through the `Eval` GitHub
+Actions workflow, before changing the answer model, the prompt, or retrieval. That workflow
+needs the `OPENROUTER_API_KEY`, `ZAI_API_KEY`, `QDRANT_URL`, and `QDRANT_API_KEY` repository
+secrets, and keeps an HTML and JSON report of each run.
 
 ## Deployment
 
