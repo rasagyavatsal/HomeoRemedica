@@ -13,7 +13,7 @@ built by the private [HomeoRemedica-dataset](https://github.com/rasagyavatsal/Ho
 generated answers. A React frontend talks to the production pipeline through a Hono API server on Node.js.
 
 **Stack:** TypeScript · Node.js · Hono · Zod · React · Vite · Qdrant · OpenRouter · Z.AI ·
-Firebase Authentication · Firestore · Vitest
+Firebase Authentication · Firestore · Vitest · Playwright
 
 ## Engineering highlights
 
@@ -173,7 +173,30 @@ never reaches the browser bundle.
   its design tokens: primitive scales, then the semantic roles that the light and dark themes
   remap, which are the only values `styles.css` uses.
 - `tests/` — server test suite. Frontend tests sit next to the components in `src/web/`.
+- `e2e/` — Playwright end-to-end tests of the built app.
 - `evals/` — promptfoo evals of the production pipeline.
+
+### End-to-end tests
+
+```sh
+npx playwright install chromium
+npm run e2e
+```
+
+`npm run e2e` builds the frontend and drives it in Chromium, at desktop and phone sizes, through
+the real API. It needs no API keys: `e2e/server.ts` answers with scripted text and sources, and
+keeps accounts in the Firebase Auth and Firestore emulators, which Playwright starts on ports
+9099 and 8086 through a pinned `firebase-tools`. The Firestore emulator needs Java 21 or later.
+The tests cover asking, stopping and retrying questions, chats kept in the browser, signing up,
+in and out, syncing chats to an account, deleting it, and rating answers. Add `--ui` to watch
+them run.
+
+```sh
+npm run e2e:smoke
+```
+
+`npm run e2e:smoke` asks one question of the production server with the keys in `.env`, and
+checks that the answer cites a source. Like the evals, it stays out of `npm run check`.
 
 ### Evals
 
