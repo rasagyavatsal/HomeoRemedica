@@ -106,6 +106,8 @@ export interface AuthConfig {
   apiKey: string
   authDomain: string
   projectId: string
+  /** The Firebase Auth emulator's URL, which only the end-to-end test server sets. */
+  emulator?: string
 }
 
 /** `GET /api/config`: `auth` is null when this server has no accounts. */

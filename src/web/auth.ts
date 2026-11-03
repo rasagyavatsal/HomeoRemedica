@@ -28,9 +28,10 @@ export interface AuthClient {
   signOut(): Promise<void>
 }
 
-export async function connectAuth(config: AuthConfig): Promise<AuthClient> {
+export async function connectAuth({ emulator, ...config }: AuthConfig): Promise<AuthClient> {
   const [{ initializeApp }, firebase] = await Promise.all([import('firebase/app'), import('firebase/auth')])
   const auth = firebase.getAuth(initializeApp(config))
+  if (emulator) firebase.connectAuthEmulator(auth, emulator, { disableWarnings: true })
   auth.useDeviceLanguage()
 
   return {
