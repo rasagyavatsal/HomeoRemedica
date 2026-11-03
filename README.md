@@ -18,7 +18,8 @@ Firebase Authentication · Firestore · Vitest
 ## Engineering highlights
 
 - **Hybrid retrieval:** fuses BM25 and voyage-4 vector rankings from every book's collection
-  through reciprocal-rank fusion, with up to eight retrieved chunks per answer.
+  through reciprocal-rank fusion, with up to eight retrieved chunks per answer. A list of symptoms
+  gets the remedies that most books support.
 - **Structured corpus:** preserves book, remedy, and section metadata on every chunk, so
   citations point to their source.
 - **Automated quality checks:** checks package boundaries, type-checks the server, tests against
@@ -40,7 +41,8 @@ flowchart TD
     K --> R[Reciprocal-rank fusion across books]
     V --> R
     E --> R
-    R --> P[Up to eight chunks with source metadata]
+    R --> D[Regrouping by remedy when no remedy dominates]
+    D --> P[Up to eight chunks with source metadata]
     Q --> G[Answer generation via Z.AI]
     P --> G
     G --> O[Answer with numbered source references]
@@ -53,6 +55,7 @@ answers with `glm-5.3-flash` by default.
 | --- | --- |
 | Qdrant with named dense and sparse vectors | Keeps source metadata, keyword search, and vector search together, in one collection per book. |
 | Reciprocal-rank fusion | Combines keyword and semantic rankings without requiring their raw scores to share a scale. Dense rankings are merged across books; BM25 rankings stay per book, because each collection has its own IDF. |
+| Regrouping by remedy | A list of symptoms matches long proving and nosode symptom lists passage by passage. When no remedy holds half the results, remedies are ranked by their best passage in each book, summed over books, so agreement between books wins. Questions about one remedy or the Organon keep the fused order. This step is not in the dataset's `scripts/search.py`. |
 | Same BM25 model at index and query time | Qdrant's server-side `qdrant/bm25` inference tokenizes queries exactly as the dataset indexed them, so the server needs no local model. |
 
 ## Quick start

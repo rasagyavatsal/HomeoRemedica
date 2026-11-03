@@ -18,10 +18,11 @@ const PAYLOAD = {
   text: 'Clarke > Nux Vomica > Mind; Head\n\nIrritable, oversensitive to noise.',
 }
 
-const ranked = (...points: [id: string | number, score: number][]) => ({
-  points: points.map(([id, score]) => ({ id, score })),
+type RankedPoint = [id: string | number, score: number, remedyId?: string]
+const ranked = (...points: RankedPoint[]) => ({
+  points: points.map(([id, score, remedyId]) => ({ id, score, ...(remedyId ? { payload: { remedy_id: remedyId } } : {}) })),
 })
-const rankings = (dense: [string | number, number][], sparse: [string | number, number][]) =>
+const rankings = (dense: RankedPoint[], sparse: RankedPoint[]) =>
   json({ result: [ranked(...dense), ranked(...sparse)], status: 'ok' })
 const records = (...points: [id: string | number, payload: Record<string, unknown>][]) =>
   json({ result: points.map(([id, payload]) => ({ id, payload })), status: 'ok' })
@@ -53,12 +54,12 @@ describe('Qdrant corpus', () => {
     expect(fetch.calls.every((call) => call.method === 'POST' && call.headers['api-key'] === 'qdrant-key')).toBe(true)
     expect(fetch.calls[0]?.body).toEqual({
       searches: [
-        { query: [0.1, 0.2], using: 'dense', limit: 15, with_payload: false, with_vector: false },
+        { query: [0.1, 0.2], using: 'dense', limit: 15, with_payload: ['remedy_id'], with_vector: false },
         {
           query: { text: 'irritability', model: 'qdrant/bm25' },
           using: 'bm25',
           limit: 15,
-          with_payload: false,
+          with_payload: ['remedy_id'],
           with_vector: false,
         },
       ],
@@ -81,6 +82,34 @@ describe('Qdrant corpus', () => {
       text: 'Irritable, oversensitive to noise.',
       score: 1 / 63 + 1 / 61,
     })
+  })
+
+  it('ranks remedies by support across books when none dominates the results', async () => {
+    // Three nosodes each match in the dense ranking and in their own book; Pulsatilla tops the
+    // BM25 ranking of three other books but is missing from the dense ranking.
+    const fetch = fakeFetch(
+      rankings([], [['a1', 9, 'pulsatilla']]),
+      rankings(
+        [['n1', 0.9, 'lyssin'], ['n2', 0.8, 'x-ray'], ['n3', 0.7, 'psorinum']],
+        [['n1', 9, 'lyssin'], ['n2', 8, 'x-ray'], ['n3', 7, 'psorinum']],
+      ),
+      rankings([], [['c1', 9, 'pulsatilla']]),
+      rankings([], [['k1', 9, 'pulsatilla']]),
+      records(['a1', { ...PAYLOAD, remedy: 'Pulsatilla' }]),
+      records(['n1', { ...PAYLOAD, remedy: 'Lyssin' }], ['n2', { ...PAYLOAD, remedy: 'X-Ray' }]),
+    )
+
+    const sources = await corpus(fetch, ['allen_keynotes', 'allen_nosodes', 'clarke_mm', 'kent_lectures']).search(
+      'weeps easily, thirstless, better in open air',
+      [1.0],
+      { limit: 3 },
+    )
+
+    expect(sources.map((source) => [source.bookId, source.remedyName])).toEqual([
+      ['allen_keynotes', 'Pulsatilla'],
+      ['allen_nosodes', 'Lyssin'],
+      ['allen_nosodes', 'X-Ray'],
+    ])
   })
 
   it.each([

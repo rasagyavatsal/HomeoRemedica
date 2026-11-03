@@ -5,6 +5,10 @@
  * voyage-4 dense vector and a BM25 sparse vector. Rankings are fused with reciprocal-rank fusion
  * the same way as the dataset's `scripts/search.py`, which its retrieval evaluation measures.
  * Qdrant encodes the BM25 query itself with the same model that indexed the collections.
+ *
+ * Unlike `scripts/search.py`, results that no remedy dominates are regrouped by remedy: a
+ * question that describes symptoms rather than naming a remedy gets the remedies most books
+ * support, instead of passages that each match well in only one book.
  */
 
 import type { BookSummary, RetrievedSource } from './contracts.ts'
@@ -19,6 +23,10 @@ export const SPARSE_MODEL = 'qdrant/bm25'
 export const PREFETCH_MULTIPLIER = 5
 // The standard reciprocal-rank fusion constant: a ranking adds 1 / (RRF_K + rank) to each point.
 export const RRF_K = 60
+// Results are regrouped by remedy unless one remedy, or one book without remedies, holds this share.
+export const DOMINANT_SHARE = 0.5
+// Regrouped results start with the best passage of each of this many remedies.
+export const DIFFERENTIAL_REMEDIES = 5
 export const QDRANT_TIMEOUT_MS = 30_000
 const LABEL = 'Qdrant'
 
@@ -44,6 +52,8 @@ interface Candidate {
   bookId: string
   id: PointId
   score: number
+  /** The passage's remedy, or its book when it has none, such as an Organon passage. */
+  subject: string
 }
 
 export class QdrantCorpus {
@@ -114,7 +124,7 @@ export class QdrantCorpus {
         fused.set(key, { ...candidate, score })
       }
     }
-    const best = topCandidates([...fused.values()], limit)
+    const best = select(topCandidates([...fused.values()], fused.size), limit)
     const payloads = await this.#payloads(best)
     return best.map((candidate) => {
       const payload = payloads.get(candidateKey(candidate.bookId, candidate.id))
@@ -134,12 +144,12 @@ export class QdrantCorpus {
       method: 'POST',
       body: JSON.stringify({
         searches: [
-          { query: embedding, using: DENSE_VECTOR, limit, with_payload: false, with_vector: false },
+          { query: embedding, using: DENSE_VECTOR, limit, with_payload: ['remedy_id'], with_vector: false },
           {
             query: { text: query, model: SPARSE_MODEL },
             using: SPARSE_VECTOR,
             limit,
-            with_payload: false,
+            with_payload: ['remedy_id'],
             with_vector: false,
           },
         ],
@@ -155,7 +165,9 @@ export class QdrantCorpus {
         if (!isRecord(point) || !isPointId(point.id) || typeof point.score !== 'number') {
           throw new ProviderError('Qdrant returned an invalid point')
         }
-        return { bookId, id: point.id, score: point.score }
+        const remedyId = isRecord(point.payload) ? point.payload.remedy_id : undefined
+        const subject = typeof remedyId === 'string' ? `remedy:${remedyId}` : `book:${bookId}`
+        return { bookId, id: point.id, score: point.score, subject }
       })
     })
     return [dense!, sparse!]
@@ -202,6 +214,33 @@ export class QdrantCorpus {
 
 function topCandidates(candidates: Candidate[], limit: number): Candidate[] {
   return candidates.sort((a, b) => b.score - a.score).slice(0, limit)
+}
+
+/**
+ * The best `limit` of the ranked candidates. When no subject dominates them, the question describes
+ * symptoms rather than naming a remedy, so remedies are ranked by how well the books together
+ * support them, and the best passage of each leading remedy comes first, then more of theirs.
+ */
+function select(ranked: readonly Candidate[], limit: number): Candidate[] {
+  const top = ranked.slice(0, limit)
+  const counts = new Map<string, number>()
+  for (const { subject } of top) counts.set(subject, (counts.get(subject) ?? 0) + 1)
+  if (Math.max(0, ...counts.values()) >= limit * DOMINANT_SHARE) return top
+  // A subject's support sums its best passage in each book, so agreement between books outweighs
+  // many passages from one, such as the long symptom lists of the provings and the nosodes.
+  const counted = new Set<string>()
+  const support = new Map<string, number>()
+  for (const { subject, bookId, score } of ranked) {
+    if (counted.has(candidateKey(bookId, subject))) continue
+    counted.add(candidateKey(bookId, subject))
+    support.set(subject, (support.get(subject) ?? 0) + score)
+  }
+  const leaders = new Set(
+    [...support.keys()].sort((a, b) => support.get(b)! - support.get(a)!).slice(0, DIFFERENTIAL_REMEDIES),
+  )
+  const firsts = [...leaders].map((subject) => ranked.find((candidate) => candidate.subject === subject)!)
+  const rest = ranked.filter((candidate) => leaders.has(candidate.subject) && !firsts.includes(candidate))
+  return [...firsts, ...rest].slice(0, limit)
 }
 
 function candidateKey(bookId: string, id: PointId): string {
