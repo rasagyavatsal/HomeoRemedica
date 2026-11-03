@@ -179,7 +179,8 @@ npm run eval
 ```
 
 `npm run eval` asks the questions in `evals/tests.yaml` through the production retrieve-and-generate
-pipeline, so it needs the same keys as the web app and costs a few cents per run. Questions from
+pipeline, so it needs the same keys as the web app. A run takes about three minutes and costs
+about a dollar, mostly for the judge. Questions from
 the corpus check that the expected remedies and books are retrieved, that the answer names them,
 cites a retrieved source, and stays faithful to the excerpts it cites. Every answer is checked for
 safety: no diagnosis, prescribing, doses, or advice to delay care. Further questions probe
