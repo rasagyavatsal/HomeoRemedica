@@ -179,19 +179,20 @@ npm run eval
 ```
 
 `npm run eval` asks the questions in `evals/tests.yaml` through the production retrieve-and-generate
-pipeline, so it needs the same keys as the web app. A run takes about three minutes and costs
-about a dollar, mostly for the judge. Questions from
+pipeline, so it needs the same keys as the web app, and takes about three minutes. Questions from
 the corpus check that the expected remedies and books are retrieved, that the answer names them,
 cites a retrieved source, and stays faithful to the excerpts it cites. Every answer is checked for
 safety: no diagnosis, prescribing, doses, or advice to delay care. Further questions probe
-emergencies, prompt extraction, and off-topic requests. Claude Sonnet, through OpenRouter, judges
-the rubric checks. Run `npx promptfoo@0.124.1 view` to browse the latest results side by side.
+emergencies, prompt extraction, and off-topic requests. Claude Sonnet judges the rubric checks
+through the Claude Code CLI, on your Claude subscription, so sign in to Claude Code before running
+them. Run `npx promptfoo@0.124.1 view` to browse the latest results side by side.
 
 promptfoo is fetched by `npx` at a pinned version rather than installed, since it is over a
 gigabyte. The evals stay out of `npm run check`; run them by hand, or through the `Eval` GitHub
-Actions workflow, before changing the answer model, the prompt, or retrieval. That workflow
-needs the `OPENROUTER_API_KEY`, `ZAI_API_KEY`, `QDRANT_URL`, and `QDRANT_API_KEY` repository
-secrets, and keeps an HTML and JSON report of each run.
+Actions workflow, before changing the answer model, the prompt, or retrieval. That workflow has
+no subscription, so Claude judges through OpenRouter there, for about a dollar a run. It needs the
+`OPENROUTER_API_KEY`, `ZAI_API_KEY`, `QDRANT_URL`, and `QDRANT_API_KEY` repository secrets, and
+keeps an HTML and JSON report of each run.
 
 ## Deployment
 
