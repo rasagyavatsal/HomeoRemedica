@@ -12,7 +12,7 @@ defaultTest:
   options:
     # A judge from another model family than the answer model, so it does not favour its own style.
     # It runs through the Claude Code CLI on your Claude subscription, so sign in to Claude Code
-    # first. The Eval workflow overrides it with `--grader`, since CI has no subscription.
+    # first.
     provider: file://judge.ts
   assert:
     - type: javascript

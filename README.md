@@ -188,11 +188,8 @@ through the Claude Code CLI, on your Claude subscription, so sign in to Claude C
 them. Run `npx promptfoo@0.124.1 view` to browse the latest results side by side.
 
 promptfoo is fetched by `npx` at a pinned version rather than installed, since it is over a
-gigabyte. The evals stay out of `npm run check`; run them by hand, or through the `Eval` GitHub
-Actions workflow, before changing the answer model, the prompt, or retrieval. That workflow has
-no subscription, so Claude judges through OpenRouter there, for about a dollar a run. It needs the
-`OPENROUTER_API_KEY`, `ZAI_API_KEY`, `QDRANT_URL`, and `QDRANT_API_KEY` repository secrets, and
-keeps an HTML and JSON report of each run.
+gigabyte. The evals stay out of `npm run check`; run them by hand before changing the answer
+model, the prompt, or retrieval.
 
 ## Deployment
 
