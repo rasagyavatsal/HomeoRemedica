@@ -55,10 +55,7 @@ test('keeps chats, newest first, after the tab is closed', async ({ page, contex
   await expect(reopened.getByRole('heading', { name: 'first chat' })).toBeVisible()
 })
 
-// Known bug: until the app knows whether someone is signed in, it has no library to save to,
-// and drops a chat answered in the meantime. Remove `test.fail` once that is fixed.
 test('saves a chat answered while chats load', async ({ page }) => {
-  test.fail()
   await page.route('**/api/config', async (route) => {
     await sleep(2_000)
     await route.continue()

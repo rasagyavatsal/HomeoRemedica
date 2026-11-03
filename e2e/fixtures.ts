@@ -26,10 +26,7 @@ export async function openApp(page: Page): Promise<void> {
   await chatsLoaded(page)
 }
 
-/**
- * Wait until the sidebar has loaded the chats. Until then the app has nowhere to save a chat,
- * and drops one answered in the meantime (see "saves a chat answered while chats load").
- */
+/** Wait until the sidebar has loaded the chats, so a test starts from the ones already saved. */
 export async function chatsLoaded(page: Page): Promise<void> {
   // A closed drawer is inert, which hides it from the accessibility tree.
   const chats = page.getByRole('navigation', { name: 'Chats', includeHidden: true })

@@ -160,9 +160,15 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
   const composer = useRef<ComposerHandle>(null)
   const drawer = useMediaQuery('(max-width: 52rem)')
 
+  // Chats answered before there is a library to save to, saved once there is one.
+  const unsaved = useRef(new Map<string, Conversation>())
   const save = useCallback(
     (conversation: Conversation) => {
-      if (!library || !conversation.messages.length) return
+      if (!conversation.messages.length) return
+      if (!library) {
+        unsaved.current.set(conversation.id, conversation)
+        return
+      }
       setChats((list) => [summarize(conversation), ...(list ?? []).filter((chat) => chat.id !== conversation.id)])
       library.save(conversation).catch((error: unknown) => setNotice(`This chat could not be saved. ${errorMessage(error)}`))
     },
@@ -185,14 +191,21 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
     setChats(null)
     if (!library) return
     let active = true
-    library.list().then(
-      (list) => active && setChats(list),
-      (error: unknown) => {
-        if (!active) return
-        setChats([])
-        setNotice(`Your chats could not be loaded. ${errorMessage(error)}`)
-      },
+    const saving = [...unsaved.current.values()].map((conversation) =>
+      library.save(conversation).catch((error: unknown) => setNotice(`This chat could not be saved. ${errorMessage(error)}`)),
     )
+    unsaved.current.clear()
+    // Listed once those are saved, so the list includes them.
+    Promise.all(saving)
+      .then(() => library.list())
+      .then(
+        (list) => active && setChats(list),
+        (error: unknown) => {
+          if (!active) return
+          setChats([])
+          setNotice(`Your chats could not be loaded. ${errorMessage(error)}`)
+        },
+      )
     if (reopen) {
       library.open(reopen).then(
         (saved) => active && saved && !current.current.messages.length && chat.open(saved),
