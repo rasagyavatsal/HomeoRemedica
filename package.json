@@ -12,7 +12,7 @@
     "dev": "vite --host 127.0.0.1 --port 5173 --strictPort",
     "build": "vite build",
     "start": "node src/server/server.ts",
-    "typecheck": "tsc -p tsconfig.server.json && tsc -p tsconfig.web.json",
+    "typecheck": "tsc -p tsconfig.server.json && tsc -p tsconfig.web.json && tsc -p tsconfig.e2e.json",
     "test": "vitest run",
     "check": "npm run typecheck && npm test && npm run build",
     "eval": "PROMPTFOO_DISABLE_TELEMETRY=1 npx --yes promptfoo@0.124.1 eval --config evals/promptfooconfig.yaml",
