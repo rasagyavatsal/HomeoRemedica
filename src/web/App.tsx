@@ -84,6 +84,13 @@ export default function App() {
     return () => clearTimeout(timer)
   }, [notice])
 
+  // A change of account shows a fresh workspace, so one person's chat never stays open for the next.
+  // Learning who is signed in as the app opens is no change, so a chat asked meanwhile stays.
+  const [workspace, setWorkspace] = useState<{ known: boolean; uid?: string; key: number }>({ known: false, key: 0 })
+  if (account !== undefined && (!workspace.known || workspace.uid !== uid)) {
+    setWorkspace({ known: true, uid, key: workspace.known ? workspace.key + 1 : workspace.key })
+  }
+
   const library = account === undefined ? null : uid ? accountLibrary : local
   const signOut = () => {
     auth?.signOut().catch((error: unknown) => setNotice(`Signing out failed. ${errorMessage(error)}`))
@@ -107,9 +114,8 @@ export default function App() {
 
   return (
     <>
-      {/* A new account shows a fresh workspace, so one person's chat never stays open for the next. */}
       <Workspace
-        key={uid ?? 'guest'}
+        key={workspace.key}
         library={library}
         notify={setNotice}
         account={

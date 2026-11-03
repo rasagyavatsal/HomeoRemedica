@@ -1,3 +1,5 @@
+import { setTimeout as sleep } from 'node:timers/promises'
+
 import type { Page } from '@playwright/test'
 
 import {
@@ -51,6 +53,21 @@ test('moves chats in this browser into the account at sign-in', async ({ page, r
 
   await expect.poll(() => localChats(page)).toEqual([])
   await expect(chatList(page)).toHaveText(['chilly and constipated'])
+})
+
+test('keeps a chat asked before the app knows who is signed in', async ({ page, request }) => {
+  const user = await createUser(request)
+  await signIn(page, user)
+  await page.route('**/api/config', async (route) => {
+    await sleep(2_000)
+    await route.continue()
+  })
+  await page.reload()
+  await askAndSave(page, 'asked while signing in')
+
+  await expect(page.getByRole('heading', { name: 'asked while signing in' })).toBeVisible()
+  await expect(chatList(page)).toHaveText(['asked while signing in'])
+  expect(await localChats(page)).toEqual([])
 })
 
 test('opens a saved chat on another device', async ({ page, request, browser }) => {
