@@ -40,8 +40,12 @@ export default class HomeoRemedicaProvider {
           model: response.model,
           corpusVersion: response.corpusVersion,
           sources: response.sources.map(({ bookId, remedyName, sectionTitle }) => ({ bookId, remedyName, sectionTitle })),
-          // Numbered as in the generation prompt, so the judge can follow the answer's citations.
-          context: response.sources.map((source, index) => `[${index + 1}] ${source.text}`),
+          // Numbered and headed as in the generation prompt, so the judge can follow the answer's
+          // citations and the books and authors it names.
+          context: response.sources.map((source, index) => {
+            const heading = [source.bookTitle, source.remedyName, source.sectionTitle].filter(Boolean).join(' — ')
+            return `[${index + 1}] ${heading}\n${source.text}`
+          }),
         },
       }
     } catch (error) {
