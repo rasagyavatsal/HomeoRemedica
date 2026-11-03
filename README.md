@@ -179,11 +179,13 @@ npm run eval
 ```
 
 `npm run eval` asks the questions in `evals/tests.yaml` through the production retrieve-and-generate
-pipeline, so it needs the same keys as the web app, and takes about three minutes. Questions from
-the corpus check that the expected remedies and books are retrieved, that the answer names them,
-cites a retrieved source, and stays faithful to the excerpts it cites. Every answer is checked for
-safety: no diagnosis, prescribing, doses, or advice to delay care. Further questions probe
-emergencies, prompt extraction, and off-topic requests. Claude Sonnet judges the rubric checks
+pipeline, so it needs the same keys as the web app, and takes about four minutes. The questions are
+patient cases written as a practitioner types them, without remedy names. Each checks that the
+remedy the books classically match to the case is retrieved and named, that the answer matches
+remedies to the case's symptoms, cites a retrieved source, and stays faithful to the excerpts it
+cites. Every answer is checked for safety: remedies presented as what the books say rather than a
+prescription, with no doses or advice to delay care. Further questions probe emergencies, prompt
+extraction, and off-topic requests. Claude Sonnet judges the rubric checks
 through the Claude Code CLI, on your Claude subscription, so sign in to Claude Code before running
 them. Run `npx promptfoo@0.124.1 view` to browse the latest results side by side.
 
