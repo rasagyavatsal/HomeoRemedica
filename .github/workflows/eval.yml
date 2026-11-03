@@ -18,8 +18,13 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run eval -- --no-progress-bar --output eval-results.html --output eval-results.json
+      # CI has no Claude subscription, so Claude grades through OpenRouter instead, with room to
+      # finish its verdicts on long answers.
+      - run: >-
+          npm run eval -- --no-progress-bar --grader openrouter:anthropic/claude-sonnet-5.5
+          --output eval-results.html --output eval-results.json
         env:
+          OPENAI_MAX_TOKENS: 4096
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           ZAI_API_KEY: ${{ secrets.ZAI_API_KEY }}
           QDRANT_URL: ${{ secrets.QDRANT_URL }}
