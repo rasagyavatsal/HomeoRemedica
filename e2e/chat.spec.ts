@@ -1,5 +1,5 @@
 import { ask, expect, openApp, replies, test, unique } from './fixtures.ts'
-import { CHAT_LIMIT, FAIL_ONCE, SLOW } from './scenario.ts'
+import { CHAT_LIMIT, FAIL_ONCE, SLOW, SUMMARY_PREFIX } from './scenario.ts'
 
 test.beforeEach(async ({ page }) => {
   await openApp(page)
@@ -61,6 +61,26 @@ test('sends the conversation so far with a follow-up', async ({ page }) => {
   await ask(page, 'and at night?')
 
   await expect(replies(page).last()).toContainText('Following on from “craves open air”')
+})
+
+test('compacts the context and keeps the summary after a reload', async ({ page }) => {
+  const first = unique('craves open air')
+  await ask(page, first)
+  await ask(page, 'and at night?')
+
+  await page.getByRole('button', { name: /^Context \d+% full$/ }).click()
+  const context = page.getByRole('dialog', { name: 'Context' })
+  await expect(context).toContainText('4 / 20')
+  await context.getByRole('button', { name: 'Compact' }).click()
+  await expect(context).toContainText('2 / 20')
+  await expect(context.getByRole('button', { name: 'Compact' })).toBeDisabled()
+
+  await page.reload()
+  const divider = page.getByRole('button', { name: 'Compacted' })
+  await divider.click()
+  await expect(page.getByText(`${SUMMARY_PREFIX} ${first}`)).toBeVisible()
+  await ask(page, 'and in the morning?')
+  await expect(replies(page).last()).toContainText('Following on from “and at night?”')
 })
 
 test('explains when too many questions are asked', async ({ page }) => {

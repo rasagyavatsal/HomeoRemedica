@@ -1,4 +1,4 @@
-import type { Citation, WebChatResponse } from '../../server/contracts.ts'
+import type { ChatTurn, Citation, WebChatResponse } from '../../server/contracts.ts'
 
 export function citation(number: number, overrides: Partial<Citation> = {}): Citation {
   return {
@@ -14,17 +14,16 @@ export function citation(number: number, overrides: Partial<Citation> = {}): Cit
   }
 }
 
-export function chatResponse(answer: string, sources: Citation[], question = 'Question?'): WebChatResponse {
-  return {
-    answer,
-    sources,
-    corpusVersion: 'v1',
-    model: 'test-model',
-    history: [
-      { role: 'user', content: question },
-      { role: 'assistant', content: answer },
-    ],
-  }
+export function chatResponse(
+  answer: string,
+  sources: Citation[],
+  question = 'Question?',
+  history: ChatTurn[] = [
+    { role: 'user', content: question },
+    { role: 'assistant', content: answer },
+  ],
+): WebChatResponse {
+  return { answer, sources, corpusVersion: 'v1', model: 'test-model', history }
 }
 
 /** A server-sent event stream; each string is sent as its own chunk. */
@@ -42,14 +41,14 @@ export function sse(event: string, data: unknown): string {
   return `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`
 }
 
-/** A streamed answer, as `/api/chat` sends it. */
-export function answerStream(answer: string, sources: Citation[], question?: string): Response {
+/** A streamed answer, as `/api/chat` sends it; `history` defaults to just this exchange. */
+export function answerStream(answer: string, sources: Citation[], question?: string, history?: ChatTurn[]): Response {
   const pieces = answer.match(/.{1,12}/gs) ?? []
   return new Response(
     eventStream([
       sse('sources', sources),
       ...pieces.map((text) => sse('text', { text })),
-      sse('done', chatResponse(answer, sources, question)),
+      sse('done', chatResponse(answer, sources, question, history)),
     ]),
     { headers: { 'Content-Type': 'text/event-stream' } },
   )

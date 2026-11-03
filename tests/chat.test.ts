@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
 import { ProductionRetriever, type SearchableRelease } from '../src/server/retrieval.ts'
+import { CONTEXT_CHARS, CONTEXT_TURNS } from '../src/web/conversation.ts'
 import {
   type AnswerGenerator,
   type ChatRequest,
   ChatRequestSchema,
+  MAX_HISTORY_CHARS,
+  MAX_HISTORY_TURNS,
   type GenerateOptions,
   type RetrievedSource,
   type Retriever,
@@ -294,6 +297,10 @@ describe('compaction', () => {
     expect([error.stage, error.kind]).toEqual(['compaction', 'timeout'])
     expect(error.message).not.toContain('provider secret')
   })
+})
+
+it('shows the browser the same context limits the server keeps', () => {
+  expect([CONTEXT_CHARS, CONTEXT_TURNS]).toEqual([MAX_HISTORY_CHARS, MAX_HISTORY_TURNS])
 })
 
 it('rejects book filters', () => {

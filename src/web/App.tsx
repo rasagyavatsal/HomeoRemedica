@@ -6,7 +6,8 @@ import { errorMessage, getJson } from './api.ts'
 import { type Account, type AuthClient, authErrorMessage, connectAuth } from './auth.ts'
 import { AuthDialog } from './AuthDialog.tsx'
 import { Composer, type ComposerHandle } from './Composer.tsx'
-import { type Conversation, newConversation } from './conversation.ts'
+import { ContextMeter } from './ContextMeter.tsx'
+import { type Conversation, contextStart, newConversation } from './conversation.ts'
 import { CloseIcon, MenuIcon } from './icons.tsx'
 import { AccountLibrary, type ChatLibrary, LocalLibrary, moveIntoAccount, openChat, summarize } from './library.ts'
 import { Sidebar } from './Sidebar.tsx'
@@ -272,6 +273,11 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
   }, [])
   const closeSources = useCallback(() => setOpenSources(null), [])
 
+  const compact = () => {
+    chat.compact().catch((error: unknown) => setNotice(errorMessage(error)))
+  }
+  const start = useMemo(() => contextStart(conversation.messages, conversation.history), [conversation.messages, conversation.history])
+
   const openMessage = openSources && conversation.messages.find((message) => message.id === openSources.messageId)
   const openSource = openSources && openMessage?.sources?.[openSources.source - 1]
   const sidebarShown = sidebarOpen && drawer
@@ -321,6 +327,8 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
                 ratings={feedback.ratings}
                 onRate={ratingClient ? feedback.rate : undefined}
                 onNote={ratingClient ? feedback.note : undefined}
+                contextStart={start}
+                summary={conversation.summary}
               />
             ) : (
               <Welcome />
@@ -330,7 +338,18 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
 
         <footer className="composer-area" style={{ '--tagline-words': TAGLINE_WORDS } as CSSProperties}>
           <div className="reading">
-            <Composer ref={composer} busy={chat.busy} onAsk={chat.ask} onStop={chat.stop} />
+            <Composer
+              ref={composer}
+              busy={chat.busy}
+              disabled={chat.compacting}
+              onAsk={chat.ask}
+              onStop={chat.stop}
+              extra={
+                (conversation.history.length > 0 || conversation.summary !== undefined) && (
+                  <ContextMeter conversation={conversation} compacting={chat.compacting} busy={chat.busy} onCompact={compact} />
+                )
+              }
+            />
             <p className="disclaimer">Historical reference only — not medical advice. For symptoms, see a qualified practitioner.</p>
           </div>
         </footer>

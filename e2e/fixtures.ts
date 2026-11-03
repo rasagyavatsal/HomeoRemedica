@@ -7,13 +7,16 @@ import { type Page, expect, test as base } from '@playwright/test'
 export { expect }
 
 export const test = base.extend<{ client: string }>({
-  // The server limits questions by the last X-Forwarded-For address, as behind Cloud Run.
+  // The server limits questions and compactions by the last X-Forwarded-For address, as behind
+  // Cloud Run.
   client: [
     async ({ context }, use) => {
       const client = randomUUID()
-      await context.route('**/api/chat', (route) =>
-        route.continue({ headers: { ...route.request().headers(), 'x-forwarded-for': client } }),
-      )
+      for (const path of ['**/api/chat', '**/api/chat/compact']) {
+        await context.route(path, (route) =>
+          route.continue({ headers: { ...route.request().headers(), 'x-forwarded-for': client } }),
+        )
+      }
       await use(client)
     },
     { auto: true },

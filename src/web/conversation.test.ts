@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { type Message, citedSources, linkCitations, savedMessages, titleFrom } from './conversation.ts'
+import { type Message, citedSources, contextStart, contextUse, linkCitations, savedMessages, titleFrom } from './conversation.ts'
 import { citation } from './test/fakes.ts'
 
 describe('linkCitations', () => {
@@ -42,4 +42,41 @@ it('saves answered and stopped turns but not failed ones', () => {
     { id: 4, role: 'user', content: 'Stopped?' },
     { id: 5, role: 'assistant', content: 'Part' },
   ])
+})
+
+describe('context', () => {
+  const messages: Message[] = [
+    { id: 0, role: 'user', content: 'Arnica?' },
+    { id: 1, role: 'assistant', content: 'Arnica answer.' },
+    { id: 2, role: 'user', content: 'Slow?' },
+    { id: 3, role: 'assistant', content: 'Partial', status: 'stopped' },
+    { id: 4, role: 'user', content: 'Bryonia?' },
+    { id: 5, role: 'assistant', content: `Bryonia ${'answer '.repeat(700)}` },
+  ]
+  const bryonia = [
+    { role: 'user' as const, content: 'Bryonia?' },
+    { role: 'assistant' as const, content: messages[5]!.content.slice(0, 4_000).trim() },
+  ]
+
+  it('measures the history and summary by the nearer limit', () => {
+    expect(contextUse({ history: bryonia, summary: 'a'.repeat(4_000) })).toEqual({
+      chars: 8_008,
+      turns: 2,
+      fraction: 8_008 / 16_000,
+    })
+    const turns = Array.from({ length: 18 }, () => ({ role: 'user' as const, content: 'x' }))
+    expect(contextUse({ history: turns }).fraction).toBe(0.9)
+  })
+
+  it('finds the first message the history holds, passing over a stopped answer', () => {
+    expect(contextStart(messages, bryonia)).toBe(4)
+    expect(contextStart(messages, [{ role: 'user', content: 'Arnica?' }, { role: 'assistant', content: 'Arnica answer.' }, ...bryonia])).toBe(0)
+    // History that starts with an answer, after the oldest question was dropped.
+    expect(contextStart(messages, [{ role: 'assistant', content: 'Arnica answer.' }, ...bryonia])).toBe(1)
+  })
+
+  it('has no start for an empty or unmatched history', () => {
+    expect(contextStart(messages, [])).toBeUndefined()
+    expect(contextStart(messages, [{ role: 'user', content: 'Never asked?' }, ...bryonia])).toBeUndefined()
+  })
 })

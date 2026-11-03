@@ -1,6 +1,6 @@
 /** Browser client for the HomeoRemedica API. */
 
-import type { ChatTurn, Citation, WebChatResponse } from '../server/contracts.ts'
+import type { ChatTurn, Citation, CompactResponse, WebChatResponse } from '../server/contracts.ts'
 
 const FALLBACK_DETAIL = 'Something went wrong. Please try again.'
 const INTERRUPTED_DETAIL = 'The answer stopped before it finished. Please try again.'
@@ -47,6 +47,20 @@ export async function getJson<T>(path: string, init?: RequestInit): Promise<T> {
 export interface ChatQuestion {
   message: string
   history: readonly ChatTurn[]
+  summary?: string | undefined
+}
+
+/** Condense a chat's earlier turns into a summary; resolves with the summary and history to keep. */
+export async function compactChat(
+  context: { history: readonly ChatTurn[]; summary?: string | undefined },
+  signal?: AbortSignal,
+): Promise<CompactResponse> {
+  return getJson<CompactResponse>('/api/chat/compact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(context),
+    signal,
+  })
 }
 
 export interface StreamHandlers {

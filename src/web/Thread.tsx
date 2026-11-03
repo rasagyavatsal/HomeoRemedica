@@ -1,4 +1,4 @@
-import { memo, useCallback, useId } from 'react'
+import { Fragment, memo, useCallback, useId, useState } from 'react'
 
 import { Answer } from './Answer.tsx'
 import type { AnswerRatings, Citation } from '../server/contracts.ts'
@@ -24,31 +24,75 @@ interface ThreadProps {
   /** Rates an answer or one of its sources; answers cannot be rated without it. */
   onRate?: RateHandler | undefined
   onNote?: NoteHandler | undefined
+  /** The index of the first message the model still reads, if known. */
+  contextStart?: number | undefined
+  /** What compacting the chat condensed its earlier turns into. */
+  summary?: string | undefined
 }
 
-export function Thread({ messages, openSources, onSources, onRetry, ratings, onRate, onNote }: ThreadProps) {
+export function Thread({ messages, openSources, onSources, onRetry, ratings, onRate, onNote, contextStart, summary }: ThreadProps) {
+  // Marked only when the model has lost an answer above it, or reads a summary in its place.
+  const divider =
+    contextStart !== undefined &&
+    contextStart > 0 &&
+    (summary !== undefined || messages.slice(0, contextStart).some((message) => message.role === 'assistant' && !message.status))
+      ? contextStart
+      : undefined
   return (
     <ol className="thread" aria-label="Conversation">
-      {messages.map((message, index) =>
-        message.role === 'user' ? (
-          <li key={message.id} className="question">
-            <h2 className="question-text">{message.content}</h2>
-          </li>
-        ) : (
-          <li key={message.id} className="reply">
-            <Reply
-              message={message}
-              activeSource={openSources?.messageId === message.id ? openSources.source : undefined}
-              onSources={onSources}
-              onRetry={index === messages.length - 1 ? onRetry : undefined}
-              ratings={ratings?.get(message.id)}
-              onRate={onRate}
-              onNote={onNote}
-            />
-          </li>
-        ),
-      )}
+      {messages.map((message, index) => (
+        <Fragment key={message.id}>
+          {index === divider && <ContextDivider summary={summary} />}
+          {message.role === 'user' ? (
+            <li className="question">
+              <h2 className="question-text">{message.content}</h2>
+            </li>
+          ) : (
+            <li className="reply">
+              <Reply
+                message={message}
+                activeSource={openSources?.messageId === message.id ? openSources.source : undefined}
+                onSources={onSources}
+                onRetry={index === messages.length - 1 ? onRetry : undefined}
+                ratings={ratings?.get(message.id)}
+                onRate={onRate}
+                onNote={onNote}
+              />
+            </li>
+          )}
+        </Fragment>
+      ))}
     </ol>
+  )
+}
+
+/** Where the model's context begins: above it, messages it no longer reads, or the summary it reads instead. */
+function ContextDivider({ summary }: { summary: string | undefined }) {
+  const [open, setOpen] = useState(false)
+  const summaryId = useId()
+  return (
+    <li className="context-divider">
+      <div className="context-divider-rule">
+        {summary === undefined ? (
+          <span className="context-divider-label">Earlier messages not in context</span>
+        ) : (
+          <button
+            type="button"
+            className="context-divider-label context-divider-button"
+            onClick={() => setOpen((value) => !value)}
+            aria-expanded={open}
+            aria-controls={open ? summaryId : undefined}
+          >
+            Compacted
+          </button>
+        )}
+      </div>
+      {open && summary !== undefined && (
+        <p id={summaryId} className="context-summary">
+          {summary}
+        </p>
+      )}
+    </li>
   )
 }
 

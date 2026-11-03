@@ -8,12 +8,13 @@ import { answerStream, citation, json, pending } from './test/fakes.ts'
 type Route = (init: RequestInit | undefined) => Response | Promise<Response>
 
 /** Answer requests by path; `/api/chat` takes one handler per question, in order. */
-function serve({ chat = [] as Route[] } = {}) {
+function serve({ chat = [] as Route[], compact }: { chat?: Route[]; compact?: Route } = {}) {
   const asked: unknown[] = []
   vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
     const path = String(input)
     if (path === '/api/books') return json({ books: [{ bookId: 'boericke_mm', title: 'Boericke, Materia Medica', author: null }] })
     if (path === '/api/config') return json({ auth: null })
+    if (path === '/api/chat/compact' && compact) return compact(init)
     if (path === '/api/chat') {
       asked.push(JSON.parse(init?.body as string))
       const next = chat.shift()
@@ -114,6 +115,74 @@ describe('asking', () => {
 
     expect(screen.getByText('Stopped.')).toBeInTheDocument()
     await waitFor(() => expect(screen.getByRole('button', { name: 'Send question' })).toBeDisabled())
+  })
+})
+
+describe('context', () => {
+  const first = [
+    { role: 'user' as const, content: 'First?' },
+    { role: 'assistant' as const, content: 'First answer.' },
+  ]
+  const second = [
+    { role: 'user' as const, content: 'Second?' },
+    { role: 'assistant' as const, content: 'Second answer.' },
+  ]
+
+  it('shows how full the context is and compacts it', async () => {
+    const compacted: unknown[] = []
+    const asked = serve({
+      chat: [
+        () => answerStream('First answer.', [citation(1)], 'First?'),
+        () => answerStream('Second answer.', [citation(1)], 'Second?', [...first, ...second]),
+        () => answerStream('Third answer.', [citation(1)], 'Third?'),
+      ],
+      compact: (init) => {
+        compacted.push(JSON.parse(init?.body as string))
+        return json({ summary: 'The user first asked about Nux vomica.', history: second })
+      },
+    })
+    render(<App />)
+
+    expect(screen.queryByRole('button', { name: /^Context/ })).not.toBeInTheDocument()
+    await ask('First?')
+    await screen.findByText('First answer.')
+    await ask('Second?')
+    await screen.findByText('Second answer.')
+    await userEvent.click(screen.getByRole('button', { name: 'Context 20% full' }))
+
+    const popover = screen.getByRole('dialog', { name: 'Context' })
+    expect(within(popover).getByText('Characters').nextSibling).toHaveTextContent('40 / 16,000')
+    expect(within(popover).getByText('Turns').nextSibling).toHaveTextContent('4 / 20')
+    await userEvent.click(within(popover).getByRole('button', { name: 'Compact' }))
+
+    expect(compacted).toEqual([{ history: [...first, ...second] }])
+    const divider = await screen.findByRole('button', { name: 'Compacted' })
+    // Only the latest exchange is left to condense, so there is nothing more to compact.
+    expect(within(popover).getByRole('button', { name: 'Compact' })).toBeDisabled()
+    await userEvent.click(divider)
+    expect(screen.getByText('The user first asked about Nux vomica.')).toBeInTheDocument()
+
+    await ask('Third?')
+    await screen.findByText('Third answer.')
+    expect(asked[2]).toEqual({ message: 'Third?', history: second, summary: 'The user first asked about Nux vomica.' })
+  })
+
+  it('shows a failed compaction and keeps the context', async () => {
+    serve({
+      chat: [() => answerStream('Second answer.', [citation(1)], 'Second?', [...first, ...second])],
+      compact: () => json({ detail: 'The request took too long. Please try again.' }, 504),
+    })
+    render(<App />)
+
+    await ask('Second?')
+    await screen.findByText('Second answer.')
+    await userEvent.click(screen.getByRole('button', { name: /^Context/ }))
+    await userEvent.click(screen.getByRole('button', { name: 'Compact' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The chat could not be compacted. The request took too long. Please try again.',
+    )
+    expect(screen.getByText('Turns').nextSibling).toHaveTextContent('4 / 20')
   })
 })
 

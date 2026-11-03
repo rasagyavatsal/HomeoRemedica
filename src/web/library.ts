@@ -29,6 +29,7 @@ const OPEN_CHAT_KEY = 'homeoremedica.openChat'
 interface StoredChat extends ChatSummary {
   messages: SavedMessage[]
   history: ChatTurn[]
+  summary?: string
 }
 
 export function summarize({ id, title, updatedAt }: Conversation): ChatSummary {
@@ -61,11 +62,18 @@ export class LocalLibrary implements ChatLibrary {
 
   async open(id: string): Promise<Conversation | null> {
     const chat = this.all().find((stored) => stored.id === id)
-    return chat ? { id: chat.id, title: chat.title, updatedAt: chat.updatedAt, messages: chat.messages, history: chat.history } : null
+    if (!chat) return null
+    const { title, updatedAt, messages, history, summary } = chat
+    return { id, title, updatedAt, messages, history, summary }
   }
 
   async save(conversation: Conversation): Promise<ChatSummary> {
-    const chat: StoredChat = { ...summarize(conversation), messages: savedMessages(conversation.messages), history: conversation.history }
+    const chat: StoredChat = {
+      ...summarize(conversation),
+      messages: savedMessages(conversation.messages),
+      history: conversation.history,
+      summary: conversation.summary,
+    }
     this.#write([chat, ...this.all().filter((stored) => stored.id !== chat.id)].slice(0, MAX_LOCAL_CHATS))
     return summarize(conversation)
   }
@@ -126,7 +134,14 @@ export class AccountLibrary implements ChatLibrary {
       throw error
     }
     const title = chat.messages.find((message) => message.role === 'user')?.content ?? ''
-    return { id, title: titleFrom(title), updatedAt: 0, messages: chat.messages, history: chat.history }
+    return {
+      id,
+      title: titleFrom(title),
+      updatedAt: 0,
+      messages: chat.messages,
+      history: chat.history,
+      summary: chat.summary,
+    }
   }
 
   async save(conversation: Conversation): Promise<ChatSummary> {
@@ -135,6 +150,7 @@ export class AccountLibrary implements ChatLibrary {
       updatedAt: conversation.updatedAt,
       messages: savedMessages(conversation.messages),
       history: conversation.history,
+      summary: conversation.summary,
     }
     const response = await this.#request(`/api/chats/${encodeURIComponent(conversation.id)}`, {
       method: 'PUT',
