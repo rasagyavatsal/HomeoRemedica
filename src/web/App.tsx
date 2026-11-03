@@ -301,6 +301,7 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
                 onRetry={chat.retry}
                 ratings={feedback.ratings}
                 onRate={ratingClient ? feedback.rate : undefined}
+                onNote={ratingClient ? feedback.note : undefined}
               />
             ) : (
               <Welcome />

@@ -80,9 +80,11 @@ function serve(chat: (() => Response)[] = []) {
     if (ratedChat) {
       const prefix = `${token}/${ratedChat}-`
       const ratings = [...feedback].filter(([key]) => key.startsWith(prefix))
-      const rated = ({ rating, sources }: Feedback): AnswerRatings => ({
+      const rated = ({ rating, sources, reasons, comment }: Feedback): AnswerRatings => ({
         answer: rating,
         sources: Object.fromEntries(sources.flatMap((source, index) => (source.rating ? [[index + 1, source.rating]] : []))),
+        reasons,
+        comment,
       })
       return json({ ratings: Object.fromEntries(ratings.map(([key, saved]) => [key.slice(prefix.length), rated(saved)])) })
     }
@@ -233,15 +235,20 @@ it('rates answers and their passages', async () => {
           { id: citation(1).id, cited: false, rating: null },
           { id: citation(2).id, cited: true, rating: 'down' },
         ],
+        reasons: [],
+        comment: null,
       },
     ]),
   )
   const [id] = feedback.keys()
   expect(id).toMatch(/^alice\/[\w-]+-1$/)
 
-  // Pressing the chosen thumb again takes the rating back.
+  // Pressing the chosen thumb reopens its comment box, and pressing it again there takes the rating back.
+  await userEvent.click(within(answer).getByRole('button', { name: 'Helpful' }))
+  expect(screen.getByRole('textbox', { name: 'Comment' })).toBeInTheDocument()
   await userEvent.click(within(answer).getByRole('button', { name: 'Helpful' }))
   await waitFor(() => expect(feedback.get(id!)?.rating).toBeNull())
+  expect(screen.queryByRole('textbox', { name: 'Comment' })).not.toBeInTheDocument()
   expect(feedback.size).toBe(1)
 })
 
@@ -272,6 +279,73 @@ it('shows saved ratings when a chat is opened again', async () => {
   await waitFor(() => expect([...feedback.values()][0]).toMatchObject({ rating: 'up', sources: [{ rating: 'up' }] }))
 })
 
+it('takes a comment, and reasons for an answer rated down', async () => {
+  fake.account = ALICE
+  const { feedback } = serve([() => answerStream('Thin answer [1].', [citation(1)], 'Thin?')])
+  const { unmount } = render(<App />)
+  await screen.findByText('alice@example.com')
+  await userEvent.type(screen.getByRole('textbox', { name: 'Your question' }), 'Thin?{Enter}')
+  await screen.findByText(/Thin answer/)
+  const answer = screen.getByRole('group', { name: 'Rate this answer' })
+
+  await userEvent.click(within(answer).getByRole('button', { name: 'Not helpful' }))
+  const comment = screen.getByRole('textbox', { name: 'Comment' })
+  expect(comment).toHaveFocus()
+  expect(comment).toHaveAttribute('placeholder', 'What was missing or wrong?')
+  await userEvent.click(screen.getByRole('button', { name: 'Irrelevant sources' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Unclear' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Unclear' }))
+  await userEvent.type(comment, '  Missed the mind symptoms.{Enter}')
+
+  expect(screen.queryByRole('textbox', { name: 'Comment' })).not.toBeInTheDocument()
+  await waitFor(() =>
+    expect([...feedback.values()][0]).toMatchObject({
+      rating: 'down',
+      reasons: ['irrelevant_sources'],
+      comment: 'Missed the mind symptoms.',
+    }),
+  )
+
+  // Choosing the thumb again reopens the comment; a thumbs-up drops the reasons.
+  await userEvent.click(within(answer).getByRole('button', { name: 'Not helpful' }))
+  expect(screen.getByRole('textbox', { name: 'Comment' })).toHaveValue('Missed the mind symptoms.')
+  await userEvent.keyboard('{Escape}')
+  expect(screen.queryByRole('textbox', { name: 'Comment' })).not.toBeInTheDocument()
+  await userEvent.click(within(answer).getByRole('button', { name: 'Helpful' }))
+  expect(screen.getByRole('textbox', { name: 'Comment' })).toHaveAttribute('placeholder', 'What helped?')
+  expect(screen.queryByRole('button', { name: 'Irrelevant sources' })).not.toBeInTheDocument()
+  await waitFor(() => expect([...feedback.values()][0]).toMatchObject({ rating: 'up', reasons: [], comment: 'Missed the mind symptoms.' }))
+
+  // The comment is there after a reload.
+  unmount()
+  render(<App />)
+  await screen.findByRole('heading', { name: 'Thin?' })
+  const reloaded = await screen.findByRole('group', { name: 'Rate this answer' })
+  await waitFor(() => expect(within(reloaded).getByRole('button', { name: 'Helpful' })).toHaveAttribute('aria-pressed', 'true'))
+  await userEvent.click(within(reloaded).getByRole('button', { name: 'Helpful' }))
+  expect(screen.getByRole('textbox', { name: 'Comment' })).toHaveValue('Missed the mind symptoms.')
+})
+
+it('closes an empty comment box on a click elsewhere, and keeps one with text', async () => {
+  fake.account = ALICE
+  serve([() => answerStream('Answer [1].', [citation(1)], 'Question?')])
+  render(<App />)
+  await screen.findByText('alice@example.com')
+  await userEvent.type(screen.getByRole('textbox', { name: 'Your question' }), 'Question?{Enter}')
+  await screen.findByText(/Answer/)
+  const helpful = within(screen.getByRole('group', { name: 'Rate this answer' })).getByRole('button', { name: 'Helpful' })
+
+  await userEvent.click(helpful)
+  await userEvent.click(screen.getByRole('textbox', { name: 'Your question' }))
+  expect(screen.queryByRole('textbox', { name: 'Comment' })).not.toBeInTheDocument()
+
+  await userEvent.click(helpful)
+  await userEvent.type(screen.getByRole('textbox', { name: 'Comment' }), 'Clear')
+  await userEvent.click(screen.getByRole('textbox', { name: 'Your question' }))
+  expect(screen.getByRole('textbox', { name: 'Comment' })).toHaveValue('Clear')
+  expect(helpful).toHaveAttribute('aria-pressed', 'true')
+})
+
 it('undoes a rating that could not be saved', async () => {
   fake.account = ALICE
   const server = serve([() => answerStream('Answer.', [citation(1)], 'Question?')])
@@ -284,7 +358,7 @@ it('undoes a rating that could not be saved', async () => {
   const helpful = within(screen.getByRole('group', { name: 'Rate this answer' })).getByRole('button', { name: 'Helpful' })
   await userEvent.click(helpful)
 
-  expect(await screen.findByText('Your rating could not be saved. Ratings are down.')).toBeInTheDocument()
+  expect(await screen.findByText('Your feedback could not be saved. Ratings are down.')).toBeInTheDocument()
   expect(helpful).toHaveAttribute('aria-pressed', 'false')
 })
 

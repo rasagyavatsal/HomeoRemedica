@@ -13,16 +13,18 @@ interface RatingButtonsProps {
   /** The thumbs' names, such as "Helpful" and "Not helpful". */
   up: string
   down: string
+  /** Whether pressing the chosen thumb again takes the rating back, or rates the same again. */
+  clears?: boolean
 }
 
 /** Thumbs up and down; pressing the chosen thumb again takes the rating back. */
-export function RatingButtons({ rating, onRate, label, up, down }: RatingButtonsProps) {
+export function RatingButtons({ rating, onRate, label, up, down, clears = true }: RatingButtonsProps) {
   // Counts thumbs-ups, so each one plays its burst afresh.
   const [bursts, setBursts] = useState(0)
 
   const choose = (choice: Rating) => {
-    const next = rating === choice ? null : choice
-    if (next === 'up') setBursts((count) => count + 1)
+    const next = rating === choice && clears ? null : choice
+    if (next === 'up' && rating !== 'up') setBursts((count) => count + 1)
     onRate(next)
   }
 

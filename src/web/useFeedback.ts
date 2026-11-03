@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import type { AnswerRatings, Feedback, Rating } from '../server/contracts.ts'
+import type { AnswerRatings, Feedback, FeedbackReason, Rating } from '../server/contracts.ts'
 import { errorMessage } from './api.ts'
 import { type Conversation, type Message, citedSources } from './conversation.ts'
 
@@ -16,7 +16,16 @@ export type RateTarget = 'answer' | number
 
 export type RateHandler = (messageId: number, target: RateTarget, rating: Rating | null) => void
 
-const UNRATED: AnswerRatings = { answer: null, sources: {} }
+/** Why an answer was rated as it was; omitted parts stay as they are. */
+export interface AnswerNote {
+  reasons?: FeedbackReason[]
+  comment?: string | null
+}
+
+/** Resolves with whether the note was saved. */
+export type NoteHandler = (messageId: number, note: AnswerNote) => Promise<boolean>
+
+const UNRATED: AnswerRatings = { answer: null, sources: {}, reasons: [], comment: null }
 
 /** The id every rating of an answer is saved under. */
 export function feedbackId(chatId: string, messageId: number): string {
@@ -39,24 +48,33 @@ export function feedbackFor(messages: readonly Message[], messageId: number, rat
       cited: cited.has(index + 1),
       rating: ratings.sources[index + 1] ?? null,
     })),
+    reasons: ratings.reasons,
+    comment: ratings.comment,
   }
 }
 
 function rated(ratings: AnswerRatings, target: RateTarget, rating: Rating | null): AnswerRatings {
-  if (target === 'answer') return { ...ratings, answer: rating }
+  // Reasons say what was wrong, so they go when the answer is no longer rated down.
+  if (target === 'answer') return { ...ratings, answer: rating, reasons: rating === 'down' ? ratings.reasons : [] }
   const { [target]: _, ...sources } = ratings.sources
   return { ...ratings, sources: rating ? { ...sources, [target]: rating } : sources }
 }
 
 function same(a: AnswerRatings, b: AnswerRatings): boolean {
   const numbers = new Set([...Object.keys(a.sources), ...Object.keys(b.sources)].map(Number))
-  return a.answer === b.answer && [...numbers].every((number) => a.sources[number] === b.sources[number])
+  return (
+    a.answer === b.answer &&
+    a.comment === b.comment &&
+    a.reasons.join() === b.reasons.join() &&
+    [...numbers].every((number) => a.sources[number] === b.sources[number])
+  )
 }
 
 export interface FeedbackControls {
   /** The open chat's ratings, by message id. */
   ratings: ReadonlyMap<number, AnswerRatings>
   rate: RateHandler
+  note: NoteHandler
 }
 
 /**
@@ -73,7 +91,7 @@ export function useFeedback(
   // The newest ratings, which each request sends, and the ones the server has.
   const latest = useRef(all)
   const saved = useRef(new Map<string, AnswerRatings>())
-  const queues = useRef(new Map<string, Promise<void>>())
+  const queues = useRef(new Map<string, Promise<boolean>>())
   // Chats whose saved ratings were loaded, or are loading.
   const loaded = useRef(new Set<string>())
   const chat = useRef(conversation)
@@ -110,29 +128,48 @@ export function useFeedback(
     setAll(next)
   }, [])
 
-  const rate = useCallback<RateHandler>(
-    (messageId, target, rating) => {
-      if (!client) return
+  /** Change an answer's ratings; resolves with whether the change was saved. */
+  const update = useCallback(
+    async (messageId: number, change: (ratings: AnswerRatings) => AnswerRatings): Promise<boolean> => {
+      if (!client) return false
       const { id: chatId, messages } = chat.current
       const id = feedbackId(chatId, messageId)
-      const next = rated(latest.current.get(id) ?? UNRATED, target, rating)
-      if (!feedbackFor(messages, messageId, next)) return
+      const next = change(latest.current.get(id) ?? UNRATED)
+      if (!feedbackFor(messages, messageId, next)) return false
       show(id, next)
       // One request at a time per answer, each sending the newest ratings, so they arrive in order.
-      const request = (queues.current.get(id) ?? Promise.resolve()).then(async () => {
+      const request = (queues.current.get(id) ?? Promise.resolve(true)).then(async () => {
         const ratings = latest.current.get(id) ?? UNRATED
-        if (same(ratings, saved.current.get(id) ?? UNRATED)) return
+        if (same(ratings, saved.current.get(id) ?? UNRATED)) return true
         try {
           await client.rate(id, feedbackFor(messages, messageId, ratings)!)
           saved.current.set(id, ratings)
+          return true
         } catch (error) {
           show(id, saved.current.get(id) ?? UNRATED)
-          onError(`Your rating could not be saved. ${errorMessage(error)}`)
+          onError(`Your feedback could not be saved. ${errorMessage(error)}`)
+          return false
         }
       })
       queues.current.set(id, request)
+      return request
     },
     [client, onError, show],
+  )
+
+  const rate = useCallback<RateHandler>(
+    (messageId, target, rating) => void update(messageId, (ratings) => rated(ratings, target, rating)),
+    [update],
+  )
+
+  const note = useCallback<NoteHandler>(
+    (messageId, { reasons, comment }) =>
+      update(messageId, (ratings) => ({
+        ...ratings,
+        reasons: reasons ?? ratings.reasons,
+        comment: comment === undefined ? ratings.comment : comment?.trim() || null,
+      })),
+    [update],
   )
 
   const ratings = useMemo(() => {
@@ -144,5 +181,5 @@ export function useFeedback(
     return open
   }, [all, conversation.id])
 
-  return { ratings, rate }
+  return { ratings, rate, note }
 }

@@ -4,8 +4,8 @@ import { Answer } from './Answer.tsx'
 import type { AnswerRatings, Citation } from '../server/contracts.ts'
 import { type Message, citedSources } from './conversation.ts'
 import { AlertIcon, RetryIcon } from './icons.tsx'
-import { RatingButtons } from './Rating.tsx'
-import type { RateHandler } from './useFeedback.ts'
+import { AnswerFeedback } from './AnswerFeedback.tsx'
+import type { NoteHandler, RateHandler } from './useFeedback.ts'
 
 /** The reference open in the sources panel. */
 interface OpenReference {
@@ -23,9 +23,10 @@ interface ThreadProps {
   ratings?: ReadonlyMap<number, AnswerRatings>
   /** Rates an answer or one of its sources; answers cannot be rated without it. */
   onRate?: RateHandler | undefined
+  onNote?: NoteHandler | undefined
 }
 
-export function Thread({ messages, openSources, onSources, onRetry, ratings, onRate }: ThreadProps) {
+export function Thread({ messages, openSources, onSources, onRetry, ratings, onRate, onNote }: ThreadProps) {
   return (
     <ol className="thread" aria-label="Conversation">
       {messages.map((message, index) =>
@@ -42,6 +43,7 @@ export function Thread({ messages, openSources, onSources, onRetry, ratings, onR
               onRetry={index === messages.length - 1 ? onRetry : undefined}
               ratings={ratings?.get(message.id)}
               onRate={onRate}
+              onNote={onNote}
             />
           </li>
         ),
@@ -58,9 +60,10 @@ interface ReplyProps {
   onRetry: (() => void) | undefined
   ratings: AnswerRatings | undefined
   onRate: RateHandler | undefined
+  onNote: NoteHandler | undefined
 }
 
-const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, ratings, onRate }: ReplyProps) {
+const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, ratings, onRate, onNote }: ReplyProps) {
   const { id, content, sources, status } = message
   const cite = useCallback((number: number) => onSources(id, number), [id, onSources])
 
@@ -94,14 +97,12 @@ const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, r
       {sources && sources.length > 0 && status !== 'streaming' && (
         <References sources={sources} cited={citedSources(content)} active={activeSource} onOpen={cite} />
       )}
-      {onRate && !status && content && (
+      {onRate && onNote && !status && content && (
         <div className="reply-actions">
-          <RatingButtons
-            rating={ratings?.answer ?? null}
+          <AnswerFeedback
+            ratings={ratings}
             onRate={(rating) => onRate(id, 'answer', rating)}
-            label="Rate this answer"
-            up="Helpful"
-            down="Not helpful"
+            onNote={(note) => onNote(id, note)}
           />
         </div>
       )}
