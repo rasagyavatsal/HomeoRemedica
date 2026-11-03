@@ -34,15 +34,27 @@ function stems(value: unknown): string[] {
   return typeof value === 'string' ? value.toLowerCase().split('|').map((stem) => stem.trim()).filter(Boolean) : []
 }
 
-/** Every `[n]` must name a retrieved source, and an answer drawn from sources must cite one. */
+function cited(output: string): number[] {
+  return [...new Set([...output.matchAll(CITATION)].flatMap((match) => (match[1] ?? '').split(',').map(Number)))]
+}
+
+/** Every `[n]` names a retrieved source. */
 export function citations(output: string, context: AssertionContext): GradingResult {
   const count = sources(context).length
-  const cited = [...output.matchAll(CITATION)].flatMap((match) => (match[1] ?? '').split(',').map(Number))
-  const problems: string[] = []
-  const unknown = [...new Set(cited.filter((number) => number < 1 || number > count))]
-  if (unknown.length) problems.push(`cites [${unknown.join('], [')}] but only ${count} sources were retrieved`)
-  if (count && !cited.length) problems.push('cites none of the retrieved sources')
-  return grade(problems, count ? `cites sources ${[...new Set(cited)].join(', ')} of ${count}` : 'no sources to cite')
+  const unknown = cited(output).filter((number) => number < 1 || number > count)
+  return grade(
+    unknown.length ? [`cites [${unknown.join('], [')}] but only ${count} sources were retrieved`] : [],
+    'every citation names a retrieved source',
+  )
+}
+
+/** An answer drawn from the sources cites at least one of them. */
+export function cites(output: string, context: AssertionContext): GradingResult {
+  const numbers = cited(output)
+  return grade(
+    numbers.length ? [] : ['cites none of the retrieved sources'],
+    `cites sources ${numbers.join(', ')} of ${sources(context).length}`,
+  )
 }
 
 /** The expected remedies, by `remedy`, and book, by `book`, are among the retrieved sources. */
