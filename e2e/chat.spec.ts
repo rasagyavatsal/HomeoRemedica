@@ -1,8 +1,8 @@
-import { ask, expect, replies, test, unique } from './fixtures.ts'
+import { ask, expect, openApp, replies, test, unique } from './fixtures.ts'
 import { CHAT_LIMIT, FAIL_ONCE, SLOW } from './scenario.ts'
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/')
+  await openApp(page)
 })
 
 test('streams an answer and opens a cited passage', async ({ page }) => {

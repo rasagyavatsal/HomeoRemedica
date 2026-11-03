@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto'
 
 import { type APIRequestContext, type Page, expect } from '@playwright/test'
 
-import { ask } from './fixtures.ts'
+import { ask, chatsLoaded } from './fixtures.ts'
 import { API_KEY, AUTH_EMULATOR, PROJECT_ID } from './scenario.ts'
 
 const EMULATOR = `http://${AUTH_EMULATOR}`
@@ -68,6 +68,7 @@ export async function signIn(page: Page, { email, password }: TestUser): Promise
   await dialog.getByRole('button', { name: 'Sign in', exact: true }).click()
   await expect(dialog).toBeHidden()
   await expect(accountButton(page, email)).toBeVisible()
+  await chatsLoaded(page)
 }
 
 /** The signed-in account in the sidebar, which opens its menu. */

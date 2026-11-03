@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test'
 
 import { askAndSave, createUser, signIn } from './accounts.ts'
-import { ask, expect, replies, test } from './fixtures.ts'
+import { ask, expect, openApp, replies, test } from './fixtures.ts'
 
 /** Run `action`, and wait until the rating it sends is saved. */
 async function rated(page: Page, action: () => Promise<void>): Promise<void> {
@@ -13,7 +13,7 @@ async function rated(page: Page, action: () => Promise<void>): Promise<void> {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/')
+  await openApp(page)
 })
 
 test('offers ratings only to signed-in readers', async ({ page }) => {

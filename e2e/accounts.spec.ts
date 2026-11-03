@@ -11,14 +11,14 @@ import {
   openSignIn,
   signIn,
 } from './accounts.ts'
-import { ask, expect, test } from './fixtures.ts'
+import { ask, expect, openApp, test } from './fixtures.ts'
 
 function chatList(page: Page) {
   return page.getByRole('navigation', { name: 'Chats' }).getByRole('listitem')
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/')
+  await openApp(page)
 })
 
 test('syncs chats once a new account verifies its email', async ({ page, request }) => {
@@ -60,7 +60,7 @@ test('opens a saved chat on another device', async ({ page, request, browser }) 
 
   const other = await browser.newContext()
   const otherPage = await other.newPage()
-  await otherPage.goto('/')
+  await openApp(otherPage)
   await signIn(otherPage, user)
   await chatList(otherPage).getByRole('button', { name: 'weeps when telling symptoms', exact: true }).click()
   await expect(otherPage.getByRole('heading', { name: 'weeps when telling symptoms' })).toBeVisible()

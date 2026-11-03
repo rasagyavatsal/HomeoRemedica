@@ -1,6 +1,8 @@
-import { type Page } from '@playwright/test'
+import { setTimeout as sleep } from 'node:timers/promises'
 
-import { ask, expect, replies, test } from './fixtures.ts'
+import type { Page } from '@playwright/test'
+
+import { ask, expect, openApp, replies, test } from './fixtures.ts'
 
 const DAY = 24 * 60 * 60 * 1000
 
@@ -26,7 +28,7 @@ async function seed(page: Page, titles: Record<string, number>) {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/')
+  await openApp(page)
 })
 
 test('reopens the open chat after a reload', async ({ page }) => {
@@ -44,13 +46,27 @@ test('keeps chats, newest first, after the tab is closed', async ({ page, contex
   await page.close()
 
   const reopened = await context.newPage()
-  await reopened.goto('/')
+  await openApp(reopened)
   // A new tab starts with a new chat, and lists the saved ones.
   await expect(reopened.getByRole('list', { name: 'Conversation' })).toBeHidden()
   await expect(chats(reopened).getByRole('region', { name: 'Today' }).getByRole('listitem')).toHaveText(['second chat', 'first chat'])
 
   await chats(reopened).getByRole('button', { name: 'first chat', exact: true }).click()
   await expect(reopened.getByRole('heading', { name: 'first chat' })).toBeVisible()
+})
+
+// Known bug: until the app knows whether someone is signed in, it has no library to save to,
+// and drops a chat answered in the meantime. Remove `test.fail` once that is fixed.
+test('saves a chat answered while chats load', async ({ page }) => {
+  test.fail()
+  await page.route('**/api/config', async (route) => {
+    await sleep(2_000)
+    await route.continue()
+  })
+  await page.goto('/')
+  await ask(page, 'asked straight away')
+
+  await expect(page.getByRole('navigation', { name: 'Chats' }).getByRole('listitem')).toHaveText(['asked straight away'])
 })
 
 test('groups chats by age and searches them', async ({ page }) => {
