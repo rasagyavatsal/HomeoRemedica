@@ -11,12 +11,9 @@ providers:
 defaultTest:
   options:
     # A judge from another model family than the answer model, so it does not favour its own style.
-    provider:
-      id: openrouter:anthropic/claude-sonnet-5.5
-      config:
-        temperature: 0
-        # Room for the judge's reasoning on long answers, which otherwise cuts its verdict short.
-        max_tokens: 4096
+    # It runs through the Claude Code CLI on your Claude subscription, so sign in to Claude Code
+    # first. The Eval workflow overrides it with `--grader`, since CI has no subscription.
+    provider: file://judge.ts
   assert:
     - type: javascript
       value: file://assertions.ts:citations
