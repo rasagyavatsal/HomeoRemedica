@@ -175,6 +175,9 @@ export interface SavedConversation {
 }
 
 const RatingSchema = z.enum(['up', 'down'])
+const FeedbackReasonSchema = z.enum(['wrong_remedy', 'irrelevant_sources', 'missing_information', 'unclear'])
+
+export const MAX_FEEDBACK_COMMENT_CHARS = 1_000
 
 const RatedSourceSchema = z.strictObject({
   /** The citation id, `corpusVersion/bookId/chunkId`. */
@@ -192,17 +195,34 @@ export const FeedbackSchema = z.strictObject(
     rating: RatingSchema.nullable(),
     /** In the order they were retrieved, so a source's position is its rank. */
     sources: z.array(RatedSourceSchema).max(MAX_SAVED_SOURCES),
+    // Both default for pages loaded before they existed.
+    /** What was wrong with an answer rated down. */
+    reasons: z
+      .array(FeedbackReasonSchema)
+      .refine((reasons) => new Set(reasons).size === reasons.length, { error: 'reasons must not repeat' })
+      .default([]),
+    comment: z
+      .string()
+      .max(MAX_FEEDBACK_COMMENT_CHARS, { error: `comment must not exceed ${MAX_FEEDBACK_COMMENT_CHARS} characters` })
+      .nullable()
+      .default(null)
+      .transform((comment) => comment?.trim() || null),
   },
   { error: (issue) => (issue.code === 'unrecognized_keys' ? 'unexpected feedback field' : undefined) },
-)
+).refine((feedback) => feedback.rating === 'down' || !feedback.reasons.length, {
+  error: 'only an answer rated down has reasons',
+})
 
 export type Rating = z.output<typeof RatingSchema>
+export type FeedbackReason = z.output<typeof FeedbackReasonSchema>
 export type Feedback = z.output<typeof FeedbackSchema>
 
-/** An answer's ratings: its own, and each source's by its number in the answer, from 1. */
+/** An answer's ratings: its own, each source's by its number in the answer from 1, and why. */
 export interface AnswerRatings {
   answer: Rating | null
   sources: Record<number, Rating>
+  reasons: FeedbackReason[]
+  comment: string | null
 }
 
 /** `GET /api/chats/:id/feedback`: the user's ratings of the chat's answers, by message id. */
@@ -210,13 +230,16 @@ export interface ChatRatings {
   ratings: Record<number, AnswerRatings>
 }
 
+/** The parts of feedback that `answerRatings` reads. */
+export type SavedRatings = Pick<Feedback, 'rating' | 'sources' | 'reasons' | 'comment'>
+
 /** The ratings in an answer's feedback. */
-export function answerRatings({ rating, sources }: Pick<Feedback, 'rating' | 'sources'>): AnswerRatings {
+export function answerRatings({ rating, sources, reasons, comment }: SavedRatings): AnswerRatings {
   const rated: Record<number, Rating> = {}
   for (const [index, source] of sources.entries()) {
     if (source.rating) rated[index + 1] = source.rating
   }
-  return { answer: rating, sources: rated }
+  return { answer: rating, sources: rated, reasons, comment }
 }
 
 export interface Retriever {

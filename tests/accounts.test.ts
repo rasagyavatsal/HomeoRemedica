@@ -186,6 +186,8 @@ function feedback(overrides: Partial<Feedback> = {}): Feedback {
       { id: 'v1/boericke_mm/1', cited: true, rating: 'up' },
       { id: 'v1/boericke_mm/2', cited: false, rating: null },
     ],
+    reasons: [],
+    comment: null,
     ...overrides,
   }
 }
@@ -220,6 +222,10 @@ describe('feedback', () => {
       { ...feedback(), question: '' },
       { ...feedback(), extra: true },
       { ...feedback(), sources: [{ id: 'v1/boericke_mm/1', rating: 'up' }] },
+      { ...feedback({ rating: 'up' }), reasons: ['unclear'] },
+      { ...feedback({ rating: 'down' }), reasons: ['unclear', 'unclear'] },
+      { ...feedback({ rating: 'down' }), reasons: ['too_long'] },
+      { ...feedback(), comment: 'x'.repeat(1_001) },
     ]) {
       expect((await request('PUT', '/api/feedback/chat-1-1', { body })).status).toBe(422)
     }
@@ -240,10 +246,38 @@ describe('feedback', () => {
     const response = await request('GET', '/api/chats/chat-1/feedback')
 
     expect(await read(response)).toEqual({
-      ratings: { 1: { answer: 'up', sources: { 1: 'up' } }, 3: { answer: null, sources: { 2: 'down' } } },
+      ratings: {
+        1: { answer: 'up', sources: { 1: 'up' }, reasons: [], comment: null },
+        3: { answer: null, sources: { 2: 'down' }, reasons: [], comment: null },
+      },
     })
     expect(await read(await request('GET', '/api/chats/chat-9/feedback'))).toEqual({ ratings: {} })
     expect((await request('GET', '/api/chats/chat-1/feedback', { user: null })).status).toBe(401)
+  })
+
+  it('keeps the reasons and a trimmed comment, and returns them with the ratings', async () => {
+    const { request, accounts } = setup()
+
+    const body = feedback({ rating: 'down', reasons: ['wrong_remedy', 'irrelevant_sources'], comment: '  Missed Bryonia.  ' })
+    expect((await request('PUT', '/api/feedback/chat-1-1', { body })).status).toBe(204)
+    await request('PUT', '/api/feedback/chat-1-3', { body: feedback({ comment: '   ' }) })
+
+    expect(accounts.feedback.saved.get('alice/chat-1-1')).toMatchObject({ comment: 'Missed Bryonia.' })
+    expect(accounts.feedback.saved.get('alice/chat-1-3')?.comment).toBeNull()
+    expect((await read(await request('GET', '/api/chats/chat-1/feedback'))).ratings[1]).toEqual({
+      answer: 'down',
+      sources: { 1: 'up' },
+      reasons: ['wrong_remedy', 'irrelevant_sources'],
+      comment: 'Missed Bryonia.',
+    })
+  })
+
+  it('accepts feedback from pages that send no reasons or comment', async () => {
+    const { request, accounts } = setup()
+    const { reasons: _, comment: __, ...older } = feedback()
+
+    expect((await request('PUT', '/api/feedback/chat-1-1', { body: older })).status).toBe(204)
+    expect(accounts.feedback.saved.get('alice/chat-1-1')).toMatchObject({ reasons: [], comment: null })
   })
 
   it('limits how many ratings each user sends', async () => {

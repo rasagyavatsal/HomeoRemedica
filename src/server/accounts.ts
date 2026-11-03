@@ -4,7 +4,7 @@ import { type App, initializeApp } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
 import { FieldPath, FieldValue, type Firestore, getFirestore } from 'firebase-admin/firestore'
 
-import type { AuthConfig, ChatSummary, Feedback, SavedChat, SavedConversation, SavedMessage } from './contracts.ts'
+import type { AuthConfig, ChatSummary, Feedback, SavedChat, SavedConversation, SavedMessage, SavedRatings } from './contracts.ts'
 
 /** The most recent chats `list` returns. */
 export const MAX_LISTED_CHATS = 200
@@ -24,7 +24,7 @@ export interface FeedbackStore {
   /** Save the user's ratings of one answer, replacing any saved before. */
   put(userId: string, feedbackId: string, feedback: Feedback): Promise<void>
   /** The ratings the user saved for a chat's answers, by message id. */
-  list(userId: string, chatId: string): Promise<Map<number, Pick<Feedback, 'rating' | 'sources'>>>
+  list(userId: string, chatId: string): Promise<Map<number, SavedRatings>>
 }
 
 export interface User {
@@ -158,7 +158,7 @@ export class FirestoreFeedbackStore implements FeedbackStore {
     await this.#feedback(userId).doc(feedbackId).set({ ...feedback, updatedAt: FieldValue.serverTimestamp() })
   }
 
-  async list(userId: string, chatId: string): Promise<Map<number, Pick<Feedback, 'rating' | 'sources'>>> {
+  async list(userId: string, chatId: string): Promise<Map<number, SavedRatings>> {
     // Every id from `${chatId}-` up to it followed by the highest character; the long question
     // and answer stay behind.
     const prefix = `${chatId}-`
@@ -166,13 +166,20 @@ export class FirestoreFeedbackStore implements FeedbackStore {
       .orderBy(FieldPath.documentId())
       .startAt(prefix)
       .endAt(`${prefix}\uf8ff`)
-      .select('rating', 'sources')
+      .select('rating', 'sources', 'reasons', 'comment')
       .get()
-    const ratings = new Map<number, Pick<Feedback, 'rating' | 'sources'>>()
+    const ratings = new Map<number, SavedRatings>()
     for (const doc of snapshot.docs) {
       // Another chat's id may begin with this one's, but its message part is not a number.
       const messageId = doc.id.slice(prefix.length)
-      if (/^\d+$/.test(messageId)) ratings.set(Number(messageId), { rating: doc.get('rating'), sources: doc.get('sources') })
+      if (!/^\d+$/.test(messageId)) continue
+      // Ratings saved before reasons and comments existed have neither.
+      ratings.set(Number(messageId), {
+        rating: doc.get('rating'),
+        sources: doc.get('sources'),
+        reasons: doc.get('reasons') ?? [],
+        comment: doc.get('comment') ?? null,
+      })
     }
     return ratings
   }
