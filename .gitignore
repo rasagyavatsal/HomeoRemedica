@@ -19,6 +19,7 @@ build/
 output/
 artifacts/corpus/
 *.tsbuildinfo
+eval-results.*
 
 # Proprietary source dataset (private repository)
 /dataset/

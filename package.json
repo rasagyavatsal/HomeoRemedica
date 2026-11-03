@@ -15,7 +15,7 @@
     "typecheck": "tsc -p tsconfig.server.json && tsc -p tsconfig.web.json",
     "test": "vitest run",
     "check": "npm run typecheck && npm test && npm run build",
-    "eval": "npx --yes promptfoo@0.124.1 eval --config evals/promptfooconfig.yaml",
+    "eval": "PROMPTFOO_DISABLE_TELEMETRY=1 npx --yes promptfoo@0.124.1 eval --config evals/promptfooconfig.yaml",
     "deploy": "gcloud run deploy homeoremedica --source . --region asia-south1 --project homeoremedica --max-instances 1"
   },
   "dependencies": {
