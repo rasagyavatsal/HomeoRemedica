@@ -1818,6 +1818,15 @@ ul {
   :root {
     --layout-gutter: var(--space-md);
   }
+
+  /* Phone widths fit one minimum-width reference per row, so keep two columns. */
+  .references-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reference-heading {
+    overflow-wrap: anywhere;
+  }
 }
 
 /* ---- Theme change ------------------------------------------------------- */
