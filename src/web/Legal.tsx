@@ -46,16 +46,7 @@ export function LegalPage({ page }: { page: LegalPageName }) {
             <span className="brand-name-accent">Homeo</span>Remedica
           </span>
         </a>
-        <div className="legal-header-tools">
-          <nav className="legal-tabs" aria-label="Legal">
-            {(['privacy', 'terms'] as const).map((name) => (
-              <a key={name} href={`/${name}`} className="legal-tab" aria-current={name === page ? 'page' : undefined}>
-                {TITLES[name]}
-              </a>
-            ))}
-          </nav>
-          <ThemeToggle />
-        </div>
+        <ThemeToggle />
       </header>
       <main className="reading">
         <article className="prose legal-body">
@@ -63,7 +54,7 @@ export function LegalPage({ page }: { page: LegalPageName }) {
           <p className="legal-effective">Effective {EFFECTIVE}</p>
           {page === 'privacy' ? <Privacy /> : <Terms />}
         </article>
-        <footer className="legal-footer">
+        <nav className="legal-footer" aria-label="Legal">
           <a href="/" className="button button-outline">
             <ArrowLeftIcon />
             Back to HomeoRemedica
@@ -72,7 +63,7 @@ export function LegalPage({ page }: { page: LegalPageName }) {
             {TITLES[other]}
             <ArrowRightIcon />
           </a>
-        </footer>
+        </nav>
       </main>
     </div>
   )

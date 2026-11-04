@@ -1752,48 +1752,6 @@ ul {
   font-size: var(--text-sm);
 }
 
-.legal-header-tools {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-/* A segmented switch between the two pages. */
-.legal-tabs {
-  display: flex;
-  gap: var(--space-3xs);
-  padding: var(--space-3xs);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-sunken);
-}
-
-.legal-tab {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--control-sm);
-  padding: 0 var(--space-sm);
-  border-radius: var(--radius-sm);
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-medium);
-  text-decoration: none;
-  white-space: nowrap;
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard);
-}
-
-.legal-tab:hover {
-  color: var(--color-text);
-}
-
-.legal-tab[aria-current='page'] {
-  background: var(--color-surface-raised);
-  box-shadow: var(--shadow-sm);
-  color: var(--color-text);
-}
-
 .legal-footer {
   display: flex;
   flex-wrap: wrap;
@@ -1814,12 +1772,6 @@ ul {
 
 .legal-footer .button-quiet:hover {
   color: var(--color-text);
-}
-
-@media (max-width: 30rem) {
-  .legal-header .brand-name {
-    display: none;
-  }
 }
 
 .legal-links a,

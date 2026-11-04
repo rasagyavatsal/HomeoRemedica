@@ -19,10 +19,9 @@ describe('legal pages', () => {
       'href',
       'mailto:rasagyavatsal16@gmail.com',
     )
-    const tabs = within(screen.getByRole('navigation', { name: 'Legal' }))
-    expect(tabs.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute('aria-current', 'page')
-    expect(tabs.getByRole('link', { name: 'Terms of Use' })).toHaveAttribute('href', '/terms')
-    expect(screen.getByRole('link', { name: 'Back to HomeoRemedica' })).toHaveAttribute('href', '/')
+    const nav = within(screen.getByRole('navigation', { name: 'Legal' }))
+    expect(nav.getByRole('link', { name: 'Terms of Use' })).toHaveAttribute('href', '/terms')
+    expect(nav.getByRole('link', { name: 'Back to HomeoRemedica' })).toHaveAttribute('href', '/')
     expect(document.title).toBe('Privacy Policy · HomeoRemedica')
   })
 
@@ -30,8 +29,7 @@ describe('legal pages', () => {
     render(<LegalPage page="terms" />)
     expect(screen.getByRole('heading', { level: 1, name: 'Terms of Use' })).toBeInTheDocument()
     expect(screen.getByText(/Courts in Mandi, Himachal Pradesh have exclusive jurisdiction/)).toBeInTheDocument()
-    const tabs = within(screen.getByRole('navigation', { name: 'Legal' }))
-    expect(tabs.getByRole('link', { name: 'Terms of Use' })).toHaveAttribute('aria-current', 'page')
-    expect(screen.getAllByRole('link', { name: 'Privacy Policy' }).at(-1)).toHaveAttribute('href', '/privacy')
+    const nav = within(screen.getByRole('navigation', { name: 'Legal' }))
+    expect(nav.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute('href', '/privacy')
   })
 })
