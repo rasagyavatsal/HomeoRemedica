@@ -8,6 +8,10 @@ plugins {
     alias(libs.plugins.play.publisher)
 }
 
+// Accounts use the Firebase project in app/google-services.json; builds without it keep chats on the
+// device only, as the web app does when the server has no accounts.
+if (file("google-services.json").exists()) apply(plugin = "com.google.gms.google-services")
+
 // release-please keeps the app version in version.txt.
 val appVersion = rootProject.file("version.txt").readText().trim()
 
@@ -94,6 +98,12 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
     implementation(libs.commonmark)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services)
+    implementation(libs.googleid)
     debugImplementation(libs.compose.ui.tooling)
 
     testImplementation(libs.junit)
