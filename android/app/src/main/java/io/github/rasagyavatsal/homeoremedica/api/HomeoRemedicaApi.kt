@@ -51,10 +51,11 @@ class HomeoRemedicaApi(
     suspend fun sendMessage(
         message: String,
         history: List<ChatTurn>,
+        summary: String? = null,
         onSources: (List<Citation>) -> Unit = {},
         onText: (String) -> Unit = {},
     ): ChatResponse {
-        val body = ApiJson.encodeToString(ChatRequest(message, history)).toRequestBody(JSON)
+        val body = ApiJson.encodeToString(ChatRequest(message, history, summary)).toRequestBody(JSON)
         val request = Request.Builder()
             .url("$baseUrl/api/chat")
             .header("Accept", "text/event-stream")
@@ -66,6 +67,13 @@ class HomeoRemedicaApi(
             if (!response.isSuccessful || !type.contains("text/event-stream")) readResponse<ChatResponse>(response)
             else readStream(ServerSentEventReader(response.body.source()), onSources, onText)
         }
+    }
+
+    /** Condense a chat's earlier turns into a summary, keeping the latest exchange word for word. */
+    suspend fun compactChat(history: List<ChatTurn>, summary: String?): CompactResponse {
+        val body = ApiJson.encodeToString(CompactRequest(history, summary)).toRequestBody(JSON)
+        val request = Request.Builder().url("$baseUrl/api/chat/compact").post(body).build()
+        return client.newCall(request).await { response -> readResponse<CompactResponse>(response) }
     }
 
     /** Stream order: `sources`, then `text` pieces, then `done` with the full response or `error`. */

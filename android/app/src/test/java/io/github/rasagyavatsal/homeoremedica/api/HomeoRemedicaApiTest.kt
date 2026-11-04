@@ -61,6 +61,33 @@ class HomeoRemedicaApiTest {
     }
 
     @Test
+    fun sendsTheSummaryOfACompactedChat() = runTest {
+        server.enqueue(stream("done" to done))
+        api.sendMessage("And Sepia?", emptyList(), summary = "Asked about Pulsatilla.")
+        assertEquals(
+            """{"message":"And Sepia?","history":[],"summary":"Asked about Pulsatilla."}""",
+            server.takeRequest().body.readUtf8(),
+        )
+    }
+
+    @Test
+    fun compactsAChat() = runTest {
+        server.enqueue(MockResponse().setBody("""{"summary":"Asked about Pulsatilla.","history":[{"role":"user","content":"And Sepia?"},{"role":"assistant","content":"Indifferent."}]}"""))
+        val history = listOf(
+            ChatTurn(Role.User, "Pulsatilla?"), ChatTurn(Role.Assistant, "Mild."),
+            ChatTurn(Role.User, "And Sepia?"), ChatTurn(Role.Assistant, "Indifferent."),
+        )
+
+        val compacted = api.compactChat(history, summary = null)
+
+        assertEquals("Asked about Pulsatilla.", compacted.summary)
+        assertEquals(history.drop(2), compacted.history)
+        val request = server.takeRequest()
+        assertEquals("/api/chat/compact", request.path)
+        assertEquals(ApiJson.encodeToString(CompactRequest(history)), request.body.readUtf8())
+    }
+
+    @Test
     fun acceptsAResponseThatDoesNotStream() = runTest {
         server.enqueue(MockResponse().setHeader("Content-Type", "application/json").setBody(done))
         assertEquals("Mild [1].", api.sendMessage("Pulsatilla?", emptyList()).answer)

@@ -39,7 +39,12 @@ data class Citation(
 )
 
 @Serializable
-data class ChatRequest(val message: String, val history: List<ChatTurn>)
+data class ChatRequest(
+    val message: String,
+    val history: List<ChatTurn>,
+    /** What compacting the chat condensed its earlier turns into. */
+    val summary: String? = null,
+)
 
 /** `POST /api/chat`: the answer plus the trimmed history to send with the next question. */
 @Serializable
@@ -50,3 +55,11 @@ data class ChatResponse(
     val sources: List<Citation>,
     val history: List<ChatTurn>,
 )
+
+/** `POST /api/chat/compact`: the context to condense into a summary. */
+@Serializable
+data class CompactRequest(val history: List<ChatTurn>, val summary: String? = null)
+
+/** `POST /api/chat/compact`: the summary and history to send with the next question. */
+@Serializable
+data class CompactResponse(val summary: String, val history: List<ChatTurn>)
