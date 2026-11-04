@@ -331,6 +331,7 @@ export function createApp(
   app.all('/api/*', (c) => c.json({ detail: 'Not Found' }, 404))
 
   if (webDist && existsSync(`${webDist}/index.html`)) {
+    app.use('/*', webCache)
     // The legal pages are views of the web app, so they serve its page.
     for (const page of LEGAL_PAGES) app.get(page, serveStatic({ root: webDist, path: 'index.html' }))
     app.use('/*', serveStatic({ root: webDist }))
@@ -344,6 +345,14 @@ export function createApp(
 
   return app
 }
+
+// Vite names every file under /assets/ after its contents, so a file there never changes and can be
+// kept for a year. The page itself names the current files, so it is checked on every visit.
+const webCache = createMiddleware(async (c, next) => {
+  await next()
+  if (!c.res.ok) return
+  c.header('Cache-Control', c.req.path.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : 'no-cache')
+})
 
 // Cloud Run appends the connecting address to X-Forwarded-For, so a client cannot forge the last
 // entry. Without a proxy in front, every client shares one limit.

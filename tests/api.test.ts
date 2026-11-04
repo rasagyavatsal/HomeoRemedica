@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -536,6 +536,25 @@ describe('web app', () => {
         expect(await response.text()).toBe('<div id="root"></div>')
       }
       expect((await app.request('/elsewhere')).status).toBe(404)
+    } finally {
+      rmSync(webDist, { recursive: true, force: true })
+    }
+  })
+
+  it('keeps built assets for a year and checks the page on every visit', async () => {
+    const webDist = mkdtempSync(join(tmpdir(), 'homeoremedica-web-'))
+    try {
+      writeFileSync(join(webDist, 'index.html'), '<div id="root"></div>')
+      mkdirSync(join(webDist, 'assets'))
+      writeFileSync(join(webDist, 'assets', 'index-abc123.js'), 'console.log(1)')
+      const app = createApp({ getService: async () => new StubService() }, { webDist, rateLimiter: null })
+
+      const asset = await app.request('/assets/index-abc123.js')
+      expect(asset.status).toBe(200)
+      expect(asset.headers.get('Cache-Control')).toBe('public, max-age=31536000, immutable')
+      for (const path of ['/', '/index.html', '/privacy']) {
+        expect((await app.request(path)).headers.get('Cache-Control')).toBe('no-cache')
+      }
     } finally {
       rmSync(webDist, { recursive: true, force: true })
     }
