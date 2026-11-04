@@ -1625,26 +1625,6 @@ ul {
   font-weight: var(--weight-semibold);
 }
 
-.context-figures {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3xs);
-  font-size: var(--text-xs);
-}
-
-.context-figures div {
-  display: flex;
-  justify-content: space-between;
-}
-
-.context-figures dt {
-  color: var(--color-text-muted);
-}
-
-.context-figures dd {
-  font-variant-numeric: tabular-nums;
-}
-
 .send-button {
   display: grid;
   place-items: center;

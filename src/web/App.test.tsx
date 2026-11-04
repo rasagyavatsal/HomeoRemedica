@@ -151,8 +151,7 @@ describe('context', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Context 20% full' }))
 
     const popover = screen.getByRole('dialog', { name: 'Context' })
-    expect(within(popover).getByText('Characters').nextSibling).toHaveTextContent('40 / 16,000')
-    expect(within(popover).getByText('Turns').nextSibling).toHaveTextContent('4 / 20')
+    expect(popover).toHaveTextContent('20% of context used')
     await userEvent.click(within(popover).getByRole('button', { name: 'Compact' }))
 
     expect(compacted).toEqual([{ history: [...first, ...second] }])
@@ -182,7 +181,7 @@ describe('context', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'The chat could not be compacted. The request took too long. Please try again.',
     )
-    expect(screen.getByText('Turns').nextSibling).toHaveTextContent('4 / 20')
+    expect(screen.getByRole('dialog', { name: 'Context' })).toHaveTextContent('20% of context used')
   })
 })
 

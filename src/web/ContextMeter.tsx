@@ -1,6 +1,6 @@
 import { type KeyboardEvent, useEffect, useId, useRef, useState } from 'react'
 
-import { CONTEXT_CHARS, CONTEXT_TURNS, type Conversation, canCompact, contextUse } from './conversation.ts'
+import { type Conversation, canCompact, contextUse } from './conversation.ts'
 
 // The ring's radius in a 20-unit box, and the share of the context from which it shows a warning.
 const RADIUS = 8
@@ -15,7 +15,7 @@ interface ContextMeterProps {
   onCompact: () => void
 }
 
-/** A ring showing how full the model's context is, which opens the figures and a Compact button. */
+/** A ring showing how full the model's context is, which opens the percentage and a Compact button. */
 export function ContextMeter({ conversation, compacting, busy, onCompact }: ContextMeterProps) {
   const [open, setOpen] = useState(false)
   const root = useRef<HTMLDivElement>(null)
@@ -31,7 +31,7 @@ export function ContextMeter({ conversation, compacting, busy, onCompact }: Cont
     return () => document.removeEventListener('pointerdown', dismiss)
   }, [open])
 
-  const { chars, turns, fraction } = contextUse(conversation)
+  const { fraction } = contextUse(conversation)
   const percent = Math.round(fraction * 100)
 
   function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
@@ -69,20 +69,6 @@ export function ContextMeter({ conversation, compacting, busy, onCompact }: Cont
       {open && (
         <div id={popoverId} className="context-popover" role="dialog" aria-label="Context">
           <p className="context-percent">{percent}% of context used</p>
-          <dl className="context-figures">
-            <div>
-              <dt>Characters</dt>
-              <dd>
-                {chars.toLocaleString()} / {CONTEXT_CHARS.toLocaleString()}
-              </dd>
-            </div>
-            <div>
-              <dt>Turns</dt>
-              <dd>
-                {turns} / {CONTEXT_TURNS}
-              </dd>
-            </div>
-          </dl>
           <button
             type="button"
             className="button button-outline button-small button-block"

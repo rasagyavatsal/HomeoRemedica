@@ -70,9 +70,9 @@ test('compacts the context and keeps the summary after a reload', async ({ page 
 
   await page.getByRole('button', { name: /^Context \d+% full$/ }).click()
   const context = page.getByRole('dialog', { name: 'Context' })
-  await expect(context).toContainText('4 / 20')
+  await expect(context).toContainText('20% of context used')
   await context.getByRole('button', { name: 'Compact' }).click()
-  await expect(context).toContainText('2 / 20')
+  await expect(context).toContainText('10% of context used')
   await expect(context.getByRole('button', { name: 'Compact' })).toBeDisabled()
 
   await page.reload()
