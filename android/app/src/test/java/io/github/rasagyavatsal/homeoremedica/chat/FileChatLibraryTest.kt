@@ -1,6 +1,7 @@
 package io.github.rasagyavatsal.homeoremedica.chat
 
 import io.github.rasagyavatsal.homeoremedica.api.Role
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -16,7 +17,7 @@ class FileChatLibraryTest {
         SavedChat(id, "Chat $id", updatedAt, listOf(Message(0, Role.User, "Question $id")), emptyList())
 
     @Test
-    fun keepsTheNewestFiftyChats() {
+    fun keepsTheNewestFiftyChats() = runTest {
         val library = FileChatLibrary(folder.root.resolve("chats.json"))
         for (n in 1..MAX_LOCAL_CHATS + 2) library.save(chat("$n", n.toLong()))
 
@@ -28,7 +29,7 @@ class FileChatLibraryTest {
     }
 
     @Test
-    fun replacesRemovesAndReopensChats() {
+    fun replacesRemovesAndReopensChats() = runTest {
         val file = folder.root.resolve("chats.json")
         val library = FileChatLibrary(file)
         library.save(chat("a", 1))
@@ -42,7 +43,7 @@ class FileChatLibraryTest {
     }
 
     @Test
-    fun skipsUnreadableChats() {
+    fun skipsUnreadableChats() = runTest {
         val file = folder.root.resolve("chats.json")
         file.writeText("""[{"id":"a","title":"A","updatedAt":1,"messages":[],"history":[]},{"id":3}]""")
         assertEquals(listOf("a"), FileChatLibrary(file).list().map { it.id })

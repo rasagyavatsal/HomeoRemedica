@@ -4,6 +4,9 @@ import io.github.rasagyavatsal.homeoremedica.api.ApiJson
 import io.github.rasagyavatsal.homeoremedica.api.ChatTurn
 import io.github.rasagyavatsal.homeoremedica.api.Citation
 import io.github.rasagyavatsal.homeoremedica.api.Role
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -61,17 +64,21 @@ data class SavedChat(
     fun summarize() = ChatSummary(id, title, updatedAt)
 }
 
-/** Where saved chats live. */
+/**
+ * Where saved chats live: the device, or the signed-in account. Each call throws [IOException] or
+ * [io.github.rasagyavatsal.homeoremedica.api.ApiException] when the chats cannot be reached.
+ */
 interface ChatLibrary {
     /** Saved chats, newest first. */
-    fun list(): List<ChatSummary>
+    suspend fun list(): List<ChatSummary>
 
-    fun open(id: String): SavedChat?
+    /** The chat, or null when it no longer exists. */
+    suspend fun open(id: String): SavedChat?
 
-    /** Save [chat], replacing any earlier copy; throws [IOException] if it cannot be stored. */
-    fun save(chat: SavedChat)
+    /** Save [chat], replacing any earlier copy. */
+    suspend fun save(chat: SavedChat)
 
-    fun remove(id: String)
+    suspend fun remove(id: String)
 }
 
 /** The chat the app had open, so the next launch returns to it. */
@@ -81,7 +88,7 @@ interface LastChat {
 }
 
 /** Chats kept in one file on the device, at most [MAX_LOCAL_CHATS] of them. */
-class FileChatLibrary(private val file: File) : ChatLibrary {
+class FileChatLibrary(private val file: File, private val io: CoroutineDispatcher = Dispatchers.IO) : ChatLibrary {
     /** Every stored chat, newest first; unreadable entries are skipped. */
     private fun all(): List<SavedChat> {
         val entries = try {
@@ -94,13 +101,15 @@ class FileChatLibrary(private val file: File) : ChatLibrary {
             .sortedByDescending { it.updatedAt }
     }
 
-    override fun list(): List<ChatSummary> = all().map { it.summarize() }
+    override suspend fun list(): List<ChatSummary> = withContext(io) { all().map { it.summarize() } }
 
-    override fun open(id: String): SavedChat? = all().find { it.id == id }
+    override suspend fun open(id: String): SavedChat? = withContext(io) { all().find { it.id == id } }
 
-    override fun save(chat: SavedChat) = write((listOf(chat) + all().filter { it.id != chat.id }).take(MAX_LOCAL_CHATS))
+    override suspend fun save(chat: SavedChat) = withContext(io) {
+        write((listOf(chat) + all().filter { it.id != chat.id }).take(MAX_LOCAL_CHATS))
+    }
 
-    override fun remove(id: String) = write(all().filter { it.id != id })
+    override suspend fun remove(id: String) = withContext(io) { write(all().filter { it.id != id }) }
 
     private fun write(chats: List<SavedChat>) {
         // Written whole and then swapped in, so a failed write leaves the earlier chats.

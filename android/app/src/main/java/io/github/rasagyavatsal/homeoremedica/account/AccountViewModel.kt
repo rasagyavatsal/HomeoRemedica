@@ -2,10 +2,14 @@ package io.github.rasagyavatsal.homeoremedica.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.rasagyavatsal.homeoremedica.chat.AccountLibrary
+import io.github.rasagyavatsal.homeoremedica.chat.ChatLibrary
 import io.github.rasagyavatsal.homeoremedica.chat.Workspace
+import io.github.rasagyavatsal.homeoremedica.chat.moveIntoAccount
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -25,12 +29,37 @@ class AccountViewModel(
     /** Null when this build has no accounts. */
     val auth: AuthClient?,
     private val workspace: Workspace,
+    /** The chats saved on the device. */
+    private val local: ChatLibrary,
+    /** The signed-in account's chats. */
+    private val remote: (AuthClient) -> AccountLibrary,
 ) : ViewModel() {
     val state: StateFlow<AccountState> = (auth?.account ?: MutableStateFlow(null))
         .map { AccountState(auth != null, it) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, AccountState(auth != null, auth?.account?.value))
 
     init {
+        // Signed in with a verified email: move the device's chats into the account before showing the
+        // account's. Learning who is signed in as the app opens is no change of account, so a chat asked
+        // meanwhile stays.
+        viewModelScope.launch {
+            var known = false
+            state.map { it.account?.takeIf(Account::verified)?.uid }.distinctUntilChanged().collectLatest { uid ->
+                val fresh = known
+                known = true
+                if (uid == null || auth == null) {
+                    workspace.useLibrary(local, fresh)
+                    return@collectLatest
+                }
+                workspace.useLibrary(null, fresh)
+                val account = remote(auth)
+                val failed = moveIntoAccount(local, account)
+                if (failed > 0) {
+                    workspace.notify("${if (failed == 1) "One chat" else "$failed chats"} on this device could not be moved into your account.")
+                }
+                workspace.useLibrary(account, fresh = false)
+            }
+        }
         // Until the email is verified, chats stay on the device.
         viewModelScope.launch {
             state.map { it.account?.takeUnless(Account::verified)?.uid }.distinctUntilChanged().collect { unverified ->

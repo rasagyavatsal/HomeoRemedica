@@ -73,7 +73,7 @@ class ChatViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel() =
+    private fun viewModel(library: ChatLibrary? = this.library) =
         ChatViewModel(
             HomeoRemedicaApi(server.url("/").toString()),
             library,
@@ -340,17 +340,49 @@ class ChatViewModelTest {
         assertEquals(MAX_QUESTION_CHARS, vm.state.value.draft.length)
     }
 
+    @Test
+    fun savesChatsAnsweredBeforeThereIsALibraryOnceThereIsOne() = runTest {
+        val vm = viewModel(library = null)
+        answer("Mild.", emptyList())
+        vm.submit("Pulsatilla?")
+        val id = vm.settled().id
+        assertNull(vm.state.value.chats)
+
+        vm.useLibrary(library, fresh = false)
+        assertEquals(listOf(id), library.awaitSaved { it.isNotEmpty() }.map { it.id })
+        assertEquals(listOf(id), vm.state.first { it.chats != null }.chats!!.map { it.id })
+        // The chat stays open.
+        assertEquals(id, vm.state.value.id)
+    }
+
+    @Test
+    fun aFreshWorkspaceStartsANewChatFromTheOtherLibrary() = runTest {
+        val vm = viewModel()
+        answer("Mild.", emptyList())
+        vm.submit("Pulsatilla?")
+        val first = vm.settled()
+        library.awaitSaved { it.isNotEmpty() }
+
+        val other = MemoryLibrary()
+        other.save(SavedChat("theirs", "Sepia?", 5, listOf(Message(0, Role.User, "Sepia?")), emptyList()))
+        vm.useLibrary(other, fresh = true)
+        val state = vm.state.first { it.chats != null }
+        assertTrue(state.id != first.id)
+        assertTrue(state.messages.isEmpty())
+        assertEquals(listOf("theirs"), state.chats!!.map { it.id })
+    }
+
     private class MemoryLibrary : ChatLibrary {
         val chats = MutableStateFlow(emptyList<SavedChat>())
         @Volatile
         var full = false
-        override fun list() = chats.value.sortedByDescending { it.updatedAt }.map { it.summarize() }
-        override fun open(id: String) = chats.value.find { it.id == id }
-        override fun save(chat: SavedChat) {
+        override suspend fun list() = chats.value.sortedByDescending { it.updatedAt }.map { it.summarize() }
+        override suspend fun open(id: String) = chats.value.find { it.id == id }
+        override suspend fun save(chat: SavedChat) {
             if (full) throw IOException("Full")
             chats.update { saved -> saved.filter { it.id != chat.id } + chat }
         }
-        override fun remove(id: String) = chats.update { saved -> saved.filter { it.id != id } }
+        override suspend fun remove(id: String) = chats.update { saved -> saved.filter { it.id != id } }
 
         /** The saved chats once they match [done]; saves finish on another thread. */
         suspend fun awaitSaved(done: (List<SavedChat>) -> Boolean): List<SavedChat> = chats.first(done)

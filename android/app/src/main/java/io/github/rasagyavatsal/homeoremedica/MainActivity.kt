@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.rasagyavatsal.homeoremedica.account.AccountViewModel
 import io.github.rasagyavatsal.homeoremedica.account.FirebaseAuthClient
 import io.github.rasagyavatsal.homeoremedica.api.HomeoRemedicaApi
+import io.github.rasagyavatsal.homeoremedica.chat.AccountLibrary
 import io.github.rasagyavatsal.homeoremedica.chat.ChatViewModel
 import io.github.rasagyavatsal.homeoremedica.chat.FileChatLibrary
 import io.github.rasagyavatsal.homeoremedica.ui.AccountControls
@@ -44,18 +45,21 @@ import java.io.File
 class MainActivity : ComponentActivity() {
     private val preferences by lazy { Preferences(getSharedPreferences("homeoremedica", MODE_PRIVATE)) }
 
+    private val api by lazy { HomeoRemedicaApi(BuildConfig.API_BASE_URL) }
+
+    // The account view model tells it where chats are saved once it knows who is signed in.
     private val viewModel: ChatViewModel by viewModels {
-        viewModelFactory {
-            initializer {
-                val chats = FileChatLibrary(File(noBackupFilesDir, "chats.json"))
-                ChatViewModel(HomeoRemedicaApi(BuildConfig.API_BASE_URL), chats, preferences.lastChat)
-            }
-        }
+        viewModelFactory { initializer { ChatViewModel(api, null, preferences.lastChat) } }
     }
 
     private val accounts: AccountViewModel by viewModels {
         viewModelFactory {
-            initializer { AccountViewModel(FirebaseAuthClient.create(applicationContext), viewModel) }
+            initializer {
+                val local = FileChatLibrary(File(noBackupFilesDir, "chats.json"))
+                AccountViewModel(FirebaseAuthClient.create(applicationContext), viewModel, local) { auth ->
+                    AccountLibrary(api, auth::token)
+                }
+            }
         }
     }
 

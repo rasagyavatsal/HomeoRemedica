@@ -16,6 +16,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.decodeFromJsonElement
 import okhttp3.Call
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -24,8 +25,8 @@ import okhttp3.Response
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-/** A failure whose message is safe to show as is. */
-class ApiException(message: String) : Exception(message)
+/** A failure whose message is safe to show as is; [status] is the HTTP status, or 0 without a response. */
+class ApiException(message: String, val status: Int = 0) : Exception(message)
 
 // The web app's messages (src/web/api.ts).
 const val GENERIC_ERROR = "Something went wrong. Please try again."
@@ -37,6 +38,9 @@ val ApiJson = Json {
     ignoreUnknownKeys = true
     explicitNulls = false
 }
+
+/** For the account endpoints, which want nullable fields sent as null and optional ones left out. */
+private val AccountJson = Json { explicitNulls = true }
 
 /** The HomeoRemedica web API; the server holds the provider keys, so the app holds none. */
 class HomeoRemedicaApi(
@@ -72,6 +76,50 @@ class HomeoRemedicaApi(
         val body = ApiJson.encodeToString(CompactRequest(history, summary)).toRequestBody(JSON)
         val request = Request.Builder().url("$baseUrl/api/chat/compact").post(body).build()
         return client.newCall(request).await { response -> readResponse<CompactResponse>(response) }
+    }
+
+    /** The signed-in user's chats, newest first. */
+    suspend fun listChats(token: String): List<RemoteChatSummary> =
+        account(token, "api/chats") { readResponse<ChatList>(it).chats }
+
+    /** One of the user's chats, or null when it no longer exists. */
+    suspend fun getChat(token: String, id: String): SavedConversation? =
+        account(token, "api/chats", id) { response ->
+            if (response.code == 404) null else readResponse<SavedConversation>(response)
+        }
+
+    suspend fun putChat(token: String, id: String, chat: SavedChatBody) =
+        account(token, "api/chats", id, method = "PUT", body = AccountJson.encodeToString(chat)) { readResponse<RemoteChatSummary>(it) }
+
+    suspend fun deleteChat(token: String, id: String) =
+        account(token, "api/chats", id, method = "DELETE") { readEmpty(it) }
+
+    /** Save the ratings of one answer, replacing any sent for it before. */
+    suspend fun putFeedback(token: String, id: String, feedback: Feedback) =
+        account(token, "api/feedback", id, method = "PUT", body = AccountJson.encodeToString(feedback)) { readEmpty(it) }
+
+    /** The ratings saved for a chat's answers, by message id. */
+    suspend fun chatRatings(token: String, chatId: String): Map<Long, AnswerRatings> =
+        account(token, "api/chats", chatId, "feedback") { readResponse<ChatRatings>(it).ratings }
+
+    /** Delete every chat and then the account itself. */
+    suspend fun deleteAccount(token: String) = account(token, "api/account", method = "DELETE") { readEmpty(it) }
+
+    private suspend fun <T> account(
+        token: String,
+        path: String,
+        vararg segments: String,
+        method: String = "GET",
+        body: String? = null,
+        read: (Response) -> T,
+    ): T {
+        val url = baseUrl.toHttpUrl().newBuilder().addPathSegments(path).apply { segments.forEach(::addPathSegment) }.build()
+        val request = Request.Builder()
+            .url(url)
+            .header("Authorization", "Bearer $token")
+            .method(method, body?.toRequestBody(JSON))
+            .build()
+        return client.newCall(request).await(read)
     }
 
     /** Stream order: `sources`, then `text` pieces, then `done` with the full response or `error`. */
@@ -131,7 +179,7 @@ private suspend fun <T> Call.await(read: (Response) -> T): T = coroutineScope {
 
 private inline fun <reified T> readResponse(response: Response): T {
     val body = parse(response.body.string())
-    if (!response.isSuccessful) throw ApiException(detailOf(body) ?: GENERIC_ERROR)
+    if (!response.isSuccessful) throw ApiException(detailOf(body) ?: GENERIC_ERROR, response.code)
     if (body !is JsonObject) throw ApiException(INVALID_RESPONSE_ERROR)
     return try {
         ApiJson.decodeFromJsonElement<T>(body)
@@ -140,6 +188,11 @@ private inline fun <reified T> readResponse(response: Response): T {
     } catch (_: IllegalArgumentException) {
         throw ApiException(INVALID_RESPONSE_ERROR)
     }
+}
+
+/** A response with nothing to read but its status. */
+private fun readEmpty(response: Response) {
+    if (!response.isSuccessful) throw ApiException(detailOf(parse(response.body.string())) ?: GENERIC_ERROR, response.code)
 }
 
 private inline fun <reified T> decode(data: String): T = try {
