@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.0.0](https://github.com/rasagyavatsal/HomeoRemedica-android/compare/HomeoRemedica-android-v3.0.0...HomeoRemedica-android-v3.0.0) (2026-11-04)
+## [3.0.0](https://github.com/rasagyavatsal/HomeoRemedica-android/releases/tag/v3.0.0) (2026-11-04)
 
 
 ### Features
