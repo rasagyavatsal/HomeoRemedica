@@ -124,7 +124,7 @@ function sidebar() {
 
 async function openSignIn() {
   await userEvent.click(await screen.findByRole('button', { name: 'Guest' }))
-  await userEvent.click(screen.getByRole('menuitem', { name: 'Sign in' }))
+  await userEvent.click(screen.getByRole('menuitem', { name: 'Sign in to sync chats' }))
 }
 
 beforeEach(() => {
@@ -467,5 +467,5 @@ it('keeps chats on this device when the server has no accounts', async () => {
   expect(await within(sidebar()).findByText('Your chats will appear here.')).toBeInTheDocument()
   await userEvent.click(screen.getByRole('button', { name: 'Guest' }))
   expect(screen.getByRole('menuitem', { name: 'Privacy Policy' })).toBeInTheDocument()
-  expect(screen.queryByRole('menuitem', { name: 'Sign in' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('menuitem', { name: 'Sign in to sync chats' })).not.toBeInTheDocument()
 })

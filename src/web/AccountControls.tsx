@@ -27,7 +27,7 @@ export function AccountControls({ account, onSignIn, onSignOut, onResendVerifica
           <>
             <div role="separator" className="menu-separator" />
             <button type="button" role="menuitem" className="menu-item" onClick={onSignIn}>
-              <SignInIcon /> Sign in
+              <SignInIcon /> Sign in to sync chats
             </button>
           </>
         )}

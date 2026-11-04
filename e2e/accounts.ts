@@ -58,7 +58,7 @@ export async function emailedLink(
 /** Open the sign-in dialog from the sidebar. */
 export async function openSignIn(page: Page) {
   await page.getByRole('button', { name: 'Guest' }).click()
-  await page.getByRole('menu', { name: 'Account' }).getByRole('menuitem', { name: 'Sign in' }).click()
+  await page.getByRole('menu', { name: 'Account' }).getByRole('menuitem', { name: 'Sign in to sync chats' }).click()
   return page.getByRole('dialog')
 }
 

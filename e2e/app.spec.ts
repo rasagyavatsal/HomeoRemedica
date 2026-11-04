@@ -25,7 +25,7 @@ test('works without accounts when the server has none', async ({ page }) => {
   await expect(replies(page).last()).toContainText('Kent describes')
   await expect(page.getByRole('navigation', { name: 'Chats' }).getByRole('listitem')).toHaveText(['jealous and suspicious'])
   await page.getByRole('button', { name: 'Guest' }).click()
-  await expect(page.getByRole('menu', { name: 'Account' }).getByRole('menuitem', { name: 'Sign in' })).toBeHidden()
+  await expect(page.getByRole('menu', { name: 'Account' }).getByRole('menuitem', { name: 'Sign in to sync chats' })).toBeHidden()
 })
 
 test('keeps chats in the browser when accounts cannot be reached', async ({ page }) => {
@@ -36,5 +36,5 @@ test('keeps chats in the browser when accounts cannot be reached', async ({ page
   await expect(replies(page).last()).toContainText('Kent describes')
   await expect(page.getByRole('navigation', { name: 'Chats' }).getByRole('listitem')).toHaveText(['faint in a warm room'])
   await page.getByRole('button', { name: 'Guest' }).click()
-  await expect(page.getByRole('menu', { name: 'Account' }).getByRole('menuitem', { name: 'Sign in' })).toBeHidden()
+  await expect(page.getByRole('menu', { name: 'Account' }).getByRole('menuitem', { name: 'Sign in to sync chats' })).toBeHidden()
 })
