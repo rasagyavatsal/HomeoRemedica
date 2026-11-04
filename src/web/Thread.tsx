@@ -1,4 +1,4 @@
-import { Fragment, memo, useCallback, useId, useState } from 'react'
+import { memo, useCallback, useId } from 'react'
 
 import { Answer } from './Answer.tsx'
 import type { AnswerRatings, Citation } from '../server/contracts.ts'
@@ -24,75 +24,34 @@ interface ThreadProps {
   /** Rates an answer or one of its sources; answers cannot be rated without it. */
   onRate?: RateHandler | undefined
   onNote?: NoteHandler | undefined
-  /** The index of the first message the model still reads, if known. */
-  contextStart?: number | undefined
-  /** What compacting the chat condensed its earlier turns into. */
-  summary?: string | undefined
+  /** Whether the chat's earlier turns are being condensed before the last question is answered. */
+  compacting?: boolean
 }
 
-export function Thread({ messages, openSources, onSources, onRetry, ratings, onRate, onNote, contextStart, summary }: ThreadProps) {
-  // Marked only when the model has lost an answer above it, or reads a summary in its place.
-  const divider =
-    contextStart !== undefined &&
-    contextStart > 0 &&
-    (summary !== undefined || messages.slice(0, contextStart).some((message) => message.role === 'assistant' && !message.status))
-      ? contextStart
-      : undefined
+export function Thread({ messages, openSources, onSources, onRetry, ratings, onRate, onNote, compacting = false }: ThreadProps) {
   return (
     <ol className="thread" aria-label="Conversation">
-      {messages.map((message, index) => (
-        <Fragment key={message.id}>
-          {index === divider && <ContextDivider summary={summary} />}
-          {message.role === 'user' ? (
-            <li className="question">
-              <h2 className="question-text">{message.content}</h2>
-            </li>
-          ) : (
-            <li className="reply">
-              <Reply
-                message={message}
-                activeSource={openSources?.messageId === message.id ? openSources.source : undefined}
-                onSources={onSources}
-                onRetry={index === messages.length - 1 ? onRetry : undefined}
-                ratings={ratings?.get(message.id)}
-                onRate={onRate}
-                onNote={onNote}
-              />
-            </li>
-          )}
-        </Fragment>
-      ))}
-    </ol>
-  )
-}
-
-/** Where the model's context begins: above it, messages it no longer reads, or the summary it reads instead. */
-function ContextDivider({ summary }: { summary: string | undefined }) {
-  const [open, setOpen] = useState(false)
-  const summaryId = useId()
-  return (
-    <li className="context-divider">
-      <div className="context-divider-rule">
-        {summary === undefined ? (
-          <span className="context-divider-label">Earlier messages not in context</span>
+      {messages.map((message, index) =>
+        message.role === 'user' ? (
+          <li key={message.id} className="question">
+            <h2 className="question-text">{message.content}</h2>
+          </li>
         ) : (
-          <button
-            type="button"
-            className="context-divider-label context-divider-button"
-            onClick={() => setOpen((value) => !value)}
-            aria-expanded={open}
-            aria-controls={open ? summaryId : undefined}
-          >
-            Compacted
-          </button>
-        )}
-      </div>
-      {open && summary !== undefined && (
-        <p id={summaryId} className="context-summary">
-          {summary}
-        </p>
+          <li key={message.id} className="reply">
+            <Reply
+              message={message}
+              activeSource={openSources?.messageId === message.id ? openSources.source : undefined}
+              onSources={onSources}
+              onRetry={index === messages.length - 1 ? onRetry : undefined}
+              compacting={compacting && index === messages.length - 1}
+              ratings={ratings?.get(message.id)}
+              onRate={onRate}
+              onNote={onNote}
+            />
+          </li>
+        ),
       )}
-    </li>
+    </ol>
   )
 }
 
@@ -102,12 +61,14 @@ interface ReplyProps {
   activeSource: number | undefined
   onSources: (messageId: number, source: number) => void
   onRetry: (() => void) | undefined
+  /** Whether the chat is being condensed before this answer starts. */
+  compacting: boolean
   ratings: AnswerRatings | undefined
   onRate: RateHandler | undefined
   onNote: NoteHandler | undefined
 }
 
-const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, ratings, onRate, onNote }: ReplyProps) {
+const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, compacting, ratings, onRate, onNote }: ReplyProps) {
   const { id, content, sources, status } = message
   const cite = useCallback((number: number) => onSources(id, number), [id, onSources])
 
@@ -131,7 +92,7 @@ const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, r
       {waiting ? (
         <p className="reply-progress" role="status">
           <span className="pulse" aria-hidden="true" />
-          {sources ? 'Reading the passages…' : 'Searching the books…'}
+          {compacting ? 'Summarizing earlier messages…' : sources ? 'Reading the passages…' : 'Searching the books…'}
         </p>
       ) : (
         <Answer content={content} sourceCount={sources?.length ?? 0} onCite={cite} />

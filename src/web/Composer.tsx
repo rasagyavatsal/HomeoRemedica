@@ -1,7 +1,6 @@
 import {
   type FormEvent,
   type KeyboardEvent,
-  type ReactNode,
   type Ref,
   useImperativeHandle,
   useLayoutEffect,
@@ -21,17 +20,13 @@ export interface ComposerHandle {
 
 interface ComposerProps {
   busy: boolean
-  /** Holds back sending without the Stop button, such as while the chat is compacted. */
-  disabled?: boolean
-  /** Shown beside the send button, such as the context meter. */
-  extra?: ReactNode
   onAsk: (question: string) => void
   onStop: () => void
   ref?: Ref<ComposerHandle>
 }
 
 /** The question box: Enter sends, Shift+Enter adds a line. */
-export function Composer({ busy, disabled = false, extra, onAsk, onStop, ref }: ComposerProps) {
+export function Composer({ busy, onAsk, onStop, ref }: ComposerProps) {
   const [draft, setDraft] = useState('')
   const field = useRef<HTMLTextAreaElement>(null)
   useImperativeHandle(ref, () => ({ focus: () => field.current?.focus() }), [])
@@ -44,7 +39,7 @@ export function Composer({ busy, disabled = false, extra, onAsk, onStop, ref }: 
     element.style.height = `${element.scrollHeight}px`
   }, [draft])
 
-  const canSend = draft.trim() !== '' && !busy && !disabled
+  const canSend = draft.trim() !== '' && !busy
 
   function submit(event?: FormEvent) {
     event?.preventDefault()
@@ -83,7 +78,6 @@ export function Composer({ busy, disabled = false, extra, onAsk, onStop, ref }: 
             {draft.length.toLocaleString()} / {MAX_QUESTION_CHARS.toLocaleString()}
           </span>
         )}
-        {extra}
         {busy ? (
           <button type="button" className="send-button" onClick={onStop} aria-label="Stop answering">
             <StopIcon />

@@ -299,7 +299,7 @@ describe('compaction', () => {
   })
 })
 
-it('shows the browser the same context limits the server keeps', () => {
+it('gives the browser the same context limits the server keeps', () => {
   expect([CONTEXT_CHARS, CONTEXT_TURNS]).toEqual([MAX_HISTORY_CHARS, MAX_HISTORY_TURNS])
 })
 

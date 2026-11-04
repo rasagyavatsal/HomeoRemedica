@@ -63,24 +63,27 @@ test('sends the conversation so far with a follow-up', async ({ page }) => {
   await expect(replies(page).last()).toContainText('Following on from “craves open air”')
 })
 
-test('compacts the context and keeps the summary after a reload', async ({ page }) => {
-  const first = unique('craves open air')
+test('summarizes a nearly full chat before the next question', async ({ page }) => {
+  // Two long exchanges fill most of the context; the padding is one word, so it streams quickly.
+  const first = unique('craves open air').padEnd(3_000, '.')
+  const second = unique('and at night?').padEnd(3_000, '.')
   await ask(page, first)
-  await ask(page, 'and at night?')
+  await ask(page, second)
 
-  await page.getByRole('button', { name: /^Context \d+% full$/ }).click()
-  const context = page.getByRole('dialog', { name: 'Context' })
-  await expect(context).toContainText('20% of context used')
-  await context.getByRole('button', { name: 'Compact' }).click()
-  await expect(context).toContainText('10% of context used')
-  await expect(context.getByRole('button', { name: 'Compact' })).toBeDisabled()
+  // Held until the line has been seen.
+  let release = () => {}
+  const held = new Promise<void>((resolve) => (release = resolve))
+  await page.route('**/api/chat/compact', async (route) => {
+    await held
+    await route.fallback()
+  })
+  const sent = page.waitForRequest((request) => new URL(request.url()).pathname === '/api/chat')
+  await ask(page, 'and in the morning?', { wait: false })
 
-  await page.reload()
-  const divider = page.getByRole('button', { name: 'Compacted' })
-  await divider.click()
-  await expect(page.getByText(`${SUMMARY_PREFIX} ${first}`)).toBeVisible()
-  await ask(page, 'and in the morning?')
-  await expect(replies(page).last()).toContainText('Following on from “and at night?”')
+  await expect(replies(page).last().getByRole('status')).toHaveText('Summarizing earlier messages…')
+  release()
+  await expect(replies(page).last()).toContainText(`Following on from “${second}”`)
+  expect((await sent).postDataJSON()).toMatchObject({ summary: `${SUMMARY_PREFIX} ${first}` })
 })
 
 test('explains when too many questions are asked', async ({ page }) => {

@@ -1,20 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { ShownError, compactChat, errorMessage, streamChat } from './api.ts'
-import { type Conversation, type Message, canCompact, newConversation, titleFrom } from './conversation.ts'
+import { compactChat, errorMessage, streamChat } from './api.ts'
+import { type Conversation, type Message, newConversation, shouldCompact, titleFrom } from './conversation.ts'
 
 export interface ChatControls {
   conversation: Conversation
   busy: boolean
-  /** Whether the chat's context is being compacted; no question can be asked meanwhile. */
+  /** Whether the chat's earlier turns are being condensed before the latest question is answered. */
   compacting: boolean
   ask(question: string): void
   /** Ask the failed question at the end of the chat again. */
   retry(): void
   stop(): void
-  /** Condense the chat's earlier turns into a summary; rejects with an error worth showing. */
-  compact(): Promise<void>
-  /** Show another chat, stopping any answer or compaction in progress. */
+  /** Show another chat, stopping any answer in progress. */
   open(conversation: Conversation): void
 }
 
@@ -27,7 +25,6 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
   // The latest chat, for request callbacks that outlive the render that started them.
   const latest = useRef(conversation)
   const request = useRef<AbortController | null>(null)
-  const compaction = useRef<AbortController | null>(null)
   const [compacting, setCompacting] = useState(false)
   const settled = useRef(onSettled)
   useEffect(() => {
@@ -56,6 +53,7 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
     if (!controller) return
     request.current = null
     controller.abort()
+    setCompacting(false)
     const current = latest.current
     updateAnswer(current.id, (answer) => ({ ...answer, status: 'stopped' }), { updatedAt: Date.now() })
     settled.current?.(latest.current)
@@ -64,7 +62,7 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
   const ask = useCallback(
     (text: string) => {
       const question = text.trim()
-      if (!question || request.current || compaction.current) return
+      if (!question || request.current) return
       const start = latest.current
       const id = start.id
       const next = (start.messages.at(-1)?.id ?? -1) + 1
@@ -80,15 +78,33 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
         ],
       })
 
-      streamChat(
-        { message: question, history: start.history, summary: start.summary },
-        {
-          onSources: (sources) => updateAnswer(id, (answer) => ({ ...answer, sources })),
-          onText: (piece) => updateAnswer(id, (answer) => ({ ...answer, content: answer.content + piece })),
-        },
-        controller.signal,
-      ).then(
-        (response) => {
+      void (async () => {
+        let context: Pick<Conversation, 'history' | 'summary'> = start
+        // A chat near the server's limits is condensed first, so its earliest turns are summarized
+        // rather than dropped.
+        if (shouldCompact(start)) {
+          setCompacting(true)
+          try {
+            context = await compactChat({ history: start.history, summary: start.summary }, controller.signal)
+            if (request.current !== controller) return
+            commit({ ...latest.current, ...context })
+          } catch {
+            // Stopped, or failed: a failure still asks, and the server drops the earliest turns instead.
+            if (request.current !== controller) return
+          } finally {
+            if (request.current === controller) setCompacting(false)
+          }
+        }
+
+        try {
+          const response = await streamChat(
+            { message: question, history: context.history, summary: context.summary },
+            {
+              onSources: (sources) => updateAnswer(id, (answer) => ({ ...answer, sources })),
+              onText: (piece) => updateAnswer(id, (answer) => ({ ...answer, content: answer.content + piece })),
+            },
+            controller.signal,
+          )
           if (request.current !== controller) return
           request.current = null
           updateAnswer(
@@ -97,14 +113,13 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
             { history: response.history, updatedAt: Date.now() },
           )
           settled.current?.(latest.current)
-        },
-        (error: unknown) => {
+        } catch (error) {
           // A stopped request was already marked by `halt`.
           if (request.current !== controller) return
           request.current = null
           updateAnswer(id, (answer) => ({ ...answer, status: 'error', error: errorMessage(error) }))
-        },
-      )
+        }
+      })()
     },
     [commit, updateAnswer],
   )
@@ -117,35 +132,9 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
     ask(question.content)
   }, [ask, commit])
 
-  const compact = useCallback(async () => {
-    const start = latest.current
-    if (request.current || compaction.current || !canCompact(start.history)) return
-    const controller = new AbortController()
-    compaction.current = controller
-    setCompacting(true)
-    try {
-      const { summary, history } = await compactChat({ history: start.history, summary: start.summary }, controller.signal)
-      if (compaction.current !== controller || latest.current.id !== start.id) return
-      commit({ ...latest.current, summary, history })
-      settled.current?.(latest.current)
-    } catch (error) {
-      // Opening another chat abandoned this one's compaction.
-      if (compaction.current !== controller) return
-      throw new ShownError(`The chat could not be compacted. ${errorMessage(error)}`)
-    } finally {
-      if (compaction.current === controller) {
-        compaction.current = null
-        setCompacting(false)
-      }
-    }
-  }, [commit])
-
   const open = useCallback(
     (next: Conversation) => {
       halt()
-      compaction.current?.abort()
-      compaction.current = null
-      setCompacting(false)
       commit(next)
     },
     [commit, halt],
@@ -153,15 +142,10 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
 
   // Leaving the page ends the requests.
   useEffect(
-    () => () => {
-      request.current?.abort()
-      const pending = compaction.current
-      compaction.current = null
-      pending?.abort()
-    },
+    () => () => request.current?.abort(),
     [],
   )
 
   const busy = conversation.messages.at(-1)?.status === 'streaming'
-  return { conversation, busy, compacting, ask, retry, stop: halt, compact, open }
+  return { conversation, busy, compacting, ask, retry, stop: halt, open }
 }

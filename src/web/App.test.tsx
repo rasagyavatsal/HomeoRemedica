@@ -121,70 +121,75 @@ describe('asking', () => {
   })
 })
 
-describe('context', () => {
-  const first = [
-    { role: 'user' as const, content: 'First?' },
-    { role: 'assistant' as const, content: 'First answer.' },
-  ]
-  const second = [
-    { role: 'user' as const, content: 'Second?' },
-    { role: 'assistant' as const, content: 'Second answer.' },
-  ]
+describe('compacting', () => {
+  // Two exchanges that fill most of the context.
+  const long = (role: 'user' | 'assistant', text: string) => ({ role, content: text.padEnd(3_300, '.') })
+  const first = [long('user', 'First?'), long('assistant', 'First answer.')]
+  const second = [long('user', 'Second?'), long('assistant', 'Second answer.')]
+  const summary = 'The user first asked about Nux vomica.'
 
-  it('shows how full the context is and compacts it', async () => {
+  it('summarizes a nearly full chat before the next question', async () => {
     const compacted: unknown[] = []
+    let release = () => {}
     const asked = serve({
       chat: [
-        () => answerStream('First answer.', [citation(1)], 'First?'),
         () => answerStream('Second answer.', [citation(1)], 'Second?', [...first, ...second]),
         () => answerStream('Third answer.', [citation(1)], 'Third?'),
       ],
       compact: (init) => {
         compacted.push(JSON.parse(init?.body as string))
-        return json({ summary: 'The user first asked about Nux vomica.', history: second })
+        return new Promise((resolve) => {
+          release = () => resolve(json({ summary, history: second }))
+        })
       },
     })
     render(<App />)
 
-    expect(screen.queryByRole('button', { name: /^Context/ })).not.toBeInTheDocument()
-    await ask('First?')
-    await screen.findByText('First answer.')
     await ask('Second?')
     await screen.findByText('Second answer.')
-    await userEvent.click(screen.getByRole('button', { name: 'Context 20% full' }))
-
-    const popover = screen.getByRole('dialog', { name: 'Context' })
-    expect(popover).toHaveTextContent('20% of context used')
-    await userEvent.click(within(popover).getByRole('button', { name: 'Compact' }))
-
-    expect(compacted).toEqual([{ history: [...first, ...second] }])
-    const divider = await screen.findByRole('button', { name: 'Compacted' })
-    // Only the latest exchange is left to condense, so there is nothing more to compact.
-    expect(within(popover).getByRole('button', { name: 'Compact' })).toBeDisabled()
-    await userEvent.click(divider)
-    expect(screen.getByText('The user first asked about Nux vomica.')).toBeInTheDocument()
-
     await ask('Third?')
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Summarizing earlier messages…')
+    expect(compacted).toEqual([{ history: [...first, ...second] }])
+    release()
     await screen.findByText('Third answer.')
-    expect(asked[2]).toEqual({ message: 'Third?', history: second, summary: 'The user first asked about Nux vomica.' })
+    expect(asked[1]).toEqual({ message: 'Third?', history: second, summary })
   })
 
-  it('shows a failed compaction and keeps the context', async () => {
-    serve({
-      chat: [() => answerStream('Second answer.', [citation(1)], 'Second?', [...first, ...second])],
+  it('asks anyway when summarizing fails', async () => {
+    const asked = serve({
+      chat: [
+        () => answerStream('Second answer.', [citation(1)], 'Second?', [...first, ...second]),
+        () => answerStream('Third answer.', [citation(1)], 'Third?'),
+      ],
       compact: () => json({ detail: 'The request took too long. Please try again.' }, 504),
     })
     render(<App />)
 
     await ask('Second?')
     await screen.findByText('Second answer.')
-    await userEvent.click(screen.getByRole('button', { name: /^Context/ }))
-    await userEvent.click(screen.getByRole('button', { name: 'Compact' }))
+    await ask('Third?')
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'The chat could not be compacted. The request took too long. Please try again.',
-    )
-    expect(screen.getByRole('dialog', { name: 'Context' })).toHaveTextContent('20% of context used')
+    await screen.findByText('Third answer.')
+    expect(asked[1]).toEqual({ message: 'Third?', history: [...first, ...second] })
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('stops while summarizing', async () => {
+    const asked = serve({
+      chat: [() => answerStream('Second answer.', [citation(1)], 'Second?', [...first, ...second])],
+      compact: (init) => pending(init?.signal),
+    })
+    render(<App />)
+
+    await ask('Second?')
+    await screen.findByText('Second answer.')
+    await ask('Third?')
+    await screen.findByText('Summarizing earlier messages…')
+    await userEvent.click(screen.getByRole('button', { name: 'Stop answering' }))
+
+    expect(screen.getByText('Stopped.')).toBeInTheDocument()
+    expect(asked).toHaveLength(1)
   })
 })
 

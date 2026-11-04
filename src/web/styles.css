@@ -912,62 +912,6 @@ ul {
   font-style: italic;
 }
 
-/* Where the model's context begins: a rule across the column with its label in the middle. */
-.context-divider {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-top: var(--space-2xl);
-}
-
-.context-divider-rule {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  width: 100%;
-}
-
-.context-divider-rule::before,
-.context-divider-rule::after {
-  flex: 1;
-  border-top: var(--border-width) solid var(--color-border);
-  content: '';
-}
-
-.context-divider-label {
-  color: var(--color-text-subtle);
-  font-size: var(--text-xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-}
-
-.context-divider-button {
-  padding: var(--space-3xs) var(--space-xs);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-pill);
-  background: none;
-}
-
-.context-divider-button:hover,
-.context-divider-button[aria-expanded='true'] {
-  border-color: var(--color-border-strong);
-  color: var(--color-text-muted);
-}
-
-.context-summary {
-  width: 100%;
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-sunken);
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  line-height: var(--leading-reading);
-  white-space: pre-wrap;
-  animation: fade-in var(--duration-base) var(--ease-standard);
-}
-
 .reply-error {
   display: flex;
   flex-wrap: wrap;
@@ -1564,58 +1508,6 @@ ul {
   color: var(--color-text-subtle);
   font-size: var(--text-xs);
   font-variant-numeric: tabular-nums;
-}
-
-/* The context meter opens its figures upwards from the question box. */
-.context {
-  position: relative;
-}
-
-.context-ring {
-  width: var(--icon-md);
-  height: var(--icon-md);
-  transform: rotate(-90deg);
-}
-
-.context-ring circle {
-  fill: none;
-  stroke-width: 2.5;
-}
-
-.context-ring-track {
-  stroke: var(--color-border);
-}
-
-.context-ring-fill {
-  stroke: var(--color-accent);
-  stroke-linecap: round;
-  transition: stroke-dashoffset var(--duration-base) var(--ease-standard);
-}
-
-.context-meter[data-level='high'] .context-ring-fill {
-  stroke: var(--color-warning-text);
-}
-
-.context-popover {
-  position: absolute;
-  right: 0;
-  bottom: calc(100% + var(--space-xs));
-  z-index: var(--layer-menu);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  width: 15rem;
-  padding: var(--space-sm);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-raised);
-  box-shadow: var(--shadow-md);
-  animation: rise-in var(--duration-fast) var(--ease-standard);
-}
-
-.context-percent {
-  font-size: var(--text-sm);
-  font-weight: var(--weight-semibold);
 }
 
 .send-button {
