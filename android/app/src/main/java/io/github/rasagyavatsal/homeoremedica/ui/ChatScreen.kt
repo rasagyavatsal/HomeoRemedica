@@ -370,15 +370,19 @@ private fun Reply(
         )
         else -> Column(modifier) {
             AssistantLabel("HomeoRemedica", streaming, colors.inkSoft, FontWeight.SemiBold)
-            if (message.content.isNotEmpty()) {
-                Answer(question, message.content, message.sources.orEmpty(), streaming, activeSource, onSource)
+            val note = @Composable {
+                if (message.status == MessageStatus.Stopped) {
+                    BasicText(
+                        if (message.content.isNotEmpty()) "Stopped before the answer finished." else "Stopped.",
+                        style = TextStyle(color = colors.faint, fontFamily = Fonts.sans, fontSize = 13.sp, fontStyle = FontStyle.Italic),
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
             }
-            if (message.status == MessageStatus.Stopped) {
-                BasicText(
-                    if (message.content.isNotEmpty()) "Stopped before the answer finished." else "Stopped.",
-                    style = TextStyle(color = colors.faint, fontFamily = Fonts.sans, fontSize = 13.sp, fontStyle = FontStyle.Italic),
-                    modifier = Modifier.padding(top = 8.dp),
-                )
+            if (message.content.isNotEmpty()) {
+                Answer(question, message.content, message.sources.orEmpty(), streaming, activeSource, onSource, note = note)
+            } else {
+                note()
             }
         }
     }

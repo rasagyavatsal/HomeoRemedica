@@ -61,8 +61,8 @@ import kotlinx.coroutines.launch
 // Ports the web app's answer view (src/web/Answer.tsx) and its references (src/web/Thread.tsx).
 
 /**
- * An answer's Markdown, with source labels such as `[2]` as chips. Once it has stopped streaming, its
- * references follow; [onSource] opens one of them, and [activeSource] is the one open.
+ * An answer's Markdown, with source labels such as `[2]` as chips, then [note]. Once it has stopped
+ * streaming, its references follow; [onSource] opens one of them, and [activeSource] is the one open.
  */
 @Composable
 fun Answer(
@@ -73,6 +73,7 @@ fun Answer(
     activeSource: Int?,
     onSource: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    note: @Composable () -> Unit = {},
 ) {
     val blocks = remember(content, sources.size) { parseAnswer(content, sources.size) }
     Column(modifier) {
@@ -85,6 +86,7 @@ fun Answer(
                 },
             )
         }
+        note()
         // Listed once the answer is done, so the list does not shift while it streams.
         if (!streaming) {
             if (sources.isNotEmpty()) {
