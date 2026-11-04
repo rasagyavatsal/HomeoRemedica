@@ -52,6 +52,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isShiftPressed
@@ -81,10 +82,11 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.rasagyavatsal.homeoremedica.api.Book
-import io.github.rasagyavatsal.homeoremedica.api.Citation
 import io.github.rasagyavatsal.homeoremedica.api.Role
 import io.github.rasagyavatsal.homeoremedica.chat.ChatState
 import io.github.rasagyavatsal.homeoremedica.chat.ChatViewModel
+import io.github.rasagyavatsal.homeoremedica.chat.Message
+import io.github.rasagyavatsal.homeoremedica.chat.MessageStatus
 import io.github.rasagyavatsal.homeoremedica.chat.SUGGESTIONS
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Fonts
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
@@ -100,6 +102,8 @@ fun ChatScreen(viewModel: ChatViewModel) {
         state = state,
         onDraftChange = viewModel::updateDraft,
         onSubmit = viewModel::submit,
+        onStop = viewModel::stop,
+        onRetry = viewModel::retry,
         onClear = viewModel::clearConversation,
     )
 }
@@ -109,6 +113,8 @@ fun ChatScreen(
     state: ChatState,
     onDraftChange: (String) -> Unit,
     onSubmit: (String) -> Unit,
+    onStop: () -> Unit,
+    onRetry: () -> Unit,
     onClear: () -> Unit,
 ) {
     val colors = Theme.colors
@@ -125,16 +131,17 @@ fun ChatScreen(
                 Box(Modifier.weight(1f).fillMaxWidth()) {
                     var composerHeight by remember { mutableIntStateOf(0) }
                     val bottomPadding = with(LocalDensity.current) { composerHeight.toDp() }
-                    if (state.messages.isEmpty() && !state.pending) {
+                    if (state.messages.isEmpty()) {
                         EmptyState(state.books, wide, bottomPadding, onAsk = submit)
                     } else {
-                        Conversation(state, wide, bottomPadding)
+                        Conversation(state, wide, bottomPadding, onRetry)
                     }
                     ComposerArea(
                         state = state,
                         wide = wide,
                         onDraftChange = onDraftChange,
                         onSubmit = { submit(state.draft) },
+                        onStop = onStop,
                         onHeightChange = { composerHeight = it },
                         modifier = Modifier.align(Alignment.BottomCenter),
                     )
@@ -272,13 +279,12 @@ private fun Suggestion(text: String, wide: Boolean, modifier: Modifier, onClick:
 }
 
 @Composable
-private fun Conversation(state: ChatState, wide: Boolean, bottomPadding: Dp) {
+private fun Conversation(state: ChatState, wide: Boolean, bottomPadding: Dp, onRetry: () -> Unit) {
     val listState = rememberLazyListState()
-    val live = state.live
-    val latestQuestion = if (live != null) state.messages.size else state.messages.indexOfLast { it.role == Role.User }
+    val latestQuestion = state.messages.indexOfLast { it.role == Role.User }
 
     // Bring each new exchange to the top of the view so long answers read from their start.
-    LaunchedEffect(state.messages.size, state.pending) {
+    LaunchedEffect(state.messages.size) {
         if (latestQuestion >= 0) listState.animateScrollToItem(latestQuestion)
     }
 
@@ -298,17 +304,13 @@ private fun Conversation(state: ChatState, wide: Boolean, bottomPadding: Dp) {
                 UserMessage(message.content, wide, itemModifier.rise(message.id))
             } else {
                 val question = state.messages.getOrNull(index - 1)?.takeIf { it.role == Role.User }?.content.orEmpty()
-                AssistantMessage(question, message.content, message.sources, wide, pending = false, modifier = itemModifier.rise(message.id))
-            }
-        }
-        if (live != null) {
-            item(key = "live-question") { UserMessage(live.question, wide, itemModifier.rise("live-question" to live.question)) }
-            item(key = "live-answer") {
-                if (live.content.isNotEmpty()) {
-                    AssistantMessage(live.question, live.content, live.sources, wide, pending = true, modifier = itemModifier)
-                } else {
-                    Progress(itemModifier.rise("progress" to live.question))
-                }
+                Reply(
+                    question,
+                    message,
+                    wide,
+                    onRetry = onRetry.takeIf { index == state.messages.lastIndex },
+                    modifier = itemModifier.rise(message.id),
+                )
             }
         }
     }
@@ -348,17 +350,23 @@ private fun AssistantLabel(text: String, pending: Boolean, color: Color, weight:
 }
 
 @Composable
-private fun AssistantMessage(
-    question: String,
-    content: String,
-    sources: List<Citation>,
-    wide: Boolean,
-    pending: Boolean,
-    modifier: Modifier,
-) {
-    Column(modifier) {
-        AssistantLabel("HomeoRemedica", pending, Theme.colors.inkSoft, FontWeight.SemiBold)
-        Answer(question, content, sources, wide)
+private fun Reply(question: String, message: Message, wide: Boolean, onRetry: (() -> Unit)?, modifier: Modifier) {
+    val colors = Theme.colors
+    val streaming = message.status == MessageStatus.Streaming
+    when {
+        message.status == MessageStatus.Error -> ReplyError(message.error.orEmpty(), onRetry, modifier)
+        streaming && message.content.isEmpty() -> Progress(modifier)
+        else -> Column(modifier) {
+            AssistantLabel("HomeoRemedica", streaming, colors.inkSoft, FontWeight.SemiBold)
+            if (message.content.isNotEmpty()) Answer(question, message.content, message.sources, wide)
+            if (message.status == MessageStatus.Stopped) {
+                BasicText(
+                    if (message.content.isNotEmpty()) "Stopped before the answer finished." else "Stopped.",
+                    style = TextStyle(color = colors.faint, fontFamily = Fonts.sans, fontSize = 13.sp, fontStyle = FontStyle.Italic),
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+            }
+        }
     }
 }
 
@@ -387,6 +395,7 @@ private fun ComposerArea(
     wide: Boolean,
     onDraftChange: (String) -> Unit,
     onSubmit: () -> Unit,
+    onStop: () -> Unit,
     onHeightChange: (Int) -> Unit,
     modifier: Modifier,
 ) {
@@ -406,21 +415,20 @@ private fun ComposerArea(
                     .navigationBarsPadding()
                     .padding(top = if (wide) 18.dp else 14.dp, bottom = if (wide) 16.dp else 10.dp),
             ) {
-                if (state.error.isNotEmpty()) ErrorMessage(state.error)
-                Composer(state, wide, onDraftChange, onSubmit)
+                Composer(state, wide, onDraftChange, onSubmit, onStop)
             }
         }
     }
 }
 
 @Composable
-private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) -> Unit, onSubmit: () -> Unit) {
+private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) -> Unit, onSubmit: () -> Unit, onStop: () -> Unit) {
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val focused by interactions.collectIsFocusedAsState()
     val radius = if (wide) 20.dp else 18.dp
     val shape = RoundedCornerShape(radius)
-    val canSend = !state.pending && state.draft.isNotBlank()
+    val canSend = !state.busy && state.draft.isNotBlank()
     Row(
         Modifier
             .fillMaxWidth()
@@ -459,8 +467,7 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
                     }
                 }
                 .semantics { contentDescription = "Message" },
-            enabled = !state.pending,
-            textStyle = TextStyle(color = if (state.pending) colors.muted else colors.ink, fontFamily = Fonts.sans, fontSize = 16.sp, lineHeight = 20.sp),
+            textStyle = TextStyle(color = colors.ink, fontFamily = Fonts.sans, fontSize = 16.sp, lineHeight = 20.sp),
             cursorBrush = SolidColor(colors.accent),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions(onSend = { onSubmit() }),
@@ -477,12 +484,13 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
                 }
             },
         )
-        SendButton(canSend, onSubmit)
+        if (state.busy) SendButton(Icons.Stop, "Stop answering", enabled = true, onStop)
+        else SendButton(Icons.ArrowUp, "Send message", canSend, onSubmit)
     }
 }
 
 @Composable
-private fun SendButton(enabled: Boolean, onClick: () -> Unit) {
+private fun SendButton(icon: ImageVector, label: String, enabled: Boolean, onClick: () -> Unit) {
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val pressed by interactions.pressed()
@@ -498,31 +506,35 @@ private fun SendButton(enabled: Boolean, onClick: () -> Unit) {
                 },
                 RoundedCornerShape(12.dp),
             )
-            .pressable(enabled, label = "Send message", interactionSource = interactions, onClick = onClick)
-            .semantics { contentDescription = "Send message" },
+            .pressable(enabled, label = label, interactionSource = interactions, onClick = onClick)
+            .semantics { contentDescription = label },
         contentAlignment = Alignment.Center,
     ) {
-        Icon(Icons.ArrowUp, if (enabled) colors.accentInk else colors.faint, 18.dp)
+        Icon(icon, if (enabled) colors.accentInk else colors.faint, 18.dp)
     }
 }
 
 
+/** A failed answer, with a way to ask again when it is the last one. */
 @Composable
-private fun ErrorMessage(message: String) {
+private fun ReplyError(message: String, onRetry: (() -> Unit)?, modifier: Modifier) {
     val colors = Theme.colors
     val shape = RoundedCornerShape(12.dp)
     Row(
-        Modifier
-            .padding(bottom = 10.dp)
-            .fillMaxWidth()
-            .rise(message, 200)
+        modifier
             .background(colors.dangerSoft, shape)
             .border(1.dp, colors.danger.copy(alpha = 0.3f), shape)
             .padding(horizontal = 14.dp, vertical = 11.dp)
             .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Assertive },
         horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Alert, colors.danger, 16.dp, Modifier.padding(top = 2.dp))
-        BasicText(message, style = TextStyle(color = colors.danger, fontFamily = Fonts.sans, fontSize = 13.5.sp, lineHeight = 1.5.em))
+        Icon(Icons.Alert, colors.danger, 16.dp)
+        BasicText(
+            message,
+            style = TextStyle(color = colors.danger, fontFamily = Fonts.sans, fontSize = 13.5.sp, lineHeight = 1.5.em),
+            modifier = Modifier.weight(1f),
+        )
+        if (onRetry != null) PillButton("Try again", ButtonStyle.Quiet, onRetry, icon = Icons.Retry)
     }
 }

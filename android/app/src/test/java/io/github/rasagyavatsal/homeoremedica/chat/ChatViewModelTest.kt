@@ -1,6 +1,7 @@
 package io.github.rasagyavatsal.homeoremedica.chat
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import io.github.rasagyavatsal.homeoremedica.api.ApiJson
 import io.github.rasagyavatsal.homeoremedica.api.ChatRequest
 import io.github.rasagyavatsal.homeoremedica.api.ChatTurn
@@ -8,7 +9,10 @@ import io.github.rasagyavatsal.homeoremedica.api.HomeoRemedicaApi
 import io.github.rasagyavatsal.homeoremedica.api.Role
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.job
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -19,11 +23,13 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ChatViewModelTest {
@@ -31,6 +37,7 @@ class ChatViewModelTest {
     private val chatResponses = LinkedBlockingQueue<MockResponse>()
     private val chatRequests = mutableListOf<ChatRequest>()
     private val store = MemoryStore()
+    private val viewModels = mutableListOf<ChatViewModel>()
 
     @Before
     fun start() {
@@ -49,12 +56,15 @@ class ChatViewModelTest {
 
     @After
     fun stop() {
+        // Let stopped requests finish before Main goes away.
+        runBlocking { viewModels.map { it.viewModelScope.coroutineContext.job }.forEach { it.cancelAndJoin() } }
         server.shutdown()
         Dispatchers.resetMain()
     }
 
     private fun viewModel(savedState: SavedStateHandle = SavedStateHandle()) =
         ChatViewModel(HomeoRemedicaApi(server.url("/").toString()), store, savedState, UnconfinedTestDispatcher())
+            .also { viewModels += it }
 
     private fun answer(text: String, history: List<ChatTurn>) {
         val body = """{"answer":"$text","corpusVersion":"v9","model":"glm","sources":[],"history":${ApiJson.encodeToString(history)}}"""
@@ -62,7 +72,7 @@ class ChatViewModelTest {
             .setBody("event: text\ndata: {\"text\":\"$text\"}\n\nevent: done\ndata: $body\n\n")
     }
 
-    private suspend fun ChatViewModel.settled() = state.first { !it.pending }
+    private suspend fun ChatViewModel.settled() = state.first { !it.busy }
 
     @Test
     fun sendsTheServerTrimmedHistoryWithLaterQuestions() = runTest {
@@ -81,22 +91,43 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun keepsAFailedDraftAndHistoryForARetry() = runTest {
+    fun showsAFailureOnTheAnswerAndRetriesIt() = runTest {
         val vm = viewModel()
         chatResponses += MockResponse().setResponseCode(429).setBody("""{"detail":"Too many questions."}""")
         vm.updateDraft("  Pulsatilla?  ")
         vm.submit()
         var state = vm.settled()
-        assertEquals("Too many questions.", state.error)
-        assertEquals("  Pulsatilla?  ", state.draft)
-        assertTrue(state.messages.isEmpty())
+        assertEquals(MessageStatus.Error, state.messages.last().status)
+        assertEquals("Too many questions.", state.messages.last().error)
+        assertEquals("", state.draft)
+        // A failed question is not kept.
+        assertNull(store.saved)
 
         answer("Mild.", listOf(ChatTurn(Role.User, "Pulsatilla?"), ChatTurn(Role.Assistant, "Mild.")))
-        vm.submit()
+        vm.retry()
         state = vm.settled()
-        assertEquals("", state.error)
         assertEquals(listOf("Pulsatilla?", "Mild."), state.messages.map { it.content })
+        assertNull(state.messages.last().status)
         assertEquals(listOf("Pulsatilla?", "Pulsatilla?"), chatRequests.map { it.message })
+    }
+
+    @Test
+    fun stopsAnAnswerAndKeepsWhatArrived() = runTest {
+        val vm = viewModel()
+        val first = "event: text\ndata: {\"text\":\"Mild\"}\n\n"
+        // The first piece arrives at once; the rest would take a minute.
+        chatResponses += MockResponse().setHeader("Content-Type", "text/event-stream")
+            .setBody(first + "event: text\ndata: {\"text\":\" and gentle.\"}\n\n")
+            .throttleBody(first.length.toLong(), 60, TimeUnit.SECONDS)
+        vm.submit("Pulsatilla?")
+        vm.state.first { it.messages.last().content == "Mild" }
+
+        vm.stop()
+        val state = vm.state.value
+        assertFalse(state.busy)
+        assertEquals(MessageStatus.Stopped, state.messages.last().status)
+        assertEquals("Mild", state.messages.last().content)
+        assertEquals(listOf("Pulsatilla?", "Mild"), store.saved?.messages?.map { it.content })
     }
 
     @Test

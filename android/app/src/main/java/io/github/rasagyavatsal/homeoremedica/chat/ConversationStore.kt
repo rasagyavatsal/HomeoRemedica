@@ -8,13 +8,23 @@ import kotlinx.serialization.Serializable
 import java.io.File
 import java.io.IOException
 
+enum class MessageStatus { Streaming, Stopped, Error }
+
 @Serializable
 data class Message(
     val id: Long,
     val role: Role,
     val content: String,
     val sources: List<Citation> = emptyList(),
+    /** Null once an answer is complete. */
+    val status: MessageStatus? = null,
+    val error: String? = null,
 )
+
+/** The messages worth keeping: failed questions and their errors are left out. */
+fun savedMessages(messages: List<Message>): List<Message> = messages.filterIndexed { index, message ->
+    message.status != MessageStatus.Error && messages.getOrNull(index + 1)?.status != MessageStatus.Error
+}
 
 @Serializable
 data class SavedConversation(val messages: List<Message>, val history: List<ChatTurn>)
