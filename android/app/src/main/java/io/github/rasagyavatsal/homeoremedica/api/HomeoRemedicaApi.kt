@@ -1,8 +1,10 @@
 package io.github.rasagyavatsal.homeoremedica.api
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
@@ -108,15 +110,26 @@ class HomeoRemedicaApi(
 }
 
 /** Run the call off the main thread, cancelling it with the calling coroutine. */
-private suspend fun <T> Call.await(read: (Response) -> T): T = withContext(Dispatchers.IO) {
-    val cancellation = coroutineContext.job.invokeOnCompletion { cancel() }
+private suspend fun <T> Call.await(read: (Response) -> T): T = coroutineScope {
+    // A blocking read never sees the coroutine cancelled, so cancel the call itself as soon as it is.
+    val watcher = launch {
+        try {
+            awaitCancellation()
+        } finally {
+            this@await.cancel()
+        }
+    }
     try {
-        execute().use(read)
-    } catch (failure: IOException) {
-        coroutineContext.ensureActive()
-        throw ApiException(NETWORK_ERROR)
+        withContext(Dispatchers.IO) {
+            try {
+                execute().use(read)
+            } catch (failure: IOException) {
+                ensureActive()
+                throw ApiException(NETWORK_ERROR)
+            }
+        }
     } finally {
-        cancellation.dispose()
+        watcher.cancel()
     }
 }
 
