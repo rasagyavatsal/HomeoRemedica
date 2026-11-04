@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -32,6 +33,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
@@ -44,15 +46,59 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import io.github.rasagyavatsal.homeoremedica.BuildConfig
+import io.github.rasagyavatsal.homeoremedica.account.Account
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Fonts
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
 
-// Ports the web app's profile and account menu (src/web/AccountControls.tsx). Accounts come later, so the
-// app is always a guest.
+// Ports the web app's profile and account menu (src/web/AccountControls.tsx).
 
-/** The sidebar's profile, which opens a menu of the legal pages and the app's version. */
+/**
+ * The sidebar's profile: a guest, or the signed-in [account], with a menu of the legal pages, what can be
+ * done, and the app's version. [onSignIn] is null when this build has no accounts.
+ */
 @Composable
-fun AccountControls() {
+fun AccountControls(
+    account: Account?,
+    onSignIn: (() -> Unit)?,
+    onResendVerification: () -> Unit,
+) {
+    val colors = Theme.colors
+    if (account == null) {
+        AccountMenu("Guest", avatar = { Icon(Icons.User, colors.textMuted, 16.dp) }, avatarColor = colors.surfaceSelected) {
+            if (onSignIn != null) {
+                MenuSeparator()
+                MenuItem(Icons.SignIn, "Sign in to sync chats", onClick = onSignIn)
+            }
+        }
+        return
+    }
+    val label = account.email ?: account.name ?: "Signed in"
+    AccountMenu(
+        label,
+        avatar = {
+            BasicText(
+                label.take(1).uppercase(),
+                style = TextStyle(color = colors.accentText, fontFamily = Fonts.sans, fontSize = 12.sp, fontWeight = FontWeight.SemiBold),
+            )
+        },
+        avatarColor = colors.accentSoft,
+    ) {
+        MenuSeparator()
+        if (!account.verified) MenuItem(Icons.Mail, "Resend verification email", onClick = onResendVerification)
+    }
+}
+
+/** What an account menu lists after the legal pages; choosing any item closes the menu first. */
+private class MenuScope(val close: () -> Unit)
+
+/** The profile, which opens a menu of the legal pages followed by [items] and the version. */
+@Composable
+private fun AccountMenu(
+    label: String,
+    avatar: @Composable () -> Unit,
+    avatarColor: Color,
+    items: @Composable MenuScope.() -> Unit,
+) {
     val colors = Theme.colors
     val openLegal = LocalOpenLegal.current
     var open by remember { mutableStateOf(false) }
@@ -65,7 +111,6 @@ fun AccountControls() {
             Modifier
                 .fillMaxWidth()
                 .onSizeChanged { width = it.width }
-                .padding(vertical = 0.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(if (pressed || open) colors.surfaceHover else Color.Transparent)
                 .pressable(label = "Account", interactionSource = interactions) { open = !open }
@@ -75,13 +120,11 @@ fun AccountControls() {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
-                Modifier.size(28.dp).clip(RoundedCornerShape(percent = 50)).background(colors.surfaceSelected),
+                Modifier.size(28.dp).clip(RoundedCornerShape(percent = 50)).background(avatarColor),
                 contentAlignment = Alignment.Center,
-            ) {
-                Icon(Icons.User, colors.textMuted, 16.dp)
-            }
+            ) { avatar() }
             BasicText(
-                "Guest",
+                label,
                 style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 13.sp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -95,12 +138,27 @@ fun AccountControls() {
                 onDismissRequest = { open = false },
                 properties = PopupProperties(focusable = true),
             ) {
-                val close = { page: LegalPageName ->
-                    open = false
-                    openLegal(page)
-                }
-                AccountMenu(Modifier.width(with(LocalDensity.current) { width.toDp() }), onTerms = { close(LegalPageName.Terms) }) {
-                    close(LegalPageName.Privacy)
+                val shape = RoundedCornerShape(10.dp)
+                val scope = MenuScope { open = false }
+                Column(
+                    Modifier
+                        .width(with(LocalDensity.current) { width.toDp() })
+                        .rise(Unit, 120)
+                        .shadowMedium(shape, colors.shadow)
+                        .background(colors.surfaceRaised, shape)
+                        .border(1.dp, colors.border, shape)
+                        .padding(4.dp)
+                        .semantics { contentDescription = "Account" },
+                ) {
+                    for (page in listOf(LegalPageName.Terms, LegalPageName.Privacy)) {
+                        scope.MenuItem(if (page == LegalPageName.Terms) Icons.Document else Icons.Shield, page.title) { openLegal(page) }
+                    }
+                    scope.items()
+                    BasicText(
+                        "v${BuildConfig.VERSION_NAME}",
+                        style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 12.sp, textAlign = TextAlign.Center),
+                        modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 4.dp),
+                    )
                 }
             }
         }
@@ -108,46 +166,32 @@ fun AccountControls() {
 }
 
 @Composable
-private fun AccountMenu(modifier: Modifier, onTerms: () -> Unit, onPrivacy: () -> Unit) {
-    val colors = Theme.colors
-    val shape = RoundedCornerShape(10.dp)
-    Column(
-        modifier
-            .rise(Unit, 120)
-            .shadowMedium(shape, colors.shadow)
-            .background(colors.surfaceRaised, shape)
-            .border(1.dp, colors.border, shape)
-            .padding(4.dp)
-            .semantics { contentDescription = "Account" },
-    ) {
-        MenuItem(Icons.Document, LegalPageName.Terms.title, onTerms)
-        MenuItem(Icons.Shield, LegalPageName.Privacy.title, onPrivacy)
-        BasicText(
-            "v${BuildConfig.VERSION_NAME}",
-            style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 12.sp, textAlign = TextAlign.Center),
-            modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 4.dp),
-        )
-    }
+private fun MenuSeparator() {
+    Box(Modifier.padding(vertical = 4.dp).fillMaxWidth().height(1.dp).background(Theme.colors.border))
 }
 
 @Composable
-private fun MenuItem(icon: ImageVector, text: String, onClick: () -> Unit) {
+private fun MenuScope.MenuItem(icon: ImageVector, text: String, danger: Boolean = false, onClick: () -> Unit) {
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val pressed by interactions.pressed()
+    val color = if (danger) colors.danger else colors.text
     Row(
         Modifier
             .fillMaxWidth()
             .heightIn(min = 36.dp)
             .clip(RoundedCornerShape(6.dp))
-            .background(if (pressed) colors.surfaceRaisedHover else Color.Transparent)
-            .pressable(role = Role.Button, label = text, interactionSource = interactions, onClick = onClick)
+            .background(if (!pressed) Color.Transparent else if (danger) colors.dangerSoft else colors.surfaceRaisedHover)
+            .pressable(role = Role.Button, label = text, interactionSource = interactions) {
+                close()
+                onClick()
+            }
             .padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(icon, colors.textMuted, 16.dp)
-        BasicText(text, style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 13.sp))
+        Icon(icon, if (danger) colors.danger else colors.textMuted, 16.dp)
+        BasicText(text, style = TextStyle(color = color, fontFamily = Fonts.sans, fontSize = 13.sp))
     }
 }
 

@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
@@ -31,6 +32,21 @@ private fun icon(name: String, vararg strokes: String, fills: List<String> = emp
         }
         for (path in fills) addPath(pathData = addPathNodes(path), fill = SolidColor(Color.Black), pathFillType = PathFillType.EvenOdd)
     }.build()
+
+private const val THUMB_UP = "M7 10v12M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"
+private const val THUMB_DOWN = "M17 14V2M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"
+
+/** An outline filled at 22% of its colour, as the web app fills a chosen thumb. */
+private fun filled(name: String, path: String): ImageVector = ImageVector.Builder(name, 24.dp, 24.dp, 24f, 24f).apply {
+    addPath(pathData = addPathNodes(path), fill = SolidColor(Color.Black), fillAlpha = 0.22f)
+    addPath(
+        pathData = addPathNodes(path),
+        stroke = SolidColor(Color.Black),
+        strokeLineWidth = 1.75f,
+        strokeLineCap = StrokeCap.Round,
+        strokeLineJoin = StrokeJoin.Round,
+    )
+}.build()
 
 object Icons {
     /** The potency drop: a drop with a ring and centre cut out, after the rings of a dilution. */
@@ -65,14 +81,32 @@ object Icons {
     val Moon = icon("Moon", "M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z")
     val Monitor = icon("Monitor", "M4 5h16v11H4zM9 20h6m-3-4v4")
     val User = icon("User", "M16 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM4 21a8 8 0 0 1 16 0")
+    val SignIn = icon("SignIn", "M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l4-4-4-4M14 12H4")
+    val SignOut = icon("SignOut", "M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10")
+    val Mail = icon("Mail", "M4 6h16v12H4zM4 7l8 6 8-6")
+    val ThumbUp = icon("ThumbUp", THUMB_UP)
+    val ThumbUpChosen = filled("ThumbUpChosen", THUMB_UP)
+    val ThumbDown = icon("ThumbDown", THUMB_DOWN)
+    val ThumbDownChosen = filled("ThumbDownChosen", THUMB_DOWN)
+
+    /** Google's mark in its own colours, which is never tinted. */
+    val Google = ImageVector.Builder("Google", 24.dp, 24.dp, 24f, 24f).apply {
+        for ((color, path) in listOf(
+            0xFF4285F4 to "M22.6 12.2c0-.8-.1-1.5-.2-2.2H12v4.2h5.9a5 5 0 0 1-2.2 3.3v2.7h3.6c2-1.9 3.3-4.7 3.3-8Z",
+            0xFF34A853 to "M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.8c-1 .7-2.2 1.1-3.7 1.1-2.9 0-5.3-1.9-6.2-4.5H2.1v2.9A11 11 0 0 0 12 23Z",
+            0xFFFBBC05 to "M5.8 14.1a6.6 6.6 0 0 1 0-4.2V7H2.1a11 11 0 0 0 0 10l3.7-2.9Z",
+            0xFFEA4335 to "M12 5.4c1.6 0 3.1.6 4.2 1.7l3.2-3.2A11 11 0 0 0 2.1 7l3.7 2.9C6.7 7.3 9.1 5.4 12 5.4Z",
+        )) addPath(pathData = addPathNodes(path), fill = SolidColor(Color(color)))
+    }.build()
 }
 
+/** An icon in [color], or in its own colours when [color] is unspecified. */
 @Composable
 fun Icon(icon: ImageVector, color: Color, size: Dp, modifier: Modifier = Modifier, contentDescription: String? = null) {
     Image(
         painter = rememberVectorPainter(icon),
         contentDescription = contentDescription,
         modifier = modifier.size(size),
-        colorFilter = ColorFilter.tint(color),
+        colorFilter = if (color.isSpecified) ColorFilter.tint(color) else null,
     )
 }

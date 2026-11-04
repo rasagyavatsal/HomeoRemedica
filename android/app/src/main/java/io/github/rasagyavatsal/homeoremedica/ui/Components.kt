@@ -146,6 +146,8 @@ fun Button(
     small: Boolean = false,
     icon: ImageVector? = null,
     trailingIcon: ImageVector? = null,
+    /** Drawn in its own colours before the text, such as Google's mark. */
+    mark: ImageVector? = null,
     raised: Boolean = false,
     color: Color? = null,
     /** Lines the content up at the start, as the sidebar's new chat button. */
@@ -182,6 +184,7 @@ fun Button(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) Icon(icon, content, 16.dp)
+        if (mark != null) Icon(mark, Color.Unspecified, 16.dp)
         BasicText(
             text,
             style = TextStyle(

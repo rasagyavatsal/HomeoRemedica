@@ -19,10 +19,15 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.rasagyavatsal.homeoremedica.account.AccountViewModel
+import io.github.rasagyavatsal.homeoremedica.account.FirebaseAuthClient
 import io.github.rasagyavatsal.homeoremedica.api.HomeoRemedicaApi
 import io.github.rasagyavatsal.homeoremedica.chat.ChatViewModel
 import io.github.rasagyavatsal.homeoremedica.chat.FileChatLibrary
 import io.github.rasagyavatsal.homeoremedica.ui.AccountControls
+import io.github.rasagyavatsal.homeoremedica.ui.AuthDialog
 import io.github.rasagyavatsal.homeoremedica.ui.ChatScreen
 import io.github.rasagyavatsal.homeoremedica.ui.LegalPage
 import io.github.rasagyavatsal.homeoremedica.ui.LegalPageName
@@ -45,6 +50,12 @@ class MainActivity : ComponentActivity() {
                 val chats = FileChatLibrary(File(noBackupFilesDir, "chats.json"))
                 ChatViewModel(HomeoRemedicaApi(BuildConfig.API_BASE_URL), chats, preferences.lastChat)
             }
+        }
+    }
+
+    private val accounts: AccountViewModel by viewModels {
+        viewModelFactory {
+            initializer { AccountViewModel(FirebaseAuthClient.create(applicationContext), viewModel) }
         }
     }
 
@@ -76,9 +87,24 @@ class MainActivity : ComponentActivity() {
             // A legal page shows over the chat, which keeps answering underneath.
             var legal by rememberSaveable { mutableStateOf<LegalPageName?>(null) }
             var notice by remember { mutableStateOf(!preferences.noticeAcknowledged) }
+            var signingIn by rememberSaveable { mutableStateOf(false) }
+            val account by accounts.state.collectAsStateWithLifecycle()
+            // A verification made from the link in the email shows when the app comes back.
+            LifecycleResumeEffect(Unit) {
+                accounts.refresh()
+                onPauseOrDispose {}
+            }
             CompositionLocalProvider(LocalThemeControl provides control, LocalOpenLegal provides { legal = it }) {
                 HomeoRemedicaTheme(dark) {
-                    ChatScreen(viewModel) { AccountControls() }
+                    ChatScreen(viewModel) {
+                        AccountControls(
+                            account.account,
+                            onSignIn = if (account.available) ({ signingIn = true }) else null,
+                            onResendVerification = accounts::resendVerification,
+                        )
+                    }
+                    val auth = accounts.auth
+                    if (signingIn && auth != null) AuthDialog(auth) { signingIn = false }
                     if (notice) {
                         PractitionerNotice {
                             preferences.acknowledgeNotice()

@@ -32,7 +32,7 @@ import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
 
 /** A modal dialog over the app, open while it is composed; back, the close button and the scrim call [onClose]. */
 @Composable
-fun Dialog(title: String, onClose: () -> Unit, content: @Composable () -> Unit) {
+fun Dialog(title: String, onClose: () -> Unit, description: String? = null, content: @Composable () -> Unit) {
     val colors = Theme.colors
     val shape = RoundedCornerShape(16.dp)
     BackHandler(onBack = onClose)
@@ -54,17 +54,23 @@ fun Dialog(title: String, onClose: () -> Unit, content: @Composable () -> Unit) 
                 .semantics { paneTitle = title },
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Row(
-                Modifier.fillMaxWidth().padding(top = 0.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                BasicText(
-                    title,
-                    style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 22.sp, lineHeight = 28.sp),
-                    modifier = Modifier.weight(1f).semantics { heading() },
-                )
-                IconButton(Icons.Close, "Close", onClose, Modifier.padding(end = 0.dp), raised = true)
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(
+                    Modifier.fillMaxWidth().padding(top = 0.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    BasicText(
+                        title,
+                        style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 22.sp, lineHeight = 28.sp),
+                        modifier = Modifier.weight(1f).semantics { heading() },
+                    )
+                    IconButton(Icons.Close, "Close", onClose, Modifier.padding(end = 0.dp), raised = true)
+                }
+                // The web app's `.dialog-description`.
+                if (description != null) {
+                    BasicText(description, style = TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = 13.sp, lineHeight = 18.sp))
+                }
             }
             content()
         }

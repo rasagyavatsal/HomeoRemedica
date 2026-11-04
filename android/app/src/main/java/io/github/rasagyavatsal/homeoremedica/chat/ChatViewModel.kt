@@ -59,7 +59,7 @@ class ChatViewModel(
     private val io: CoroutineDispatcher = Dispatchers.IO,
     private val clock: () -> Long = System::currentTimeMillis,
     private val newId: () -> String = { UUID.randomUUID().toString() },
-) : ViewModel() {
+) : ViewModel(), Workspace {
     private val _state = MutableStateFlow(ChatState(newId()))
     val state: StateFlow<ChatState> = _state.asStateFlow()
     /** The request streaming the last answer; read from the network thread too. */
@@ -197,6 +197,8 @@ class ChatViewModel(
     }
 
     fun dismissNotice() = _state.update { it.copy(notice = null) }
+
+    override fun notify(message: String) = _state.update { it.copy(notice = message) }
 
     private fun show(chat: SavedChat) {
         lastChat.set(chat.id)
