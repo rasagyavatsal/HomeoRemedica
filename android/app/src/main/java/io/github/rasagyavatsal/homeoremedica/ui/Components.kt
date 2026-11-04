@@ -35,7 +35,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -50,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Ease
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Fonts
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
+import kotlinx.coroutines.delay
 
 val Pill = RoundedCornerShape(percent = 50)
 
@@ -144,6 +147,9 @@ fun Button(
     icon: ImageVector? = null,
     raised: Boolean = false,
     color: Color? = null,
+    /** Lines the content up at the start, as the sidebar's new chat button. */
+    start: Boolean = false,
+    minHeight: Dp = if (small) 28.dp else 36.dp,
 ) {
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
@@ -165,13 +171,13 @@ fun Button(
         modifier
             .scale(if (active) 0.96f else 1f)
             .alpha(if (enabled) 1f else 0.55f)
-            .defaultMinSize(minHeight = if (small) 28.dp else 36.dp)
+            .defaultMinSize(minHeight = minHeight)
             .clip(shape)
             .background(background)
             .border(1.dp, if (style == ButtonStyle.Outline) colors.borderStrong else Color.Transparent, shape)
             .pressable(enabled, label = text, interactionSource = interactions, onClick = onClick)
             .padding(horizontal = if (small) 8.dp else 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, if (start) Alignment.Start else Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) Icon(icon, content, 16.dp)
@@ -217,5 +223,34 @@ fun IconButton(
     ) {
         if (content != null) content()
         else Icon(icon, if (pressed) pressedColor ?: colors.text else color ?: colors.textMuted, iconSize)
+    }
+}
+
+/** The web app's `.toast`: a message that dismisses itself after eight seconds. */
+@Composable
+fun Toast(message: String, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
+    val colors = Theme.colors
+    LaunchedEffect(message) {
+        delay(8_000)
+        onDismiss()
+    }
+    val shape = RoundedCornerShape(10.dp)
+    Row(
+        modifier
+            .rise(message, 200)
+            .shadowLarge(shape, colors.shadow)
+            .background(colors.surfaceRaised, shape)
+            .border(1.dp, colors.borderStrong, shape)
+            .padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp)
+            .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Assertive },
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        BasicText(
+            message,
+            style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 13.sp, lineHeight = 18.sp),
+            modifier = Modifier.weight(1f, fill = false),
+        )
+        IconButton(Icons.Close, "Dismiss", onDismiss, raised = true)
     }
 }

@@ -1,6 +1,11 @@
 package io.github.rasagyavatsal.homeoremedica.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -23,6 +28,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -84,6 +90,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -98,6 +105,7 @@ import io.github.rasagyavatsal.homeoremedica.chat.MAX_QUESTION_CHARS
 import io.github.rasagyavatsal.homeoremedica.chat.Message
 import io.github.rasagyavatsal.homeoremedica.chat.MessageStatus
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Ease
+import io.github.rasagyavatsal.homeoremedica.ui.theme.EaseExit
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Fonts
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
 import java.text.NumberFormat
@@ -115,7 +123,7 @@ private val OpenSourceSaver = listSaver<OpenSource?, Long>(
 )
 
 @Composable
-fun ChatScreen(viewModel: ChatViewModel) {
+fun ChatScreen(viewModel: ChatViewModel, footer: (@Composable () -> Unit)? = null) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     ChatScreen(
         state = state,
@@ -123,9 +131,16 @@ fun ChatScreen(viewModel: ChatViewModel) {
         onSubmit = viewModel::submit,
         onStop = viewModel::stop,
         onRetry = viewModel::retry,
-        onClear = viewModel::newChat,
+        onNewChat = viewModel::newChat,
+        onOpenChat = viewModel::openChat,
+        onDeleteChat = viewModel::deleteChat,
+        onDismissNotice = viewModel::dismissNotice,
+        footer = footer,
     )
 }
+
+/** Below this width the chat list is a drawer, as below the web app's 52rem. */
+private val DrawerBelow = 832.dp
 
 @Composable
 fun ChatScreen(
@@ -134,7 +149,11 @@ fun ChatScreen(
     onSubmit: (String) -> Unit,
     onStop: () -> Unit,
     onRetry: () -> Unit,
-    onClear: () -> Unit,
+    onNewChat: () -> Unit,
+    onOpenChat: (String) -> Unit,
+    onDeleteChat: (String) -> Unit,
+    onDismissNotice: () -> Unit,
+    footer: (@Composable () -> Unit)? = null,
 ) {
     val colors = Theme.colors
     val keyboard = LocalSoftwareKeyboardController.current
@@ -143,6 +162,12 @@ fun ChatScreen(
         onSubmit(text)
     }
     var openSource by rememberSaveable(stateSaver = OpenSourceSaver) { mutableStateOf(null) }
+    // Another chat closes the passage open from this one.
+    var sourceChat by rememberSaveable { mutableStateOf(state.id) }
+    if (sourceChat != state.id) {
+        sourceChat = state.id
+        openSource = null
+    }
     val open = openSource
     val source = open?.let { state.messages.find { message -> message.id == it.messageId }?.sources?.getOrNull(it.number - 1) }
     // Tapping the open reference again closes the panel.
@@ -151,25 +176,49 @@ fun ChatScreen(
         openSource = if (openSource == next) null else next
     }
     val closeSource = { openSource = null }
-    BackHandler(enabled = source != null, onBack = closeSource)
+    var sidebarOpen by rememberSaveable { mutableStateOf(false) }
+    val closeSidebar = { sidebarOpen = false }
 
-    CompositionLocalProvider(LocalEntrances provides remember { Entrances() }) {
-        BoxWithConstraints(Modifier.fillMaxSize().background(colors.canvas).imePadding()) {
-            val wide = maxWidth >= 640.dp
-            val panelWidth = if (wide) (maxWidth * 0.32f).coerceIn(288.dp, 400.dp) else minOf(400.dp, maxWidth)
-            Row(Modifier.fillMaxSize()) {
-                Column(Modifier.weight(1f).fillMaxHeight()) {
-                    Header(wide, enabled = state.messages.isNotEmpty()) {
-                        openSource = null
-                        onClear()
-                    }
+    BoxWithConstraints(Modifier.fillMaxSize().background(colors.canvas)) {
+        val drawer = maxWidth < DrawerBelow
+        val wide = maxWidth >= 640.dp
+        val panelWidth = if (wide) (maxWidth * 0.32f).coerceIn(288.dp, 400.dp) else minOf(400.dp, maxWidth)
+        BackHandler(enabled = source != null || (drawer && sidebarOpen)) {
+            closeSource()
+            closeSidebar()
+        }
+        val sidebar = @Composable { modifier: Modifier ->
+            Sidebar(
+                chats = state.chats,
+                activeId = state.id,
+                onNew = {
+                    closeSidebar()
+                    onNewChat()
+                },
+                onOpen = { id ->
+                    closeSidebar()
+                    onOpenChat(id)
+                },
+                onDelete = onDeleteChat,
+                onClose = if (drawer) closeSidebar else null,
+                modifier = modifier,
+                footer = footer,
+            )
+        }
+
+        Row(Modifier.fillMaxSize()) {
+            if (!drawer) sidebar(Modifier.width(SidebarWidth).fillMaxHeight())
+            Column(Modifier.weight(1f).fillMaxHeight().imePadding()) {
+                Topbar(state.title.ifEmpty { "New chat" }, onMenu = if (drawer) ({ sidebarOpen = true }) else null)
+                // Each chat's messages play their entrance when it opens.
+                CompositionLocalProvider(LocalEntrances provides remember(state.id) { Entrances() }) {
                     Box(Modifier.weight(1f).fillMaxWidth()) {
                         var composerHeight by remember { mutableIntStateOf(0) }
                         val bottomPadding = with(LocalDensity.current) { composerHeight.toDp() }
                         if (state.messages.isEmpty()) {
                             Welcome(bottomPadding)
                         } else {
-                            Conversation(state, wide, bottomPadding, open, showSource, onRetry)
+                            key(state.id) { Conversation(state, wide, bottomPadding, open, showSource, onRetry) }
                         }
                         ComposerArea(
                             state = state,
@@ -182,48 +231,73 @@ fun ChatScreen(
                         )
                     }
                 }
-                // Beside the chat on wide screens, as the web app's `.sources` column.
-                if (source != null && open != null && wide) {
-                    key(source.id) {
-                        SourcesPanel(
-                            source,
-                            open.number,
-                            closeSource,
-                            Modifier
-                                .width(panelWidth)
-                                .fillMaxHeight()
-                                .drawBehind { drawLine(colors.border, Offset.Zero, Offset(0f, size.height), 1.dp.toPx()) },
-                        )
-                    }
-                }
             }
-            // Over the chat on narrow screens.
-            if (source != null && open != null && !wide) {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .background(colors.scrim)
-                        .pressable(label = "Close source", onClick = closeSource),
-                )
+            // Beside the chat on wide screens, as the web app's `.sources` column.
+            if (source != null && open != null && wide) {
                 key(source.id) {
                     SourcesPanel(
                         source,
                         open.number,
                         closeSource,
                         Modifier
-                            .align(Alignment.CenterEnd)
                             .width(panelWidth)
                             .fillMaxHeight()
-                            .shadowLarge(RectangleShape, colors.shadow),
+                            .drawBehind { drawLine(colors.border, Offset.Zero, Offset(0f, size.height), 1.dp.toPx()) },
                     )
                 }
             }
+        }
+        // Over the chat on narrow screens.
+        if (source != null && open != null && !wide) {
+            Scrim("Close source", closeSource)
+            key(source.id) {
+                SourcesPanel(
+                    source,
+                    open.number,
+                    closeSource,
+                    Modifier
+                        .align(Alignment.CenterEnd)
+                        .width(panelWidth)
+                        .fillMaxHeight()
+                        .shadowLarge(RectangleShape, colors.shadow),
+                )
+            }
+        }
+        // The chat list slides in over the chat on narrow screens.
+        if (drawer) {
+            AnimatedVisibility(sidebarOpen, enter = fadeIn(tween(200, easing = Ease)), exit = fadeOut(tween(200, easing = EaseExit))) {
+                Scrim("Close chats", closeSidebar)
+            }
+            AnimatedVisibility(
+                sidebarOpen,
+                enter = slideInHorizontally(tween(320, easing = Ease)) { -it },
+                exit = slideOutHorizontally(tween(200, easing = EaseExit)) { -it },
+            ) {
+                sidebar(Modifier.width(minOf(SidebarWidth, maxWidth - 48.dp)).fillMaxHeight().shadowLarge(RectangleShape, colors.shadow))
+            }
+        }
+        state.notice?.let { notice ->
+            Toast(
+                notice,
+                onDismissNotice,
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
+                    .imePadding()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
+            )
         }
     }
 }
 
 @Composable
-private fun Header(wide: Boolean, enabled: Boolean, onClear: () -> Unit) {
+private fun Scrim(label: String, onClick: () -> Unit) {
+    Box(Modifier.fillMaxSize().background(Theme.colors.scrim).pressable(label = label, onClick = onClick))
+}
+
+/** The web app's `.topbar`: the chats button on narrow screens, then the open chat's title. */
+@Composable
+private fun Topbar(title: String, onMenu: (() -> Unit)?) {
     val colors = Theme.colors
     Row(
         Modifier
@@ -231,19 +305,19 @@ private fun Header(wide: Boolean, enabled: Boolean, onClear: () -> Unit) {
             .background(colors.canvas)
             .drawBehind { drawLine(colors.border, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
             .statusBarsPadding()
-            .padding(horizontal = if (wide) 20.dp else 16.dp, vertical = if (wide) 14.dp else 10.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+            .heightIn(min = 44.dp)
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Brand()
-        Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
-            ThemeToggle()
-            if (wide) {
-                Button("New chat", ButtonStyle.Quiet, onClear, enabled = enabled, icon = Icons.Plus, color = Theme.colors.textMuted)
-            } else if (enabled) {
-                IconButton(Icons.Plus, "New chat", onClear)
-            }
-        }
+        if (onMenu != null) IconButton(Icons.Menu, "Open chats", onMenu, Modifier.offset(x = (-8).dp))
+        BasicText(
+            title,
+            style = TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = 13.sp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+        )
     }
 }
 
