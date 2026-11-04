@@ -7,6 +7,13 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [9.6.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.5.0...HomeoRemedica-v9.6.0) (2026-11-04)
+
+
+### Features
+
+* **web:** show the app version in the account menu ([2ed896c](https://github.com/rasagyavatsal/HomeoRemedica/commit/2ed896c757fefb2d65ee49501dfeaaac04e41a40))
+
 ## [9.5.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.4.0...HomeoRemedica-v9.5.0) (2026-11-04)
 
 
