@@ -583,6 +583,13 @@ a.menu-item {
   outline: none;
 }
 
+.menu-version {
+  padding: var(--space-2xs) var(--space-xs) 0;
+  color: var(--color-text-subtle);
+  font-size: var(--text-xs);
+  text-align: center;
+}
+
 .menu-item-danger,
 .menu-item-danger .icon {
   color: var(--color-danger);

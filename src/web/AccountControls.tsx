@@ -1,5 +1,6 @@
 import { type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from 'react'
 
+import { version } from '../../package.json'
 import { errorMessage } from './api.ts'
 import type { Account } from './auth.ts'
 import { Dialog } from './Dialog.tsx'
@@ -57,7 +58,7 @@ export function AccountControls({ account, onSignIn, onSignOut, onResendVerifica
   )
 }
 
-/** The profile, which opens a menu of the legal pages followed by the given account actions. */
+/** The profile, which opens a menu of the legal pages, the given account actions, and the app's version. */
 function AccountMenu({
   label,
   avatar,
@@ -136,6 +137,9 @@ function AccountMenu({
             <ShieldIcon /> Privacy Policy
           </a>
           {children}
+          <div role="none" className="menu-version">
+            v{version}
+          </div>
         </div>
       )}
     </div>

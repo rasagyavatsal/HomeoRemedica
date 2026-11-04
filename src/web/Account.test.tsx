@@ -2,6 +2,7 @@ import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, it, vi } from 'vitest'
 
+import { version } from '../../package.json'
 import type { AnswerRatings, Feedback, SavedChat } from '../server/contracts.ts'
 import App from './App.tsx'
 import type { Account, AuthClient } from './auth.ts'
@@ -422,6 +423,14 @@ it('links the legal pages from the account menu', async () => {
   await userEvent.click(await screen.findByRole('button', { name: 'alice@example.com' }))
   expect(screen.getByRole('menuitem', { name: 'Terms of Use' })).toHaveAttribute('href', '/terms')
   expect(screen.getByRole('menuitem', { name: 'Privacy Policy' })).toHaveAttribute('href', '/privacy')
+})
+
+it('shows the version in the account menu', async () => {
+  serve()
+  render(<App />)
+
+  await userEvent.click(await screen.findByRole('button', { name: 'Guest' }))
+  expect(within(screen.getByRole('menu')).getByText(`v${version}`)).toBeInTheDocument()
 })
 
 it('closes the account menu on Escape or a click outside it', async () => {
