@@ -1,6 +1,5 @@
 package io.github.rasagyavatsal.homeoremedica.chat
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import io.github.rasagyavatsal.homeoremedica.api.ApiJson
 import io.github.rasagyavatsal.homeoremedica.api.ChatRequest
@@ -11,7 +10,9 @@ import io.github.rasagyavatsal.homeoremedica.api.Role
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.job
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -29,6 +30,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 
@@ -39,7 +41,10 @@ class ChatViewModelTest {
     private val chatRequests = mutableListOf<ChatRequest>()
     private val compactResponses = LinkedBlockingQueue<MockResponse>()
     private val compactRequests = mutableListOf<CompactRequest>()
-    private val store = MemoryStore()
+    private val library = MemoryLibrary()
+    private val lastChat = MemoryLastChat()
+    private var now = 1_000L
+    private var ids = 0
     private val viewModels = mutableListOf<ChatViewModel>()
 
     @Before
@@ -68,9 +73,15 @@ class ChatViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel(savedState: SavedStateHandle = SavedStateHandle()) =
-        ChatViewModel(HomeoRemedicaApi(server.url("/").toString()), store, savedState, UnconfinedTestDispatcher())
-            .also { viewModels += it }
+    private fun viewModel() =
+        ChatViewModel(
+            HomeoRemedicaApi(server.url("/").toString()),
+            library,
+            lastChat,
+            UnconfinedTestDispatcher(),
+            clock = { now++ },
+            newId = { "chat-${ids++}" },
+        ).also { viewModels += it }
 
     private fun answer(text: String, history: List<ChatTurn>) {
         val body = """{"answer":"$text","corpusVersion":"v9","model":"glm","sources":[],"history":${ApiJson.encodeToString(history)}}"""
@@ -119,7 +130,7 @@ class ChatViewModelTest {
         assertEquals("Earlier turns.", chatRequests.last().summary)
         assertEquals("Earlier turns.", state.summary)
         assertFalse(state.compacting)
-        assertEquals("Earlier turns.", store.saved?.summary)
+        assertEquals("Earlier turns.", library.awaitSaved { it.singleOrNull()?.messages?.size == 4 }.single().summary)
     }
 
     @Test
@@ -162,7 +173,7 @@ class ChatViewModelTest {
         assertEquals("Too many questions.", state.messages.last().error)
         assertEquals("", state.draft)
         // A failed question is not kept.
-        assertNull(store.saved)
+        assertTrue(library.chats.value.isEmpty())
 
         answer("Mild.", listOf(ChatTurn(Role.User, "Pulsatilla?"), ChatTurn(Role.Assistant, "Mild.")))
         vm.retry()
@@ -184,7 +195,7 @@ class ChatViewModelTest {
             chatResponses += MockResponse().setResponseCode(429).setHeader("Retry-After", "60").setBody("""{"detail":"$detail"}""")
             vm.submit("Pulsatilla?")
             assertEquals(detail, vm.settled().messages.last().error)
-            vm.clearConversation()
+            vm.newChat()
         }
     }
 
@@ -221,24 +232,105 @@ class ChatViewModelTest {
         assertFalse(state.busy)
         assertEquals(MessageStatus.Stopped, state.messages.last().status)
         assertEquals("Mild", state.messages.last().content)
-        assertEquals(listOf("Pulsatilla?", "Mild"), store.saved?.messages?.map { it.content })
+        assertEquals(listOf("Pulsatilla?", "Mild"), library.awaitSaved { it.isNotEmpty() }.single().messages.map { it.content })
+    }
+
+    private suspend fun ChatViewModel.ask(question: String, reply: String) {
+        answer(reply, listOf(ChatTurn(Role.User, question), ChatTurn(Role.Assistant, reply)))
+        submit(question)
+        val id = settled().id
+        // Saving finishes after the answer does.
+        library.awaitSaved { chats -> chats.any { it.id == id && it.messages.last().content == reply } }
     }
 
     @Test
-    fun restoresTheConversationAfterTheProcessRestarts() = runTest {
-        val savedState = SavedStateHandle()
-        val first = viewModel(savedState)
-        answer("Mild.", listOf(ChatTurn(Role.User, "Pulsatilla?"), ChatTurn(Role.Assistant, "Mild.")))
-        first.submit("Pulsatilla?")
-        first.settled()
+    fun savesEachChatNewestFirstWithItsTitle() = runTest {
+        val vm = viewModel()
+        vm.ask("  Pulsatilla\n  in   children? ", "Mild.")
+        vm.newChat()
+        vm.ask("Sepia?", "Indifferent.")
 
-        val restored = viewModel(savedState).state.value
-        assertEquals(listOf("Pulsatilla?", "Mild."), restored.messages.map { it.content })
-        assertEquals(2, restored.history.size)
+        val chats = vm.state.value.chats.orEmpty()
+        assertEquals(listOf("Sepia?", "Pulsatilla in children?"), chats.map { it.title })
+        assertEquals(library.list(), chats)
+        assertEquals(listOf("Sepia?", "Indifferent."), library.open(chats[0].id)?.messages?.map { it.content })
+    }
 
-        // A fresh launch has no saved state, so it starts over.
+    @Test
+    fun reopensTheLastChatOnTheNextLaunch() = runTest {
+        val first = viewModel()
+        first.ask("Pulsatilla?", "Mild.")
+
+        val reopened = viewModel().state.value
+        assertEquals(first.state.value.id, reopened.id)
+        assertEquals(listOf("Pulsatilla?", "Mild."), reopened.messages.map { it.content })
+        assertEquals(2, reopened.history.size)
+        assertEquals("Pulsatilla?", reopened.title)
+
+        // A new chat is not reopened until it has a question.
+        first.newChat()
         assertTrue(viewModel().state.value.messages.isEmpty())
-        assertNull(store.saved)
+    }
+
+    @Test
+    fun opensASavedChatAndKeepsTheDraft() = runTest {
+        val vm = viewModel()
+        vm.ask("Pulsatilla?", "Mild.")
+        val pulsatilla = vm.state.value.id
+        vm.newChat()
+        vm.ask("Sepia?", "Indifferent.")
+        vm.updateDraft("Next")
+
+        vm.openChat(pulsatilla)
+        val state = vm.state.value
+        assertEquals(pulsatilla, state.id)
+        assertEquals(listOf("Pulsatilla?", "Mild."), state.messages.map { it.content })
+        assertEquals("Next", state.draft)
+        assertEquals(pulsatilla, lastChat.id)
+    }
+
+    @Test
+    fun deletesChatsAndStartsANewOneForTheOpenChat() = runTest {
+        val vm = viewModel()
+        vm.ask("Pulsatilla?", "Mild.")
+        val pulsatilla = vm.state.value.id
+        vm.newChat()
+        vm.ask("Sepia?", "Indifferent.")
+        val sepia = vm.state.value.id
+
+        vm.deleteChat(pulsatilla)
+        assertEquals(sepia, vm.state.value.id)
+        assertEquals(listOf(sepia), vm.state.value.chats?.map { it.id })
+
+        vm.deleteChat(sepia)
+        assertTrue(vm.state.value.messages.isEmpty())
+        assertTrue(vm.state.value.chats.orEmpty().isEmpty())
+        assertTrue(library.chats.value.isEmpty())
+        assertNull(lastChat.id)
+    }
+
+    @Test
+    fun saysWhenAChatNoLongerExists() = runTest {
+        val vm = viewModel()
+        vm.ask("Pulsatilla?", "Mild.")
+        val pulsatilla = vm.state.value.id
+        vm.newChat()
+        library.remove(pulsatilla)
+
+        vm.openChat(pulsatilla)
+        assertEquals("That chat no longer exists.", vm.state.value.notice)
+        assertTrue(vm.state.value.chats.orEmpty().isEmpty())
+        vm.dismissNotice()
+        assertNull(vm.state.value.notice)
+    }
+
+    @Test
+    fun saysWhenAChatCannotBeSaved() = runTest {
+        library.full = true
+        val vm = viewModel()
+        answer("Mild.", emptyList())
+        vm.submit("Pulsatilla?")
+        assertEquals("This chat could not be saved. Please try again.", vm.state.first { it.notice != null }.notice)
     }
 
     @Test
@@ -248,14 +340,27 @@ class ChatViewModelTest {
         assertEquals(MAX_QUESTION_CHARS, vm.state.value.draft.length)
     }
 
-    private class MemoryStore : ConversationStore {
-        var saved: SavedConversation? = null
-        override fun load() = saved
-        override fun save(conversation: SavedConversation) {
-            saved = conversation.takeIf { it.messages.isNotEmpty() }
+    private class MemoryLibrary : ChatLibrary {
+        val chats = MutableStateFlow(emptyList<SavedChat>())
+        @Volatile
+        var full = false
+        override fun list() = chats.value.sortedByDescending { it.updatedAt }.map { it.summarize() }
+        override fun open(id: String) = chats.value.find { it.id == id }
+        override fun save(chat: SavedChat) {
+            if (full) throw IOException("Full")
+            chats.update { saved -> saved.filter { it.id != chat.id } + chat }
         }
-        override fun clear() {
-            saved = null
+        override fun remove(id: String) = chats.update { saved -> saved.filter { it.id != id } }
+
+        /** The saved chats once they match [done]; saves finish on another thread. */
+        suspend fun awaitSaved(done: (List<SavedChat>) -> Boolean): List<SavedChat> = chats.first(done)
+    }
+
+    private class MemoryLastChat : LastChat {
+        var id: String? = null
+        override fun get() = id
+        override fun set(id: String?) {
+            this.id = id
         }
     }
 }

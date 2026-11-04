@@ -123,7 +123,7 @@ fun ChatScreen(viewModel: ChatViewModel) {
         onSubmit = viewModel::submit,
         onStop = viewModel::stop,
         onRetry = viewModel::retry,
-        onClear = viewModel::clearConversation,
+        onClear = viewModel::newChat,
     )
 }
 
@@ -159,7 +159,7 @@ fun ChatScreen(
             val panelWidth = if (wide) (maxWidth * 0.32f).coerceIn(288.dp, 400.dp) else minOf(400.dp, maxWidth)
             Row(Modifier.fillMaxSize()) {
                 Column(Modifier.weight(1f).fillMaxHeight()) {
-                    Header(wide, enabled = state.canClear) {
+                    Header(wide, enabled = state.messages.isNotEmpty()) {
                         openSource = null
                         onClear()
                     }

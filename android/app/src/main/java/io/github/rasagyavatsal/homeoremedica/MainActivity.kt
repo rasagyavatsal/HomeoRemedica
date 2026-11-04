@@ -16,12 +16,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.github.rasagyavatsal.homeoremedica.api.HomeoRemedicaApi
 import io.github.rasagyavatsal.homeoremedica.chat.ChatViewModel
-import io.github.rasagyavatsal.homeoremedica.chat.FileConversationStore
+import io.github.rasagyavatsal.homeoremedica.chat.FileChatLibrary
 import io.github.rasagyavatsal.homeoremedica.ui.ChatScreen
 import io.github.rasagyavatsal.homeoremedica.ui.theme.DarkPalette
 import io.github.rasagyavatsal.homeoremedica.ui.theme.HomeoRemedicaTheme
@@ -32,17 +31,18 @@ import io.github.rasagyavatsal.homeoremedica.ui.theme.ThemeControl
 import java.io.File
 
 class MainActivity : ComponentActivity() {
+    private val preferences by lazy { Preferences(getSharedPreferences("homeoremedica", MODE_PRIVATE)) }
+
     private val viewModel: ChatViewModel by viewModels {
-        val conversation = File(noBackupFilesDir, "conversation.json")
         viewModelFactory {
             initializer {
-                ChatViewModel(HomeoRemedicaApi(BuildConfig.API_BASE_URL), FileConversationStore(conversation), createSavedStateHandle())
+                val chats = FileChatLibrary(File(noBackupFilesDir, "chats.json"))
+                ChatViewModel(HomeoRemedicaApi(BuildConfig.API_BASE_URL), chats, preferences.lastChat)
             }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val preferences = Preferences(getSharedPreferences("homeoremedica", MODE_PRIVATE))
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
