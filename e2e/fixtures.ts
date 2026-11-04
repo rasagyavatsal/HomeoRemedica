@@ -21,6 +21,11 @@ export const test = base.extend<{ client: string }>({
     },
     { auto: true },
   ],
+  // Past the practitioner notice, which blocks the page until it is acknowledged.
+  context: async ({ context }, use) => {
+    await context.addInitScript(() => localStorage.setItem('homeoremedica.practitioner-notice', 'seen'))
+    await use(context)
+  },
 })
 
 /** Open the app and wait until it knows where chats are saved. */

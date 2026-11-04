@@ -10,6 +10,7 @@ import { ContextMeter } from './ContextMeter.tsx'
 import { type Conversation, contextStart, newConversation } from './conversation.ts'
 import { CloseIcon, MenuIcon } from './icons.tsx'
 import { AccountLibrary, type ChatLibrary, LocalLibrary, moveIntoAccount, openChat, summarize } from './library.ts'
+import { PractitionerNotice } from './PractitionerNotice.tsx'
 import { Sidebar } from './Sidebar.tsx'
 import { SourcesPanel } from './SourcesPanel.tsx'
 import { Thread } from './Thread.tsx'
@@ -132,6 +133,7 @@ export default function App() {
         }
       />
       {signingIn && auth && <AuthDialog auth={auth} onClose={() => setSigningIn(false)} />}
+      <PractitionerNotice />
       {notice && (
         <div className="toast" role="alert">
           <p>{notice}</p>

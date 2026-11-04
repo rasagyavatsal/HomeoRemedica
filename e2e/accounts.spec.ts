@@ -78,6 +78,8 @@ test('opens a saved chat on another device', async ({ page, request, browser }) 
   const other = await browser.newContext()
   const otherPage = await other.newPage()
   await openApp(otherPage)
+  // A new device has not seen the practitioner notice yet.
+  await otherPage.getByRole('button', { name: 'I understand' }).click()
   await signIn(otherPage, user)
   await chatList(otherPage).getByRole('button', { name: 'weeps when telling symptoms', exact: true }).click()
   await expect(otherPage.getByRole('heading', { name: 'weeps when telling symptoms' })).toBeVisible()

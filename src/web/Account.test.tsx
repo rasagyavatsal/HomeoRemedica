@@ -5,6 +5,7 @@ import { beforeEach, expect, it, vi } from 'vitest'
 import type { AnswerRatings, Feedback, SavedChat } from '../server/contracts.ts'
 import App from './App.tsx'
 import type { Account, AuthClient } from './auth.ts'
+import { NOTICE_KEY } from './PractitionerNotice.tsx'
 import { LocalLibrary } from './library.ts'
 import { answerStream, citation, json } from './test/fakes.ts'
 
@@ -124,6 +125,8 @@ function sidebar() {
 beforeEach(() => {
   localStorage.clear()
   sessionStorage.clear()
+  // Past the practitioner notice, which has its own tests.
+  localStorage.setItem(NOTICE_KEY, 'seen')
   fake.account = null
   fake.listeners.clear()
   fake.failWith = null

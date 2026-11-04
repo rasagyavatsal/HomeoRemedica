@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import App from './App.tsx'
+import { NOTICE_KEY } from './PractitionerNotice.tsx'
 import { answerStream, citation, json, pending } from './test/fakes.ts'
 
 type Route = (init: RequestInit | undefined) => Response | Promise<Response>
@@ -33,6 +34,8 @@ async function ask(question: string) {
 beforeEach(() => {
   localStorage.clear()
   sessionStorage.clear()
+  // Past the practitioner notice, which has its own tests.
+  localStorage.setItem(NOTICE_KEY, 'seen')
 })
 
 describe('asking', () => {
