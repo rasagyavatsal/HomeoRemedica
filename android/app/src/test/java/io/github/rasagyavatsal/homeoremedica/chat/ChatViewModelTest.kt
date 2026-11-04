@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.rasagyavatsal.homeoremedica.api.ApiJson
 import io.github.rasagyavatsal.homeoremedica.api.ChatRequest
 import io.github.rasagyavatsal.homeoremedica.api.ChatTurn
+import io.github.rasagyavatsal.homeoremedica.api.CompactRequest
 import io.github.rasagyavatsal.homeoremedica.api.HomeoRemedicaApi
 import io.github.rasagyavatsal.homeoremedica.api.Role
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +37,8 @@ class ChatViewModelTest {
     private val server = MockWebServer()
     private val chatResponses = LinkedBlockingQueue<MockResponse>()
     private val chatRequests = mutableListOf<ChatRequest>()
+    private val compactResponses = LinkedBlockingQueue<MockResponse>()
+    private val compactRequests = mutableListOf<CompactRequest>()
     private val store = MemoryStore()
     private val viewModels = mutableListOf<ChatViewModel>()
 
@@ -45,6 +48,10 @@ class ChatViewModelTest {
         server.dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse = when (request.path) {
                 "/api/books" -> MockResponse().setBody("""{"books":[{"bookId":"kent_lectures","title":"Kent","author":"James Tyler Kent"}]}""")
+                "/api/chat/compact" -> {
+                    synchronized(compactRequests) { compactRequests += ApiJson.decodeFromString<CompactRequest>(request.body.readUtf8()) }
+                    compactResponses.take()
+                }
                 else -> {
                     synchronized(chatRequests) { chatRequests += ApiJson.decodeFromString<ChatRequest>(request.body.readUtf8()) }
                     chatResponses.take()
@@ -88,6 +95,61 @@ class ChatViewModelTest {
         assertEquals(listOf(emptyList(), trimmed), chatRequests.map { it.history })
         assertEquals(listOf("First?", "One.", "Second?", "Two."), state.messages.map { it.content })
         assertEquals("", state.draft)
+    }
+
+    /** A history as long as the server keeps, which is past the point of compacting. */
+    private fun fullHistory(count: Int = 16) = List(count) { index ->
+        ChatTurn(if (index % 2 == 0) Role.User else Role.Assistant, "Turn $index")
+    }
+
+    @Test
+    fun compactsALongChatBeforeTheNextQuestion() = runTest {
+        val vm = viewModel()
+        answer("One.", fullHistory())
+        vm.submit("First?")
+        vm.settled()
+
+        val kept = fullHistory().takeLast(2)
+        compactResponses += MockResponse().setBody("""{"summary":"Earlier turns.","history":${ApiJson.encodeToString(kept)}}""")
+        answer("Two.", kept + listOf(ChatTurn(Role.User, "Second?"), ChatTurn(Role.Assistant, "Two.")))
+        vm.submit("Second?")
+        val state = vm.settled()
+
+        assertEquals(listOf(CompactRequest(fullHistory())), compactRequests)
+        assertEquals(kept, chatRequests.last().history)
+        assertEquals("Earlier turns.", chatRequests.last().summary)
+        assertEquals("Earlier turns.", state.summary)
+        assertFalse(state.compacting)
+        assertEquals("Earlier turns.", store.saved?.summary)
+    }
+
+    @Test
+    fun asksAnywayWhenCompactingFails() = runTest {
+        val vm = viewModel()
+        answer("One.", fullHistory())
+        vm.submit("First?")
+        vm.settled()
+
+        compactResponses += MockResponse().setResponseCode(502)
+        answer("Two.", fullHistory())
+        vm.submit("Second?")
+        val state = vm.settled()
+
+        assertEquals(fullHistory(), chatRequests.last().history)
+        assertNull(chatRequests.last().summary)
+        assertEquals("Two.", state.messages.last().content)
+        assertFalse(state.compacting)
+    }
+
+    @Test
+    fun compactsOnlyNearTheServerLimits() {
+        assertFalse(shouldCompact(fullHistory(14), null))
+        assertTrue(shouldCompact(fullHistory(16), null))
+        val long = listOf(ChatTurn(Role.User, "x".repeat(6_500)), ChatTurn(Role.Assistant, "y".repeat(6_500)))
+        // Only turns older than the latest exchange can be condensed.
+        assertFalse(shouldCompact(long, null))
+        assertTrue(shouldCompact(long + long, null))
+        assertTrue(shouldCompact(fullHistory(4), "z".repeat(13_000)))
     }
 
     @Test

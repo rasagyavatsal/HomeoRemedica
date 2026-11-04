@@ -27,7 +27,7 @@ fun savedMessages(messages: List<Message>): List<Message> = messages.filterIndex
 }
 
 @Serializable
-data class SavedConversation(val messages: List<Message>, val history: List<ChatTurn>)
+data class SavedConversation(val messages: List<Message>, val history: List<ChatTurn>, val summary: String? = null)
 
 /** Where the conversation is kept so it outlives the process, like the web app's tab session storage. */
 interface ConversationStore {

@@ -35,7 +35,11 @@ data class ChatState(
     val books: List<Book> = emptyList(),
     val messages: List<Message> = emptyList(),
     val history: List<ChatTurn> = emptyList(),
+    /** What compacting the chat condensed its earlier turns into. */
+    val summary: String? = null,
     val draft: String = "",
+    /** Whether the chat's earlier turns are being condensed before the latest question is answered. */
+    val compacting: Boolean = false,
 ) {
     /** Whether the last answer is still streaming. */
     val busy: Boolean get() = messages.lastOrNull()?.status == MessageStatus.Streaming
@@ -59,7 +63,9 @@ class ChatViewModel(
     init {
         // Saved state survives only within one task, so a fresh launch starts a new conversation.
         if (savedState.get<Boolean>(SESSION_KEY) == true) {
-            store.load()?.let { saved -> _state.update { it.copy(messages = saved.messages, history = saved.history) } }
+            store.load()?.let { saved ->
+                _state.update { it.copy(messages = saved.messages, history = saved.history, summary = saved.summary) }
+            }
         } else {
             store.clear()
             savedState[SESSION_KEY] = true
@@ -77,7 +83,7 @@ class ChatViewModel(
         // Saved once each answer settles, without failed questions, like the web app's saved chats.
         viewModelScope.launch {
             _state.filter { !it.busy }
-                .map { SavedConversation(savedMessages(it.messages), it.history) }
+                .map { SavedConversation(savedMessages(it.messages), it.history, it.summary) }
                 .distinctUntilChanged()
                 .collect { conversation -> withContext(io) { store.save(conversation) } }
         }
@@ -104,10 +110,29 @@ class ChatViewModel(
         val job = viewModelScope.launch(start = CoroutineStart.LAZY) {
             val self = coroutineContext.job
             fun current() = request === self
+            var history = start.history
+            var summary = start.summary
+            // A chat near the server's limits is condensed first, so its earliest turns are summarized
+            // rather than dropped.
+            if (shouldCompact(history, summary)) {
+                _state.update { it.copy(compacting = true) }
+                try {
+                    val compacted = api.compactChat(history, summary)
+                    if (!current()) return@launch
+                    history = compacted.history
+                    summary = compacted.summary
+                    _state.update { it.copy(history = history, summary = summary) }
+                } catch (_: ApiException) {
+                    // A failure still asks, and the server drops the earliest turns instead.
+                } finally {
+                    if (current()) _state.update { it.copy(compacting = false) }
+                }
+            }
             try {
                 val response = api.sendMessage(
                     question,
-                    start.history,
+                    history,
+                    summary,
                     onSources = { sources -> if (current()) updateAnswer { it.copy(sources = sources) } },
                     onText = { piece -> if (current()) updateAnswer { it.copy(content = it.content + piece) } },
                 )
@@ -140,12 +165,13 @@ class ChatViewModel(
         val job = request ?: return
         request = null
         job.cancel()
+        _state.update { it.copy(compacting = false) }
         updateAnswer { it.copy(status = MessageStatus.Stopped) }
     }
 
     fun clearConversation() {
         stop()
-        _state.update { it.copy(messages = emptyList(), history = emptyList(), draft = "") }
+        _state.update { it.copy(messages = emptyList(), history = emptyList(), summary = null, draft = "") }
     }
 
     /** Change the last message, the answer being streamed. */
