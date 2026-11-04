@@ -73,7 +73,7 @@ export function AuthDialog({ auth, onClose }: { auth: AuthClient; onClose: () =>
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            autoFocus
+            data-autofocus
           />
         </label>
         {mode !== 'reset' && (

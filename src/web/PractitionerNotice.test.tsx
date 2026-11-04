@@ -14,6 +14,7 @@ describe('practitioner notice', () => {
     const notice = screen.getByRole('dialog', { name: 'For homeopathy practitioners' })
     expect(notice).toHaveTextContent('qualified homeopathy doctors')
     expect(notice).toHaveTextContent('Do not enter patients’ personal details')
+    expect(screen.getByRole('button', { name: 'I understand' })).toHaveFocus()
 
     await userEvent.click(screen.getByRole('button', { name: 'I understand' }))
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()

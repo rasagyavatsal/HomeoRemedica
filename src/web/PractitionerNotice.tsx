@@ -37,7 +37,7 @@ export function PractitionerNotice() {
         identifies them. Describe symptoms and cases in general terms.
       </p>
       <div className="dialog-actions">
-        <button type="button" className="button button-primary" onClick={acknowledge} autoFocus>
+        <button type="button" className="button button-primary" onClick={acknowledge} data-autofocus>
           I understand
         </button>
       </div>

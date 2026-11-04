@@ -21,6 +21,8 @@ export function Dialog({ title, description, onClose, children }: DialogProps) {
     const element = dialog.current
     if (!element) return
     element.showModal()
+    // Opening focuses the first control, the close button; React's autoFocus ran before the dialog could take focus.
+    element.querySelector<HTMLElement>('[data-autofocus]')?.focus()
     // Escape closes the dialog natively; report it so the parent stops rendering it.
     const onCancel = (event: Event) => {
       event.preventDefault()
