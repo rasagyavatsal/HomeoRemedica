@@ -6,17 +6,6 @@ import kotlinx.serialization.Serializable
 // Mirrors the web app's server contracts (src/server/contracts.ts).
 
 @Serializable
-data class Book(
-    val bookId: String,
-    val title: String,
-    val author: String? = null,
-)
-
-/** `GET /api/books` */
-@Serializable
-data class BookCatalog(val books: List<Book>)
-
-@Serializable
 enum class Role {
     @SerialName("user") User,
     @SerialName("assistant") Assistant,

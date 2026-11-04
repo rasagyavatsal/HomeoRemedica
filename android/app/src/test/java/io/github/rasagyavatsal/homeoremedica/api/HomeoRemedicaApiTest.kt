@@ -135,16 +135,7 @@ class HomeoRemedicaApiTest {
     @Test
     fun reportsAnUnreachableServer() = runTest {
         server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
-        assertFailsWith(NETWORK_ERROR) { api.loadBooks() }
-    }
-
-    @Test
-    fun loadsTheBookCatalog() = runTest {
-        server.enqueue(MockResponse().setBody("""{"books":[{"bookId":"kent_lectures","title":"Kent, Lectures","author":"James Tyler Kent"},{"bookId":"x","title":"Anonymous","author":null}]}"""))
-        val books = api.loadBooks().books
-        assertEquals("James Tyler Kent", books[0].author)
-        assertNull(books[1].author)
-        assertEquals("/api/books", server.takeRequest().path)
+        assertFailsWith(NETWORK_ERROR) { api.sendMessage("Pulsatilla?", emptyList()) }
     }
 
     @Test

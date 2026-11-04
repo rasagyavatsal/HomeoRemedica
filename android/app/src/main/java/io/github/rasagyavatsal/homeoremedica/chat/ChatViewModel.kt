@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.rasagyavatsal.homeoremedica.api.ApiException
-import io.github.rasagyavatsal.homeoremedica.api.Book
 import io.github.rasagyavatsal.homeoremedica.api.ChatTurn
 import io.github.rasagyavatsal.homeoremedica.api.GENERIC_ERROR
 import io.github.rasagyavatsal.homeoremedica.api.HomeoRemedicaApi
@@ -30,15 +29,7 @@ const val MAX_QUESTION_CHARS = 4_000
 /** Where the composer starts counting characters. */
 const val COUNTER_FROM = MAX_QUESTION_CHARS - 500
 
-val SUGGESTIONS = listOf(
-    "What are the keynote symptoms of Arsenicum album?",
-    "Compare Bryonia and Rhus toxicodendron for joint pain.",
-    "Which remedies are worse from cold, damp weather?",
-    "How is the Pulsatilla temperament described?",
-)
-
 data class ChatState(
-    val books: List<Book> = emptyList(),
     val messages: List<Message> = emptyList(),
     val history: List<ChatTurn> = emptyList(),
     /** What compacting the chat condensed its earlier turns into. */
@@ -75,15 +66,6 @@ class ChatViewModel(
         } else {
             store.clear()
             savedState[SESSION_KEY] = true
-        }
-
-        // The catalog only decorates the empty state, so a failed load leaves the generic copy in place.
-        viewModelScope.launch {
-            try {
-                val books = api.loadBooks().books
-                _state.update { it.copy(books = books) }
-            } catch (_: ApiException) {
-            }
         }
 
         // Saved once each answer settles, without failed questions, like the web app's saved chats.

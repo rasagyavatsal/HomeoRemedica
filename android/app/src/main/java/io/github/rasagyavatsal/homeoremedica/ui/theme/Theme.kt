@@ -32,6 +32,8 @@ data class Palette(
     val danger: Color,
     val dangerSoft: Color,
     val shadow: Color,
+    val glow: Color,
+    val glowWarm: Color,
     val dark: Boolean,
 )
 
@@ -53,6 +55,8 @@ val LightPalette = Palette(
     danger = Color(0xFFA3402F),
     dangerSoft = Color(0xFFF8E9E4),
     shadow = Color(0x331F1E1B),
+    glow = Color(146, 185, 156).copy(alpha = 0.4f),
+    glowWarm = Color(224, 192, 122).copy(alpha = 0.25f),
     dark = false,
 )
 
@@ -74,6 +78,8 @@ val DarkPalette = Palette(
     danger = Color(0xFFE59A88),
     dangerSoft = Color(0xFF2E1D19),
     shadow = Color(0x99000000),
+    glow = Color(77, 127, 92).copy(alpha = 0.28f),
+    glowWarm = Color(138, 101, 20).copy(alpha = 0.18f),
     dark = true,
 )
 

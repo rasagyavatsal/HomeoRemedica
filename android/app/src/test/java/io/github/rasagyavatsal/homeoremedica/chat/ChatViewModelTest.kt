@@ -47,7 +47,6 @@ class ChatViewModelTest {
         Dispatchers.setMain(UnconfinedTestDispatcher())
         server.dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse = when (request.path) {
-                "/api/books" -> MockResponse().setBody("""{"books":[{"bookId":"kent_lectures","title":"Kent","author":"James Tyler Kent"}]}""")
                 "/api/chat/compact" -> {
                     synchronized(compactRequests) { compactRequests += ApiJson.decodeFromString<CompactRequest>(request.body.readUtf8()) }
                     compactResponses.take()
@@ -214,12 +213,6 @@ class ChatViewModelTest {
         val vm = viewModel()
         vm.updateDraft("a".repeat(MAX_QUESTION_CHARS + 10))
         assertEquals(MAX_QUESTION_CHARS, vm.state.value.draft.length)
-    }
-
-    @Test
-    fun loadsTheBookCatalog() = runTest {
-        val vm = viewModel()
-        assertEquals("James Tyler Kent", vm.state.first { it.books.isNotEmpty() }.books.single().author)
     }
 
     private class MemoryStore : ConversationStore {

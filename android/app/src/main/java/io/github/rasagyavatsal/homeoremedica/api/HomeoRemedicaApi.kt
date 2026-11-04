@@ -44,11 +44,6 @@ class HomeoRemedicaApi(
 ) {
     private val baseUrl = baseUrl.trimEnd('/')
 
-    suspend fun loadBooks(): BookCatalog {
-        val request = Request.Builder().url("$baseUrl/api/books").get().build()
-        return client.newCall(request).await { response -> readResponse<BookCatalog>(response) }
-    }
-
     /** Ask a question, reporting sources and answer text as the server streams them. */
     suspend fun sendMessage(
         message: String,

@@ -75,12 +75,12 @@ class Entrances {
 
 val LocalEntrances = compositionLocalOf { Entrances() }
 
-/** The web app's `rise` entrance: fade in while moving up 6dp. */
+/** The web app's `rise` entrance: fade in while moving up 6dp, after [delayMillis]. */
 @Composable
-fun Modifier.rise(key: Any, durationMillis: Int = 320): Modifier {
+fun Modifier.rise(key: Any, durationMillis: Int = 320, delayMillis: Int = 0): Modifier {
     val entrances = LocalEntrances.current
     val progress = remember(key) { Animatable(if (entrances.first(key)) 0f else 1f) }
-    LaunchedEffect(key) { progress.animateTo(1f, tween(durationMillis, easing = Ease)) }
+    LaunchedEffect(key) { progress.animateTo(1f, tween(durationMillis, delayMillis, easing = Ease)) }
     return graphicsLayer {
         alpha = progress.value
         translationY = (1 - progress.value) * 6.dp.toPx()
