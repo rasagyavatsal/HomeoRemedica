@@ -26,6 +26,7 @@ import io.github.rasagyavatsal.homeoremedica.ui.ChatScreen
 import io.github.rasagyavatsal.homeoremedica.ui.LegalPage
 import io.github.rasagyavatsal.homeoremedica.ui.LegalPageName
 import io.github.rasagyavatsal.homeoremedica.ui.LocalOpenLegal
+import io.github.rasagyavatsal.homeoremedica.ui.PractitionerNotice
 import io.github.rasagyavatsal.homeoremedica.ui.theme.DarkPalette
 import io.github.rasagyavatsal.homeoremedica.ui.theme.HomeoRemedicaTheme
 import io.github.rasagyavatsal.homeoremedica.ui.theme.LightPalette
@@ -73,9 +74,16 @@ class MainActivity : ComponentActivity() {
             }
             // A legal page shows over the chat, which keeps answering underneath.
             var legal by rememberSaveable { mutableStateOf<LegalPageName?>(null) }
+            var notice by remember { mutableStateOf(!preferences.noticeAcknowledged) }
             CompositionLocalProvider(LocalThemeControl provides control, LocalOpenLegal provides { legal = it }) {
                 HomeoRemedicaTheme(dark) {
                     ChatScreen(viewModel)
+                    if (notice) {
+                        PractitionerNotice {
+                            preferences.acknowledgeNotice()
+                            notice = false
+                        }
+                    }
                     legal?.let { page -> LegalPage(page, onOpen = { legal = it }, onClose = { legal = null }) }
                 }
             }

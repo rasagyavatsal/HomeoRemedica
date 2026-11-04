@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import io.github.rasagyavatsal.homeoremedica.chat.LastChat
 import io.github.rasagyavatsal.homeoremedica.ui.theme.ThemeChoice
+import java.time.Instant
 
 /** What the app remembers on the device besides its chats, as the web app keeps in local storage. */
 class Preferences(private val prefs: SharedPreferences) {
@@ -12,6 +13,11 @@ class Preferences(private val prefs: SharedPreferences) {
         set(value) = prefs.edit {
             if (value == ThemeChoice.System) remove(THEME) else putString(THEME, value.key)
         }
+
+    /** Whether the practitioner notice has been acknowledged on this device. */
+    val noticeAcknowledged: Boolean get() = prefs.contains(NOTICE)
+
+    fun acknowledgeNotice() = prefs.edit { putString(NOTICE, Instant.now().toString()) }
 
     /** The chat the app had open, so the next launch returns to it. */
     val lastChat = object : LastChat {
@@ -22,5 +28,6 @@ class Preferences(private val prefs: SharedPreferences) {
     private companion object {
         const val THEME = "theme"
         const val OPEN_CHAT = "openChat"
+        const val NOTICE = "practitionerNotice"
     }
 }
