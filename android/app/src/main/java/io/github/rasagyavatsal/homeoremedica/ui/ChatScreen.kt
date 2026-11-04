@@ -236,10 +236,13 @@ private fun Header(wide: Boolean, enabled: Boolean, onClear: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Brand()
-        if (wide) {
-            Button("New chat", ButtonStyle.Quiet, onClear, enabled = enabled, icon = Icons.Plus, color = Theme.colors.textMuted)
-        } else if (enabled) {
-            IconButton(Icons.Plus, "New chat", onClear)
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+            ThemeToggle()
+            if (wide) {
+                Button("New chat", ButtonStyle.Quiet, onClear, enabled = enabled, icon = Icons.Plus, color = Theme.colors.textMuted)
+            } else if (enabled) {
+                IconButton(Icons.Plus, "New chat", onClear)
+            }
         }
     }
 }

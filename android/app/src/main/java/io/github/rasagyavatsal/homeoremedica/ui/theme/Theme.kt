@@ -1,12 +1,15 @@
 package io.github.rasagyavatsal.homeoremedica.ui.theme
 
 import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
@@ -157,6 +160,21 @@ val Ease = CubicBezierEasing(0.2f, 0f, 0f, 1f)
 /** The web app's `--ease-exit`. */
 val EaseExit = CubicBezierEasing(0.3f, 0f, 1f, 1f)
 
+/** The colour theme: the system's, or one the reader chose. */
+enum class ThemeChoice(val key: String, val label: String) {
+    System("system", "System theme"),
+    Light("light", "Light theme"),
+    Dark("dark", "Dark theme");
+
+    /** The next theme the toggle steps to. */
+    val next: ThemeChoice get() = entries[(ordinal + 1) % entries.size]
+}
+
+/** The chosen theme and a way to step to the next one, for the theme toggle. */
+class ThemeControl(val choice: ThemeChoice, val cycle: () -> Unit)
+
+val LocalThemeControl = staticCompositionLocalOf { ThemeControl(ThemeChoice.System) {} }
+
 private val LocalPalette = staticCompositionLocalOf { LightPalette }
 
 object Theme {
@@ -164,9 +182,49 @@ object Theme {
         @Composable get() = LocalPalette.current
 }
 
+/** Every colour of the palette part way from light ([fraction] 0) to dark (1). */
+private fun lerp(fraction: Float): Palette {
+    fun mix(light: Palette.() -> Color) = androidx.compose.ui.graphics.lerp(LightPalette.light(), DarkPalette.light(), fraction)
+    return Palette(
+        canvas = mix { canvas },
+        surface = mix { surface },
+        surfaceRaised = mix { surfaceRaised },
+        surfaceSunken = mix { surfaceSunken },
+        surfaceHover = mix { surfaceHover },
+        surfaceRaisedHover = mix { surfaceRaisedHover },
+        surfaceSelected = mix { surfaceSelected },
+        text = mix { text },
+        textMuted = mix { textMuted },
+        textSubtle = mix { textSubtle },
+        textOnAccent = mix { textOnAccent },
+        border = mix { border },
+        borderStrong = mix { borderStrong },
+        accent = mix { accent },
+        accentHover = mix { accentHover },
+        accentText = mix { accentText },
+        accentSoft = mix { accentSoft },
+        accentSoftHover = mix { accentSoftHover },
+        accentBorder = mix { accentBorder },
+        glow = mix { glow },
+        glowWarm = mix { glowWarm },
+        danger = mix { danger },
+        dangerHover = mix { dangerHover },
+        dangerSoft = mix { dangerSoft },
+        scrim = mix { scrim },
+        shadow = mix { shadow },
+        dark = fraction >= 0.5f,
+    )
+}
+
 @Composable
 fun HomeoRemedicaTheme(dark: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val palette = if (dark) DarkPalette else LightPalette
+    // A change of theme crossfades, like the web app's view transition.
+    val fraction by animateFloatAsState(if (dark) 1f else 0f, tween(320, easing = Ease), label = "theme")
+    val palette = when (fraction) {
+        0f -> LightPalette
+        1f -> DarkPalette
+        else -> lerp(fraction)
+    }
     CompositionLocalProvider(
         LocalPalette provides palette,
         LocalTextSelectionColors provides TextSelectionColors(handleColor = palette.accent, backgroundColor = palette.accentSoft),
