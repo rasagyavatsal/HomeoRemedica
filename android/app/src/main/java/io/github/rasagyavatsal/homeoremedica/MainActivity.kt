@@ -22,6 +22,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import io.github.rasagyavatsal.homeoremedica.api.HomeoRemedicaApi
 import io.github.rasagyavatsal.homeoremedica.chat.ChatViewModel
 import io.github.rasagyavatsal.homeoremedica.chat.FileChatLibrary
+import io.github.rasagyavatsal.homeoremedica.ui.AccountControls
 import io.github.rasagyavatsal.homeoremedica.ui.ChatScreen
 import io.github.rasagyavatsal.homeoremedica.ui.LegalPage
 import io.github.rasagyavatsal.homeoremedica.ui.LegalPageName
@@ -77,7 +78,7 @@ class MainActivity : ComponentActivity() {
             var notice by remember { mutableStateOf(!preferences.noticeAcknowledged) }
             CompositionLocalProvider(LocalThemeControl provides control, LocalOpenLegal provides { legal = it }) {
                 HomeoRemedicaTheme(dark) {
-                    ChatScreen(viewModel)
+                    ChatScreen(viewModel) { AccountControls() }
                     if (notice) {
                         PractitionerNotice {
                             preferences.acknowledgeNotice()
