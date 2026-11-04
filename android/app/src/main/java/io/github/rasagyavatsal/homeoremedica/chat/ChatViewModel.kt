@@ -24,6 +24,12 @@ import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+// The server's limit on one question.
+const val MAX_QUESTION_CHARS = 4_000
+
+/** Where the composer starts counting characters. */
+const val COUNTER_FROM = MAX_QUESTION_CHARS - 500
+
 val SUGGESTIONS = listOf(
     "What are the keynote symptoms of Arsenicum album?",
     "Compare Bryonia and Rhus toxicodendron for joint pain.",
@@ -89,7 +95,7 @@ class ChatViewModel(
         }
     }
 
-    fun updateDraft(draft: String) = _state.update { it.copy(draft = draft) }
+    fun updateDraft(draft: String) = _state.update { it.copy(draft = draft.take(MAX_QUESTION_CHARS)) }
 
     fun submit(text: String = _state.value.draft) {
         val question = text.trim()

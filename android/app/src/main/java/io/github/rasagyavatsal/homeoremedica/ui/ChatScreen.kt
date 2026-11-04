@@ -89,13 +89,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.rasagyavatsal.homeoremedica.api.Book
 import io.github.rasagyavatsal.homeoremedica.api.Role
 import io.github.rasagyavatsal.homeoremedica.chat.ChatState
+import io.github.rasagyavatsal.homeoremedica.chat.COUNTER_FROM
 import io.github.rasagyavatsal.homeoremedica.chat.ChatViewModel
+import io.github.rasagyavatsal.homeoremedica.chat.MAX_QUESTION_CHARS
 import io.github.rasagyavatsal.homeoremedica.chat.Message
 import io.github.rasagyavatsal.homeoremedica.chat.MessageStatus
 import io.github.rasagyavatsal.homeoremedica.chat.SUGGESTIONS
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Ease
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Fonts
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
+import java.text.NumberFormat
 
 // Ports the web app's chat page (src/web/App.tsx).
 
@@ -507,7 +510,7 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
                 Box(Modifier.padding(vertical = 8.dp), contentAlignment = Alignment.CenterStart) {
                     if (state.draft.isEmpty()) {
                         BasicText(
-                            if (state.messages.isNotEmpty()) "Ask a follow-up…" else "Ask about a remedy or symptom…",
+                            "Ask about a remedy, symptom or principle…",
                             style = TextStyle(color = colors.faint, fontFamily = Fonts.sans, fontSize = 16.sp, lineHeight = 20.sp),
                         )
                     }
@@ -515,8 +518,18 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
                 }
             },
         )
-        if (state.busy) SendButton(Icons.Stop, "Stop answering", enabled = true, onStop)
-        else SendButton(Icons.ArrowUp, "Send message", canSend, onSubmit)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            if (state.draft.length >= COUNTER_FROM) {
+                val count = NumberFormat.getIntegerInstance()
+                BasicText(
+                    "${count.format(state.draft.length)} / ${count.format(MAX_QUESTION_CHARS)}",
+                    style = TextStyle(color = colors.faint, fontFamily = Fonts.sans, fontSize = 12.sp, fontFeatureSettings = "tnum"),
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                )
+            }
+            if (state.busy) SendButton(Icons.Stop, "Stop answering", enabled = true, onStop)
+            else SendButton(Icons.ArrowUp, "Send message", canSend, onSubmit)
+        }
     }
 }
 

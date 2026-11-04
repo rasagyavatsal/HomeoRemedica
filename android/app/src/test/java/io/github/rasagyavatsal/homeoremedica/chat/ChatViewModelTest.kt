@@ -210,6 +210,13 @@ class ChatViewModelTest {
     }
 
     @Test
+    fun limitsTheDraftToTheServerLimit() {
+        val vm = viewModel()
+        vm.updateDraft("a".repeat(MAX_QUESTION_CHARS + 10))
+        assertEquals(MAX_QUESTION_CHARS, vm.state.value.draft.length)
+    }
+
+    @Test
     fun loadsTheBookCatalog() = runTest {
         val vm = viewModel()
         assertEquals("James Tyler Kent", vm.state.first { it.books.isNotEmpty() }.books.single().author)
