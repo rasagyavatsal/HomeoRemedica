@@ -12,19 +12,26 @@ commonmark-java
 
 The app is a client of the web app's API, so it holds no provider keys:
 
-- `GET /api/books` lists the books shown on the empty state.
 - `POST /api/chat` with `Accept: text/event-stream` streams `sources`, then `text` pieces, then `done` with
   the full answer and the server-trimmed history to send with the next question, or `error` with a
   safe `detail`.
+- `POST /api/chat/compact` condenses a chat's earlier turns into a `summary`, sent with later questions,
+  once the history nears the server's 20-turn or 16,000-character limit.
+
+The server enforces the rate limits, per client and for all users together each day, and the app shows
+its messages on the failed answer.
 
 It keeps the web app's behaviour and look:
 
 - **Design:** the palette, type and motion of `styles.css`, in light and dark, drawn with Compose
   foundation rather than Material components.
-- **Answers:** CommonMark without raw HTML. `[1]` and `[1, 2]` labels become chips that open, highlight
-  and scroll to their source.
-- **Sources:** cited sources come first; the rest are marked *Not cited*.
-- **Composer:** Enter sends and Shift+Enter adds a line.
+- **Welcome:** the tagline's words rise in over drifting glows, and the composer follows them.
+- **Answers:** CommonMark without raw HTML. While an answer is on its way, a label says whether the books
+  are being searched or read. It can be stopped, and a failed one asked again.
+- **References:** cards under each answer list the passages it cites. A card or a `[1]` chip opens only
+  that passage, beside the chat on wide screens and over it on phones.
+- **Composer:** Enter sends and Shift+Enter adds a line. Questions stop at 4,000 characters, with a
+  counter from 3,500.
 - **Session:** like the web app's tab session, a conversation survives rotation and the system ending the
   process in the background. A fresh launch starts a new one.
 
