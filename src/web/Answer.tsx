@@ -1,7 +1,8 @@
 import { createContext, memo, useContext, useMemo } from 'react'
-import Markdown, { type Components } from 'react-markdown'
+import type { Components } from 'react-markdown'
 
 import { linkCitations } from './conversation.ts'
+import { Markdown } from './Markdown.tsx'
 
 /** Opens source `number` of the answer being rendered. */
 const CiteContext = createContext<(number: number) => void>(() => {})

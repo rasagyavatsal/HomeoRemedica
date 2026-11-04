@@ -1388,6 +1388,11 @@ a.menu-item {
   margin-top: var(--space-sm);
 }
 
+/* The Markdown source, shown for the moment before its renderer loads. */
+.markdown-pending {
+  white-space: pre-wrap;
+}
+
 .prose h1,
 .prose h2,
 .prose h3,

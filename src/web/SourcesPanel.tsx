@@ -1,7 +1,8 @@
-import Markdown, { type Components } from 'react-markdown'
+import type { Components } from 'react-markdown'
 
 import type { Citation, Rating } from '../server/contracts.ts'
 import { CloseIcon } from './icons.tsx'
+import { Markdown } from './Markdown.tsx'
 import { RatingButtons } from './Rating.tsx'
 
 interface SourcesPanelProps {

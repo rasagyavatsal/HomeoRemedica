@@ -50,7 +50,8 @@ describe('asking', () => {
     const references = await screen.findByRole('list', { name: 'References' })
     expect(within(references).getAllByRole('button')).toHaveLength(1)
     expect(screen.queryByRole('region', { name: 'Pulsatilla' })).not.toBeInTheDocument()
-    await userEvent.click(screen.getByRole('button', { name: 'Source 2' }))
+    // Citations become buttons once the Markdown renderer has loaded.
+    await userEvent.click(await screen.findByRole('button', { name: 'Source 2' }))
 
     // Only the clicked passage is shown.
     const panel = screen.getByRole('region', { name: 'Pulsatilla' })
