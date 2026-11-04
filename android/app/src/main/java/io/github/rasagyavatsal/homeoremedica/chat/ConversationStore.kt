@@ -15,7 +15,8 @@ data class Message(
     val id: Long,
     val role: Role,
     val content: String,
-    val sources: List<Citation> = emptyList(),
+    /** Null until the server has sent the passages it found. */
+    val sources: List<Citation>? = null,
     /** Null once an answer is complete. */
     val status: MessageStatus? = null,
     val error: String? = null,

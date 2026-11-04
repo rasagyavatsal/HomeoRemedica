@@ -1,5 +1,10 @@
 package io.github.rasagyavatsal.homeoremedica.ui
 
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -42,7 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.CornerRadius
@@ -88,6 +93,7 @@ import io.github.rasagyavatsal.homeoremedica.chat.ChatViewModel
 import io.github.rasagyavatsal.homeoremedica.chat.Message
 import io.github.rasagyavatsal.homeoremedica.chat.MessageStatus
 import io.github.rasagyavatsal.homeoremedica.chat.SUGGESTIONS
+import io.github.rasagyavatsal.homeoremedica.ui.theme.Ease
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Fonts
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
 
@@ -309,6 +315,7 @@ private fun Conversation(state: ChatState, wide: Boolean, bottomPadding: Dp, onR
                     message,
                     wide,
                     onRetry = onRetry.takeIf { index == state.messages.lastIndex },
+                    compacting = state.compacting && index == state.messages.lastIndex,
                     modifier = itemModifier.rise(message.id),
                 )
             }
@@ -350,15 +357,29 @@ private fun AssistantLabel(text: String, pending: Boolean, color: Color, weight:
 }
 
 @Composable
-private fun Reply(question: String, message: Message, wide: Boolean, onRetry: (() -> Unit)?, modifier: Modifier) {
+private fun Reply(
+    question: String,
+    message: Message,
+    wide: Boolean,
+    onRetry: (() -> Unit)?,
+    compacting: Boolean,
+    modifier: Modifier,
+) {
     val colors = Theme.colors
     val streaming = message.status == MessageStatus.Streaming
     when {
         message.status == MessageStatus.Error -> ReplyError(message.error.orEmpty(), onRetry, modifier)
-        streaming && message.content.isEmpty() -> Progress(modifier)
+        streaming && message.content.isEmpty() -> Progress(
+            when {
+                compacting -> "Summarizing earlier messages…"
+                message.sources != null -> "Reading the passages…"
+                else -> "Searching the books…"
+            },
+            modifier,
+        )
         else -> Column(modifier) {
             AssistantLabel("HomeoRemedica", streaming, colors.inkSoft, FontWeight.SemiBold)
-            if (message.content.isNotEmpty()) Answer(question, message.content, message.sources, wide)
+            if (message.content.isNotEmpty()) Answer(question, message.content, message.sources.orEmpty(), wide)
             if (message.status == MessageStatus.Stopped) {
                 BasicText(
                     if (message.content.isNotEmpty()) "Stopped before the answer finished." else "Stopped.",
@@ -370,22 +391,32 @@ private fun Reply(question: String, message: Message, wide: Boolean, onRetry: ((
     }
 }
 
+/** What the answer is waiting on: the web app's `.reply-progress`. */
 @Composable
-private fun Progress(modifier: Modifier) {
+private fun Progress(label: String, modifier: Modifier) {
     val colors = Theme.colors
-    Column(modifier.semantics { liveRegion = LiveRegionMode.Polite }) {
-        AssistantLabel("Preparing an answer…", pending = true, colors.muted, FontWeight.Medium)
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            for (fraction in listOf(1f, 0.88f, 0.62f)) {
-                Box(
-                    Modifier
-                        .fillMaxWidth(fraction)
-                        .height(12.dp)
-                        .clip(RoundedCornerShape(6.dp))
-                        .shimmer(colors.surfaceHover, colors.lineStrong),
-                )
-            }
-        }
+    val beat by rememberInfiniteTransition("progress").animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(600, easing = Ease), RepeatMode.Reverse),
+        label = "progress pulse",
+    )
+    Row(
+        modifier.semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier
+                .size(8.dp)
+                .graphicsLayer {
+                    alpha = 1 - 0.75f * beat
+                    scaleX = 1 - 0.3f * beat
+                    scaleY = scaleX
+                }
+                .background(colors.accent, Pill),
+        )
+        BasicText(label, style = TextStyle(color = colors.muted, fontFamily = Fonts.sans, fontSize = 13.sp))
     }
 }
 

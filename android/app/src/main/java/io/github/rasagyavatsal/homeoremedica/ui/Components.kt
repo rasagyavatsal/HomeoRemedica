@@ -1,7 +1,6 @@
 package io.github.rasagyavatsal.homeoremedica.ui
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -29,13 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
@@ -102,22 +97,6 @@ fun Modifier.pulse(): Modifier {
         label = "pulse",
     )
     return graphicsLayer { this.alpha = alpha }
-}
-
-/** The web app's `shimmer` skeleton bar. */
-@Composable
-fun Modifier.shimmer(base: Color, highlight: Color): Modifier {
-    val phase by rememberInfiniteTransition("shimmer").animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(1400, easing = LinearEasing)),
-        label = "shimmer",
-    )
-    return drawBehind {
-        val span = size.width * 2
-        val start = -span * phase
-        drawRect(Brush.linearGradient(listOf(base, highlight, base), Offset(start, 0f), Offset(start + span, 0f), TileMode.Repeated))
-    }
 }
 
 /** The mark in a tinted rounded square, as in the wordmark, avatars and empty state. */
