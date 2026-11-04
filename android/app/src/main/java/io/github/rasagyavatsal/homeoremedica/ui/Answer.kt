@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -73,6 +74,8 @@ fun Answer(
     onSource: (Int) -> Unit,
     modifier: Modifier = Modifier,
     note: @Composable () -> Unit = {},
+    /** Lays out the answer's buttons, such as beside its ratings; by default they sit at the end. */
+    actions: (@Composable (buttons: @Composable RowScope.() -> Unit) -> Unit)? = null,
 ) {
     val blocks = remember(content, sources.size) { parseAnswer(content, sources.size) }
     Column(modifier) {
@@ -91,9 +94,14 @@ fun Answer(
             if (sources.isNotEmpty()) {
                 References(sources, remember(content, sources.size) { citedNumbers(content, sources.size) }, activeSource, onSource)
             }
-            Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.End) {
+            val buttons: @Composable RowScope.() -> Unit = {
                 ReportButton(question, content)
                 CopyButton(content)
+            }
+            if (actions != null) {
+                Box(Modifier.padding(top = 12.dp)) { actions(buttons) }
+            } else {
+                Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.End, content = buttons)
             }
         }
     }

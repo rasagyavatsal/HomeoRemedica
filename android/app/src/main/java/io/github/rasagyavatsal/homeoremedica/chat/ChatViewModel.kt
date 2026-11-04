@@ -2,7 +2,10 @@ package io.github.rasagyavatsal.homeoremedica.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.rasagyavatsal.homeoremedica.api.AnswerRatings
 import io.github.rasagyavatsal.homeoremedica.api.ApiException
+import io.github.rasagyavatsal.homeoremedica.api.FeedbackReason
+import io.github.rasagyavatsal.homeoremedica.api.Rating
 import io.github.rasagyavatsal.homeoremedica.api.ChatTurn
 import io.github.rasagyavatsal.homeoremedica.api.GENERIC_ERROR
 import io.github.rasagyavatsal.homeoremedica.api.HomeoRemedicaApi
@@ -10,7 +13,9 @@ import io.github.rasagyavatsal.homeoremedica.api.Role
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,6 +51,10 @@ data class ChatState(
     val chats: List<ChatSummary>? = null,
     /** A message for the reader, such as a chat that could not be saved. */
     val notice: String? = null,
+    /** The open chat's ratings, by message id. */
+    val ratings: Map<Long, AnswerRatings> = emptyMap(),
+    /** Whether answers can be rated, which needs a verified account. */
+    val canRate: Boolean = false,
 ) {
     /** Whether the last answer is still streaming. */
     val busy: Boolean get() = messages.lastOrNull()?.status == MessageStatus.Streaming
@@ -71,8 +80,17 @@ class ChatViewModel(
     private var library: ChatLibrary? = library
     /** Chats answered before there is a library to save to, saved once there is one. */
     private val unsaved = LinkedHashMap<String, SavedChat>()
+    // Ratings by feedback id: the newest, which each request sends, and the ones the server has.
+    private val ratings = mutableMapOf<String, AnswerRatings>()
+    private val savedRatings = mutableMapOf<String, AnswerRatings>()
+    /** One request at a time per answer, so they arrive in order. */
+    private val ratingQueues = mutableMapOf<String, Deferred<Boolean>>()
+    /** Chats whose saved ratings were loaded, or are loading. */
+    private val loadedRatings = mutableSetOf<String>()
+    private val ratingClient: RatingClient? get() = library as? RatingClient
 
     init {
+        _state.update { it.copy(canRate = library is RatingClient) }
         library?.let(::load)
     }
 
@@ -86,11 +104,94 @@ class ChatViewModel(
             request?.cancel()
             request = null
             unsaved.clear()
+            ratings.clear()
+            savedRatings.clear()
+            ratingQueues.clear()
+            loadedRatings.clear()
             _state.update { ChatState(newId(), draft = it.draft, notice = it.notice) }
         }
         this.library = library
-        _state.update { it.copy(chats = null) }
+        _state.update { it.copy(chats = null, canRate = library is RatingClient) }
         library?.let(::load)
+        loadRatings()
+    }
+
+    /** Rate an answer, or its source numbered [source] from 1; a null [rating] takes it back. */
+    fun rate(messageId: Long, source: Int?, rating: Rating?) = updateRatings(messageId) { it.rated(source, rating) }
+
+    /**
+     * Say why an answer was rated as it was: [reasons] and [comment] replace the saved ones unless null, and
+     * an empty comment removes it. [onSaved] hears whether the change was saved.
+     */
+    fun note(messageId: Long, reasons: List<FeedbackReason>? = null, comment: String? = null, onSaved: (Boolean) -> Unit = {}) =
+        updateRatings(messageId, onSaved) {
+            it.copy(reasons = reasons ?: it.reasons, comment = if (comment == null) it.comment else comment.trim().ifEmpty { null })
+        }
+
+    /** Change an answer's ratings at once, and undo the change if it cannot be saved. */
+    private fun updateRatings(messageId: Long, onSaved: (Boolean) -> Unit = {}, change: (AnswerRatings) -> AnswerRatings) {
+        val client = ratingClient ?: return onSaved(false)
+        val state = _state.value
+        val id = feedbackId(state.id, messageId)
+        val next = change(ratings[id] ?: Unrated)
+        if (feedbackFor(state.messages, messageId, next) == null) return onSaved(false)
+        showRating(id, next)
+        val previous = ratingQueues[id]
+        // Each request sends the newest ratings, so ones made while another is sent go together.
+        val request = viewModelScope.async {
+            previous?.await()
+            val newest = ratings[id] ?: Unrated
+            if (newest == (savedRatings[id] ?: Unrated)) return@async true
+            try {
+                client.rate(id, feedbackFor(state.messages, messageId, newest)!!)
+                savedRatings[id] = newest
+                true
+            } catch (failure: Exception) {
+                if (!unreachable(failure)) throw failure
+                showRating(id, savedRatings[id] ?: Unrated)
+                notify("Your feedback could not be saved. ${reason(failure)}")
+                false
+            }
+        }
+        ratingQueues[id] = request
+        viewModelScope.launch { onSaved(request.await()) }
+    }
+
+    private fun showRating(id: String, answer: AnswerRatings) {
+        ratings[id] = answer
+        publishRatings()
+    }
+
+    /** Show the open chat's ratings. */
+    private fun publishRatings() = _state.update { state ->
+        val prefix = "${state.id}-"
+        state.copy(ratings = ratings.entries.filter { it.key.startsWith(prefix) }.associate { it.key.removePrefix(prefix).toLong() to it.value })
+    }
+
+    /** Load the open chat's saved ratings once; ratings given while they load win over the loaded ones. */
+    private fun loadRatings() {
+        val client = ratingClient ?: return
+        val state = _state.value
+        val chatId = state.id
+        if (state.messages.isEmpty() || !loadedRatings.add(chatId)) return
+        viewModelScope.launch {
+            val loaded = try {
+                client.ratings(chatId)
+            } catch (failure: Exception) {
+                if (!unreachable(failure)) throw failure
+                // Tried again the next time the chat opens.
+                loadedRatings -= chatId
+                return@launch
+            }
+            if (ratingClient !== client) return@launch
+            for ((messageId, answer) in loaded) {
+                val id = feedbackId(chatId, messageId)
+                if (id in ratings) continue
+                ratings[id] = answer
+                savedRatings[id] = answer
+            }
+            publishRatings()
+        }
     }
 
     /** Save the chats answered meanwhile to [library], then list its chats and reopen the one open last time. */
@@ -203,7 +304,7 @@ class ChatViewModel(
     fun newChat() {
         stop()
         lastChat.set(null)
-        _state.update { ChatState(newId(), draft = it.draft, chats = it.chats, notice = it.notice) }
+        _state.update { ChatState(newId(), draft = it.draft, chats = it.chats, notice = it.notice, canRate = it.canRate) }
     }
 
     /** Show a saved chat, stopping any answer in progress. */
@@ -263,8 +364,11 @@ class ChatViewModel(
                 draft = it.draft,
                 chats = it.chats,
                 notice = it.notice,
+                canRate = it.canRate,
             )
         }
+        publishRatings()
+        loadRatings()
     }
 
     /** Save the open chat once an answer settles, listing it first. */

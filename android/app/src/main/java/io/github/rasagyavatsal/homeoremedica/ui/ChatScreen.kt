@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -97,6 +98,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.rasagyavatsal.homeoremedica.api.AnswerRatings
+import io.github.rasagyavatsal.homeoremedica.api.FeedbackReason
+import io.github.rasagyavatsal.homeoremedica.api.Rating
 import io.github.rasagyavatsal.homeoremedica.api.Role
 import io.github.rasagyavatsal.homeoremedica.chat.COUNTER_FROM
 import io.github.rasagyavatsal.homeoremedica.chat.ChatState
@@ -135,6 +139,8 @@ fun ChatScreen(viewModel: ChatViewModel, footer: (@Composable () -> Unit)? = nul
         onOpenChat = viewModel::openChat,
         onDeleteChat = viewModel::deleteChat,
         onDismissNotice = viewModel::dismissNotice,
+        onRate = viewModel::rate,
+        onNote = viewModel::note,
         footer = footer,
     )
 }
@@ -153,6 +159,9 @@ fun ChatScreen(
     onOpenChat: (String) -> Unit,
     onDeleteChat: (String) -> Unit,
     onDismissNotice: () -> Unit,
+    /** Rates an answer, or one of its sources by number. */
+    onRate: (messageId: Long, source: Int?, rating: Rating?) -> Unit = { _, _, _ -> },
+    onNote: (messageId: Long, reasons: List<FeedbackReason>?, comment: String?, onSaved: (Boolean) -> Unit) -> Unit = { _, _, _, _ -> },
     footer: (@Composable () -> Unit)? = null,
 ) {
     val colors = Theme.colors
@@ -176,6 +185,14 @@ fun ChatScreen(
         openSource = if (openSource == next) null else next
     }
     val closeSource = { openSource = null }
+    val sourceRating = open?.let { state.ratings[it.messageId]?.sources?.get(it.number) }
+    // A passage is rated with its answer, so only a finished answer's can be.
+    val sourceAnswer = open?.let { state.messages.find { message -> message.id == it.messageId } }
+    val rateSource = if (open != null && state.canRate && sourceAnswer?.status == null) {
+        { rating: Rating? -> onRate(open.messageId, open.number, rating) }
+    } else {
+        null
+    }
     var sidebarOpen by rememberSaveable { mutableStateOf(false) }
     val closeSidebar = { sidebarOpen = false }
 
@@ -218,7 +235,7 @@ fun ChatScreen(
                         if (state.messages.isEmpty()) {
                             Welcome(bottomPadding)
                         } else {
-                            key(state.id) { Conversation(state, wide, bottomPadding, open, showSource, onRetry) }
+                            key(state.id) { Conversation(state, wide, bottomPadding, open, showSource, onRetry, onRate, onNote) }
                         }
                         ComposerArea(
                             state = state,
@@ -243,6 +260,8 @@ fun ChatScreen(
                             .width(panelWidth)
                             .fillMaxHeight()
                             .drawBehind { drawLine(colors.border, Offset.Zero, Offset(0f, size.height), 1.dp.toPx()) },
+                        sourceRating,
+                        rateSource,
                     )
                 }
             }
@@ -260,6 +279,8 @@ fun ChatScreen(
                         .width(panelWidth)
                         .fillMaxHeight()
                         .shadowLarge(RectangleShape, colors.shadow),
+                    sourceRating,
+                    rateSource,
                 )
             }
         }
@@ -329,6 +350,8 @@ private fun Conversation(
     openSource: OpenSource?,
     onSource: (messageId: Long, number: Int) -> Unit,
     onRetry: () -> Unit,
+    onRate: (messageId: Long, source: Int?, rating: Rating?) -> Unit,
+    onNote: (messageId: Long, reasons: List<FeedbackReason>?, comment: String?, onSaved: (Boolean) -> Unit) -> Unit,
 ) {
     val listState = rememberLazyListState()
     val latestQuestion = state.messages.indexOfLast { it.role == Role.User }
@@ -362,6 +385,10 @@ private fun Conversation(
                     onRetry = onRetry.takeIf { index == state.messages.lastIndex },
                     compacting = state.compacting && index == state.messages.lastIndex,
                     modifier = itemModifier.rise(message.id),
+                    ratings = state.ratings[message.id],
+                    onRate = if (state.canRate) ({ rating -> onRate(message.id, null, rating) }) else null,
+                    onNote = { reasons, comment, onSaved -> onNote(message.id, reasons, comment, onSaved) },
+                    newest = index == state.messages.lastIndex,
                 )
             }
         }
@@ -398,6 +425,11 @@ private fun Reply(
     onRetry: (() -> Unit)?,
     compacting: Boolean,
     modifier: Modifier,
+    ratings: AnswerRatings?,
+    /** Rates the answer; it cannot be rated without this. */
+    onRate: ((Rating?) -> Unit)?,
+    onNote: (reasons: List<FeedbackReason>?, comment: String?, onSaved: (Boolean) -> Unit) -> Unit,
+    newest: Boolean,
 ) {
     val colors = Theme.colors
     val streaming = message.status == MessageStatus.Streaming
@@ -422,7 +454,14 @@ private fun Reply(
                 }
             }
             if (message.content.isNotEmpty()) {
-                Answer(question, message.content, message.sources.orEmpty(), streaming, activeSource, onSource, note = note)
+                // Only a finished answer can be rated.
+                val actions: (@Composable (@Composable RowScope.() -> Unit) -> Unit)? =
+                    if (onRate != null && message.status == null) {
+                        { buttons -> AnswerFeedback(ratings, onRate, onNote, newest, trailing = buttons) }
+                    } else {
+                        null
+                    }
+                Answer(question, message.content, message.sources.orEmpty(), streaming, activeSource, onSource, note = note, actions = actions)
             } else {
                 note()
             }

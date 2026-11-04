@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import io.github.rasagyavatsal.homeoremedica.answer.label
 import io.github.rasagyavatsal.homeoremedica.answer.parsePassage
 import io.github.rasagyavatsal.homeoremedica.api.Citation
+import io.github.rasagyavatsal.homeoremedica.api.Rating
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Fonts
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
 
@@ -42,7 +43,15 @@ import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
 
 /** The passage behind one reference in an answer; [number] is its place in the answer, from 1. */
 @Composable
-fun SourcesPanel(source: Citation, number: Int, onClose: () -> Unit, modifier: Modifier = Modifier) {
+fun SourcesPanel(
+    source: Citation,
+    number: Int,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier,
+    rating: Rating? = null,
+    /** Rates the passage; it cannot be rated without this. */
+    onRate: ((Rating?) -> Unit)? = null,
+) {
     val colors = Theme.colors
     val passage = remember(source.text) { parsePassage(source.text) }
     Column(modifier.background(colors.surface).statusBarsPadding()) {
@@ -70,7 +79,10 @@ fun SourcesPanel(source: Citation, number: Int, onClose: () -> Unit, modifier: M
                     style = TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = 12.sp, lineHeight = 1.4.em),
                 )
             }
-            CloseButton(onClose)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                if (onRate != null) RatingButtons(rating, onRate, "Rate this passage", "Relevant", "Not relevant")
+                CloseButton(onClose)
+            }
         }
         Spacer(Modifier.fillMaxWidth().height(1.dp).background(colors.border))
         Column(

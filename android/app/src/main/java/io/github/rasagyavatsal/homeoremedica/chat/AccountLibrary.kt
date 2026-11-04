@@ -15,7 +15,7 @@ import java.io.IOException
 // Ports the web app's account library (src/web/library.ts).
 
 /** Chats saved to the signed-in account through the API; [token] gives a current ID token. */
-class AccountLibrary(private val api: HomeoRemedicaApi, private val token: suspend () -> String) : ChatLibrary {
+class AccountLibrary(private val api: HomeoRemedicaApi, private val token: suspend () -> String) : ChatLibrary, RatingClient {
     private suspend fun signedIn(): String = try {
         token()
     } catch (failure: AuthException) {
@@ -39,10 +39,9 @@ class AccountLibrary(private val api: HomeoRemedicaApi, private val token: suspe
     override suspend fun remove(id: String) = api.deleteChat(signedIn(), id)
 
     /** Save the ratings of one answer, replacing any sent for it before. */
-    suspend fun rate(id: String, feedback: Feedback) = api.putFeedback(signedIn(), id, feedback)
+    override suspend fun rate(id: String, feedback: Feedback) = api.putFeedback(signedIn(), id, feedback)
 
-    /** The ratings saved for a chat's answers, by message id. */
-    suspend fun ratings(chatId: String): Map<Long, AnswerRatings> = api.chatRatings(signedIn(), chatId)
+    override suspend fun ratings(chatId: String): Map<Long, AnswerRatings> = api.chatRatings(signedIn(), chatId)
 
     /** Delete every chat and then the account itself. */
     suspend fun deleteAccount() = api.deleteAccount(signedIn())
