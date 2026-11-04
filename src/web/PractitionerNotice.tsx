@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { Dialog } from './Dialog.tsx'
+import { LegalLinks } from './Legal.tsx'
 
 export const NOTICE_KEY = 'homeoremedica.practitioner-notice'
 
@@ -35,6 +36,9 @@ export function PractitionerNotice() {
       <p>
         Do not enter patients’ personal details, such as names, contact details, ID numbers or anything else that
         identifies them. Describe symptoms and cases in general terms.
+      </p>
+      <p>
+        By using HomeoRemedica, you agree to the <LegalLinks />.
       </p>
       <div className="dialog-actions">
         <button type="button" className="button button-primary" onClick={acknowledge} data-autofocus>

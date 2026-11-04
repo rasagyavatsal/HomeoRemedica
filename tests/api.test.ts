@@ -1,3 +1,7 @@
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+
 import { describe, expect, it, vi } from 'vitest'
 
 import { type AppDependencies, type ChatHandler, createApp, productionDependencies } from '../src/server/app.ts'
@@ -516,5 +520,24 @@ describe('production dependencies', () => {
     await expect(dependencies.getService()).rejects.toThrow(CorpusError)
     expect(await dependencies.getService()).toBe(stub)
     expect(build).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('web app', () => {
+  it('serves its page at the legal paths', async () => {
+    const webDist = mkdtempSync(join(tmpdir(), 'homeoremedica-web-'))
+    try {
+      writeFileSync(join(webDist, 'index.html'), '<div id="root"></div>')
+      const app = createApp({ getService: async () => new StubService() }, { webDist, rateLimiter: null })
+
+      for (const path of ['/privacy', '/terms']) {
+        const response = await app.request(path)
+        expect(response.status).toBe(200)
+        expect(await response.text()).toBe('<div id="root"></div>')
+      }
+      expect((await app.request('/elsewhere')).status).toBe(404)
+    } finally {
+      rmSync(webDist, { recursive: true, force: true })
+    }
   })
 })

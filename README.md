@@ -94,7 +94,9 @@ Enter sends; Shift+Enter adds a line; a question can be stopped while it is answ
 one asked again. Signed out, answered and stopped chats are saved in the browser's local storage,
 newest first and at most 50, so they survive closing the tab but stay on that device. A reload
 reopens the chat the tab had open. The sidebar groups chats by age, searches them, and deletes one
-after confirmation; on narrow screens it opens as a drawer, and the sources panel slides over the chat.
+after confirmation; on narrow screens it opens as a drawer, and the sources panel slides over the chat. The Privacy Policy and Terms of Use
+are pages of the web app at `/privacy` and `/terms`, linked from the sidebar, the sign-in dialog and the
+practitioner notice.
 
 When the server has accounts configured, people can sign up or sign in with an email and password
 or with Google, and request a password-reset email. Signed in, each chat is saved to the account

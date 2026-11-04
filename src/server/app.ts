@@ -59,6 +59,7 @@ const FAILURE_STATUS: Record<FailureKind, ContentfulStatusCode> = {
 
 // `npm start` serves the built frontend too. During development Vite serves both.
 export const WEB_DIST = fileURLToPath(new URL('../../dist', import.meta.url))
+const LEGAL_PAGES = ['/privacy', '/terms']
 
 const ACCOUNT_FAILURE = 'Your saved chats could not be reached. Please try again.'
 const CHAT_ID = /^[A-Za-z0-9_-]{1,64}$/
@@ -330,6 +331,8 @@ export function createApp(
   app.all('/api/*', (c) => c.json({ detail: 'Not Found' }, 404))
 
   if (webDist && existsSync(`${webDist}/index.html`)) {
+    // The legal pages are views of the web app, so they serve its page.
+    for (const page of LEGAL_PAGES) app.get(page, serveStatic({ root: webDist, path: 'index.html' }))
     app.use('/*', serveStatic({ root: webDist }))
   }
 

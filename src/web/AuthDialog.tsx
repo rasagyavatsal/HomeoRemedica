@@ -3,6 +3,7 @@ import { type FormEvent, useState } from 'react'
 import { type AuthClient, authErrorMessage } from './auth.ts'
 import { Dialog } from './Dialog.tsx'
 import { GoogleMark } from './icons.tsx'
+import { LegalLinks } from './Legal.tsx'
 
 type Mode = 'sign-in' | 'sign-up' | 'reset'
 
@@ -129,6 +130,12 @@ export function AuthDialog({ auth, onClose }: { auth: AuthClient; onClose: () =>
           </span>
         )}
       </div>
+
+      {mode !== 'reset' && (
+        <p className="legal-links">
+          By continuing, you agree to the <LegalLinks />.
+        </p>
+      )}
     </Dialog>
   )
 }

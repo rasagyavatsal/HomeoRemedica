@@ -2,6 +2,7 @@ import { type ReactNode, useState } from 'react'
 
 import type { ChatSummary } from '../server/contracts.ts'
 import { CloseIcon, DropMark, PlusIcon, SearchIcon, TrashIcon } from './icons.tsx'
+import { LegalLinks } from './Legal.tsx'
 import { ThemeToggle } from './ThemeToggle.tsx'
 
 interface SidebarProps {
@@ -113,7 +114,12 @@ export function Sidebar({ chats, activeId, onNew, onOpen, onDelete, onClose, foo
         )}
       </div>
 
-      {footer && <div className="sidebar-footer">{footer}</div>}
+      <div className="sidebar-footer">
+        {footer}
+        <p className="legal-links">
+          <LegalLinks separator="·" />
+        </p>
+      </div>
     </nav>
   )
 }

@@ -1714,6 +1714,65 @@ ul {
   }
 }
 
+/* ---- Legal pages -------------------------------------------------------- */
+
+.legal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  min-height: var(--control-lg);
+  padding: var(--space-xs) var(--space-md);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.legal-header .brand {
+  text-decoration: none;
+}
+
+.legal-body {
+  padding: var(--space-xl) 0;
+}
+
+.legal-body h1 {
+  margin-top: 0;
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-tight);
+}
+
+.legal-body h2 {
+  margin-top: var(--space-xl);
+}
+
+.prose .legal-effective {
+  margin-top: var(--space-xs);
+  color: var(--color-text-subtle);
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+}
+
+.legal-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-md) 0 var(--space-2xl);
+  border-top: var(--border-width) solid var(--color-border);
+  font-size: var(--text-sm);
+}
+
+.legal-nav a,
+.legal-links a,
+.dialog a {
+  color: var(--color-accent-text);
+}
+
+.legal-links {
+  color: var(--color-text-subtle);
+  font-size: var(--text-xs);
+}
+
 /* ---- Theme change ------------------------------------------------------- */
 
 ::view-transition-old(root),
