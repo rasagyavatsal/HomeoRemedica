@@ -145,6 +145,7 @@ fun Button(
     enabled: Boolean = true,
     small: Boolean = false,
     icon: ImageVector? = null,
+    trailingIcon: ImageVector? = null,
     raised: Boolean = false,
     color: Color? = null,
     /** Lines the content up at the start, as the sidebar's new chat button. */
@@ -191,6 +192,7 @@ fun Button(
                 fontFamily = Fonts.sans,
             ),
         )
+        if (trailingIcon != null) Icon(trailingIcon, content, 16.dp)
     }
 }
 

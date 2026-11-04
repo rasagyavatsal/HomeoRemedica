@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.runtime.CompositionLocalProvider
@@ -22,6 +23,9 @@ import io.github.rasagyavatsal.homeoremedica.api.HomeoRemedicaApi
 import io.github.rasagyavatsal.homeoremedica.chat.ChatViewModel
 import io.github.rasagyavatsal.homeoremedica.chat.FileChatLibrary
 import io.github.rasagyavatsal.homeoremedica.ui.ChatScreen
+import io.github.rasagyavatsal.homeoremedica.ui.LegalPage
+import io.github.rasagyavatsal.homeoremedica.ui.LegalPageName
+import io.github.rasagyavatsal.homeoremedica.ui.LocalOpenLegal
 import io.github.rasagyavatsal.homeoremedica.ui.theme.DarkPalette
 import io.github.rasagyavatsal.homeoremedica.ui.theme.HomeoRemedicaTheme
 import io.github.rasagyavatsal.homeoremedica.ui.theme.LightPalette
@@ -67,9 +71,12 @@ class MainActivity : ComponentActivity() {
                     preferences.theme = theme
                 }
             }
-            CompositionLocalProvider(LocalThemeControl provides control) {
+            // A legal page shows over the chat, which keeps answering underneath.
+            var legal by rememberSaveable { mutableStateOf<LegalPageName?>(null) }
+            CompositionLocalProvider(LocalThemeControl provides control, LocalOpenLegal provides { legal = it }) {
                 HomeoRemedicaTheme(dark) {
                     ChatScreen(viewModel)
+                    legal?.let { page -> LegalPage(page, onOpen = { legal = it }, onClose = { legal = null }) }
                 }
             }
         }
