@@ -27,10 +27,11 @@ import java.util.concurrent.TimeUnit
 /** A failure whose message is safe to show as is. */
 class ApiException(message: String) : Exception(message)
 
-const val GENERIC_ERROR = "The request could not be completed. Please try again."
+// The web app's messages (src/web/api.ts).
+const val GENERIC_ERROR = "Something went wrong. Please try again."
 const val INVALID_RESPONSE_ERROR = "The API returned an invalid response. Please try again."
-const val INTERRUPTED_ERROR = "The answer was interrupted. Please try again."
-const val NETWORK_ERROR = "Could not reach HomeoRemedica. Check your connection and try again."
+const val INTERRUPTED_ERROR = "The answer stopped before it finished. Please try again."
+const val NETWORK_ERROR = "The server could not be reached. Check your connection and try again."
 
 val ApiJson = Json {
     ignoreUnknownKeys = true

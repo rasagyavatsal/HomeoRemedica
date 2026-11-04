@@ -173,6 +173,39 @@ class ChatViewModelTest {
     }
 
     @Test
+    fun showsTheServerRateLimits() = runTest {
+        // The server limits each client, and every client together to a daily total.
+        val limits = listOf(
+            "Too many questions in a short time. Please wait a minute and try again.",
+            "HomeoRemedica has answered all the questions it can for now. Please try again later.",
+        )
+        val vm = viewModel()
+        for (detail in limits) {
+            chatResponses += MockResponse().setResponseCode(429).setHeader("Retry-After", "60").setBody("""{"detail":"$detail"}""")
+            vm.submit("Pulsatilla?")
+            assertEquals(detail, vm.settled().messages.last().error)
+            vm.clearConversation()
+        }
+    }
+
+    @Test
+    fun asksAnywayWhenCompactingIsRateLimited() = runTest {
+        val vm = viewModel()
+        answer("One.", fullHistory())
+        vm.submit("First?")
+        vm.settled()
+
+        // Compacting counts as a question, so a client at its limit is refused both.
+        val detail = "Too many questions in a short time. Please wait a minute and try again."
+        compactResponses += MockResponse().setResponseCode(429).setBody("""{"detail":"$detail"}""")
+        chatResponses += MockResponse().setResponseCode(429).setBody("""{"detail":"$detail"}""")
+        vm.submit("Second?")
+
+        assertEquals(detail, vm.settled().messages.last().error)
+        assertEquals(1, compactRequests.size)
+    }
+
+    @Test
     fun stopsAnAnswerAndKeepsWhatArrived() = runTest {
         val vm = viewModel()
         val first = "event: text\ndata: {\"text\":\"Mild\"}\n\n"
