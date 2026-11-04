@@ -93,7 +93,7 @@ test('signs out to this browser’s chats and back in to the account’s', async
   await askAndSave(page, 'fear of the dark')
 
   await chooseFromAccountMenu(page, user.email, 'Sign out')
-  await expect(page.getByRole('button', { name: 'Sign in to sync chats' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Guest' })).toBeVisible()
   await expect(page.getByRole('navigation', { name: 'Chats' })).toContainText('Your chats will appear here.')
 
   await signIn(page, user)

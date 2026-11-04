@@ -122,6 +122,11 @@ function sidebar() {
   return screen.getByRole('navigation', { name: 'Chats' })
 }
 
+async function openSignIn() {
+  await userEvent.click(await screen.findByRole('button', { name: 'Guest' }))
+  await userEvent.click(screen.getByRole('menuitem', { name: 'Sign in' }))
+}
+
 beforeEach(() => {
   localStorage.clear()
   sessionStorage.clear()
@@ -148,7 +153,7 @@ it('moves this device’s chats into the account at sign-in', async () => {
   render(<App />)
 
   expect(await within(sidebar()).findByRole('button', { name: 'Saved before signing in' })).toBeInTheDocument()
-  await userEvent.click(screen.getByRole('button', { name: 'Sign in to sync chats' }))
+  await openSignIn()
   const dialog = screen.getByRole('dialog', { name: 'Sign in' })
   await userEvent.type(within(dialog).getByLabelText('Email'), 'alice@example.com')
   await userEvent.type(within(dialog).getByLabelText('Password'), 'secret123')
@@ -185,7 +190,7 @@ it('keeps chats on this device until a new account’s email is verified', async
   const { store, requests } = serve([() => answerStream('Kept answer.', [citation(1)], 'Kept?')])
   render(<App />)
 
-  await userEvent.click(await screen.findByRole('button', { name: 'Sign in to sync chats' }))
+  await openSignIn()
   const dialog = screen.getByRole('dialog', { name: 'Sign in' })
   await userEvent.click(within(dialog).getByRole('button', { name: 'Create an account' }))
   await userEvent.type(within(dialog).getByLabelText('Email'), 'alice@example.com')
@@ -368,7 +373,7 @@ it('undoes a rating that could not be saved', async () => {
 it('offers ratings only to a verified account', async () => {
   serve([() => answerStream('Guest answer [1].', [citation(1)], 'Guest?')])
   render(<App />)
-  await screen.findByRole('button', { name: 'Sign in to sync chats' })
+  await screen.findByRole('button', { name: 'Guest' })
   await userEvent.type(screen.getByRole('textbox', { name: 'Your question' }), 'Guest?{Enter}')
   await screen.findByText(/Guest answer/)
   await userEvent.click(screen.getByRole('button', { name: 'Source 1' }))
@@ -388,7 +393,7 @@ it('signs out to a fresh chat on this device', async () => {
   await userEvent.click(screen.getByRole('button', { name: 'alice@example.com' }))
   await userEvent.click(screen.getByRole('menuitem', { name: 'Sign out' }))
 
-  expect(await screen.findByRole('button', { name: 'Sign in to sync chats' })).toBeInTheDocument()
+  expect(await screen.findByRole('button', { name: 'Guest' })).toBeInTheDocument()
   expect(screen.queryByText('Private answer.')).not.toBeInTheDocument()
   expect(await within(sidebar()).findByText('Your chats will appear here.')).toBeInTheDocument()
 })
@@ -406,7 +411,17 @@ it('deletes the account after confirmation', async () => {
 
   expect(await screen.findByText('Your account and its chats were deleted.')).toBeInTheDocument()
   expect(requests).toContain('DELETE /api/account')
-  expect(screen.getByRole('button', { name: 'Sign in to sync chats' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Guest' })).toBeInTheDocument()
+})
+
+it('links the legal pages from the account menu', async () => {
+  fake.account = ALICE
+  serve()
+  render(<App />)
+
+  await userEvent.click(await screen.findByRole('button', { name: 'alice@example.com' }))
+  expect(screen.getByRole('menuitem', { name: 'Terms of Use' })).toHaveAttribute('href', '/terms')
+  expect(screen.getByRole('menuitem', { name: 'Privacy Policy' })).toHaveAttribute('href', '/privacy')
 })
 
 it('closes the account menu on Escape or a click outside it', async () => {
@@ -416,7 +431,7 @@ it('closes the account menu on Escape or a click outside it', async () => {
   const account = await screen.findByRole('button', { name: 'alice@example.com' })
 
   await userEvent.click(account)
-  expect(screen.getByRole('menuitem', { name: 'Sign out' })).toHaveFocus()
+  expect(screen.getByRole('menuitem', { name: 'Terms of Use' })).toHaveFocus()
   await userEvent.keyboard('{Escape}')
   expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   expect(account).toHaveFocus()
@@ -431,7 +446,7 @@ it('explains a failed sign-in and offers a password reset', async () => {
   serve()
   render(<App />)
 
-  await userEvent.click(await screen.findByRole('button', { name: 'Sign in to sync chats' }))
+  await openSignIn()
   const dialog = screen.getByRole('dialog', { name: 'Sign in' })
   await userEvent.type(within(dialog).getByLabelText('Email'), 'alice@example.com')
   await userEvent.type(within(dialog).getByLabelText('Password'), 'wrong')
@@ -450,5 +465,7 @@ it('keeps chats on this device when the server has no accounts', async () => {
   render(<App />)
 
   expect(await within(sidebar()).findByText('Your chats will appear here.')).toBeInTheDocument()
-  expect(screen.queryByRole('button', { name: 'Sign in to sync chats' })).not.toBeInTheDocument()
+  await userEvent.click(screen.getByRole('button', { name: 'Guest' }))
+  expect(screen.getByRole('menuitem', { name: 'Privacy Policy' })).toBeInTheDocument()
+  expect(screen.queryByRole('menuitem', { name: 'Sign in' })).not.toBeInTheDocument()
 })

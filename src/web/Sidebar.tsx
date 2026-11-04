@@ -2,7 +2,6 @@ import { type ReactNode, useState } from 'react'
 
 import type { ChatSummary } from '../server/contracts.ts'
 import { CloseIcon, DropMark, PlusIcon, SearchIcon, TrashIcon } from './icons.tsx'
-import { LegalLinks } from './Legal.tsx'
 import { ThemeToggle } from './ThemeToggle.tsx'
 
 interface SidebarProps {
@@ -13,7 +12,7 @@ interface SidebarProps {
   onOpen: (id: string) => void
   onDelete: (id: string) => void
   onClose: () => void
-  /** Sign-in or account controls. */
+  /** The guest or account profile. */
   footer?: ReactNode
 }
 
@@ -114,12 +113,7 @@ export function Sidebar({ chats, activeId, onNew, onOpen, onDelete, onClose, foo
         )}
       </div>
 
-      <div className="sidebar-footer">
-        {footer}
-        <p className="sidebar-legal">
-          <LegalLinks separator="·" />
-        </p>
-      </div>
+      {footer && <div className="sidebar-footer">{footer}</div>}
     </nav>
   )
 }

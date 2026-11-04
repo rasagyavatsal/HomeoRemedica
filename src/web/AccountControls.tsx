@@ -1,58 +1,73 @@
-import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
+import { type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from 'react'
 
 import { errorMessage } from './api.ts'
 import type { Account } from './auth.ts'
 import { Dialog } from './Dialog.tsx'
-import { MailIcon, SignOutIcon, TrashIcon, UserIcon } from './icons.tsx'
+import { DocumentIcon, MailIcon, ShieldIcon, SignInIcon, SignOutIcon, TrashIcon, UserIcon } from './icons.tsx'
 
 interface AccountControlsProps {
   /** The signed-in account, null when signed out, or undefined while that is unknown. */
   account: Account | null | undefined
-  onSignIn: () => void
+  /** Absent when the server has no accounts. */
+  onSignIn: (() => void) | undefined
   onSignOut: () => void
   onResendVerification: () => void
   onDeleteAccount: () => Promise<void>
 }
 
-/** The sidebar's sign-in button, or the signed-in account and what can be done with it. */
+/** The sidebar's profile: a guest, or the signed-in account, with a menu of what can be done. */
 export function AccountControls({ account, onSignIn, onSignOut, onResendVerification, onDeleteAccount }: AccountControlsProps) {
   const [deleting, setDeleting] = useState(false)
 
   if (account === undefined) return null
   if (account === null) {
     return (
-      <button type="button" className="button button-outline button-block" onClick={onSignIn}>
-        <UserIcon /> Sign in to sync chats
-      </button>
+      <AccountMenu label="Guest" avatar={<UserIcon />} guest>
+        {onSignIn && (
+          <>
+            <div role="separator" className="menu-separator" />
+            <button type="button" role="menuitem" className="menu-item" onClick={onSignIn}>
+              <SignInIcon /> Sign in
+            </button>
+          </>
+        )}
+      </AccountMenu>
     )
   }
 
   const label = account.email ?? account.name ?? 'Signed in'
   return (
     <>
-      <AccountMenu
-        label={label}
-        onSignOut={onSignOut}
-        onResend={account.verified ? undefined : onResendVerification}
-        onDelete={() => setDeleting(true)}
-      />
+      <AccountMenu label={label} avatar={label.slice(0, 1).toUpperCase()}>
+        <div role="separator" className="menu-separator" />
+        {!account.verified && (
+          <button type="button" role="menuitem" className="menu-item" onClick={onResendVerification}>
+            <MailIcon /> Resend verification email
+          </button>
+        )}
+        <button type="button" role="menuitem" className="menu-item" onClick={onSignOut}>
+          <SignOutIcon /> Sign out
+        </button>
+        <button type="button" role="menuitem" className="menu-item menu-item-danger" onClick={() => setDeleting(true)}>
+          <TrashIcon /> Delete account…
+        </button>
+      </AccountMenu>
       {deleting && <DeleteAccountDialog onDelete={onDeleteAccount} onClose={() => setDeleting(false)} />}
     </>
   )
 }
 
-/** The signed-in account, which opens a menu to sign out or delete the account. */
+/** The profile, which opens a menu of the legal pages followed by the given account actions. */
 function AccountMenu({
   label,
-  onSignOut,
-  onResend,
-  onDelete,
+  avatar,
+  guest = false,
+  children,
 }: {
   label: string
-  onSignOut: () => void
-  /** Offered until the email address is verified. */
-  onResend: (() => void) | undefined
-  onDelete: () => void
+  avatar: ReactNode
+  guest?: boolean
+  children: ReactNode
 }) {
   const [open, setOpen] = useState(false)
   const root = useRef<HTMLDivElement>(null)
@@ -88,11 +103,6 @@ function AccountMenu({
     items.at((index + step) % items.length)?.focus()
   }
 
-  function choose(action: () => void) {
-    setOpen(false)
-    action()
-  }
-
   return (
     <div className="account" ref={root}>
       <button
@@ -104,24 +114,28 @@ function AccountMenu({
         aria-expanded={open}
         title={label}
       >
-        <span className="account-avatar" aria-hidden="true">
-          {label.slice(0, 1).toUpperCase()}
+        <span className="account-avatar" data-guest={guest || undefined} aria-hidden="true">
+          {avatar}
         </span>
         <span className="account-name">{label}</span>
       </button>
       {open && (
-        <div ref={menu} className="account-menu" role="menu" aria-label="Account" onKeyDown={onKeyDown}>
-          {onResend && (
-            <button type="button" role="menuitem" className="menu-item" onClick={() => choose(onResend)}>
-              <MailIcon /> Resend verification email
-            </button>
-          )}
-          <button type="button" role="menuitem" className="menu-item" onClick={() => choose(onSignOut)}>
-            <SignOutIcon /> Sign out
-          </button>
-          <button type="button" role="menuitem" className="menu-item menu-item-danger" onClick={() => choose(onDelete)}>
-            <TrashIcon /> Delete account…
-          </button>
+        // Choosing any item closes the menu.
+        <div
+          ref={menu}
+          className="account-menu"
+          role="menu"
+          aria-label="Account"
+          onKeyDown={onKeyDown}
+          onClick={(event) => (event.target as HTMLElement).closest('[role="menuitem"]') && setOpen(false)}
+        >
+          <a href="/terms" target="_blank" rel="noopener" role="menuitem" className="menu-item">
+            <DocumentIcon /> Terms of Use
+          </a>
+          <a href="/privacy" target="_blank" rel="noopener" role="menuitem" className="menu-item">
+            <ShieldIcon /> Privacy Policy
+          </a>
+          {children}
         </div>
       )}
     </div>

@@ -16,13 +16,13 @@ export function legalPage(pathname: string): LegalPageName | null {
 }
 
 /** Links to both pages, opened in a new tab so an answer in progress is not lost. */
-export function LegalLinks({ separator = 'and' }: { separator?: string }) {
+export function LegalLinks() {
   return (
     <>
       <a href="/terms" target="_blank" rel="noopener">
         Terms of Use
       </a>{' '}
-      {separator}{' '}
+      and{' '}
       <a href="/privacy" target="_blank" rel="noopener">
         Privacy Policy
       </a>

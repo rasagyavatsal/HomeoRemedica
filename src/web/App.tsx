@@ -120,15 +120,13 @@ export default function App() {
         library={library}
         notify={setNotice}
         account={
-          auth && (
-            <AccountControls
-              account={account}
-              onSignIn={() => setSigningIn(true)}
-              onSignOut={signOut}
-              onResendVerification={resendVerification}
-              onDeleteAccount={deleteAccount}
-            />
-          )
+          <AccountControls
+            account={account}
+            onSignIn={auth ? () => setSigningIn(true) : undefined}
+            onSignOut={signOut}
+            onResendVerification={resendVerification}
+            onDeleteAccount={deleteAccount}
+          />
         }
       />
       {signingIn && auth && <AuthDialog auth={auth} onClose={() => setSigningIn(false)} />}
@@ -155,7 +153,7 @@ interface WorkspaceProps {
   /** Where chats are saved; null while that is being worked out. */
   library: ChatLibrary | null
   notify: (message: string) => void
-  /** Sign-in or account controls for the sidebar. */
+  /** The guest or account profile for the sidebar. */
   account?: ReactNode
 }
 
