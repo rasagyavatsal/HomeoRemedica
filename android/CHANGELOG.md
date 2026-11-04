@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.2.0](https://github.com/rasagyavatsal/HomeoRemedica-android/compare/v3.1.0...v3.2.0) (2026-11-04)
+
+
+### Features
+
+* add the account menu with the legal links and the version ([eb931fe](https://github.com/rasagyavatsal/HomeoRemedica-android/commit/eb931fe79756c7375b917a0f28f8e570e234c35f))
+* add the chats drawer with new chat, search, date groups and delete ([65cdee0](https://github.com/rasagyavatsal/HomeoRemedica-android/commit/65cdee0efc3ecac653d8b11a552a4cf63329b708))
+* add the Privacy Policy and Terms of Use ([238a602](https://github.com/rasagyavatsal/HomeoRemedica-android/commit/238a602735bd72a304cc56b4e33a167a5fc954b9))
+* adopt the web app's design tokens and potency drop logo ([bd4136d](https://github.com/rasagyavatsal/HomeoRemedica-android/commit/bd4136da67a67f4c61154e5a1ca42c63c045c5e3))
+* rate answers, with reasons and a comment, and their passages ([40c3223](https://github.com/rasagyavatsal/HomeoRemedica-android/commit/40c3223f6214c3946798706d767c6e7bff1c6b96))
+* save up to 50 chats on the device and reopen the last one ([5a72ec9](https://github.com/rasagyavatsal/HomeoRemedica-android/commit/5a72ec9dc6e5d504244d670205d0fbd3209b258e))
+* show the practitioners-only notice on first launch ([20ead52](https://github.com/rasagyavatsal/HomeoRemedica-android/commit/20ead52b4f8e159a7e7b40e01b29629d95b87876))
+* sign in with email or Google, sign up, reset the password and verify the email ([57ddf39](https://github.com/rasagyavatsal/HomeoRemedica-android/commit/57ddf394039d90d4e59006cbe020f233429ef0a2))
+* sign out and delete the account ([a39e0ce](https://github.com/rasagyavatsal/HomeoRemedica-android/commit/a39e0cee478ac8be8e34d0d6dcec0e60351dbaef))
+* switch between the system, light and dark themes ([31ef6e4](https://github.com/rasagyavatsal/HomeoRemedica-android/commit/31ef6e43c6a9fe9591823f940dc588ace1be1d46))
+* sync chats through the account once its email is verified ([d3c94f4](https://github.com/rasagyavatsal/HomeoRemedica-android/commit/d3c94f4e451421e2ddc2e5f5c2309900177980f8))
+
 ## [3.1.0](https://github.com/rasagyavatsal/HomeoRemedica-android/compare/v3.0.0...v3.1.0) (2026-11-04)
 
 
