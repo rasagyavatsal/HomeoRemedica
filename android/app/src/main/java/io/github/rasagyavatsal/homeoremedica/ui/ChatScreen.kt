@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +28,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -42,6 +45,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -50,11 +57,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -104,6 +113,14 @@ import java.text.NumberFormat
 
 private val ColumnWidth = 760.dp
 
+/** The reference open in the sources panel: an answer and one of its sources. */
+private data class OpenSource(val messageId: Long, val number: Int)
+
+private val OpenSourceSaver = listSaver<OpenSource?, Long>(
+    save = { open -> open?.let { listOf(it.messageId, it.number.toLong()) }.orEmpty() },
+    restore = { saved -> OpenSource(saved[0], saved[1].toInt()) },
+)
+
 @Composable
 fun ChatScreen(viewModel: ChatViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -132,27 +149,79 @@ fun ChatScreen(
         keyboard?.hide()
         onSubmit(text)
     }
+    var openSource by rememberSaveable(stateSaver = OpenSourceSaver) { mutableStateOf(null) }
+    val open = openSource
+    val source = open?.let { state.messages.find { message -> message.id == it.messageId }?.sources?.getOrNull(it.number - 1) }
+    // Tapping the open reference again closes the panel.
+    val showSource = { messageId: Long, number: Int ->
+        val next = OpenSource(messageId, number)
+        openSource = if (openSource == next) null else next
+    }
+    val closeSource = { openSource = null }
+    BackHandler(enabled = source != null, onBack = closeSource)
+
     CompositionLocalProvider(LocalEntrances provides remember { Entrances() }) {
         BoxWithConstraints(Modifier.fillMaxSize().background(colors.bg).imePadding()) {
             val wide = maxWidth >= 640.dp
-            Column(Modifier.fillMaxSize()) {
-                Header(wide, enabled = state.canClear, onClear = onClear)
-                Box(Modifier.weight(1f).fillMaxWidth()) {
-                    var composerHeight by remember { mutableIntStateOf(0) }
-                    val bottomPadding = with(LocalDensity.current) { composerHeight.toDp() }
-                    if (state.messages.isEmpty()) {
-                        EmptyState(state.books, wide, bottomPadding, onAsk = submit)
-                    } else {
-                        Conversation(state, wide, bottomPadding, onRetry)
+            val panelWidth = if (wide) (maxWidth * 0.32f).coerceIn(288.dp, 400.dp) else minOf(400.dp, maxWidth)
+            Row(Modifier.fillMaxSize()) {
+                Column(Modifier.weight(1f).fillMaxHeight()) {
+                    Header(wide, enabled = state.canClear) {
+                        openSource = null
+                        onClear()
                     }
-                    ComposerArea(
-                        state = state,
-                        wide = wide,
-                        onDraftChange = onDraftChange,
-                        onSubmit = { submit(state.draft) },
-                        onStop = onStop,
-                        onHeightChange = { composerHeight = it },
-                        modifier = Modifier.align(Alignment.BottomCenter),
+                    Box(Modifier.weight(1f).fillMaxWidth()) {
+                        var composerHeight by remember { mutableIntStateOf(0) }
+                        val bottomPadding = with(LocalDensity.current) { composerHeight.toDp() }
+                        if (state.messages.isEmpty()) {
+                            EmptyState(state.books, wide, bottomPadding, onAsk = submit)
+                        } else {
+                            Conversation(state, wide, bottomPadding, open, showSource, onRetry)
+                        }
+                        ComposerArea(
+                            state = state,
+                            wide = wide,
+                            onDraftChange = onDraftChange,
+                            onSubmit = { submit(state.draft) },
+                            onStop = onStop,
+                            onHeightChange = { composerHeight = it },
+                            modifier = Modifier.align(Alignment.BottomCenter),
+                        )
+                    }
+                }
+                // Beside the chat on wide screens, as the web app's `.sources` column.
+                if (source != null && open != null && wide) {
+                    key(source.id) {
+                        SourcesPanel(
+                            source,
+                            open.number,
+                            closeSource,
+                            Modifier
+                                .width(panelWidth)
+                                .fillMaxHeight()
+                                .drawBehind { drawLine(colors.line, Offset.Zero, Offset(0f, size.height), 1.dp.toPx()) },
+                        )
+                    }
+                }
+            }
+            // Over the chat on narrow screens.
+            if (source != null && open != null && !wide) {
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .background(if (colors.dark) Color.Black.copy(alpha = 0.55f) else colors.ink.copy(alpha = 0.32f))
+                        .pressable(label = "Close source", onClick = closeSource),
+                )
+                key(source.id) {
+                    SourcesPanel(
+                        source,
+                        open.number,
+                        closeSource,
+                        Modifier
+                            .align(Alignment.CenterEnd)
+                            .width(panelWidth)
+                            .fillMaxHeight()
+                            .shadow(24.dp, RectangleShape, ambientColor = colors.shadow, spotColor = colors.shadow),
                     )
                 }
             }
@@ -288,7 +357,14 @@ private fun Suggestion(text: String, wide: Boolean, modifier: Modifier, onClick:
 }
 
 @Composable
-private fun Conversation(state: ChatState, wide: Boolean, bottomPadding: Dp, onRetry: () -> Unit) {
+private fun Conversation(
+    state: ChatState,
+    wide: Boolean,
+    bottomPadding: Dp,
+    openSource: OpenSource?,
+    onSource: (messageId: Long, number: Int) -> Unit,
+    onRetry: () -> Unit,
+) {
     val listState = rememberLazyListState()
     val latestQuestion = state.messages.indexOfLast { it.role == Role.User }
 
@@ -316,7 +392,8 @@ private fun Conversation(state: ChatState, wide: Boolean, bottomPadding: Dp, onR
                 Reply(
                     question,
                     message,
-                    wide,
+                    activeSource = openSource?.takeIf { it.messageId == message.id }?.number,
+                    onSource = { number -> onSource(message.id, number) },
                     onRetry = onRetry.takeIf { index == state.messages.lastIndex },
                     compacting = state.compacting && index == state.messages.lastIndex,
                     modifier = itemModifier.rise(message.id),
@@ -363,7 +440,8 @@ private fun AssistantLabel(text: String, pending: Boolean, color: Color, weight:
 private fun Reply(
     question: String,
     message: Message,
-    wide: Boolean,
+    activeSource: Int?,
+    onSource: (Int) -> Unit,
     onRetry: (() -> Unit)?,
     compacting: Boolean,
     modifier: Modifier,
@@ -382,7 +460,9 @@ private fun Reply(
         )
         else -> Column(modifier) {
             AssistantLabel("HomeoRemedica", streaming, colors.inkSoft, FontWeight.SemiBold)
-            if (message.content.isNotEmpty()) Answer(question, message.content, message.sources.orEmpty(), wide)
+            if (message.content.isNotEmpty()) {
+                Answer(question, message.content, message.sources.orEmpty(), streaming, activeSource, onSource)
+            }
             if (message.status == MessageStatus.Stopped) {
                 BasicText(
                     if (message.content.isNotEmpty()) "Stopped before the answer finished." else "Stopped.",

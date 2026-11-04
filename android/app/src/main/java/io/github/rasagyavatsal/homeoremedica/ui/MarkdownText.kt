@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
@@ -51,7 +52,7 @@ import io.github.rasagyavatsal.homeoremedica.ui.theme.Fonts
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Palette
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
 
-// Renders a parsed answer with the web app's `.answer` styles.
+// Renders a parsed answer with the web app's `.answer` styles, or a passage with its `.source-text` ones.
 
 private const val CITATION_PREFIX = "cite-"
 
@@ -68,19 +69,36 @@ fun MarkdownText(
     val colors = Theme.colors
     val body = TextStyle(color = colors.ink, fontFamily = Fonts.serif, fontSize = 17.sp, lineHeight = 1.68.em)
     Column(modifier) {
-        Blocks(blocks, body, colors, onCitation, citationLabel)
+        Blocks(blocks, body, colors, onCitation, citationLabel, passage = false)
+    }
+}
+
+/** A passage from the books: links are plain text and headings are small labels. */
+@Composable
+fun PassageText(blocks: List<Block>, modifier: Modifier = Modifier) {
+    val colors = Theme.colors
+    val body = TextStyle(color = colors.ink, fontFamily = Fonts.serif, fontSize = 15.sp, lineHeight = 1.65.em)
+    Column(modifier) {
+        Blocks(blocks, body, colors, onCitation = {}, label = { "" }, passage = true)
     }
 }
 
 @Composable
-private fun Blocks(blocks: List<Block>, style: TextStyle, colors: Palette, onCitation: (Int) -> Unit, label: CitationLabel) {
+private fun Blocks(
+    blocks: List<Block>,
+    style: TextStyle,
+    colors: Palette,
+    onCitation: (Int) -> Unit,
+    label: CitationLabel,
+    passage: Boolean,
+) {
     blocks.forEachIndexed { index, block ->
         if (index > 0) {
             val previous = blocks[index - 1]
             Spacer(
                 Modifier.height(
                     when {
-                        block is Block.Heading -> 28.dp
+                        block is Block.Heading -> if (passage) 16.dp else 28.dp
                         previous is Block.Heading -> 10.dp
                         block is Block.Rule || previous is Block.Rule -> 26.dp
                         block is Block.Quote || previous is Block.Quote -> 20.dp
@@ -89,20 +107,40 @@ private fun Blocks(blocks: List<Block>, style: TextStyle, colors: Palette, onCit
                 ),
             )
         }
-        BlockView(block, style, colors, onCitation, label)
+        BlockView(block, style, colors, onCitation, label, passage)
     }
 }
 
 @Composable
-private fun BlockView(block: Block, style: TextStyle, colors: Palette, onCitation: (Int) -> Unit, label: CitationLabel) {
+private fun BlockView(
+    block: Block,
+    style: TextStyle,
+    colors: Palette,
+    onCitation: (Int) -> Unit,
+    label: CitationLabel,
+    passage: Boolean,
+) {
     when (block) {
-        is Block.Paragraph -> InlineText(block.inlines, style, colors, onCitation, label)
+        is Block.Paragraph -> InlineText(block.inlines, style, colors, onCitation, label, links = !passage)
         is Block.Heading -> InlineText(
             block.inlines,
-            style.copy(fontSize = if (block.level == 1) 22.sp else 19.sp, lineHeight = 1.4.em, fontWeight = FontWeight.SemiBold),
+            if (passage) {
+                style.copy(
+                    color = colors.muted,
+                    fontFamily = Fonts.sans,
+                    fontSize = 12.sp,
+                    lineHeight = 1.4.em,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 0.06.em,
+                )
+            } else {
+                style.copy(fontSize = if (block.level == 1) 22.sp else 19.sp, lineHeight = 1.4.em, fontWeight = FontWeight.SemiBold)
+            },
             colors,
             onCitation,
             label,
+            links = !passage,
+            uppercase = passage,
         )
         is Block.ListBlock -> Column {
             block.items.forEachIndexed { index, item ->
@@ -114,7 +152,7 @@ private fun BlockView(block: Block, style: TextStyle, colors: Palette, onCitatio
                         modifier = Modifier.width(20.dp).alignByBaseline(),
                     )
                     Column(Modifier.padding(start = 8.dp).alignByBaseline()) {
-                        Blocks(item, style, colors, onCitation, label)
+                        Blocks(item, style, colors, onCitation, label, passage)
                     }
                 }
             }
@@ -126,7 +164,7 @@ private fun BlockView(block: Block, style: TextStyle, colors: Palette, onCitatio
                     .drawBehind { drawRect(line, size = size.copy(width = 3.dp.toPx())) }
                     .padding(start = 18.dp, top = 2.dp, bottom = 2.dp),
             ) {
-                Blocks(block.blocks, style.copy(color = colors.inkSoft, fontStyle = FontStyle.Italic), colors, onCitation, label)
+                Blocks(block.blocks, style.copy(color = colors.inkSoft, fontStyle = FontStyle.Italic), colors, onCitation, label, passage)
             }
         }
         is Block.CodeBlock -> Box(
@@ -148,8 +186,18 @@ private fun BlockView(block: Block, style: TextStyle, colors: Palette, onCitatio
 }
 
 @Composable
-private fun InlineText(inlines: List<Inline>, style: TextStyle, colors: Palette, onCitation: (Int) -> Unit, label: CitationLabel) {
-    val text = remember(inlines, colors) { annotate(inlines, colors) }
+private fun InlineText(
+    inlines: List<Inline>,
+    style: TextStyle,
+    colors: Palette,
+    onCitation: (Int) -> Unit,
+    label: CitationLabel,
+    links: Boolean,
+    uppercase: Boolean = false,
+) {
+    val text = remember(inlines, colors, links, uppercase) {
+        annotate(inlines, colors, links).let { if (uppercase) it.toUpperCase() else it }
+    }
     val numbers = remember(inlines) { citations(inlines) }
     val chips = numbers.associate { number ->
         val digits = number.toString().length
@@ -202,7 +250,7 @@ private fun citations(inlines: List<Inline>): Set<Int> = buildSet {
     }
 }
 
-private fun annotate(inlines: List<Inline>, colors: Palette): AnnotatedString = buildAnnotatedString {
+private fun annotate(inlines: List<Inline>, colors: Palette, links: Boolean): AnnotatedString = buildAnnotatedString {
     fun append(inlines: List<Inline>) {
         for (inline in inlines) {
             when (inline) {
@@ -212,7 +260,7 @@ private fun annotate(inlines: List<Inline>, colors: Palette): AnnotatedString = 
                 is Inline.Code -> withStyle(SpanStyle(fontFamily = Fonts.mono, fontSize = 0.8.em, background = colors.surfaceSunken)) {
                     append(inline.code)
                 }
-                is Inline.Link -> withLink(
+                is Inline.Link -> if (!links) append(inline.children) else withLink(
                     LinkAnnotation.Url(
                         inline.destination,
                         TextLinkStyles(SpanStyle(color = colors.accent, textDecoration = TextDecoration.Underline)),

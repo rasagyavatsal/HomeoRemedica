@@ -46,6 +46,9 @@ private val parser: Parser = Parser.builder().build()
 fun parseAnswer(markdown: String, sourceCount: Int): List<Block> =
     blocks(parser.parse(linkCitations(markdown, sourceCount)))
 
+/** Parse a passage from the books, which cites nothing. */
+fun parsePassage(markdown: String): List<Block> = blocks(parser.parse(markdown))
+
 private fun Node.children(): Sequence<Node> = generateSequence(firstChild) { it.next }
 
 private fun blocks(parent: Node): List<Block> = parent.children().mapNotNull(::block).toList()

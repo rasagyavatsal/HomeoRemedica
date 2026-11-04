@@ -48,7 +48,8 @@ object Icons {
     val Flag = icon("Flag", "M5 21V4", "M5 4h12l-2.5 4.5L17 13H5")
     val Chevron = icon("Chevron", "m9 6 6 6-6 6")
     val Stop = icon("Stop", fills = listOf("M8.5 7h7A1.5 1.5 0 0 1 17 8.5v7a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 7 15.5v-7A1.5 1.5 0 0 1 8.5 7Z"))
-    val Retry = icon("Retry", "M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4")
+    val Close = icon("Close", "M6 6l12 12M18 6 6 18")
+    val Retry =icon("Retry", "M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4")
     val Alert = icon("Alert", "M3 12a9 9 0 1 0 18 0a9 9 0 1 0-18 0", "M12 7.5v5.5m0 3.2v.1")
 }
 

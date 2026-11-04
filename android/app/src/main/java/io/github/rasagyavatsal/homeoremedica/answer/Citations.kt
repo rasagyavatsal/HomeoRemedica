@@ -37,9 +37,9 @@ fun citedNumbers(markdown: String, sourceCount: Int): Set<Int> {
     return cited
 }
 
-/** Source numbers in display order: those the answer cites first; the rest were retrieved but not used. */
-fun sourceOrder(sourceCount: Int, cited: Set<Int>): List<Int> =
-    (1..sourceCount).sortedWith(compareBy({ it !in cited }, { it }))
+/** The source numbers an answer lists as references: those it cites, or every one if it cites none. */
+fun referencedNumbers(sourceCount: Int, cited: Set<Int>): List<Int> =
+    (1..sourceCount).filter { cited.isEmpty() || it in cited }
 
 /** The remedy, or the section for passages about principles rather than a remedy. */
 val Citation.label: String get() = remedyName ?: sectionTitle

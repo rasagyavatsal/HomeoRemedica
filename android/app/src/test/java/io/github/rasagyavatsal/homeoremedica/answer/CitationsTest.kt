@@ -46,9 +46,9 @@ class CitationsTest {
     }
 
     @Test
-    fun ordersCitedSourcesFirst() {
-        assertEquals(listOf(1, 3, 2), sourceOrder(3, setOf(3, 1)))
-        assertEquals(listOf(1, 2, 3), sourceOrder(3, emptySet()))
+    fun referencesTheCitedSourcesOrAllOfThem() {
+        assertEquals(listOf(1, 3), referencedNumbers(3, setOf(3, 1)))
+        assertEquals(listOf(1, 2, 3), referencedNumbers(3, emptySet()))
     }
 
     @Test

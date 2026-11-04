@@ -27,6 +27,11 @@ class MarkdownTest {
     }
 
     @Test
+    fun leavesLabelsInAPassageAsText() {
+        assertEquals(listOf(Paragraph(listOf(Text("Compare [1].")))), parsePassage("Compare [1].").joined())
+    }
+
+    @Test
     fun dropsRawHtml() {
         assertEquals(
             listOf(Paragraph(listOf(Strong(listOf(Text("Bold"))), Text(" and safe")))).toString(),
