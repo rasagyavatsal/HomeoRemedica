@@ -19,7 +19,6 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -98,32 +97,6 @@ class ChatViewModelTest {
         assertEquals("", state.error)
         assertEquals(listOf("Pulsatilla?", "Mild."), state.messages.map { it.content })
         assertEquals(listOf("Pulsatilla?", "Pulsatilla?"), chatRequests.map { it.message })
-    }
-
-    @Test
-    fun handlesCommandsLocally() = runTest {
-        val vm = viewModel()
-        answer("Mild.", listOf(ChatTurn(Role.User, "Pulsatilla?"), ChatTurn(Role.Assistant, "Mild.")))
-        vm.submit("Pulsatilla?")
-        vm.settled()
-
-        vm.submit("/nope")
-        assertEquals("Unknown command. Use /clear or /quit.", vm.state.value.error)
-        vm.submit("/quit")
-        assertTrue(vm.state.value.ended)
-        vm.submit("Ignored while ended")
-        vm.clearConversation()
-        val state = vm.state.value
-        assertFalse(state.ended)
-        assertTrue(state.messages.isEmpty() && state.history.isEmpty())
-        assertEquals(1, chatRequests.size)
-    }
-
-    @Test
-    fun matchesCommandsAsTheyAreTyped() {
-        assertEquals(listOf("/clear", "/quit"), ChatState(draft = "/").commandMatches.map { it.name })
-        assertEquals(listOf("/clear"), ChatState(draft = "/cl").commandMatches.map { it.name })
-        assertTrue(ChatState(draft = "/clear now").commandMatches.isEmpty())
     }
 
     @Test

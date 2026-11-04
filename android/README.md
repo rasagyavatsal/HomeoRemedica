@@ -24,7 +24,7 @@ It keeps the web app's behaviour and look:
 - **Answers:** CommonMark without raw HTML. `[1]` and `[1, 2]` labels become chips that open, highlight
   and scroll to their source.
 - **Sources:** cited sources come first; the rest are marked *Not cited*.
-- **Composer:** Enter sends, Shift+Enter adds a line, and `/clear`, `/quit` and `/exit` run locally.
+- **Composer:** Enter sends and Shift+Enter adds a line.
 - **Session:** like the web app's tab session, a conversation survives rotation and the system ending the
   process in the background. A fresh launch starts a new one.
 

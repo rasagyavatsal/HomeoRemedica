@@ -21,13 +21,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-data class Command(val name: String, val description: String)
-
-val COMMANDS = listOf(
-    Command("/clear", "Start a new conversation"),
-    Command("/quit", "End this session"),
-)
-
 val SUGGESTIONS = listOf(
     "What are the keynote symptoms of Arsenicum album?",
     "Compare Bryonia and Rhus toxicodendron for joint pain.",
@@ -49,15 +42,10 @@ data class ChatState(
     val draft: String = "",
     val live: LiveExchange? = null,
     val error: String = "",
-    val ended: Boolean = false,
 ) {
     val pending: Boolean get() = live != null
 
-    /** Commands whose names start with a draft such as `/` or `/cl`. */
-    val commandMatches: List<Command>
-        get() = if (Regex("""^/\S*$""").matches(draft)) COMMANDS.filter { it.name.startsWith(draft) } else emptyList()
-
-    val canClear: Boolean get() = !pending && (messages.isNotEmpty() || draft.isNotEmpty() || ended)
+    val canClear: Boolean get() = !pending && (messages.isNotEmpty() || draft.isNotEmpty())
 }
 
 class ChatViewModel(
@@ -103,11 +91,8 @@ class ChatViewModel(
     fun submit(text: String = _state.value.draft) {
         val message = text.trim()
         val current = _state.value
-        if (message.isEmpty() || current.pending || current.ended) return
-        _state.update { it.copy(error = "") }
-        if (message.startsWith("/")) return runCommand(message)
-
-        _state.update { it.copy(draft = text, live = LiveExchange(message)) }
+        if (message.isEmpty() || current.pending) return
+        _state.update { it.copy(draft = text, error = "", live = LiveExchange(message)) }
         viewModelScope.launch {
             try {
                 val response = api.sendMessage(
@@ -134,18 +119,9 @@ class ChatViewModel(
         }
     }
 
-    fun runCommand(command: String) {
-        _state.update { it.copy(error = "") }
-        when (command) {
-            "/clear" -> clearConversation()
-            "/quit", "/exit" -> _state.update { it.copy(ended = true, draft = "") }
-            else -> _state.update { it.copy(error = "Unknown command. Use /clear or /quit.") }
-        }
-    }
-
     fun clearConversation() {
         if (_state.value.pending) return
-        _state.update { it.copy(messages = emptyList(), history = emptyList(), draft = "", error = "", ended = false) }
+        _state.update { it.copy(messages = emptyList(), history = emptyList(), draft = "", error = "") }
     }
 
     private companion object {

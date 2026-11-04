@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -46,16 +45,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -85,13 +80,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.rasagyavatsal.homeoremedica.BuildConfig
 import io.github.rasagyavatsal.homeoremedica.api.Book
 import io.github.rasagyavatsal.homeoremedica.api.Citation
 import io.github.rasagyavatsal.homeoremedica.api.Role
 import io.github.rasagyavatsal.homeoremedica.chat.ChatState
 import io.github.rasagyavatsal.homeoremedica.chat.ChatViewModel
-import io.github.rasagyavatsal.homeoremedica.chat.Command
 import io.github.rasagyavatsal.homeoremedica.chat.SUGGESTIONS
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Fonts
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
@@ -107,7 +100,6 @@ fun ChatScreen(viewModel: ChatViewModel) {
         state = state,
         onDraftChange = viewModel::updateDraft,
         onSubmit = viewModel::submit,
-        onCommand = viewModel::runCommand,
         onClear = viewModel::clearConversation,
     )
 }
@@ -117,13 +109,12 @@ fun ChatScreen(
     state: ChatState,
     onDraftChange: (String) -> Unit,
     onSubmit: (String) -> Unit,
-    onCommand: (String) -> Unit,
     onClear: () -> Unit,
 ) {
     val colors = Theme.colors
     val keyboard = LocalSoftwareKeyboardController.current
     val submit = { text: String ->
-        if (!text.trim().startsWith("/")) keyboard?.hide()
+        keyboard?.hide()
         onSubmit(text)
     }
     CompositionLocalProvider(LocalEntrances provides remember { Entrances() }) {
@@ -135,7 +126,7 @@ fun ChatScreen(
                     var composerHeight by remember { mutableIntStateOf(0) }
                     val bottomPadding = with(LocalDensity.current) { composerHeight.toDp() }
                     if (state.messages.isEmpty() && !state.pending) {
-                        if (!state.ended) EmptyState(state.books, wide, bottomPadding, onAsk = submit)
+                        EmptyState(state.books, wide, bottomPadding, onAsk = submit)
                     } else {
                         Conversation(state, wide, bottomPadding)
                     }
@@ -144,8 +135,6 @@ fun ChatScreen(
                         wide = wide,
                         onDraftChange = onDraftChange,
                         onSubmit = { submit(state.draft) },
-                        onCommand = onCommand,
-                        onClear = onClear,
                         onHeightChange = { composerHeight = it },
                         modifier = Modifier.align(Alignment.BottomCenter),
                     )
@@ -398,13 +387,10 @@ private fun ComposerArea(
     wide: Boolean,
     onDraftChange: (String) -> Unit,
     onSubmit: () -> Unit,
-    onCommand: (String) -> Unit,
-    onClear: () -> Unit,
     onHeightChange: (Int) -> Unit,
     modifier: Modifier,
 ) {
     val colors = Theme.colors
-    val focus = remember { FocusRequester() }
     Column(
         modifier
             .fillMaxWidth()
@@ -414,13 +400,6 @@ private fun ComposerArea(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(Modifier.widthIn(max = ColumnWidth - 48.dp).fillMaxWidth()) {
-            val matches = state.commandMatches
-            if (matches.isNotEmpty() && !state.ended) {
-                CommandMenu(matches, Modifier.padding(top = 14.dp).offset(y = 6.dp)) { name ->
-                    onCommand(name)
-                    focus.requestFocus()
-                }
-            }
             Column(
                 Modifier
                     .onSizeChanged { onHeightChange(it.height) }
@@ -428,27 +407,14 @@ private fun ComposerArea(
                     .padding(top = if (wide) 18.dp else 14.dp, bottom = if (wide) 16.dp else 10.dp),
             ) {
                 if (state.error.isNotEmpty()) ErrorMessage(state.error)
-                if (state.ended) {
-                    EndedSession(onClear)
-                } else {
-                    Composer(state, wide, focus, onDraftChange, onSubmit)
-                }
-                Row(Modifier.padding(top = 10.dp, start = 6.dp, end = 6.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    val footer = TextStyle(color = colors.faint, fontFamily = Fonts.sans, fontSize = 11.sp, lineHeight = 1.4.em)
-                    BasicText(
-                        "Historical reference only — not medical advice. For health decisions, consult a qualified clinician.",
-                        style = footer,
-                        modifier = Modifier.weight(1f),
-                    )
-                    BasicText("v${BuildConfig.VERSION_NAME}", style = footer)
-                }
+                Composer(state, wide, onDraftChange, onSubmit)
             }
         }
     }
 }
 
 @Composable
-private fun Composer(state: ChatState, wide: Boolean, focus: FocusRequester, onDraftChange: (String) -> Unit, onSubmit: () -> Unit) {
+private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) -> Unit, onSubmit: () -> Unit) {
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val focused by interactions.collectIsFocusedAsState()
@@ -482,7 +448,6 @@ private fun Composer(state: ChatState, wide: Boolean, focus: FocusRequester, onD
             modifier = Modifier
                 .weight(1f)
                 .heightIn(min = 36.dp, max = 200.dp)
-                .focusRequester(focus)
                 .onPreviewKeyEvent { event ->
                     // Enter sends; Shift+Enter adds a line.
                     val enter = event.key == Key.Enter || event.key == Key.NumPadEnter
@@ -541,45 +506,6 @@ private fun SendButton(enabled: Boolean, onClick: () -> Unit) {
     }
 }
 
-@Composable
-private fun CommandMenu(commands: List<Command>, modifier: Modifier, onCommand: (String) -> Unit) {
-    val colors = Theme.colors
-    val shape = RoundedCornerShape(14.dp)
-    Column(
-        modifier
-            .fillMaxWidth()
-            .rise(remember { Any() }, 160)
-            .shadowMedium(shape, colors.shadow)
-            .background(colors.surface, shape)
-            .border(1.dp, colors.line, shape)
-            .padding(6.dp)
-            .semantics { contentDescription = "Commands" },
-    ) {
-        for (command in commands) {
-            val interactions = remember(command.name) { MutableInteractionSource() }
-            val pressed by interactions.pressed()
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .background(if (pressed) colors.surfaceHover else Color.Transparent, RoundedCornerShape(8.dp))
-                    .pressable(label = command.description, interactionSource = interactions) { onCommand(command.name) }
-                    .padding(horizontal = 10.dp, vertical = 9.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                BasicText(
-                    command.name,
-                    style = TextStyle(color = colors.accent, fontFamily = Fonts.mono, fontSize = 12.5.sp),
-                    modifier = Modifier.widthIn(min = 56.dp).alignByBaseline(),
-                )
-                BasicText(
-                    command.description,
-                    style = TextStyle(color = if (pressed) colors.ink else colors.muted, fontFamily = Fonts.sans, fontSize = 13.sp),
-                    modifier = Modifier.alignByBaseline(),
-                )
-            }
-        }
-    }
-}
 
 @Composable
 private fun ErrorMessage(message: String) {
@@ -598,30 +524,5 @@ private fun ErrorMessage(message: String) {
     ) {
         Icon(Icons.Alert, colors.danger, 16.dp, Modifier.padding(top = 2.dp))
         BasicText(message, style = TextStyle(color = colors.danger, fontFamily = Fonts.sans, fontSize = 13.5.sp, lineHeight = 1.5.em))
-    }
-}
-
-@Composable
-private fun EndedSession(onClear: () -> Unit) {
-    val colors = Theme.colors
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .drawBehind {
-                val stroke = 1.dp.toPx()
-                drawRoundRect(
-                    colors.lineStrong,
-                    topLeft = Offset(stroke / 2, stroke / 2),
-                    size = Size(size.width - stroke, size.height - stroke),
-                    cornerRadius = CornerRadius(20.dp.toPx()),
-                    style = Stroke(stroke, pathEffect = PathEffect.dashPathEffect(floatArrayOf(4.dp.toPx(), 3.dp.toPx()))),
-                )
-            }
-            .padding(start = 20.dp, end = 14.dp, top = 14.dp, bottom = 14.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        BasicText("Session ended.", style = TextStyle(color = colors.muted, fontFamily = Fonts.sans, fontSize = 14.sp))
-        PillButton("Start new chat", ButtonStyle.Primary, onClear)
     }
 }
