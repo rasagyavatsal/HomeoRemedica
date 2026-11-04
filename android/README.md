@@ -6,7 +6,7 @@ same seven books and shows the same cited answers as the web app. Historical ref
 advice.
 
 **Stack:** Kotlin · Jetpack Compose (foundation only, no Material) · OkHttp · kotlinx.serialization ·
-commonmark-java
+commonmark-java · Firebase Authentication · Credential Manager
 
 ## How it works
 
@@ -17,6 +17,11 @@ The app is a client of the web app's API, so it holds no provider keys:
   safe `detail`.
 - `POST /api/chat/compact` condenses a chat's earlier turns into a `summary`, sent with later questions,
   once the history nears the server's 20-turn or 16,000-character limit.
+
+Signed in, the saved-chat endpoints take a Firebase ID token as `Authorization: Bearer <token>`:
+`GET /api/chats`, `GET`, `PUT` and `DELETE /api/chats/:id`, `GET /api/chats/:id/feedback`,
+`PUT /api/feedback/:id` for one answer's ratings, and `DELETE /api/account`. Saving and rating need a
+verified email address.
 
 The server enforces the rate limits, per client and for all users together each day, and the app shows
 its messages on the failed answer.
@@ -37,6 +42,12 @@ It keeps the web app's behaviour and look:
   wide screens and slides over it on phones.
 - **Practitioners:** a notice on first launch says who the app is for. The account menu links the Privacy
   Policy and Terms of Use and shows the version.
+- **Accounts:** sign in with email or Google, create an account, or have a password-reset link sent. Email
+  sign-ups are sent a verification link, which the menu can send again; the app checks for it each time
+  it comes back. Once the email is verified, the device's chats move into the account and chats sync
+  through it. The menu signs out and deletes the account with its chats.
+- **Ratings:** signed in with a verified email, answers can be rated up or down. Rating one opens a box
+  for a comment, with reasons to pick for an answer rated down. A passage can be rated from its panel.
 
 ## Build
 
@@ -56,9 +67,19 @@ the web app with `npm start` and pass its address:
 
 Debug builds allow plain HTTP to `10.0.2.2` and `localhost` only; release builds require HTTPS.
 
+Accounts need the web app's Firebase project. Without `app/google-services.json` the app builds without
+them and keeps chats on the device, as the web app does when its server has no accounts. To turn them on:
+
+1. Add an Android app with the package `com.rasagyavatsal.homeoremedica` to the Firebase project, with
+   the SHA-1 fingerprints of the debug key, the upload key and Play's app signing key, so Google sign-in
+   accepts the builds.
+2. Download its `google-services.json` into `app/`.
+
+- `app/src/main/java/.../account/`: Firebase sign-in and the account view model.
 - `app/src/main/java/.../api/`: the API contracts and the streaming client.
 - `app/src/main/java/.../answer/`: citation linking and Markdown parsing.
-- `app/src/main/java/.../chat/`: the chat view model and the saved chats.
+- `app/src/main/java/.../chat/`: the chat view model, the saved chats on the device or the account, and
+  ratings.
 - `app/src/main/java/.../ui/`: the design system and screens.
 
 ## Releases
