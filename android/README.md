@@ -23,8 +23,8 @@ its messages on the failed answer.
 
 It keeps the web app's behaviour and look:
 
-- **Design:** the palette, type and motion of `styles.css`, in light and dark, drawn with Compose
-  foundation rather than Material components.
+- **Design:** the design tokens of `tokens.css` and the potency drop logo, drawn with Compose foundation
+  rather than Material components. A toggle steps through the system, light and dark themes.
 - **Welcome:** the tagline's words rise in over drifting glows, and the composer follows them.
 - **Answers:** CommonMark without raw HTML. While an answer is on its way, a label says whether the books
   are being searched or read. It can be stopped, and a failed one asked again.
@@ -32,8 +32,11 @@ It keeps the web app's behaviour and look:
   that passage, beside the chat on wide screens and over it on phones.
 - **Composer:** Enter sends and Shift+Enter adds a line. Questions stop at 4,000 characters, with a
   counter from 3,500.
-- **Session:** like the web app's tab session, a conversation survives rotation and the system ending the
-  process in the background. A fresh launch starts a new one.
+- **Chats:** up to 50 are saved on the device, and the app reopens the last one. The chats drawer starts
+  a new chat, searches them from six on, groups them by age and deletes them. It sits beside the chat on
+  wide screens and slides over it on phones.
+- **Practitioners:** a notice on first launch says who the app is for. The account menu links the Privacy
+  Policy and Terms of Use and shows the version.
 
 ## Build
 
@@ -55,7 +58,7 @@ Debug builds allow plain HTTP to `10.0.2.2` and `localhost` only; release builds
 
 - `app/src/main/java/.../api/`: the API contracts and the streaming client.
 - `app/src/main/java/.../answer/`: citation linking and Markdown parsing.
-- `app/src/main/java/.../chat/`: the chat view model and conversation store.
+- `app/src/main/java/.../chat/`: the chat view model and the saved chats.
 - `app/src/main/java/.../ui/`: the design system and screens.
 
 ## Releases
