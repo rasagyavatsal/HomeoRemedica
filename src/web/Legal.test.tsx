@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { LegalPage, legalPage } from './Legal.tsx'
@@ -19,7 +19,10 @@ describe('legal pages', () => {
       'href',
       'mailto:rasagyavatsal16@gmail.com',
     )
-    expect(screen.getByRole('link', { name: 'Terms of Use' })).toHaveAttribute('href', '/terms')
+    const tabs = within(screen.getByRole('navigation', { name: 'Legal' }))
+    expect(tabs.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute('aria-current', 'page')
+    expect(tabs.getByRole('link', { name: 'Terms of Use' })).toHaveAttribute('href', '/terms')
+    expect(screen.getByRole('link', { name: 'Back to HomeoRemedica' })).toHaveAttribute('href', '/')
     expect(document.title).toBe('Privacy Policy · HomeoRemedica')
   })
 
@@ -27,8 +30,8 @@ describe('legal pages', () => {
     render(<LegalPage page="terms" />)
     expect(screen.getByRole('heading', { level: 1, name: 'Terms of Use' })).toBeInTheDocument()
     expect(screen.getByText(/Courts in Mandi, Himachal Pradesh have exclusive jurisdiction/)).toBeInTheDocument()
-    expect(screen.getByRole('navigation', { name: 'Legal' })).toContainElement(
-      screen.getAllByRole('link', { name: 'Privacy Policy' }).at(-1)!,
-    )
+    const tabs = within(screen.getByRole('navigation', { name: 'Legal' }))
+    expect(tabs.getByRole('link', { name: 'Terms of Use' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getAllByRole('link', { name: 'Privacy Policy' }).at(-1)).toHaveAttribute('href', '/privacy')
   })
 })

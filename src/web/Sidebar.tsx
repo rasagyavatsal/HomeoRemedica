@@ -116,7 +116,7 @@ export function Sidebar({ chats, activeId, onNew, onOpen, onDelete, onClose, foo
 
       <div className="sidebar-footer">
         {footer}
-        <p className="legal-links">
+        <p className="sidebar-legal">
           <LegalLinks separator="·" />
         </p>
       </div>

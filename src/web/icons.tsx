@@ -24,6 +24,8 @@ function icon(paths: ReactNode) {
 }
 
 export const ArrowUpIcon = icon(<path d="M12 19V5m-6 6 6-6 6 6" />)
+export const ArrowLeftIcon = icon(<path d="M19 12H5m6-6-6 6 6 6" />)
+export const ArrowRightIcon = icon(<path d="M5 12h14m-6-6 6 6-6 6" />)
 export const StopIcon = icon(<rect x="7" y="7" width="10" height="10" rx="1.5" fill="currentColor" stroke="none" />)
 export const CloseIcon = icon(<path d="M6 6l12 12M18 6 6 18" />)
 export const PlusIcon = icon(<path d="M12 5v14M5 12h14" />)

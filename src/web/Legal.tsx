@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { DropMark } from './icons.tsx'
+import { ArrowLeftIcon, ArrowRightIcon, DropMark } from './icons.tsx'
 import { ThemeToggle } from './ThemeToggle.tsx'
 
 export type LegalPageName = 'privacy' | 'terms'
@@ -46,7 +46,16 @@ export function LegalPage({ page }: { page: LegalPageName }) {
             <span className="brand-name-accent">Homeo</span>Remedica
           </span>
         </a>
-        <ThemeToggle />
+        <div className="legal-header-tools">
+          <nav className="legal-tabs" aria-label="Legal">
+            {(['privacy', 'terms'] as const).map((name) => (
+              <a key={name} href={`/${name}`} className="legal-tab" aria-current={name === page ? 'page' : undefined}>
+                {TITLES[name]}
+              </a>
+            ))}
+          </nav>
+          <ThemeToggle />
+        </div>
       </header>
       <main className="reading">
         <article className="prose legal-body">
@@ -54,10 +63,16 @@ export function LegalPage({ page }: { page: LegalPageName }) {
           <p className="legal-effective">Effective {EFFECTIVE}</p>
           {page === 'privacy' ? <Privacy /> : <Terms />}
         </article>
-        <nav className="legal-nav" aria-label="Legal">
-          <a href={`/${other}`}>{TITLES[other]}</a>
-          <a href="/">Back to HomeoRemedica</a>
-        </nav>
+        <footer className="legal-footer">
+          <a href="/" className="button button-outline">
+            <ArrowLeftIcon />
+            Back to HomeoRemedica
+          </a>
+          <a href={`/${other}`} className="button button-quiet">
+            {TITLES[other]}
+            <ArrowRightIcon />
+          </a>
+        </footer>
       </main>
     </div>
   )
