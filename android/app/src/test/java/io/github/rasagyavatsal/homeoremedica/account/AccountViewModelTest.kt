@@ -6,6 +6,7 @@ import io.github.rasagyavatsal.homeoremedica.api.Role
 import io.github.rasagyavatsal.homeoremedica.chat.AccountLibrary
 import io.github.rasagyavatsal.homeoremedica.chat.ChatLibrary
 import io.github.rasagyavatsal.homeoremedica.chat.ChatSummary
+import io.github.rasagyavatsal.homeoremedica.chat.LastChat
 import io.github.rasagyavatsal.homeoremedica.chat.Message
 import io.github.rasagyavatsal.homeoremedica.chat.MessageStatus
 import io.github.rasagyavatsal.homeoremedica.chat.SavedChat
@@ -40,6 +41,7 @@ import java.util.Collections
 class AccountViewModelTest {
     private val server = MockWebServer()
     private val requests = Collections.synchronizedList(mutableListOf<RecordedRequest>())
+    private var failDeletes = false
     /** Chat ids the server refuses to save. */
     private val refused = mutableSetOf<String>()
     private val local = MemoryLibrary()
@@ -54,6 +56,8 @@ class AccountViewModelTest {
                 val id = request.path!!.substringAfterLast('/')
                 return when {
                     request.method == "PUT" && id in refused -> MockResponse().setResponseCode(413).setBody("""{"detail":"This chat is too long to save."}""")
+                    request.method == "DELETE" && failDeletes ->
+                        MockResponse().setResponseCode(500).setBody("""{"detail":"Your saved chats could not be reached. Please try again."}""")
                     request.method == "PUT" -> MockResponse().setBody("""{"id":"$id","title":"T","updatedAt":1}""")
                     request.path == "/api/chats" -> MockResponse().setBody("""{"chats":[]}""")
                     else -> MockResponse().setResponseCode(204)
@@ -69,9 +73,21 @@ class AccountViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel(auth: AuthClient?) = AccountViewModel(auth, workspace, local) { client ->
-        AccountLibrary(HomeoRemedicaApi(server.url("/").toString()), client::token)
+    private val lastChat = object : LastChat {
+        var id: String? = "open"
+        override fun get() = id
+        override fun set(id: String?) {
+            this.id = id
+        }
     }
+
+    private fun viewModel(auth: AuthClient?) = AccountViewModel(
+        auth,
+        workspace,
+        local,
+        remote = { client -> AccountLibrary(HomeoRemedicaApi(server.url("/").toString()), client::token) },
+        lastChat = lastChat,
+    )
 
     private val verified = Account("u1", "a@b.co", null, verified = true)
     private val unverified = verified.copy(verified = false)
@@ -156,6 +172,28 @@ class AccountViewModelTest {
         workspace.awaitAccount()
         auth.signOut()
         assertEquals(Use(local, fresh = true), workspace.uses.last())
+    }
+
+    @Test
+    fun deletesTheAccountThenSignsOut() = runBlocking {
+        val auth = FakeAuth(unverified)
+        viewModel(auth).deleteAccount()
+        val delete = requests.single { it.method == "DELETE" }
+        assertEquals("/api/account", delete.path)
+        assertEquals("Bearer token-u1", delete.getHeader("Authorization"))
+        assertEquals(listOf("signOut"), auth.calls)
+        assertNull(lastChat.id)
+        assertEquals("Your account and its chats were deleted.", workspace.notices.last())
+    }
+
+    @Test
+    fun keepsTheAccountWhenItCouldNotBeDeleted() = runBlocking {
+        val auth = FakeAuth(unverified)
+        failDeletes = true
+        val failure = runCatching { viewModel(auth).deleteAccount() }.exceptionOrNull()
+        assertEquals("Your saved chats could not be reached. Please try again.", failure?.message)
+        assertTrue(auth.calls.isEmpty())
+        assertEquals("open", lastChat.id)
     }
 
     @Test

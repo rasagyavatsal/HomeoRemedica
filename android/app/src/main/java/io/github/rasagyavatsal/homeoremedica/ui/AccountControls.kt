@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,8 +46,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
+import kotlinx.coroutines.launch
 import io.github.rasagyavatsal.homeoremedica.BuildConfig
 import io.github.rasagyavatsal.homeoremedica.account.Account
+import io.github.rasagyavatsal.homeoremedica.api.ApiException
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Fonts
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
 
@@ -61,6 +64,9 @@ fun AccountControls(
     account: Account?,
     onSignIn: (() -> Unit)?,
     onResendVerification: () -> Unit,
+    onSignOut: () -> Unit,
+    /** Asks first, in [DeleteAccountDialog]. */
+    onDeleteAccount: () -> Unit,
 ) {
     val colors = Theme.colors
     if (account == null) {
@@ -85,6 +91,43 @@ fun AccountControls(
     ) {
         MenuSeparator()
         if (!account.verified) MenuItem(Icons.Mail, "Resend verification email", onClick = onResendVerification)
+        MenuItem(Icons.SignOut, "Sign out", onClick = onSignOut)
+        MenuItem(Icons.Trash, "Delete account…", danger = true, onClick = onDeleteAccount)
+    }
+}
+
+/** Confirms deleting the account; [onDelete] throws [ApiException] with a message to show if it fails. */
+@Composable
+fun DeleteAccountDialog(onDelete: suspend () -> Unit, onClose: () -> Unit) {
+    val scope = rememberCoroutineScope()
+    var working by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<String?>(null) }
+    Dialog(
+        "Delete your account?",
+        { if (!working) onClose() },
+        description = "This permanently deletes the account and every chat saved to it. It cannot be undone.",
+    ) {
+        error?.let { FormMessage(it) }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
+            Button("Cancel", ButtonStyle.Quiet, onClose, enabled = !working, raised = true)
+            Button(
+                if (working) "Deleting…" else "Delete account",
+                ButtonStyle.Danger,
+                {
+                    working = true
+                    error = null
+                    scope.launch {
+                        try {
+                            onDelete()
+                        } catch (failure: ApiException) {
+                            error = failure.message
+                            working = false
+                        }
+                    }
+                },
+                enabled = !working,
+            )
+        }
     }
 }
 

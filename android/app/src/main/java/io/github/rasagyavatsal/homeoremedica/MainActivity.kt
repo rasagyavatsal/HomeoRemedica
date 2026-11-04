@@ -29,6 +29,7 @@ import io.github.rasagyavatsal.homeoremedica.chat.ChatViewModel
 import io.github.rasagyavatsal.homeoremedica.chat.FileChatLibrary
 import io.github.rasagyavatsal.homeoremedica.ui.AccountControls
 import io.github.rasagyavatsal.homeoremedica.ui.AuthDialog
+import io.github.rasagyavatsal.homeoremedica.ui.DeleteAccountDialog
 import io.github.rasagyavatsal.homeoremedica.ui.ChatScreen
 import io.github.rasagyavatsal.homeoremedica.ui.LegalPage
 import io.github.rasagyavatsal.homeoremedica.ui.LegalPageName
@@ -56,9 +57,13 @@ class MainActivity : ComponentActivity() {
         viewModelFactory {
             initializer {
                 val local = FileChatLibrary(File(noBackupFilesDir, "chats.json"))
-                AccountViewModel(FirebaseAuthClient.create(applicationContext), viewModel, local) { auth ->
-                    AccountLibrary(api, auth::token)
-                }
+                AccountViewModel(
+                    FirebaseAuthClient.create(applicationContext),
+                    viewModel,
+                    local,
+                    remote = { auth -> AccountLibrary(api, auth::token) },
+                    lastChat = preferences.lastChat,
+                )
             }
         }
     }
@@ -92,6 +97,7 @@ class MainActivity : ComponentActivity() {
             var legal by rememberSaveable { mutableStateOf<LegalPageName?>(null) }
             var notice by remember { mutableStateOf(!preferences.noticeAcknowledged) }
             var signingIn by rememberSaveable { mutableStateOf(false) }
+            var deleting by rememberSaveable { mutableStateOf(false) }
             val account by accounts.state.collectAsStateWithLifecycle()
             // A verification made from the link in the email shows when the app comes back.
             LifecycleResumeEffect(Unit) {
@@ -105,10 +111,21 @@ class MainActivity : ComponentActivity() {
                             account.account,
                             onSignIn = if (account.available) ({ signingIn = true }) else null,
                             onResendVerification = accounts::resendVerification,
+                            onSignOut = accounts::signOut,
+                            onDeleteAccount = { deleting = true },
                         )
                     }
                     val auth = accounts.auth
                     if (signingIn && auth != null) AuthDialog(auth) { signingIn = false }
+                    if (deleting && account.account != null) {
+                        DeleteAccountDialog(
+                            onDelete = {
+                                accounts.deleteAccount()
+                                deleting = false
+                            },
+                            onClose = { deleting = false },
+                        )
+                    }
                     if (notice) {
                         PractitionerNotice {
                             preferences.acknowledgeNotice()

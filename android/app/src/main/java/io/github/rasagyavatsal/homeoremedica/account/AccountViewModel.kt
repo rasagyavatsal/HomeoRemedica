@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.rasagyavatsal.homeoremedica.chat.AccountLibrary
 import io.github.rasagyavatsal.homeoremedica.chat.ChatLibrary
+import io.github.rasagyavatsal.homeoremedica.chat.LastChat
 import io.github.rasagyavatsal.homeoremedica.chat.Workspace
 import io.github.rasagyavatsal.homeoremedica.chat.moveIntoAccount
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +34,7 @@ class AccountViewModel(
     private val local: ChatLibrary,
     /** The signed-in account's chats. */
     private val remote: (AuthClient) -> AccountLibrary,
+    private val lastChat: LastChat,
 ) : ViewModel() {
     val state: StateFlow<AccountState> = (auth?.account ?: MutableStateFlow(null))
         .map { AccountState(auth != null, it) }
@@ -79,6 +81,31 @@ class AccountViewModel(
                 // Checked again the next time the app returns.
             }
         }
+    }
+
+    fun signOut() {
+        val auth = auth ?: return
+        viewModelScope.launch {
+            try {
+                auth.signOut()
+            } catch (failure: AuthException) {
+                workspace.notify("Signing out failed. ${failure.message ?: "Please try again."}")
+            }
+        }
+    }
+
+    /** Delete the account and every chat saved to it; throws [ApiException] with a message to show if it cannot. */
+    suspend fun deleteAccount() {
+        val auth = auth ?: return
+        // An unverified account has no chats in it yet, but can still be deleted.
+        remote(auth).deleteAccount()
+        lastChat.set(null)
+        try {
+            auth.signOut()
+        } catch (_: AuthException) {
+            // The account is gone either way.
+        }
+        workspace.notify("Your account and its chats were deleted.")
     }
 
     fun resendVerification() {
