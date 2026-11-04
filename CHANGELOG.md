@@ -7,6 +7,34 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [9.5.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.4.0...HomeoRemedica-v9.5.0) (2026-11-04)
+
+
+### Features
+
+* **server:** compact a chat's context into a summary ([c3ef360](https://github.com/rasagyavatsal/HomeoRemedica/commit/c3ef360faec7ce3113a1a2cf5efecbe3d58abe26))
+* **web:** add a privacy policy and terms of use ([764be0f](https://github.com/rasagyavatsal/HomeoRemedica/commit/764be0fc63e62652599df46a072d8cbfa4e9c46f))
+* **web:** compact long chats automatically and hide the context meter ([ac2a213](https://github.com/rasagyavatsal/HomeoRemedica/commit/ac2a213afc98019797e42fdc02d9b33252986422))
+* **web:** lay out references as a grid on phones ([4daee9b](https://github.com/rasagyavatsal/HomeoRemedica/commit/4daee9b357280041653a0ded23dad146a988407a))
+* **web:** remove the disclaimer under the composer ([5275895](https://github.com/rasagyavatsal/HomeoRemedica/commit/5275895918bb6330090a986bd3aa4383d7baa668))
+* **web:** restyle the legal page navigation to match the app ([3436b3f](https://github.com/rasagyavatsal/HomeoRemedica/commit/3436b3f0ac3f00a30d40e06f4cbbbeefce5a550b))
+* **web:** say why to sign in from the guest menu ([8829c89](https://github.com/rasagyavatsal/HomeoRemedica/commit/8829c89a5bb90ab7823822d582ac0518c9a0da31))
+* **web:** show a guest profile and move legal links into the account menu ([0b5dd7a](https://github.com/rasagyavatsal/HomeoRemedica/commit/0b5dd7aed2f1a5dc74fc9b3e9237af411f83a036))
+* **web:** show a practitioners-only notice on first visit ([048b33d](https://github.com/rasagyavatsal/HomeoRemedica/commit/048b33d9ecf4fc044084831c6ddeb4c909a068b6))
+* **web:** show how full the context is and compact it ([746eaff](https://github.com/rasagyavatsal/HomeoRemedica/commit/746eaff53f10461f526594641eaef1f4218400d1))
+* **web:** show only the context percentage ([8b76181](https://github.com/rasagyavatsal/HomeoRemedica/commit/8b76181c4c18e52dc069b9c1be165e4883b2d946))
+
+
+### Bug Fixes
+
+* **web:** focus the intended control when a dialog opens ([a4ef1fb](https://github.com/rasagyavatsal/HomeoRemedica/commit/a4ef1fb352eb94705ee0ba8e08384b5515a8d438))
+
+
+### Performance Improvements
+
+* **server:** cache built web assets for a year ([bfb911a](https://github.com/rasagyavatsal/HomeoRemedica/commit/bfb911af7ffefb46498b6cc73557803c96115e57))
+* **web:** load the Markdown renderer after the first screen ([6eb8b7c](https://github.com/rasagyavatsal/HomeoRemedica/commit/6eb8b7c3c210ac4872cb66a8663e81aabdd562e1))
+
 ## [9.4.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.3.0...HomeoRemedica-v9.4.0) (2026-11-03)
 
 
