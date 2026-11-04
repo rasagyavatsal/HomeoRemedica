@@ -350,7 +350,6 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
                 )
               }
             />
-            <p className="disclaimer">Historical reference only — not medical advice. For symptoms, see a qualified practitioner.</p>
           </div>
         </footer>
       </main>

@@ -265,13 +265,6 @@ ul {
   background: linear-gradient(to bottom, transparent, var(--color-canvas) var(--space-md));
 }
 
-.disclaimer {
-  margin-top: var(--space-xs);
-  color: var(--color-text-subtle);
-  font-size: var(--text-xs);
-  text-align: center;
-}
-
 /* ---- Sidebar ------------------------------------------------------------ */
 
 .sidebar-slot {
