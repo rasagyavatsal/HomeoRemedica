@@ -56,23 +56,23 @@ fun SourcesPanel(source: Citation, number: Int, onClose: () -> Unit, modifier: M
             ) {
                 BasicText(
                     number.toString(),
-                    style = TextStyle(color = colors.accentInk, fontFamily = Fonts.sans, fontSize = 12.sp, fontWeight = FontWeight.SemiBold),
+                    style = TextStyle(color = colors.textOnAccent, fontFamily = Fonts.sans, fontSize = 12.sp, fontWeight = FontWeight.SemiBold),
                 )
             }
             Column(Modifier.weight(1f).padding(top = 4.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 BasicText(
                     source.label,
-                    style = TextStyle(color = colors.ink, fontFamily = Fonts.serif, fontSize = 16.sp, lineHeight = 1.25.em, fontWeight = FontWeight.SemiBold),
+                    style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 15.sp, lineHeight = 1.25.em, fontWeight = FontWeight.SemiBold),
                     modifier = Modifier.semantics { heading() },
                 )
                 BasicText(
                     if (source.remedyName != null && source.sectionTitle.isNotEmpty()) "${source.bookTitle} · ${source.sectionTitle}" else source.bookTitle,
-                    style = TextStyle(color = colors.muted, fontFamily = Fonts.sans, fontSize = 12.sp, lineHeight = 1.4.em),
+                    style = TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = 12.sp, lineHeight = 1.4.em),
                 )
             }
             CloseButton(onClose)
         }
-        Spacer(Modifier.fillMaxWidth().height(1.dp).background(colors.line))
+        Spacer(Modifier.fillMaxWidth().height(1.dp).background(colors.border))
         Column(
             Modifier
                 .weight(1f)
@@ -99,6 +99,6 @@ private fun CloseButton(onClose: () -> Unit) {
             .pressable(label = "Close source", interactionSource = interactions, onClick = onClose),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(Icons.Close, if (pressed) colors.ink else colors.muted, 18.dp, contentDescription = "Close source")
+        Icon(Icons.Close, if (pressed) colors.text else colors.textMuted, 18.dp, contentDescription = "Close source")
     }
 }

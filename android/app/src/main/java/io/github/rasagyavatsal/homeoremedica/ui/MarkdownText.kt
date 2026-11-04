@@ -67,7 +67,7 @@ fun MarkdownText(
     modifier: Modifier = Modifier,
 ) {
     val colors = Theme.colors
-    val body = TextStyle(color = colors.ink, fontFamily = Fonts.serif, fontSize = 17.sp, lineHeight = 1.68.em)
+    val body = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 17.sp, lineHeight = 1.65.em)
     Column(modifier) {
         Blocks(blocks, body, colors, onCitation, citationLabel, passage = false)
     }
@@ -77,7 +77,7 @@ fun MarkdownText(
 @Composable
 fun PassageText(blocks: List<Block>, modifier: Modifier = Modifier) {
     val colors = Theme.colors
-    val body = TextStyle(color = colors.ink, fontFamily = Fonts.serif, fontSize = 15.sp, lineHeight = 1.65.em)
+    val body = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 13.sp, lineHeight = 1.65.em)
     Column(modifier) {
         Blocks(blocks, body, colors, onCitation = {}, label = { "" }, passage = true)
     }
@@ -126,7 +126,7 @@ private fun BlockView(
             block.inlines,
             if (passage) {
                 style.copy(
-                    color = colors.muted,
+                    color = colors.textMuted,
                     fontFamily = Fonts.sans,
                     fontSize = 12.sp,
                     lineHeight = 1.4.em,
@@ -148,7 +148,7 @@ private fun BlockView(
                 Row {
                     BasicText(
                         if (block.ordered) "${block.start + index}." else "•",
-                        style = style.copy(color = colors.faint, textAlign = TextAlign.End),
+                        style = style.copy(color = colors.textSubtle, textAlign = TextAlign.End),
                         modifier = Modifier.width(20.dp).alignByBaseline(),
                     )
                     Column(Modifier.padding(start = 8.dp).alignByBaseline()) {
@@ -158,13 +158,13 @@ private fun BlockView(
             }
         }
         is Block.Quote -> {
-            val line = colors.lineStrong
+            val line = colors.borderStrong
             Column(
                 Modifier
-                    .drawBehind { drawRect(line, size = size.copy(width = 3.dp.toPx())) }
-                    .padding(start = 18.dp, top = 2.dp, bottom = 2.dp),
+                    .drawBehind { drawRect(line, size = size.copy(width = 2.dp.toPx())) }
+                    .padding(start = 16.dp),
             ) {
-                Blocks(block.blocks, style.copy(color = colors.inkSoft, fontStyle = FontStyle.Italic), colors, onCitation, label, passage)
+                Blocks(block.blocks, style.copy(color = colors.textMuted), colors, onCitation, label, passage)
             }
         }
         is Block.CodeBlock -> Box(
@@ -172,14 +172,14 @@ private fun BlockView(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(10.dp))
                 .background(colors.surfaceSunken)
-                .border(1.dp, colors.line, RoundedCornerShape(10.dp))
+                .border(1.dp, colors.border, RoundedCornerShape(10.dp))
                 .horizontalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 14.dp),
         ) {
             BasicText(block.code, style = style.copy(fontFamily = Fonts.mono, fontSize = 13.6.sp, lineHeight = 1.5.em), softWrap = false)
         }
         Block.Rule -> {
-            val line = colors.line
+            val line = colors.border
             Spacer(Modifier.fillMaxWidth().height(1.dp).drawBehind { drawLine(line, Offset.Zero, Offset(size.width, 0f), 1.dp.toPx()) })
         }
     }
@@ -219,7 +219,7 @@ private fun CitationChip(number: Int, onCitation: (Int) -> Unit, description: St
             .padding(start = 2.dp, end = 1.dp)
             .fillMaxSize()
             .clip(RoundedCornerShape(6.dp))
-            .background(if (pressed) colors.accent else colors.accentSoft)
+            .background(if (pressed) colors.accentSoftHover else colors.accentSoft)
             .pressable(interactionSource = interactions) { onCitation(number) }
             .semantics { contentDescription = description },
         contentAlignment = Alignment.Center,
@@ -227,7 +227,7 @@ private fun CitationChip(number: Int, onCitation: (Int) -> Unit, description: St
         BasicText(
             number.toString(),
             style = TextStyle(
-                color = if (pressed) colors.accentInk else colors.accent,
+                color = colors.accentText,
                 fontFamily = Fonts.sans,
                 fontSize = 11.sp,
                 lineHeight = 11.sp,
@@ -263,7 +263,7 @@ private fun annotate(inlines: List<Inline>, colors: Palette, links: Boolean): An
                 is Inline.Link -> if (!links) append(inline.children) else withLink(
                     LinkAnnotation.Url(
                         inline.destination,
-                        TextLinkStyles(SpanStyle(color = colors.accent, textDecoration = TextDecoration.Underline)),
+                        TextLinkStyles(SpanStyle(color = colors.accentText, textDecoration = TextDecoration.Underline)),
                     ),
                 ) { append(inline.children) }
                 is Inline.Citation -> appendInlineContent("$CITATION_PREFIX${inline.number}", "[${inline.number}]")

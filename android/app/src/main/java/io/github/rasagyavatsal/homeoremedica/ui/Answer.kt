@@ -33,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
@@ -112,7 +111,7 @@ private fun References(sources: List<Citation>, cited: Set<Int>, active: Int?, o
     Column(Modifier.padding(top = 24.dp).rise(sources, 320)) {
         BasicText(
             "REFERENCES",
-            style = TextStyle(color = colors.faint, fontFamily = Fonts.sans, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.06.em),
+            style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.06.em),
             modifier = Modifier.padding(bottom = 8.dp),
         )
         // An auto-filling grid, as `repeat(auto-fill, minmax(12rem, 1fr))` lays it out.
@@ -143,7 +142,7 @@ private fun Reference(number: Int, source: Citation, active: Boolean, modifier: 
         modifier
             .clip(shape)
             .background(if (highlighted) colors.accentSoft else colors.surface)
-            .border(1.dp, if (highlighted) lerp(colors.line, colors.accent, 0.35f) else colors.line, shape)
+            .border(1.dp, if (highlighted) colors.accentBorder else colors.border, shape)
             .pressable(label = if (active) "Close source" else "Open source", interactionSource = interactions, onClick = onClick)
             .semantics(mergeDescendants = true) {
                 contentDescription = "Source $number: ${source.label}, ${source.bookTitle}"
@@ -164,7 +163,7 @@ private fun Reference(number: Int, source: Citation, active: Boolean, modifier: 
             BasicText(
                 number.toString(),
                 style = TextStyle(
-                    color = if (active) colors.accentInk else colors.accent,
+                    color = if (active) colors.textOnAccent else colors.accentText,
                     fontFamily = Fonts.sans,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -174,8 +173,8 @@ private fun Reference(number: Int, source: Citation, active: Boolean, modifier: 
             )
         }
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            BasicText(source.label, style = TextStyle(color = colors.ink, fontFamily = Fonts.sans, fontSize = 13.sp, fontWeight = FontWeight.SemiBold))
-            BasicText(source.bookTitle, style = TextStyle(color = colors.muted, fontFamily = Fonts.sans, fontSize = 12.sp, lineHeight = 1.4.em))
+            BasicText(source.label, style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 13.sp, fontWeight = FontWeight.SemiBold))
+            BasicText(source.bookTitle, style = TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = 12.sp, lineHeight = 1.4.em))
         }
     }
 }
@@ -214,7 +213,7 @@ private fun ReportButton(question: String, answer: String) {
             },
         contentAlignment = Alignment.Center,
     ) {
-        Icon(Icons.Flag, if (pressed) colors.ink else colors.muted, 15.dp, contentDescription = "Report answer")
+        Icon(Icons.Flag, if (pressed) colors.text else colors.textMuted, 15.dp, contentDescription = "Report answer")
     }
 }
 
@@ -247,7 +246,7 @@ private fun CopyButton(text: String) {
     ) {
         Icon(
             if (copied) Icons.Check else Icons.Copy,
-            if (pressed) colors.ink else colors.muted,
+            if (pressed) colors.text else colors.textMuted,
             15.dp,
             contentDescription = if (copied) "Copied" else "Copy answer",
         )

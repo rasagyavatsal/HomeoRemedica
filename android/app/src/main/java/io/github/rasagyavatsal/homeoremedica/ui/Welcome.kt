@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import io.github.rasagyavatsal.homeoremedica.ui.theme.Ease
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Fonts
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
 import kotlinx.coroutines.delay
@@ -58,8 +59,7 @@ private const val WORD_STAGGER_MILLIS = 60
 private const val GLOW_IN_MILLIS = 1600
 private const val DRIFT_MILLIS = 14_000
 
-// The web app's `--ease-standard`, and CSS's `ease-in-out` that each drift keyframe eases with.
-private val StandardEasing = CubicBezierEasing(0.2f, 0f, 0f, 1f)
+// CSS's `ease-in-out`, which each drift keyframe eases with.
 private val EaseInOut = CubicBezierEasing(0.42f, 0f, 0.58f, 1f)
 
 /** When the tagline's last word has started in, so the composer can follow it. */
@@ -92,12 +92,12 @@ private fun TaglineWord(word: String, index: Int) {
     val progress = remember { Animatable(0f) }
     LaunchedEffect(Unit) {
         delay(index * WORD_STAGGER_MILLIS.toLong())
-        progress.animateTo(1f, tween(REVEAL_MILLIS, easing = StandardEasing))
+        progress.animateTo(1f, tween(REVEAL_MILLIS, easing = Ease))
     }
     BasicText(
         word,
         style = TextStyle(
-            color = Theme.colors.ink,
+            color = Theme.colors.text,
             fontFamily = Fonts.sans,
             fontSize = 32.sp,
             lineHeight = 1.25.em,
@@ -118,7 +118,7 @@ private fun Glows(modifier: Modifier) {
     val fade = remember { Animatable(0f) }
     LaunchedEffect(Unit) {
         delay(TAGLINE_MILLIS.toLong())
-        fade.animateTo(1f, tween(GLOW_IN_MILLIS, easing = StandardEasing))
+        fade.animateTo(1f, tween(GLOW_IN_MILLIS, easing = Ease))
     }
     val transition = rememberInfiniteTransition("glows")
     val first by transition.drift(DRIFT_MILLIS, RepeatMode.Reverse)

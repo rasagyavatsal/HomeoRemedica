@@ -154,7 +154,7 @@ fun ChatScreen(
     BackHandler(enabled = source != null, onBack = closeSource)
 
     CompositionLocalProvider(LocalEntrances provides remember { Entrances() }) {
-        BoxWithConstraints(Modifier.fillMaxSize().background(colors.bg).imePadding()) {
+        BoxWithConstraints(Modifier.fillMaxSize().background(colors.canvas).imePadding()) {
             val wide = maxWidth >= 640.dp
             val panelWidth = if (wide) (maxWidth * 0.32f).coerceIn(288.dp, 400.dp) else minOf(400.dp, maxWidth)
             Row(Modifier.fillMaxSize()) {
@@ -192,7 +192,7 @@ fun ChatScreen(
                             Modifier
                                 .width(panelWidth)
                                 .fillMaxHeight()
-                                .drawBehind { drawLine(colors.line, Offset.Zero, Offset(0f, size.height), 1.dp.toPx()) },
+                                .drawBehind { drawLine(colors.border, Offset.Zero, Offset(0f, size.height), 1.dp.toPx()) },
                         )
                     }
                 }
@@ -202,7 +202,7 @@ fun ChatScreen(
                 Box(
                     Modifier
                         .fillMaxSize()
-                        .background(if (colors.dark) Color.Black.copy(alpha = 0.55f) else colors.ink.copy(alpha = 0.32f))
+                        .background(colors.scrim)
                         .pressable(label = "Close source", onClick = closeSource),
                 )
                 key(source.id) {
@@ -214,7 +214,7 @@ fun ChatScreen(
                             .align(Alignment.CenterEnd)
                             .width(panelWidth)
                             .fillMaxHeight()
-                            .shadow(24.dp, RectangleShape, ambientColor = colors.shadow, spotColor = colors.shadow),
+                            .shadowLarge(RectangleShape, colors.shadow),
                     )
                 }
             }
@@ -228,41 +228,19 @@ private fun Header(wide: Boolean, enabled: Boolean, onClear: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
-            .background(colors.bg)
-            .drawBehind { drawLine(colors.line, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
+            .background(colors.canvas)
+            .drawBehind { drawLine(colors.border, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
             .statusBarsPadding()
             .padding(horizontal = if (wide) 20.dp else 16.dp, vertical = if (wide) 14.dp else 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            Modifier.semantics(mergeDescendants = true) { heading() },
-            horizontalArrangement = Arrangement.spacedBy(9.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            MarkBadge(size = if (wide) 30.dp else 28.dp, corner = 9.dp, markSize = 20.dp)
-            BasicText(
-                buildAnnotatedString {
-                    append("Homeo")
-                    withStyle(SpanStyle(color = colors.accent)) { append("Remedica") }
-                },
-                style = TextStyle(
-                    color = colors.ink,
-                    fontFamily = Fonts.serif,
-                    fontSize = if (wide) 20.sp else 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = (-0.2).sp,
-                ),
-            )
+        Brand()
+        if (wide) {
+            Button("New chat", ButtonStyle.Quiet, onClear, enabled = enabled, icon = Icons.Plus, color = Theme.colors.textMuted)
+        } else if (enabled) {
+            IconButton(Icons.Plus, "New chat", onClear)
         }
-        PillButton(
-            text = if (wide) "New chat" else null,
-            style = ButtonStyle.Quiet,
-            onClick = onClear,
-            enabled = enabled,
-            icon = Icons.Plus,
-            contentDescription = "New chat",
-        )
     }
 }
 
@@ -316,33 +294,21 @@ private fun Conversation(
 @Composable
 private fun UserMessage(content: String, wide: Boolean, modifier: Modifier) {
     val colors = Theme.colors
-    val shape = RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp, bottomEnd = 5.dp, bottomStart = 18.dp)
+    val shape = RoundedCornerShape(16.dp)
     BoxWithConstraints(modifier, contentAlignment = Alignment.CenterEnd) {
-        val maxBubble = if (wide) minOf(maxWidth * 0.85f, 560.dp) else maxWidth * 0.92f
+        val maxBubble = maxWidth * 0.85f
         SelectionContainer {
             BasicText(
                 content,
-                style = TextStyle(color = colors.ink, fontFamily = Fonts.sans, fontSize = 15.sp, lineHeight = 1.55.em),
+                style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 15.sp, lineHeight = 1.4.em),
                 modifier = Modifier
                     .widthIn(max = maxBubble)
-                    .background(colors.surfaceSunken, shape)
-                    .border(1.dp, colors.line, shape)
-                    .padding(horizontal = 17.dp, vertical = 12.dp)
+                    .background(colors.surfaceRaised, shape)
+                    .border(1.dp, colors.border, shape)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
                     .semantics { contentDescription = "You: $content" },
             )
         }
-    }
-}
-
-@Composable
-private fun AssistantLabel(text: String, pending: Boolean, color: Color, weight: FontWeight) {
-    Row(
-        Modifier.padding(bottom = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(9.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        MarkBadge(size = 24.dp, corner = 7.dp, markSize = 14.dp, modifier = if (pending) Modifier.pulse() else Modifier)
-        BasicText(text, style = TextStyle(color = color, fontFamily = Fonts.sans, fontSize = 13.sp, fontWeight = weight))
     }
 }
 
@@ -369,12 +335,11 @@ private fun Reply(
             modifier,
         )
         else -> Column(modifier) {
-            AssistantLabel("HomeoRemedica", streaming, colors.inkSoft, FontWeight.SemiBold)
             val note = @Composable {
                 if (message.status == MessageStatus.Stopped) {
                     BasicText(
                         if (message.content.isNotEmpty()) "Stopped before the answer finished." else "Stopped.",
-                        style = TextStyle(color = colors.faint, fontFamily = Fonts.sans, fontSize = 13.sp, fontStyle = FontStyle.Italic),
+                        style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 13.sp, fontStyle = FontStyle.Italic),
                         modifier = Modifier.padding(top = 8.dp),
                     )
                 }
@@ -413,7 +378,7 @@ private fun Progress(label: String, modifier: Modifier) {
                 }
                 .background(colors.accent, Pill),
         )
-        BasicText(label, style = TextStyle(color = colors.muted, fontFamily = Fonts.sans, fontSize = 13.sp))
+        BasicText(label, style = TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = 13.sp))
     }
 }
 
@@ -434,7 +399,7 @@ private fun ComposerArea(
         modifier
             .fillMaxWidth()
             // Content fades out under the composer, as in the web app.
-            .drawBehind { drawRect(Brush.verticalGradient(listOf(Color.Transparent, colors.bg), startY = 0f, endY = 26.dp.toPx())) }
+            .drawBehind { drawRect(Brush.verticalGradient(listOf(Color.Transparent, colors.canvas), startY = 0f, endY = 26.dp.toPx())) }
             .padding(horizontal = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -458,7 +423,7 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val focused by interactions.collectIsFocusedAsState()
-    val radius = if (wide) 20.dp else 18.dp
+    val radius = 16.dp
     val shape = RoundedCornerShape(radius)
     val canSend = !state.busy && state.draft.isNotBlank()
     Row(
@@ -466,9 +431,9 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
             .fillMaxWidth()
             .drawBehind {
                 if (focused) {
-                    val ring = 4.dp.toPx()
+                    val ring = 3.dp.toPx()
                     drawRoundRect(
-                        colors.accent.copy(alpha = 0.12f),
+                        colors.accentSoft,
                         topLeft = Offset(-ring, -ring),
                         size = Size(size.width + ring * 2, size.height + ring * 2),
                         cornerRadius = CornerRadius(radius.toPx() + ring),
@@ -476,10 +441,10 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
                 }
             }
             .shadowMedium(shape, colors.shadow)
-            .background(colors.surface, shape)
-            .border(1.dp, if (focused) lerp(colors.lineStrong, colors.accent, 0.55f) else colors.lineStrong, shape)
-            .padding(start = if (wide) 18.dp else 14.dp, top = 8.dp, end = 8.dp, bottom = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+            .background(colors.surfaceRaised, shape)
+            .border(1.dp, if (focused) colors.accent else colors.borderStrong, shape)
+            .padding(start = 16.dp, top = 8.dp, end = 8.dp, bottom = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Bottom,
     ) {
         BasicTextField(
@@ -487,7 +452,7 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
             onValueChange = onDraftChange,
             modifier = Modifier
                 .weight(1f)
-                .heightIn(min = 36.dp, max = 200.dp)
+                .heightIn(min = 36.dp, max = 192.dp)
                 .onPreviewKeyEvent { event ->
                     // Enter sends; Shift+Enter adds a line.
                     val enter = event.key == Key.Enter || event.key == Key.NumPadEnter
@@ -499,7 +464,7 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
                     }
                 }
                 .semantics { contentDescription = "Message" },
-            textStyle = TextStyle(color = colors.ink, fontFamily = Fonts.sans, fontSize = 16.sp, lineHeight = 20.sp),
+            textStyle = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 15.sp, lineHeight = 21.sp),
             cursorBrush = SolidColor(colors.accent),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions(onSend = { onSubmit() }),
@@ -509,7 +474,7 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
                     if (state.draft.isEmpty()) {
                         BasicText(
                             "Ask about a remedy, symptom or principle…",
-                            style = TextStyle(color = colors.faint, fontFamily = Fonts.sans, fontSize = 16.sp, lineHeight = 20.sp),
+                            style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 15.sp, lineHeight = 21.sp),
                         )
                     }
                     field()
@@ -521,7 +486,7 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
                 val count = NumberFormat.getIntegerInstance()
                 BasicText(
                     "${count.format(state.draft.length)} / ${count.format(MAX_QUESTION_CHARS)}",
-                    style = TextStyle(color = colors.faint, fontFamily = Fonts.sans, fontSize = 12.sp, fontFeatureSettings = "tnum"),
+                    style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 12.sp, fontFeatureSettings = "tnum"),
                     modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
                 )
             }
@@ -538,21 +503,21 @@ private fun SendButton(icon: ImageVector, label: String, enabled: Boolean, onCli
     val pressed by interactions.pressed()
     Box(
         Modifier
-            .scale(if (pressed && enabled) 0.94f else 1f)
+            .scale(if (pressed && enabled) 0.96f else 1f)
             .size(36.dp)
             .background(
                 when {
-                    !enabled -> colors.surfaceSunken
+                    !enabled -> colors.surfaceSelected
                     pressed -> colors.accentHover
                     else -> colors.accent
                 },
-                RoundedCornerShape(12.dp),
+                RoundedCornerShape(10.dp),
             )
             .pressable(enabled, label = label, interactionSource = interactions, onClick = onClick)
             .semantics { contentDescription = label },
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, if (enabled) colors.accentInk else colors.faint, 18.dp)
+        Icon(icon, if (enabled) colors.textOnAccent else colors.textSubtle, 18.dp)
     }
 }
 
@@ -561,12 +526,11 @@ private fun SendButton(icon: ImageVector, label: String, enabled: Boolean, onCli
 @Composable
 private fun ReplyError(message: String, onRetry: (() -> Unit)?, modifier: Modifier) {
     val colors = Theme.colors
-    val shape = RoundedCornerShape(12.dp)
+    val shape = RoundedCornerShape(10.dp)
     Row(
         modifier
             .background(colors.dangerSoft, shape)
-            .border(1.dp, colors.danger.copy(alpha = 0.3f), shape)
-            .padding(horizontal = 14.dp, vertical = 11.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp)
             .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Assertive },
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -574,9 +538,9 @@ private fun ReplyError(message: String, onRetry: (() -> Unit)?, modifier: Modifi
         Icon(Icons.Alert, colors.danger, 16.dp)
         BasicText(
             message,
-            style = TextStyle(color = colors.danger, fontFamily = Fonts.sans, fontSize = 13.5.sp, lineHeight = 1.5.em),
+            style = TextStyle(color = colors.danger, fontFamily = Fonts.sans, fontSize = 13.sp, lineHeight = 1.4.em),
             modifier = Modifier.weight(1f),
         )
-        if (onRetry != null) PillButton("Try again", ButtonStyle.Quiet, onRetry, icon = Icons.Retry)
+        if (onRetry != null) Button("Try again", ButtonStyle.Quiet, onRetry, icon = Icons.Retry)
     }
 }
