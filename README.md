@@ -136,6 +136,12 @@ a verification link, keeping their chats in the browser until it is followed. Ac
 number of chats, but each may save at most 1,000 new messages an hour and 5,000 a day; a save
 over that gets `429` with `Retry-After`.
 
+## Android app
+
+A native Kotlin client for the same API lives in [`android/`](android/). Open that folder in Android
+Studio; [android/README.md](android/README.md) covers its setup and builds. The two apps are released
+separately, as `web-v*` and `android-v*`.
+
 ## Configuration
 
 The API reads environment variables and optional `.env` and `.env.local` files.
