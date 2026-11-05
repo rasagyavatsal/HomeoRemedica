@@ -7,7 +7,7 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
-## [9.5.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.4.0...HomeoRemedica-v9.5.0) (2026-11-04)
+## [9.5.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v9.4.0...web-v9.5.0) (2026-11-04)
 
 
 ### Features
@@ -35,7 +35,7 @@
 * **server:** cache built web assets for a year ([bfb911a](https://github.com/rasagyavatsal/HomeoRemedica/commit/bfb911af7ffefb46498b6cc73557803c96115e57))
 * **web:** load the Markdown renderer after the first screen ([6eb8b7c](https://github.com/rasagyavatsal/HomeoRemedica/commit/6eb8b7c3c210ac4872cb66a8663e81aabdd562e1))
 
-## [9.4.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.3.0...HomeoRemedica-v9.4.0) (2026-11-03)
+## [9.4.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v9.3.0...web-v9.4.0) (2026-11-03)
 
 
 ### Features
@@ -57,7 +57,7 @@
 * **web:** move pre-verification chats into the account after verifying ([3989a24](https://github.com/rasagyavatsal/HomeoRemedica/commit/3989a245a897f4ceaf21bb2512f96a6ac9bcf878)), closes [#54](https://github.com/rasagyavatsal/HomeoRemedica/issues/54)
 * **web:** save chats answered before the chat library loads ([12cd4ae](https://github.com/rasagyavatsal/HomeoRemedica/commit/12cd4ae1f7a3007118e28ebf5c94bb6fc0691814))
 
-## [9.3.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.2.0...HomeoRemedica-v9.3.0) (2026-11-02)
+## [9.3.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v9.2.0...web-v9.3.0) (2026-11-02)
 
 
 ### Features
@@ -82,7 +82,7 @@
 * **web:** show a hover colour on quiet dialog buttons in dark mode ([38c0532](https://github.com/rasagyavatsal/HomeoRemedica/commit/38c0532d2cc4df7f7f9b6416ffcfc4f1407285ab))
 * **web:** time the composer reveal from the tagline's word count ([5f3bec3](https://github.com/rasagyavatsal/HomeoRemedica/commit/5f3bec3e637d2310ff654204ed8dfc06f9146e41))
 
-## [9.2.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.1.0...HomeoRemedica-v9.2.0) (2026-11-02)
+## [9.2.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v9.1.0...web-v9.2.0) (2026-11-02)
 
 
 ### Features
@@ -108,14 +108,14 @@
 * **web:** keep focus in the chats drawer on slow devices ([c9a5fa1](https://github.com/rasagyavatsal/HomeoRemedica/commit/c9a5fa12c0d41854f7693a0689559c1d6eb75449))
 * **web:** keep the sources panel beside the chat ([edb7f75](https://github.com/rasagyavatsal/HomeoRemedica/commit/edb7f75f2d3990bcc1b3f8982321d4c061191305))
 
-## [9.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v9.0.0...HomeoRemedica-v9.1.0) (2026-11-02)
+## [9.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v9.0.0...web-v9.1.0) (2026-11-02)
 
 
 ### Features
 
 * **web:** save chats in local storage and list them in a sidebar ([58eaf2b](https://github.com/rasagyavatsal/HomeoRemedica/commit/58eaf2b3ea47dc00690752c1593113287013f034))
 
-## [9.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v8.1.0...HomeoRemedica-v9.0.0) (2026-10-31)
+## [9.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v8.1.0...web-v9.0.0) (2026-10-31)
 
 
 ### ⚠ BREAKING CHANGES
@@ -126,7 +126,7 @@
 
 * search the per-book Qdrant collections ([e612ea2](https://github.com/rasagyavatsal/HomeoRemedica/commit/e612ea2e1ce6238b48938823df52746e140ee716))
 
-## [8.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v8.0.0...HomeoRemedica-v8.1.0) (2026-10-22)
+## [8.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v8.0.0...web-v8.1.0) (2026-10-22)
 
 
 ### Features
@@ -154,7 +154,7 @@
 * **server:** lower answer reasoning effort from max to high ([3653202](https://github.com/rasagyavatsal/HomeoRemedica/commit/36532020e967bc65804ba4e88506c92d3f911319))
 * **server:** reject oversized citations before generating an answer ([14bf093](https://github.com/rasagyavatsal/HomeoRemedica/commit/14bf093b405ac7c7d35bccc698b41e1eb3875a5d))
 
-## [8.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v7.1.0...HomeoRemedica-v8.0.0) (2026-10-19)
+## [8.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v7.1.0...web-v8.0.0) (2026-10-19)
 
 
 ### ⚠ BREAKING CHANGES
@@ -165,7 +165,7 @@
 
 * remove book filtering ([20922e7](https://github.com/rasagyavatsal/HomeoRemedica/commit/20922e75f0f55af5323cd1f69c376c6a2332c14e))
 
-## [7.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v7.0.0...HomeoRemedica-v7.1.0) (2026-10-19)
+## [7.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v7.0.0...web-v7.1.0) (2026-10-19)
 
 
 ### Features
@@ -173,7 +173,7 @@
 * **web:** redesign chat interface with inline citations and dark mode ([e6b1b56](https://github.com/rasagyavatsal/HomeoRemedica/commit/e6b1b5629004958927098ef1883141c0b05281c1))
 * **web:** show app version in place of model and corpus details ([be3c86c](https://github.com/rasagyavatsal/HomeoRemedica/commit/be3c86c13260cf089695830925c832542e8ad5b1))
 
-## [7.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v6.0.0...HomeoRemedica-v7.0.0) (2026-10-19)
+## [7.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v6.0.0...web-v7.0.0) (2026-10-19)
 
 
 ### ⚠ BREAKING CHANGES
@@ -216,7 +216,7 @@
 * rewrite the API server in TypeScript ([a233461](https://github.com/rasagyavatsal/HomeoRemedica/commit/a23346188fdb40bee094108e69a9fab4cccdabb9))
 * **web:** remove browser frontend and static serving ([#34](https://github.com/rasagyavatsal/HomeoRemedica/issues/34)) ([8b0d2ef](https://github.com/rasagyavatsal/HomeoRemedica/commit/8b0d2ef4b2af56569c2209f96400ea5cf59b499f))
 
-## [6.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v5.0.0...HomeoRemedica-v6.0.0) (2026-09-12)
+## [6.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v5.0.0...web-v6.0.0) (2026-09-12)
 
 
 ### ⚠ BREAKING CHANGES
@@ -238,7 +238,7 @@
 
 * simplify README and correct setup instructions ([#31](https://github.com/rasagyavatsal/HomeoRemedica/issues/31)) ([c61be1d](https://github.com/rasagyavatsal/HomeoRemedica/commit/c61be1d3ceb7b156c6ed8c61a7c02243781c367f))
 
-## [5.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v4.0.0...HomeoRemedica-v5.0.0) (2026-09-11)
+## [5.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v4.0.0...web-v5.0.0) (2026-09-11)
 
 
 ### ⚠ BREAKING CHANGES
@@ -256,7 +256,7 @@
 
 * **benchmarks:** separate queries from results ([#21](https://github.com/rasagyavatsal/HomeoRemedica/issues/21)) ([03d1ac2](https://github.com/rasagyavatsal/HomeoRemedica/commit/03d1ac2bd1c73cfb7b78cdb1cc70a6eb6746f262))
 
-## [4.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v3.0.0...HomeoRemedica-v4.0.0) (2026-09-11)
+## [4.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v3.0.0...web-v4.0.0) (2026-09-11)
 
 
 ### ⚠ BREAKING CHANGES
@@ -269,7 +269,7 @@
 * **evaluation:** isolate experiments from chat releases ([#17](https://github.com/rasagyavatsal/HomeoRemedica/issues/17)) ([b231ded](https://github.com/rasagyavatsal/HomeoRemedica/commit/b231ded0d9dc074e5988b3b55540a77028960ff4))
 * **packages:** rename packages to chat corpus and eval ([#19](https://github.com/rasagyavatsal/HomeoRemedica/issues/19)) ([b8237d7](https://github.com/rasagyavatsal/HomeoRemedica/commit/b8237d74a5a8b9c4c10225632af0145b6823862d))
 
-## [3.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v2.3.0...HomeoRemedica-v3.0.0) (2026-09-07)
+## [3.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v2.3.0...web-v3.0.0) (2026-09-07)
 
 
 ### ⚠ BREAKING CHANGES
@@ -284,7 +284,7 @@
 * **evaluation:** depth-8 intent-aware metric suite on the combined corpus ([#13](https://github.com/rasagyavatsal/HomeoRemedica/issues/13)) ([99e853f](https://github.com/rasagyavatsal/HomeoRemedica/commit/99e853f7d10b37544db3552f57835f75331c90af))
 * **evaluation:** switch corpus defaults to v9 symptom retrieval ([#15](https://github.com/rasagyavatsal/HomeoRemedica/issues/15)) ([c0e2190](https://github.com/rasagyavatsal/HomeoRemedica/commit/c0e2190f95d5580c6d7f66703ef9cc7715ad12bc))
 
-## [2.3.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v2.2.0...HomeoRemedica-v2.3.0) (2026-09-05)
+## [2.3.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v2.2.0...web-v2.3.0) (2026-09-05)
 
 
 ### Features
@@ -292,28 +292,28 @@
 * **dataset:** add combined corpus file ([#8](https://github.com/rasagyavatsal/HomeoRemedica/issues/8)) ([37ba8d6](https://github.com/rasagyavatsal/HomeoRemedica/commit/37ba8d6da43f430168747b58ff5535718b89411f))
 * **evaluation:** add v3 clinical case queries ([#10](https://github.com/rasagyavatsal/HomeoRemedica/issues/10)) ([07f4082](https://github.com/rasagyavatsal/HomeoRemedica/commit/07f4082a38822a7595f530e6416a95e9db785ec8))
 
-## [2.2.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v2.1.1...HomeoRemedica-v2.2.0) (2026-09-04)
+## [2.2.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v2.1.1...web-v2.2.0) (2026-09-04)
 
 
 ### Features
 
 * publish source dataset under CC BY 4.0 ([#5](https://github.com/rasagyavatsal/HomeoRemedica/issues/5)) ([aa14cc3](https://github.com/rasagyavatsal/HomeoRemedica/commit/aa14cc34bbb15d53e3f4e2e17c1e66110059bc2f))
 
-## [2.1.1](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v2.1.0...HomeoRemedica-v2.1.1) (2026-09-04)
+## [2.1.1](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v2.1.0...web-v2.1.1) (2026-09-04)
 
 
 ### Documentation
 
 * remove retired repository references ([#3](https://github.com/rasagyavatsal/HomeoRemedica/issues/3)) ([749aa19](https://github.com/rasagyavatsal/HomeoRemedica/commit/749aa19c2a2318e04b5542ff4ce9fcd318e8a21f))
 
-## [2.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/HomeoRemedica-v2.0.0...HomeoRemedica-v2.1.0) (2026-09-04)
+## [2.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v2.0.0...web-v2.1.0) (2026-09-04)
 
 
 ### Features
 
 * publish complete codebase without corpus data ([#1](https://github.com/rasagyavatsal/HomeoRemedica/issues/1)) ([7a3afe6](https://github.com/rasagyavatsal/HomeoRemedica/commit/7a3afe68c1f1c36600272628bbd1862f9e4ff6e9))
 
-## [2.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/homeoremedica-web-v6.1.2...HomeoRemedica-v2.0.0) (2026-08-31)
+## [2.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/homeoremedica-web-v6.1.2...web-v2.0.0) (2026-08-31)
 
 
 ### ⚠ BREAKING CHANGES
