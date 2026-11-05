@@ -1,0 +1,1 @@
+HomeoRemedica 3.0 is a new app: ask questions of seven classic materia medica, including Allen and Hahnemann, and get AI answers with citations to the source passages. Needs an internet connection.

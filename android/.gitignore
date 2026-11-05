@@ -1,0 +1,28 @@
+# Gradle and build output
+.gradle/
+.kotlin/
+build/
+captures/
+*.apk
+*.aab
+
+# Local configuration and secrets
+local.properties
+*.jks
+*.keystore
+keystore.properties
+*service-account*.json
+play-credentials*.json
+
+# Editor and OS files
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local agent instructions
+CLAUDE.md
+
+# Logs
+*.log
