@@ -93,9 +93,9 @@ app's log, save a screenshot and run the unit tests.
 
 The emulator can run on another Linux machine on the network:
 
-1. On that machine, install the Android SDK and create an emulator. Run it with
-   `emulator -avd <name> -no-window -ports 5554,5555`, for example as a systemd user service named
-   `android-emulator` so `make restart` can restart it.
+1. On that machine, install the Android SDK and create an emulator. Add a systemd user service named
+   `android-emulator` that runs `emulator -avd <name> -no-window -ports 5554,5555`, and turn on lingering
+   for the user (`loginctl enable-linger`) so it can run without a login.
 2. Copy this machine's `~/.android/adbkey` and `adbkey.pub` to that machine's `~/.android/` before the
    emulator's first boot. Play Store images trust only the key of the machine that runs them.
 3. Here, put its SSH address in `local.mk`:
@@ -104,8 +104,9 @@ The emulator can run on another Linux machine on the network:
    EMULATOR_HOST = user@192.168.1.20
    ```
 
-The make commands then tunnel adb to it over SSH, and tunnel port 8000 back, so `10.0.2.2:8000` in the
-emulator still reaches `npm start` here. `make disconnect` closes the tunnel.
+The make commands then start the emulator if it's stopped, tunnel adb to it over SSH, and tunnel port 8000
+back, so `10.0.2.2:8000` in the emulator still reaches `npm start` here. Closing the window `make emu` opens
+stops the emulator, and so does `make stop`; `make disconnect` closes the tunnel and leaves it running.
 
 ## Releases
 

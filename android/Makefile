@@ -5,9 +5,11 @@
 #
 #     EMULATOR_HOST = user@192.168.1.20
 #
-# That machine runs the emulator with its adb port on 5555 (see "Remote emulator" in README.md). `make
-# connect` tunnels this machine's port $(ADB_PORT) to it over SSH, and tunnels the emulator machine's port
-# $(API_PORT) back here, so 10.0.2.2:$(API_PORT) in the emulator reaches `npm start` on this machine.
+# That machine runs the emulator as the systemd user service $(EMULATOR_SERVICE), with its adb port on 5555
+# (see "Remote emulator" in README.md). `make connect` starts the service if it's stopped, tunnels this
+# machine's port $(ADB_PORT) to it over SSH, and tunnels the emulator machine's port $(API_PORT) back here, so
+# 10.0.2.2:$(API_PORT) in the emulator reaches `npm start` on this machine. `make stop` shuts it down, as
+# does closing the window `make emu` opens.
 
 -include local.mk
 
@@ -29,12 +31,13 @@ endif
 ADB := adb $(if $(SERIAL),-s $(SERIAL))
 
 .DEFAULT_GOAL := help
-.PHONY: help connect disconnect emu install run local restart logs shot test
+.PHONY: help connect disconnect stop emu install run local restart logs shot test
 
 help:
-	@echo "make emu         connect and open the emulator's screen in a window"
+	@echo "make emu         open the emulator's screen in a window; closing it stops a remote emulator"
 	@echo "make connect     connect adb to the device without a window"
-	@echo "make disconnect  close the tunnel to the remote emulator"
+	@echo "make disconnect  close the tunnel to the remote emulator and leave it running"
+	@echo "make stop        stop the remote emulator"
 	@echo "make install     build the debug app and install it"
 	@echo "make run         install and open the app"
 	@echo "make local       install and open a build that uses npm start on this machine"
@@ -50,7 +53,9 @@ ifneq ($(strip $(EMULATOR_HOST)),)
 	@ssh -S "$(TUNNEL)" -O check $(EMULATOR_HOST) 2>/dev/null || \
 	  ssh -f -N -M -S "$(TUNNEL)" -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 \
 	    -L $(ADB_PORT):127.0.0.1:5555 -R $(API_PORT):127.0.0.1:$(API_PORT) $(EMULATOR_HOST)
-	@adb connect $(SERIAL) >/dev/null
+	@ssh -S "$(TUNNEL)" $(EMULATOR_HOST) 'systemctl --user is-active -q $(EMULATOR_SERVICE) || \
+	  { echo "Starting the emulator on $$(hostname)"; systemctl --user start $(EMULATOR_SERVICE); }'
+	@adb connect $(SERIAL) >/dev/null 2>&1 || true
 endif
 	@printf 'Waiting for the device to finish booting'; tries=0; \
 	until [ "$$($(ADB) shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ]; do \
@@ -74,10 +79,20 @@ else
 	@echo "EMULATOR_HOST isn't set, so there's no tunnel to close."
 endif
 
+stop:
+ifneq ($(strip $(EMULATOR_HOST)),)
+	@ssh $(EMULATOR_HOST) 'systemctl --user stop $(EMULATOR_SERVICE)'
+	@$(MAKE) --no-print-directory disconnect >/dev/null
+	@echo "Stopped the emulator on $(EMULATOR_HOST)."
+else
+	@echo "EMULATOR_HOST isn't set; stop your local emulator yourself." >&2; exit 1
+endif
+
 # --force-adb-forward: scrcpy's default reverse connection fails when adb runs through an SSH tunnel.
 emu: connect
 	scrcpy $(if $(SERIAL),-s $(SERIAL)) --force-adb-forward --window-title "HomeoRemedica emulator" \
-	  --stay-awake --max-fps 60
+	  --stay-awake --max-fps 60; \
+	$(if $(SERIAL),$(MAKE) --no-print-directory stop)
 
 install: connect
 	$(GRADLE) installDebug
