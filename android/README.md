@@ -82,6 +82,31 @@ them and keeps chats on the device, as the web app does when its server has no a
   ratings.
 - `app/src/main/java/.../ui/`: the design system and screens.
 
+## Commands
+
+`make` in this directory lists shortcuts for the device adb sees: `make run` installs and opens the app,
+`make local` does the same with a build that uses `npm start` on this machine, and `make emu`, `make logs`,
+`make shot` and `make test` open the screen with [scrcpy](https://github.com/Genymobile/scrcpy), follow the
+app's log, save a screenshot and run the unit tests.
+
+### Remote emulator
+
+The emulator can run on another Linux machine on the network:
+
+1. On that machine, install the Android SDK and create an emulator. Run it with
+   `emulator -avd <name> -no-window -ports 5554,5555`, for example as a systemd user service named
+   `android-emulator` so `make restart` can restart it.
+2. Copy this machine's `~/.android/adbkey` and `adbkey.pub` to that machine's `~/.android/` before the
+   emulator's first boot. Play Store images trust only the key of the machine that runs them.
+3. Here, put its SSH address in `local.mk`:
+
+   ```make
+   EMULATOR_HOST = user@192.168.1.20
+   ```
+
+The make commands then tunnel adb to it over SSH, and tunnel port 8000 back, so `10.0.2.2:8000` in the
+emulator still reaches `npm start` here. `make disconnect` closes the tunnel.
+
 ## Releases
 
 [release-please](https://github.com/googleapis/release-please) opens a release pull request from the
