@@ -230,18 +230,35 @@ fun LegalPage(page: LegalPageName, onOpen: (LegalPageName) -> Unit, onClose: () 
     BackHandler(onBack = onClose)
 
     Column(Modifier.fillMaxSize().background(colors.canvas)) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .drawBehind { drawLine(colors.border, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
-                .statusBarsPadding()
-                .heightIn(min = 44.dp)
-                .padding(horizontal = 16.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Brand(Modifier.pressable(label = "Back to HomeoRemedica", onClick = onClose))
-            ThemeToggle()
+        if (LocalCompact.current) {
+            // A back arrow, as phones leave a page; the theme is chosen in the account sheet.
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .drawBehind { drawLine(colors.border, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
+                    .statusBarsPadding()
+                    .heightIn(min = 56.dp)
+                    .padding(horizontal = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                IconButton(Icons.ArrowLeft, "Back to HomeoRemedica", onClose, size = 48.dp, iconSize = 22.dp, color = colors.text)
+                Brand()
+            }
+        } else {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .drawBehind { drawLine(colors.border, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
+                    .statusBarsPadding()
+                    .heightIn(min = 44.dp)
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Brand(Modifier.pressable(label = "Back to HomeoRemedica", onClick = onClose))
+                ThemeToggle()
+            }
         }
         Box(Modifier.weight(1f).fillMaxWidth().verticalScroll(scroll), contentAlignment = Alignment.TopCenter) {
             Column(

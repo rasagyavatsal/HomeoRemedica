@@ -103,30 +103,38 @@ fun DeleteAccountDialog(onDelete: suspend () -> Unit, onClose: () -> Unit) {
     var error by remember { mutableStateOf<String?>(null) }
     Dialog(
         "Delete your account?",
-        { if (!working) onClose() },
+        onClose,
         description = "This permanently deletes the account and every chat saved to it. It cannot be undone.",
+        dismissible = !working,
     ) {
         error?.let { FormMessage(it) }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
-            Button("Cancel", ButtonStyle.Quiet, onClose, enabled = !working, raised = true)
-            Button(
-                if (working) "Deleting…" else "Delete account",
-                ButtonStyle.Danger,
-                {
-                    working = true
-                    error = null
-                    scope.launch {
-                        try {
-                            onDelete()
-                        } catch (failure: ApiException) {
-                            error = failure.message
-                            working = false
+        val close = dialogClose(onClose)
+        DialogButtons(
+            { modifier ->
+                Button(
+                    if (working) "Deleting…" else "Delete account",
+                    ButtonStyle.Danger,
+                    {
+                        working = true
+                        error = null
+                        scope.launch {
+                            try {
+                                onDelete()
+                            } catch (failure: ApiException) {
+                                error = failure.message
+                                working = false
+                            }
                         }
-                    }
-                },
-                enabled = !working,
-            )
-        }
+                    },
+                    modifier,
+                    enabled = !working,
+                    minHeight = if (LocalCompact.current) 48.dp else 36.dp,
+                )
+            },
+            { modifier ->
+                Button("Cancel", ButtonStyle.Quiet, close, modifier, enabled = !working, raised = true, minHeight = if (LocalCompact.current) 48.dp else 36.dp)
+            },
+        )
     }
 }
 

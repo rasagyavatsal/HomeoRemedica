@@ -12,9 +12,8 @@ import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
+import androidx.compose.ui.unit.dp
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
-
-// Ports the web app's practitioner notice (src/web/PractitionerNotice.tsx).
 
 /** Who the app is for, shown until the device has acknowledged it; any way of closing it acknowledges it. */
 @Composable
@@ -44,8 +43,9 @@ fun PractitionerNotice(onAcknowledge: () -> Unit) {
             },
             style = text,
         )
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            Button("I understand", ButtonStyle.Primary, onAcknowledge)
-        }
+        val close = dialogClose(onAcknowledge)
+        DialogButtons({ modifier ->
+            Button("I understand", ButtonStyle.Primary, close, modifier, minHeight = if (LocalCompact.current) 48.dp else 36.dp)
+        })
     }
 }

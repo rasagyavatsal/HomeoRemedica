@@ -91,6 +91,8 @@ fun BottomSheet(
     /** What closing the sheet does, as its handle and scrim announce it. */
     closeLabel: String = "Close",
     expandable: Boolean = false,
+    /** Whether the reader can close the sheet; while not, dragging it down springs it back. */
+    dismissible: Boolean = true,
     content: @Composable SheetScope.() -> Unit,
 ) = Layer {
     val colors = Theme.colors
@@ -99,7 +101,8 @@ fun BottomSheet(
     val dismissed by rememberUpdatedState(onDismiss)
     val fling = with(density) { 400.dp.toPx() }
     val motion = remember { SheetMotion(scope, fling) { dismissed() } }
-    BackHandler { motion.dismiss() }
+    motion.dismissible = dismissible
+    BackHandler { if (dismissible) motion.dismiss() }
 
     BoxWithConstraints(Modifier.fillMaxSize().imePadding()) {
         val screen = constraints.maxHeight.toFloat()
@@ -113,7 +116,7 @@ fun BottomSheet(
                 .fillMaxSize()
                 .graphicsLayer { alpha = motion.shown }
                 .background(colors.scrim)
-                .pressable(label = closeLabel, onClick = motion::dismiss),
+                .pressable(enabled = dismissible, label = closeLabel) { motion.dismiss() },
         )
         val shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
         Column(
@@ -137,7 +140,7 @@ fun BottomSheet(
                 .semantics { paneTitle = label }
                 .navigationBarsPadding(),
         ) {
-            Handle(closeLabel, motion::dismiss)
+            Handle(closeLabel, dismissible, motion::dismiss)
             if (title != null) {
                 BasicText(
                     title,
@@ -152,7 +155,7 @@ fun BottomSheet(
 
 /** The bar at the top of a sheet, which shows it can be dragged and closes it when tapped. */
 @Composable
-private fun Handle(label: String, onClick: () -> Unit) {
+private fun Handle(label: String, enabled: Boolean, onClick: () -> Unit) {
     Box(
         Modifier
             .fillMaxWidth()
@@ -162,7 +165,7 @@ private fun Handle(label: String, onClick: () -> Unit) {
         Box(
             Modifier
                 .size(width = 96.dp, height = 28.dp)
-                .pressable(label = label, onClick = onClick)
+                .pressable(enabled, label = label, onClick = onClick)
                 .semantics { contentDescription = label },
             contentAlignment = Alignment.Center,
         ) {
@@ -179,6 +182,7 @@ private class SheetMotion(private val scope: CoroutineScope, private val fling: 
     private var offset by mutableFloatStateOf(Float.NaN)
     private var hidden by mutableFloatStateOf(0f)
     var half by mutableFloatStateOf(Float.NaN)
+    var dismissible by mutableStateOf(true)
     private var closing by mutableStateOf(false)
     private var job: Job? = null
 
@@ -219,7 +223,11 @@ private class SheetMotion(private val scope: CoroutineScope, private val fling: 
             velocity < -fling -> anchors.lastOrNull { it < offset - 1f } ?: 0f
             else -> anchors.minBy { abs(it - offset) }
         }
-        if (target == hidden) dismiss() else animateTo(target)
+        when {
+            target != hidden -> animateTo(target)
+            dismissible -> dismiss()
+            else -> animateTo(open)
+        }
     }
 
     fun dismiss() {

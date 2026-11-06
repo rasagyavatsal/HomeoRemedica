@@ -35,7 +35,7 @@ import io.github.rasagyavatsal.homeoremedica.ui.theme.Fonts
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
 import kotlinx.coroutines.launch
 
-// Ports the web app's sign-in dialog (src/web/AuthDialog.tsx).
+// The web app's sign-in dialog (src/web/AuthDialog.tsx), a page of its own on phones.
 
 private enum class Mode(val title: String) {
     SignIn("Sign in"),
@@ -92,7 +92,7 @@ fun AuthDialog(auth: AuthClient, onClose: () -> Unit) {
         sent = false
     }
 
-    Dialog(mode.title, onClose) {
+    TaskPage(mode.title, onClose) {
         if (mode != Mode.Reset && auth.google) {
             Button(
                 "Continue with Google",
