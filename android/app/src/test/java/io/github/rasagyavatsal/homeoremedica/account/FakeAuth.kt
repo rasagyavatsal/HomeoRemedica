@@ -39,8 +39,12 @@ class FakeAuth(account: Account? = null) : AuthClient {
         calls += "resetPassword"
     }
 
+    /** Runs once signing out has changed the account, as the app reacts to it. */
+    var onSignOut: suspend () -> Unit = {}
+
     override suspend fun signOut() {
         calls += "signOut"
         account.value = null
+        onSignOut()
     }
 }

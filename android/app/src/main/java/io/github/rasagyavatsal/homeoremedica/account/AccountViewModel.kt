@@ -14,7 +14,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /** Who is signed in, and what the account menu shows. */
 data class AccountState(
@@ -99,13 +101,16 @@ class AccountViewModel(
         val auth = auth ?: return
         // An unverified account has no chats in it yet, but can still be deleted.
         remote(auth).deleteAccount()
-        lastChat.set(null)
-        try {
-            auth.signOut()
-        } catch (_: AuthException) {
-            // The account is gone either way.
+        // Signing out closes the dialog that asked, cancelling its scope, which may be the caller's: finish anyway.
+        withContext(NonCancellable) {
+            lastChat.set(null)
+            try {
+                auth.signOut()
+            } catch (_: AuthException) {
+                // The account is gone either way.
+            }
+            workspace.notify("Your account and its chats were deleted.")
         }
-        workspace.notify("Your account and its chats were deleted.")
     }
 
     fun resendVerification() {

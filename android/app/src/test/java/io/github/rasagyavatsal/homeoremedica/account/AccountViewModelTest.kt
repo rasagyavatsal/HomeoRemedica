@@ -12,14 +12,17 @@ import io.github.rasagyavatsal.homeoremedica.chat.MessageStatus
 import io.github.rasagyavatsal.homeoremedica.chat.SavedChat
 import io.github.rasagyavatsal.homeoremedica.chat.Workspace
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.yield
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.jsonArray
@@ -183,6 +186,21 @@ class AccountViewModelTest {
         assertEquals("Bearer token-u1", delete.getHeader("Authorization"))
         assertEquals(listOf("signOut"), auth.calls)
         assertNull(lastChat.id)
+        assertEquals("Your account and its chats were deleted.", workspace.notices.last())
+    }
+
+    @Test
+    fun saysTheAccountWasDeletedThoughSigningOutClosesTheDialogThatAsked() = runBlocking {
+        val auth = FakeAuth(unverified)
+        val vm = viewModel(auth)
+        lateinit var deleting: Job
+        // Signing out removes the dialog, cancelling the deletion it started.
+        auth.onSignOut = {
+            deleting.cancel()
+            yield()
+        }
+        deleting = launch { vm.deleteAccount() }
+        deleting.join()
         assertEquals("Your account and its chats were deleted.", workspace.notices.last())
     }
 
