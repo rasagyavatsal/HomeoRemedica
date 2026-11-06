@@ -89,6 +89,18 @@ them and keeps chats on the device, as the web app does when its server has no a
 `make shot` and `make test` open the screen with [scrcpy](https://github.com/Genymobile/scrcpy), follow the
 app's log, save a screenshot and run the unit tests.
 
+### End-to-end tests
+
+`make e2e` runs the tests in `app/src/androidTest` on the device adb sees, and `make e2e TEST=ChatTest`
+runs one class. They drive the app with Compose UI tests against the web app's e2e server (`e2e/server.ts`),
+which scripts the answers, and the Firebase Auth and Firestore emulators, which hold the accounts. `e2e.sh`
+starts them on this machine unless they are running, which needs Node, the web app's `npm install` and Java,
+and the device reaches them through `adb reverse`. The tests build the app with `-Phomeoremedica.e2e`, which
+points it at both and asks from an address of its own each launch, as the server limits questions per address.
+
+Each test starts from a fresh install. Robots in `robots/` are the only code that knows how the screens
+are built; tests say what the reader does and sees.
+
 ### Remote emulator
 
 The emulator can run on another Linux machine on the network:

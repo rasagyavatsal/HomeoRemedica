@@ -31,7 +31,7 @@ endif
 ADB := adb $(if $(SERIAL),-s $(SERIAL))
 
 .DEFAULT_GOAL := help
-.PHONY: help connect disconnect stop emu install run local restart logs shot test
+.PHONY: help connect disconnect stop emu install run local restart logs shot test e2e
 
 help:
 	@echo "make emu         open the emulator's screen in a window; closing it stops a remote emulator"
@@ -45,6 +45,7 @@ help:
 	@echo "make logs        follow the app's log"
 	@echo "make shot        save a screenshot to build/screenshots/"
 	@echo "make test        run the unit tests"
+	@echo "make e2e         run the end-to-end tests on the device; TEST=ChatTest runs one class"
 	@echo
 	@echo "Device: $(if $(SERIAL),remote emulator on $(EMULATOR_HOST),the one adb sees)"
 
@@ -124,3 +125,6 @@ shot: connect
 
 test:
 	$(GRADLE) testDebugUnitTest
+
+e2e: connect
+	./e2e.sh $(if $(TEST),-Pandroid.testInstrumentationRunnerArguments.class=io.github.rasagyavatsal.homeoremedica.$(TEST))
