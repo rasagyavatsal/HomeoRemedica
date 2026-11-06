@@ -125,3 +125,8 @@ Conventional Commits on `main`. It keeps the version in `version.txt`, which the
 ./gradlew publishBundle                # to internal testing
 ./gradlew publishListing               # store listing in app/src/main/play
 ```
+
+Each `android-v*` release runs `./gradlew test publishBundle` in the `Deploy` GitHub Actions workflow,
+which you can also run by hand with `android`. It reads the upload key from the repository secrets
+`ANDROID_KEYSTORE_BASE64` (the `.jks`, base64-encoded), `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`
+and `ANDROID_KEY_PASSWORD`, and the service account's JSON key from `PLAY_SERVICE_ACCOUNT_JSON`.

@@ -229,9 +229,10 @@ model, the prompt, or retrieval.
 
 ## Deployment
 
-The app runs on Cloud Run at <https://homeoremedica-619837289655.asia-south1.run.app>. Every push
-to `main` runs `npm run check` and deploys through the `Deploy` GitHub Actions workflow, which
-authenticates to Google Cloud with Workload Identity Federation. To deploy manually:
+The app runs on Cloud Run at <https://homeoremedica-619837289655.asia-south1.run.app>. Each `web-v*`
+release runs `npm run check` and deploys through the `Deploy` GitHub Actions workflow, which
+authenticates to Google Cloud with Workload Identity Federation; run `Deploy` by hand with `web` to
+redeploy without a release. To deploy from your machine:
 
 ```sh
 npm run deploy
