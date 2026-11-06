@@ -13,7 +13,8 @@ class ChatRobot(rule: ComposeTestRule) : Robot(rule) {
     /** Ask [question] and wait until it is in the conversation, without waiting for its answer. */
     fun ask(question: String) {
         rule.onNodeWithContentDescription("Message").performTextInput(question)
-        tap(hasContentDescription("Send message"))
+        // Through its click action: the keyboard rising may still be moving the composer.
+        press(hasContentDescription("Send message"))
         waitFor(hasContentDescription("You: $question"))
     }
 
