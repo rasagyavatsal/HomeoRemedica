@@ -1,5 +1,7 @@
 package io.github.rasagyavatsal.homeoremedica.ui
 
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -83,7 +85,7 @@ fun TextField(
                 Box(
                     Modifier
                         .fillMaxWidth()
-                        .height(44.dp)
+                        .height(if (LocalCompact.current) 48.dp else 44.dp)
                         .background(colors.surface, shape)
                         .border(1.dp, if (focused) colors.accent else colors.borderStrong, shape)
                         .padding(horizontal = 12.dp),
@@ -129,7 +131,11 @@ fun TextButton(text: String, onClick: () -> Unit) {
             fontWeight = FontWeight.Medium,
             textDecoration = if (pressed) TextDecoration.Underline else null,
         ),
-        modifier = Modifier.pressable(label = text, interactionSource = interactions, onClick = onClick).padding(vertical = 4.dp),
+        modifier = Modifier
+            .pressable(label = text, interactionSource = interactions, onClick = onClick)
+            .heightIn(min = if (LocalCompact.current) 44.dp else 0.dp)
+            .wrapContentHeight(Alignment.CenterVertically)
+            .padding(vertical = 4.dp),
     )
 }
 

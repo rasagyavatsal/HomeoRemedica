@@ -155,10 +155,11 @@ private fun Thumb(choice: Rating, rating: Rating?, label: String, burst: Int, wa
             },
         )
     }
+    val compact = LocalCompact.current
     Box(
         Modifier
-            .size(28.dp)
-            .clip(RoundedCornerShape(6.dp))
+            .size(if (compact) 44.dp else 28.dp)
+            .clip(RoundedCornerShape(if (compact) 10.dp else 6.dp))
             .background(if (pressed) colors.surfaceHover else Color.Transparent)
             .pressable(label = label, interactionSource = interactions, onClick = onClick)
             .semantics {
@@ -176,7 +177,7 @@ private fun Thumb(choice: Rating, rating: Rating?, label: String, burst: Int, wa
         Icon(
             icon,
             color,
-            16.dp,
+            if (compact) 20.dp else 16.dp,
             Modifier.graphicsLayer {
                 // The web app's rating-pop and rating-dip, which peak a third of the way through.
                 val peak = (if (motion.value < 0.35f) motion.value / 0.35f else (1 - motion.value) / 0.65f).coerceIn(0f, 1f)

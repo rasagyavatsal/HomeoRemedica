@@ -193,7 +193,7 @@ private fun SearchField(query: String, onChange: (String) -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
-            .height(36.dp)
+            .height(if (LocalCompact.current) 44.dp else 36.dp)
             .background(colors.surfaceRaised, shape)
             .border(1.dp, if (focused) colors.accent else colors.border, shape)
             .padding(horizontal = 12.dp),

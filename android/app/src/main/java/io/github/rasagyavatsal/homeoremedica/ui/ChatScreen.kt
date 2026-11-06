@@ -318,7 +318,8 @@ fun ChatScreen(
                 Modifier
                     .align(Alignment.BottomCenter)
                     .imePadding()
-                    .padding(start = 16.dp, end = 16.dp, bottom = composerSpace),
+                    .padding(start = 16.dp, end = 16.dp, bottom = composerSpace)
+                    .then(if (compact) Modifier.widthIn(max = 640.dp).fillMaxWidth() else Modifier),
                 action = if (state.restorable) "Undo" else null,
                 onAction = onUndoDelete,
             )
@@ -643,10 +644,11 @@ private fun SendButton(icon: ImageVector, label: String, enabled: Boolean, onCli
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val pressed by interactions.pressed()
+    val compact = LocalCompact.current
     Box(
         Modifier
             .scale(if (pressed && enabled) 0.96f else 1f)
-            .size(36.dp)
+            .size(if (compact) 44.dp else 36.dp)
             .background(
                 when {
                     !enabled -> colors.surfaceSelected
@@ -659,7 +661,7 @@ private fun SendButton(icon: ImageVector, label: String, enabled: Boolean, onCli
             .semantics { contentDescription = label },
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, if (enabled) colors.textOnAccent else colors.textSubtle, 18.dp)
+        Icon(icon, if (enabled) colors.textOnAccent else colors.textSubtle, if (compact) 20.dp else 18.dp)
     }
 }
 

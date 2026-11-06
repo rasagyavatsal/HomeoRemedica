@@ -152,7 +152,8 @@ fun Button(
     color: Color? = null,
     /** Lines the content up at the start, as the sidebar's new chat button. */
     start: Boolean = false,
-    minHeight: Dp = if (small) 28.dp else 36.dp,
+    // Phones need a larger target for a finger than the web app's for a pointer.
+    minHeight: Dp = if (LocalCompact.current) (if (small) 36.dp else 44.dp) else (if (small) 28.dp else 36.dp),
 ) {
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
@@ -199,14 +200,14 @@ fun Button(
     }
 }
 
-/** The web app's `.icon-button`: a 36dp square that darkens when pressed. */
+/** The web app's `.icon-button`: a square, 36dp or 48dp on phones, that darkens when pressed. */
 @Composable
 fun IconButton(
     icon: ImageVector,
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    size: Dp = 36.dp,
+    size: Dp = if (LocalCompact.current) 48.dp else 36.dp,
     iconSize: Dp = 20.dp,
     color: Color? = null,
     pressedColor: Color? = null,
@@ -254,7 +255,8 @@ fun Toast(message: String, onDismiss: () -> Unit, modifier: Modifier = Modifier,
         BasicText(
             message,
             style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 13.sp, lineHeight = 18.sp),
-            modifier = Modifier.weight(1f, fill = false),
+            // Across the width on phones, as a snackbar, pushing its buttons to the end.
+            modifier = Modifier.weight(1f, fill = LocalCompact.current),
         )
         if (action != null) Button(action, ButtonStyle.Quiet, onAction, raised = true, color = colors.accentText)
         IconButton(Icons.Close, "Dismiss", onDismiss, raised = true)
