@@ -29,6 +29,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import kotlinx.coroutines.delay
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
@@ -219,8 +221,9 @@ private fun Burst(color: Color) {
 }
 
 /**
- * Thumbs for an answer, then [trailing]. Choosing one opens a box for a comment, with reasons to pick when
- * the answer was rated down; choosing it again while the box is open takes the rating back. [onNote] says
+ * Thumbs for an answer, then [trailing]. Choosing one asks for a comment, with reasons to pick when the
+ * answer was rated down: in a sheet on phones, where choosing the rated thumb again takes the rating back,
+ * and in a box under the thumbs on wide screens, where it does so while the box is open. [onNote] says
  * whether the note was saved.
  */
 @Composable
@@ -232,7 +235,7 @@ fun AnswerFeedback(
     modifier: Modifier = Modifier,
     trailing: @Composable RowScope.() -> Unit = {},
 ) {
-    val colors = Theme.colors
+    val compact = LocalCompact.current
     val (rating, _, reasons, comment) = ratings ?: Unrated
     var open by rememberSaveable { mutableStateOf(false) }
     var draft by rememberSaveable { mutableStateOf("") }
@@ -241,6 +244,15 @@ fun AnswerFeedback(
     // A rating undone because it could not be saved closes the box too.
     val shown = open && rating != null
     val field = remember { FocusRequester() }
+    // A thumb rated up plays its burst before the sheet covers it.
+    var asking by remember { mutableStateOf<Rating?>(null) }
+    LaunchedEffect(asking) {
+        if (asking == Rating.Up) delay(450)
+        if (asking != null) {
+            open = true
+            asking = null
+        }
+    }
 
     val choose = { next: Rating? ->
         if (next == null) {
@@ -252,20 +264,37 @@ fun AnswerFeedback(
                 draft = comment.orEmpty()
                 sent = 0
             }
-            open = true
+            if (compact) asking = next else open = true
         }
     }
     val changed = draft.trim() != comment.orEmpty()
-    val submit = {
-        open = false
+    val send = {
         if (changed) {
             sent++
             // Reopen with the text still there if it could not be saved.
             onNote(null, draft) { saved -> if (!saved) open = true }
         }
     }
-    BackHandler(enabled = shown) { open = false }
-    LaunchedEffect(shown) { if (shown) runCatching { field.requestFocus() } }
+    val submit = {
+        open = false
+        send()
+    }
+    BackHandler(enabled = shown && !compact) { open = false }
+    LaunchedEffect(shown) { if (shown && !compact) runCatching { field.requestFocus() } }
+
+    val reasonChips = @Composable {
+        FlowRow(
+            Modifier.semantics { contentDescription = "What went wrong" },
+            horizontalArrangement = Arrangement.spacedBy(if (compact) 8.dp else 4.dp),
+            verticalArrangement = Arrangement.spacedBy(if (compact) 8.dp else 4.dp),
+        ) {
+            FeedbackReason.entries.forEachIndexed { index, reason ->
+                ReasonChip(reason.label, reason in reasons, Modifier.rise(reason, 200, 50 * index), large = compact) {
+                    onNote(if (reason in reasons) reasons - reason else reasons + reason, null) {}
+                }
+            }
+        }
+    }
 
     Column(modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -277,12 +306,42 @@ fun AnswerFeedback(
                 "Helpful",
                 "Not helpful",
                 Modifier.rise("rating", 320, 480),
-                clears = shown,
+                clears = shown || compact,
                 wave = newest,
             )
             if (sent > 0 && !shown) key(sent) { SentCheck() }
             Spacer(Modifier.weight(1f))
             trailing()
+        }
+        if (compact) {
+            if (shown) {
+                BottomSheet(
+                    "Feedback",
+                    { open = false },
+                    title = if (rating == Rating.Down) "What went wrong?" else "What helped?",
+                ) {
+                    val close = ::dismiss
+                    Column(
+                        Modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        if (rating == Rating.Down) reasonChips()
+                        CommentBox(
+                            draft,
+                            { draft = it.take(MAX_FEEDBACK_COMMENT_CHARS) },
+                            "Add a comment",
+                            changed,
+                            {
+                                send()
+                                close()
+                            },
+                            Modifier,
+                            large = true,
+                        )
+                    }
+                }
+            }
+            return@Column
         }
         AnimatedVisibility(
             shown,
@@ -290,19 +349,7 @@ fun AnswerFeedback(
             exit = shrinkVertically(tween(320, easing = Ease)) + fadeOut(tween(200, easing = Ease)),
         ) {
             Column(Modifier.widthIn(max = 680.dp)) {
-                if (rating == Rating.Down) {
-                    FlowRow(
-                        Modifier.padding(top = 8.dp).semantics { contentDescription = "What went wrong" },
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        FeedbackReason.entries.forEachIndexed { index, reason ->
-                            ReasonChip(reason.label, reason in reasons, Modifier.rise(reason, 200, 50 * index)) {
-                                onNote(if (reason in reasons) reasons - reason else reasons + reason, null) {}
-                            }
-                        }
-                    }
-                }
+                if (rating == Rating.Down) Box(Modifier.padding(top = 8.dp)) { reasonChips() }
                 CommentBox(
                     draft,
                     { draft = it.take(MAX_FEEDBACK_COMMENT_CHARS) },
@@ -336,7 +383,7 @@ private fun SentCheck() {
 }
 
 @Composable
-private fun ReasonChip(text: String, chosen: Boolean, modifier: Modifier, onClick: () -> Unit) {
+private fun ReasonChip(text: String, chosen: Boolean, modifier: Modifier, large: Boolean = false, onClick: () -> Unit) {
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val pressed by interactions.pressed()
@@ -345,7 +392,7 @@ private fun ReasonChip(text: String, chosen: Boolean, modifier: Modifier, onClic
         style = TextStyle(
             color = if (chosen) colors.accentText else if (pressed) colors.text else colors.textMuted,
             fontFamily = Fonts.sans,
-            fontSize = 12.sp,
+            fontSize = if (large) 14.sp else 12.sp,
             fontWeight = FontWeight.Medium,
         ),
         modifier = modifier
@@ -354,8 +401,9 @@ private fun ReasonChip(text: String, chosen: Boolean, modifier: Modifier, onClic
             .border(1.dp, if (chosen) colors.accentBorder else if (pressed) colors.borderStrong else colors.border, Pill)
             .pressable(label = text, interactionSource = interactions, onClick = onClick)
             .semantics { selected = chosen }
-            .heightIn(min = 28.dp)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .heightIn(min = if (large) 40.dp else 28.dp)
+            .wrapContentHeight(Alignment.CenterVertically)
+            .padding(horizontal = if (large) 16.dp else 12.dp, vertical = 6.dp),
     )
 }
 
@@ -367,15 +415,16 @@ private fun CommentBox(
     canSend: Boolean,
     onSend: () -> Unit,
     fieldModifier: Modifier,
+    large: Boolean = false,
 ) {
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val focused by interactions.collectIsFocusedAsState()
     val shape = RoundedCornerShape(10.dp)
-    val text = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 13.sp, lineHeight = 1.4.em)
+    val text = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = if (large) 15.sp else 13.sp, lineHeight = 1.4.em)
     Row(
         Modifier
-            .padding(top = 8.dp)
+            .padding(top = if (large) 0.dp else 8.dp)
             .fillMaxWidth()
             .background(colors.surfaceRaised, shape)
             .border(1.dp, if (focused) colors.accent else colors.borderStrong, shape)
@@ -388,8 +437,8 @@ private fun CommentBox(
             onValueChange,
             fieldModifier
                 .weight(1f)
-                .heightIn(max = 128.dp)
-                .padding(vertical = 4.dp)
+                .heightIn(min = if (large) 32.dp else 0.dp, max = 128.dp)
+                .padding(vertical = if (large) 8.dp else 4.dp)
                 .onPreviewKeyEvent { event ->
                     // Enter sends; Shift+Enter adds a line.
                     val enter = event.key == Key.Enter || event.key == Key.NumPadEnter
@@ -415,8 +464,8 @@ private fun CommentBox(
         )
         Box(
             Modifier
-                .size(28.dp)
-                .background(if (canSend) colors.accent else colors.surfaceSelected, RoundedCornerShape(6.dp))
+                .size(if (large) 40.dp else 28.dp)
+                .background(if (canSend) colors.accent else colors.surfaceSelected, RoundedCornerShape(if (large) 10.dp else 6.dp))
                 .pressable(canSend, label = "Send comment", onClick = onSend)
                 .semantics { contentDescription = "Send comment" },
             contentAlignment = Alignment.Center,
