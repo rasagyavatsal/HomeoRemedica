@@ -747,7 +747,8 @@ a.menu-item {
 
 .toast {
   position: fixed;
-  bottom: var(--space-lg);
+  /* Above the composer, which it would otherwise cover. */
+  bottom: calc(var(--composer-height, 0px) + var(--space-sm));
   left: 50%;
   z-index: var(--layer-toast);
   display: flex;

@@ -11,3 +11,10 @@ HTMLDialogElement.prototype.showModal = function () {
 }
 HTMLDialogElement.prototype.close = function () { this.open = false }
 window.scrollTo = () => {}
+
+// jsdom lays nothing out, so there are no sizes to observe.
+globalThis.ResizeObserver ??= class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}

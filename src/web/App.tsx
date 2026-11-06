@@ -186,6 +186,7 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
   const ratingClient = library instanceof AccountLibrary ? library : null
   const feedback = useFeedback(conversation, ratingClient, setNotice)
   const scroller = useFollow(conversation.messages)
+  const composerArea = useComposerHeight()
   // The open chat, for callbacks that finish after it may have changed.
   const current = useRef(conversation)
   useEffect(() => {
@@ -329,7 +330,7 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
           </div>
         </div>
 
-        <footer className="composer-area" style={{ '--tagline-words': TAGLINE_WORDS } as CSSProperties}>
+        <footer ref={composerArea} className="composer-area" style={{ '--tagline-words': TAGLINE_WORDS } as CSSProperties}>
           <div className="reading">
             <Composer
               ref={composer}
@@ -400,6 +401,28 @@ function useFollow(messages: readonly unknown[]) {
     count.current = messages.length
     if (node && (atEnd.current || changed)) node.scrollTop = node.scrollHeight
   }, [messages])
+
+  return element
+}
+
+/**
+ * Publish the composer area's height as `--composer-height`, so the toast can sit above the composer
+ * rather than over the question box and its send button.
+ */
+function useComposerHeight() {
+  const element = useRef<HTMLElement>(null)
+
+  useLayoutEffect(() => {
+    const node = element.current
+    if (!node) return
+    const root = document.documentElement.style
+    const observer = new ResizeObserver(() => root.setProperty('--composer-height', `${node.offsetHeight}px`))
+    observer.observe(node)
+    return () => {
+      observer.disconnect()
+      root.removeProperty('--composer-height')
+    }
+  }, [])
 
   return element
 }

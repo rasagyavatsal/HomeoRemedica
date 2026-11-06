@@ -31,6 +31,10 @@ test('syncs chats once a new account verifies its email', async ({ page, request
   await dialog.getByLabel('Password').fill(password)
   await dialog.getByRole('button', { name: 'Create an account' }).click()
   await expect(page.getByRole('alert')).toContainText('Verify your email address to sync your chats.')
+  // The notice sits above the composer, so the question can be typed and sent while it shows.
+  const notice = await page.getByRole('alert').boundingBox()
+  const composer = await page.locator('.composer').boundingBox()
+  expect(notice!.y + notice!.height).toBeLessThanOrEqual(composer!.y)
 
   // Until the email is verified, chats stay in this browser.
   await ask(page, 'cannot bear to be touched')
