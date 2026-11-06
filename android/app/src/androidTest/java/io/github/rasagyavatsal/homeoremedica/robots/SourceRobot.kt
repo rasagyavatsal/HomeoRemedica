@@ -5,7 +5,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.test.junit4.ComposeTestRule
 
-/** The panel showing one cited passage, beside the chat on wide screens and over it on phones. */
+/** The cited passages: a sheet over the chat on phones that swipes between them, and a panel beside it on wide screens. */
 class SourceRobot(rule: ComposeTestRule) : Robot(rule) {
     fun showsPassage(text: String) = waitFor(hasText(text, substring = true))
 

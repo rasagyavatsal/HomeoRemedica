@@ -98,6 +98,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.rasagyavatsal.homeoremedica.answer.citedNumbers
+import io.github.rasagyavatsal.homeoremedica.answer.referencedNumbers
 import io.github.rasagyavatsal.homeoremedica.api.AnswerRatings
 import io.github.rasagyavatsal.homeoremedica.api.FeedbackReason
 import io.github.rasagyavatsal.homeoremedica.api.Rating
@@ -144,9 +146,6 @@ fun ChatScreen(viewModel: ChatViewModel, footer: (@Composable () -> Unit)? = nul
         footer = footer,
     )
 }
-
-/** Below this width the chat list is a drawer, as below the web app's 52rem. */
-private val DrawerBelow = 832.dp
 
 @Composable
 fun ChatScreen(
@@ -198,11 +197,13 @@ fun ChatScreen(
     var composerHeight by remember { mutableIntStateOf(0) }
     val composerSpace = with(LocalDensity.current) { composerHeight.toDp() }
 
+    val compact = LocalCompact.current
+
     BoxWithConstraints(Modifier.fillMaxSize().background(colors.canvas)) {
-        val drawer = maxWidth < DrawerBelow
+        val drawer = compact
         val wide = maxWidth >= 640.dp
-        val panelWidth = if (wide) (maxWidth * 0.32f).coerceIn(288.dp, 400.dp) else minOf(400.dp, maxWidth)
-        BackHandler(enabled = source != null || (drawer && sidebarOpen)) {
+        val panelWidth = (maxWidth * 0.32f).coerceIn(288.dp, 400.dp)
+        BackHandler(enabled = (source != null && !compact) || (drawer && sidebarOpen)) {
             closeSource()
             closeSidebar()
         }
@@ -250,7 +251,7 @@ fun ChatScreen(
                 }
             }
             // Beside the chat on wide screens, as the web app's `.sources` column.
-            if (source != null && open != null && wide) {
+            if (source != null && open != null && !compact) {
                 key(source.id) {
                     SourcesPanel(
                         source,
@@ -266,21 +267,25 @@ fun ChatScreen(
                 }
             }
         }
-        // Over the chat on narrow screens.
-        if (source != null && open != null && !wide) {
-            Scrim("Close source", closeSource)
-            key(source.id) {
-                SourcesPanel(
-                    source,
-                    open.number,
-                    closeSource,
-                    Modifier
-                        .align(Alignment.CenterEnd)
-                        .width(panelWidth)
-                        .fillMaxHeight()
-                        .shadowLarge(RectangleShape, colors.shadow),
-                    sourceRating,
-                    rateSource,
+        // A sheet over the chat on phones, which swipes between the answer's passages.
+        if (source != null && open != null && sourceAnswer != null && compact) {
+            val sources = sourceAnswer.sources.orEmpty()
+            val ratings = state.ratings[open.messageId]?.sources
+            key(open.messageId) {
+                SourceSheet(
+                    sources = sources,
+                    numbers = remember(sourceAnswer.content, sources.size) {
+                        referencedNumbers(sources.size, citedNumbers(sourceAnswer.content, sources.size))
+                    },
+                    number = open.number,
+                    onSelect = { number -> openSource = OpenSource(open.messageId, number) },
+                    onClose = closeSource,
+                    rating = { number -> ratings?.get(number) },
+                    onRate = if (state.canRate && sourceAnswer.status == null) {
+                        { number, rating -> onRate(open.messageId, number, rating) }
+                    } else {
+                        null
+                    },
                 )
             }
         }

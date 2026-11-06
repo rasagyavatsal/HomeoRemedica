@@ -28,6 +28,7 @@ import io.github.rasagyavatsal.homeoremedica.chat.AccountLibrary
 import io.github.rasagyavatsal.homeoremedica.chat.ChatViewModel
 import io.github.rasagyavatsal.homeoremedica.chat.FileChatLibrary
 import io.github.rasagyavatsal.homeoremedica.ui.AccountControls
+import io.github.rasagyavatsal.homeoremedica.ui.AppFrame
 import io.github.rasagyavatsal.homeoremedica.ui.AuthDialog
 import io.github.rasagyavatsal.homeoremedica.ui.DeleteAccountDialog
 import io.github.rasagyavatsal.homeoremedica.ui.ChatScreen
@@ -110,33 +111,35 @@ class MainActivity : ComponentActivity() {
             }
             CompositionLocalProvider(LocalThemeControl provides control, LocalOpenLegal provides { legal = it }) {
                 HomeoRemedicaTheme(dark) {
-                    ChatScreen(viewModel) {
-                        AccountControls(
-                            account.account,
-                            onSignIn = if (account.available) ({ signingIn = true }) else null,
-                            onResendVerification = accounts::resendVerification,
-                            onSignOut = accounts::signOut,
-                            onDeleteAccount = { deleting = true },
-                        )
-                    }
-                    val auth = accounts.auth
-                    if (signingIn && auth != null) AuthDialog(auth) { signingIn = false }
-                    if (deleting && account.account != null) {
-                        DeleteAccountDialog(
-                            onDelete = {
-                                accounts.deleteAccount()
-                                deleting = false
-                            },
-                            onClose = { deleting = false },
-                        )
-                    }
-                    if (notice) {
-                        PractitionerNotice {
-                            preferences.acknowledgeNotice()
-                            notice = false
+                    AppFrame {
+                        ChatScreen(viewModel) {
+                            AccountControls(
+                                account.account,
+                                onSignIn = if (account.available) ({ signingIn = true }) else null,
+                                onResendVerification = accounts::resendVerification,
+                                onSignOut = accounts::signOut,
+                                onDeleteAccount = { deleting = true },
+                            )
                         }
+                        val auth = accounts.auth
+                        if (signingIn && auth != null) AuthDialog(auth) { signingIn = false }
+                        if (deleting && account.account != null) {
+                            DeleteAccountDialog(
+                                onDelete = {
+                                    accounts.deleteAccount()
+                                    deleting = false
+                                },
+                                onClose = { deleting = false },
+                            )
+                        }
+                        if (notice) {
+                            PractitionerNotice {
+                                preferences.acknowledgeNotice()
+                                notice = false
+                            }
+                        }
+                        legal?.let { page -> LegalPage(page, onOpen = { legal = it }, onClose = { legal = null }) }
                     }
-                    legal?.let { page -> LegalPage(page, onOpen = { legal = it }, onClose = { legal = null }) }
                 }
             }
         }
