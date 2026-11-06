@@ -105,7 +105,8 @@ fun Sidebar(
         ) {
             Brand()
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
-                ThemeToggle()
+                // Phones choose the theme in the account sheet.
+                if (!compact) ThemeToggle()
                 if (onClose != null) IconButton(Icons.Close, "Close chats", onClose)
             }
         }

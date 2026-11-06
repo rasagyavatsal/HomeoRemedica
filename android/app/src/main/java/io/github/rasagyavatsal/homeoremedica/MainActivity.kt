@@ -93,9 +93,9 @@ class MainActivity : ComponentActivity() {
                 window.setBackgroundDrawable(ColorDrawable((if (dark) DarkPalette else LightPalette).canvas.toArgb()))
             }
             val control = remember(theme) {
-                ThemeControl(theme) {
-                    theme = theme.next
-                    preferences.theme = theme
+                ThemeControl(theme) { choice ->
+                    theme = choice
+                    preferences.theme = choice
                 }
             }
             // A legal page shows over the chat, which keeps answering underneath.

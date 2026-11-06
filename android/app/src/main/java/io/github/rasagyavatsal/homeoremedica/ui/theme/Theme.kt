@@ -170,8 +170,11 @@ enum class ThemeChoice(val key: String, val label: String) {
     val next: ThemeChoice get() = entries[(ordinal + 1) % entries.size]
 }
 
-/** The chosen theme and a way to step to the next one, for the theme toggle. */
-class ThemeControl(val choice: ThemeChoice, val cycle: () -> Unit)
+/** The chosen theme and a way to choose another, for the theme toggle and picker. */
+class ThemeControl(val choice: ThemeChoice, val choose: (ThemeChoice) -> Unit) {
+    /** Step to the next theme, as the toggle does. */
+    val cycle: () -> Unit = { choose(choice.next) }
+}
 
 val LocalThemeControl = staticCompositionLocalOf { ThemeControl(ThemeChoice.System) {} }
 

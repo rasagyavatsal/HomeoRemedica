@@ -5,7 +5,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import io.github.rasagyavatsal.homeoremedica.support.TestUser
 
-/** The profile at the foot of the chats, and its menu. */
+/** The profile at the foot of the chats, and its sheet on phones or menu on wide screens. */
 class AccountRobot(rule: ComposeTestRule) : Robot(rule) {
     /** Open the sign-in dialog. */
     fun openSignIn(): AuthRobot {

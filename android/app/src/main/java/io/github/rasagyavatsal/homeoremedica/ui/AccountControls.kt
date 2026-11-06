@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
@@ -52,8 +53,6 @@ import io.github.rasagyavatsal.homeoremedica.account.Account
 import io.github.rasagyavatsal.homeoremedica.api.ApiException
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Fonts
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
-
-// Ports the web app's profile and account menu (src/web/AccountControls.tsx).
 
 /**
  * The sidebar's profile: a guest, or the signed-in [account], with a menu of the legal pages, what can be
@@ -131,10 +130,13 @@ fun DeleteAccountDialog(onDelete: suspend () -> Unit, onClose: () -> Unit) {
     }
 }
 
-/** What an account menu lists after the legal pages; choosing any item closes the menu first. */
-private class MenuScope(val close: () -> Unit)
+/** What an account menu lists; choosing any item closes the menu first. In a [sheet], items are rows to tap. */
+private class MenuScope(val close: () -> Unit, val sheet: Boolean = false)
 
-/** The profile, which opens a menu of the legal pages followed by [items] and the version. */
+/**
+ * The profile, which opens the legal pages followed by [items] and the version: in a sheet on phones, with
+ * the theme too, and in a menu above it on wide screens, as the web app's.
+ */
 @Composable
 private fun AccountMenu(
     label: String,
@@ -143,6 +145,7 @@ private fun AccountMenu(
     items: @Composable MenuScope.() -> Unit,
 ) {
     val colors = Theme.colors
+    val compact = LocalCompact.current
     val openLegal = LocalOpenLegal.current
     var open by remember { mutableStateOf(false) }
     var width by remember { mutableIntStateOf(0) }
@@ -158,23 +161,47 @@ private fun AccountMenu(
                 .background(if (pressed || open) colors.surfaceHover else Color.Transparent)
                 .pressable(label = "Account", interactionSource = interactions) { open = !open }
                 .semantics(mergeDescendants = true) { stateDescription = if (open) "Expanded" else "Collapsed" }
+                .heightIn(min = if (compact) 48.dp else 0.dp)
                 .padding(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(if (compact) 12.dp else 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(
-                Modifier.size(28.dp).clip(RoundedCornerShape(percent = 50)).background(avatarColor),
-                contentAlignment = Alignment.Center,
-            ) { avatar() }
+            Avatar(avatar, avatarColor, if (compact) 32.dp else 28.dp)
             BasicText(
                 label,
-                style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 13.sp),
+                style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = if (compact) 15.sp else 13.sp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
             )
         }
-        if (open) {
+        if (open && compact) {
+            BottomSheet("Account", { open = false }) {
+                val scope = MenuScope(::dismiss, sheet = true)
+                Row(
+                    Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, bottom = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Avatar(avatar, avatarColor, 40.dp)
+                    BasicText(
+                        label,
+                        style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 17.sp, fontWeight = FontWeight.Medium),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                scope.items()
+                scope.MenuSeparator()
+                ThemePicker(Modifier.padding(horizontal = 24.dp, vertical = 8.dp))
+                scope.MenuSeparator()
+                for (page in listOf(LegalPageName.Terms, LegalPageName.Privacy)) {
+                    scope.MenuItem(if (page == LegalPageName.Terms) Icons.Document else Icons.Shield, page.title) { openLegal(page) }
+                }
+                Version(Modifier.padding(top = 8.dp, bottom = 12.dp))
+            }
+        } else if (open) {
             val gap = with(LocalDensity.current) { 8.dp.roundToPx() }
             Popup(
                 popupPositionProvider = remember(gap) { AboveAnchor(gap) },
@@ -182,7 +209,7 @@ private fun AccountMenu(
                 properties = PopupProperties(focusable = true),
             ) {
                 val shape = RoundedCornerShape(10.dp)
-                val scope = MenuScope { open = false }
+                val scope = MenuScope({ open = false })
                 Column(
                     Modifier
                         .width(with(LocalDensity.current) { width.toDp() })
@@ -197,11 +224,7 @@ private fun AccountMenu(
                         scope.MenuItem(if (page == LegalPageName.Terms) Icons.Document else Icons.Shield, page.title) { openLegal(page) }
                     }
                     scope.items()
-                    BasicText(
-                        "v${BuildConfig.VERSION_NAME}",
-                        style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 12.sp, textAlign = TextAlign.Center),
-                        modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 4.dp),
-                    )
+                    Version(Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp))
                 }
             }
         }
@@ -209,12 +232,39 @@ private fun AccountMenu(
 }
 
 @Composable
-private fun MenuSeparator() {
-    Box(Modifier.padding(vertical = 4.dp).fillMaxWidth().height(1.dp).background(Theme.colors.border))
+private fun Avatar(content: @Composable () -> Unit, color: Color, size: Dp) {
+    Box(Modifier.size(size).clip(Pill).background(color), contentAlignment = Alignment.Center) { content() }
+}
+
+@Composable
+private fun Version(modifier: Modifier) {
+    BasicText(
+        "v${BuildConfig.VERSION_NAME}",
+        style = TextStyle(color = Theme.colors.textSubtle, fontFamily = Fonts.sans, fontSize = 12.sp, textAlign = TextAlign.Center),
+        modifier = modifier.fillMaxWidth(),
+    )
+}
+
+@Composable
+private fun MenuScope.MenuSeparator() {
+    Box(
+        Modifier
+            .padding(vertical = if (sheet) 8.dp else 4.dp)
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(Theme.colors.border),
+    )
 }
 
 @Composable
 private fun MenuScope.MenuItem(icon: ImageVector, text: String, danger: Boolean = false, onClick: () -> Unit) {
+    if (sheet) {
+        SheetItem(icon, text, danger) {
+            close()
+            onClick()
+        }
+        return
+    }
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val pressed by interactions.pressed()
