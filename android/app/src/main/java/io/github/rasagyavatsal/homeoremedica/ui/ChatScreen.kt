@@ -372,30 +372,32 @@ private fun Conversation(
         .fillMaxWidth()
         .padding(horizontal = if (wide) 24.dp else 16.dp)
         .padding(bottom = if (wide) 36.dp else 30.dp)
-    LazyColumn(
-        Modifier.fillMaxSize().semantics { contentDescription = "Conversation" },
-        state = listState,
-        contentPadding = PaddingValues(top = if (wide) 40.dp else 28.dp, bottom = bottomPadding + 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        itemsIndexed(state.messages, key = { _, message -> message.id }) { index, message ->
-            if (message.role == Role.User) {
-                UserMessage(message.content, wide, itemModifier.rise(message.id))
-            } else {
-                val question = state.messages.getOrNull(index - 1)?.takeIf { it.role == Role.User }?.content.orEmpty()
-                Reply(
-                    question,
-                    message,
-                    activeSource = openSource?.takeIf { it.messageId == message.id }?.number,
-                    onSource = { number -> onSource(message.id, number) },
-                    onRetry = onRetry.takeIf { index == state.messages.lastIndex },
-                    compacting = state.compacting && index == state.messages.lastIndex,
-                    modifier = itemModifier.rise(message.id),
-                    ratings = state.ratings[message.id],
-                    onRate = if (state.canRate) ({ rating -> onRate(message.id, null, rating) }) else null,
-                    onNote = { reasons, comment, onSaved -> onNote(message.id, reasons, comment, onSaved) },
-                    newest = index == state.messages.lastIndex,
-                )
+    CompositionLocalProvider(LocalGutter provides if (wide) 24.dp else 16.dp) {
+        LazyColumn(
+            Modifier.fillMaxSize().semantics { contentDescription = "Conversation" },
+            state = listState,
+            contentPadding = PaddingValues(top = if (wide) 40.dp else 28.dp, bottom = bottomPadding + 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            itemsIndexed(state.messages, key = { _, message -> message.id }) { index, message ->
+                if (message.role == Role.User) {
+                    UserMessage(message.content, wide, itemModifier.rise(message.id))
+                } else {
+                    val question = state.messages.getOrNull(index - 1)?.takeIf { it.role == Role.User }?.content.orEmpty()
+                    Reply(
+                        question,
+                        message,
+                        activeSource = openSource?.takeIf { it.messageId == message.id }?.number,
+                        onSource = { number -> onSource(message.id, number) },
+                        onRetry = onRetry.takeIf { index == state.messages.lastIndex },
+                        compacting = state.compacting && index == state.messages.lastIndex,
+                        modifier = itemModifier.rise(message.id),
+                        ratings = state.ratings[message.id],
+                        onRate = if (state.canRate) ({ rating -> onRate(message.id, null, rating) }) else null,
+                        onNote = { reasons, comment, onSaved -> onNote(message.id, reasons, comment, onSaved) },
+                        newest = index == state.messages.lastIndex,
+                    )
+                }
             }
         }
     }

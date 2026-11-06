@@ -12,6 +12,13 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
@@ -111,7 +118,13 @@ fun Answer(
 private val ReferenceMin = 192.dp
 private val ReferenceGap = 8.dp
 
-/** The passages an answer cites, or every passage it retrieved if it cites none. */
+/** How far the conversation's items sit from the screen's sides, which a row that scrolls sideways reaches past. */
+val LocalGutter = compositionLocalOf { 16.dp }
+
+/**
+ * The passages an answer cites, or every passage it retrieved if it cites none: a row that scrolls
+ * sideways on phones, and a grid that fills the width on wide screens, as the web app's.
+ */
 @Composable
 private fun References(sources: List<Citation>, cited: Set<Int>, active: Int?, onOpen: (Int) -> Unit) {
     val colors = Theme.colors
@@ -122,6 +135,24 @@ private fun References(sources: List<Citation>, cited: Set<Int>, active: Int?, o
             style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.06.em),
             modifier = Modifier.padding(bottom = 8.dp),
         )
+        if (LocalCompact.current) {
+            val gutter = LocalGutter.current
+            Row(
+                Modifier
+                    .bleed(gutter)
+                    .horizontalScroll(rememberScrollState())
+                    .height(IntrinsicSize.Min)
+                    .padding(horizontal = gutter),
+                horizontalArrangement = Arrangement.spacedBy(ReferenceGap),
+            ) {
+                for (number in listed) {
+                    Reference(number, sources[number - 1], number == active, Modifier.widthIn(max = 240.dp).fillMaxHeight(), oneLine = true) {
+                        onOpen(number)
+                    }
+                }
+            }
+            return@Column
+        }
         // An auto-filling grid, as `repeat(auto-fill, minmax(12rem, 1fr))` lays it out.
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             val columns = maxOf(1, ((maxWidth + ReferenceGap) / (ReferenceMin + ReferenceGap)).toInt())
@@ -139,13 +170,21 @@ private fun References(sources: List<Citation>, cited: Set<Int>, active: Int?, o
     }
 }
 
+/** Widens content by [by] on each side, past the padding around it, so a sideways row runs to the screen's edges. */
+private fun Modifier.bleed(by: Dp) = layout { measurable, constraints ->
+    val extra = (by * 2).roundToPx()
+    val placeable = measurable.measure(constraints.copy(minWidth = constraints.minWidth + extra, maxWidth = constraints.maxWidth + extra))
+    layout(placeable.width - extra, placeable.height) { placeable.place(-extra / 2, 0) }
+}
+
 @Composable
-private fun Reference(number: Int, source: Citation, active: Boolean, modifier: Modifier, onClick: () -> Unit) {
+private fun Reference(number: Int, source: Citation, active: Boolean, modifier: Modifier, oneLine: Boolean = false, onClick: () -> Unit) {
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val pressed by interactions.pressed()
     val shape = RoundedCornerShape(10.dp)
     val highlighted = active || pressed
+    val lines = if (oneLine) 1 else Int.MAX_VALUE
     Row(
         modifier
             .clip(shape)
@@ -181,8 +220,18 @@ private fun Reference(number: Int, source: Citation, active: Boolean, modifier: 
             )
         }
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            BasicText(source.label, style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 13.sp, fontWeight = FontWeight.SemiBold))
-            BasicText(source.bookTitle, style = TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = 12.sp, lineHeight = 1.4.em))
+            BasicText(
+                source.label,
+                style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 13.sp, fontWeight = FontWeight.SemiBold),
+                maxLines = lines,
+                overflow = TextOverflow.Ellipsis,
+            )
+            BasicText(
+                source.bookTitle,
+                style = TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = 12.sp, lineHeight = 1.4.em),
+                maxLines = lines,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
     }
 }
