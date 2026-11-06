@@ -27,13 +27,12 @@ class AccountTest {
             account { openSignIn().createAccount(user) }
             close()
         }
+        // Until the email is verified, chats stay on the device. The notice sits above the composer, so the
+        // question can be sent while it shows.
         app.chat {
             seesNotice("Verify your email address to sync your chats.")
-            dismissNotice()
+            askAndWait("cannot bear to be touched")
         }
-
-        // Until the email is verified, chats stay on the device.
-        app.chat { askAndWait("cannot bear to be touched") }
         eventually { assertEquals(listOf("cannot bear to be touched"), Device.chatTitles()) }
 
         Accounts.follow(Accounts.emailedLink(user.email, "VERIFY_EMAIL"))

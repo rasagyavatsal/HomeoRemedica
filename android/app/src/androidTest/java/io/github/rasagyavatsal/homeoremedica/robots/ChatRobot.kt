@@ -46,9 +46,6 @@ class ChatRobot(rule: ComposeTestRule) : Robot(rule) {
     /** A message shown for a few seconds over the chat, such as a chat that could not be saved. */
     fun seesNotice(text: String) = waitFor(hasText(text, substring = true))
 
-    /** Close the notice, which covers the composer until it goes after a few seconds. */
-    fun dismissNotice() = tap(hasContentDescription("Dismiss"))
-
     /** The empty chat, which welcomes the reader with the tagline. */
     fun seesWelcome() = waitFor(hasContentDescription("Ask the classical homoeopathic literature."))
 

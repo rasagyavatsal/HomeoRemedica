@@ -195,6 +195,8 @@ fun ChatScreen(
     }
     var sidebarOpen by rememberSaveable { mutableStateOf(false) }
     val closeSidebar = { sidebarOpen = false }
+    var composerHeight by remember { mutableIntStateOf(0) }
+    val composerSpace = with(LocalDensity.current) { composerHeight.toDp() }
 
     BoxWithConstraints(Modifier.fillMaxSize().background(colors.canvas)) {
         val drawer = maxWidth < DrawerBelow
@@ -230,12 +232,10 @@ fun ChatScreen(
                 // Each chat's messages play their entrance when it opens.
                 CompositionLocalProvider(LocalEntrances provides remember(state.id) { Entrances() }) {
                     Box(Modifier.weight(1f).fillMaxWidth()) {
-                        var composerHeight by remember { mutableIntStateOf(0) }
-                        val bottomPadding = with(LocalDensity.current) { composerHeight.toDp() }
                         if (state.messages.isEmpty()) {
-                            Welcome(bottomPadding)
+                            Welcome(composerSpace)
                         } else {
-                            key(state.id) { Conversation(state, wide, bottomPadding, open, showSource, onRetry, onRate, onNote) }
+                            key(state.id) { Conversation(state, wide, composerSpace, open, showSource, onRetry, onRate, onNote) }
                         }
                         ComposerArea(
                             state = state,
@@ -301,11 +301,12 @@ fun ChatScreen(
             Toast(
                 notice,
                 onDismissNotice,
+                // Above the composer, which it would otherwise cover; the composer's height includes the
+                // navigation bar, and the keyboard lifts both.
                 Modifier
                     .align(Alignment.BottomCenter)
-                    .navigationBarsPadding()
                     .imePadding()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
+                    .padding(start = 16.dp, end = 16.dp, bottom = composerSpace),
             )
         }
     }
