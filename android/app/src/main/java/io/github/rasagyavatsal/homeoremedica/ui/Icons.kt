@@ -60,6 +60,19 @@ object Icons {
     val ArrowLeft = icon("ArrowLeft", "M19 12H5m6-6-6 6 6 6")
     val ArrowRight = icon("ArrowRight", "M5 12h14m-6-6 6 6-6 6")
     val Plus = icon("Plus", "M12 5v14M5 12h14")
+    val More = icon(
+        "More",
+        fills = listOf(
+            "M6.75 12a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0Z",
+            "M13.75 12a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0Z",
+            "M20.75 12a1.75 1.75 0 1 1-3.5 0 1.75 1.75 0 0 1 3.5 0Z",
+        ),
+    )
+    val Share = icon(
+        "Share",
+        "M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z",
+        "m8.6 13.5 6.8 4M15.4 6.5l-6.8 4",
+    )
     val NewChat = icon("NewChat", "M11 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5", "M17.5 3.5a2.12 2.12 0 0 1 3 3L13 14l-4 1 1-4 7.5-7.5Z")
     val Menu = icon("Menu", "M4 7h16M4 12h16M4 17h16")
     val Copy = icon(

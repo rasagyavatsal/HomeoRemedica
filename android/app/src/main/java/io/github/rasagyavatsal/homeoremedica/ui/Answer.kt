@@ -3,6 +3,10 @@ package io.github.rasagyavatsal.homeoremedica.ui
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.Intent
+import android.content.Context
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -101,9 +105,15 @@ fun Answer(
             if (sources.isNotEmpty()) {
                 References(sources, remember(content, sources.size) { citedNumbers(content, sources.size) }, activeSource, onSource)
             }
+            // Phones gather the answer's actions in a sheet behind one button.
+            val compact = LocalCompact.current
             val buttons: @Composable RowScope.() -> Unit = {
-                ReportButton(question, content)
-                CopyButton(content)
+                if (compact) {
+                    MoreButton(question, content)
+                } else {
+                    ReportButton(question, content)
+                    CopyButton(content)
+                }
             }
             if (actions != null) {
                 Box(Modifier.padding(top = 12.dp)) { actions(buttons) }
@@ -239,6 +249,31 @@ private fun Reference(number: Int, source: Citation, active: Boolean, modifier: 
 private const val REPORT_EMAIL = "rasagyavatsal@outlook.com"
 
 /** Play requires a way to report AI answers: this drafts an email with the exchange, or shares it without an email app. */
+private fun report(context: Context, question: String, answer: String) {
+    val subject = "Report: HomeoRemedica answer"
+    val body = "What is wrong with this answer?\n\n\n" +
+        "---\nQuestion:\n$question\n\nAnswer:\n$answer\n\nApp version ${BuildConfig.VERSION_NAME}"
+    val email = Intent(Intent.ACTION_SENDTO, "mailto:".toUri())
+        .putExtra(Intent.EXTRA_EMAIL, arrayOf(REPORT_EMAIL))
+        .putExtra(Intent.EXTRA_SUBJECT, subject)
+        .putExtra(Intent.EXTRA_TEXT, body)
+    try {
+        context.startActivity(email)
+    } catch (_: ActivityNotFoundException) {
+        val share = Intent(Intent.ACTION_SEND)
+            .setType("text/plain")
+            .putExtra(Intent.EXTRA_SUBJECT, subject)
+            .putExtra(Intent.EXTRA_TEXT, "To: $REPORT_EMAIL\n\n$body")
+        context.startActivity(Intent.createChooser(share, "Report answer"))
+    }
+}
+
+/** Offers the answer to another app through the system's share sheet. */
+private fun share(context: Context, answer: String) {
+    val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, answer)
+    context.startActivity(Intent.createChooser(send, "Share answer"))
+}
+
 @Composable
 private fun ReportButton(question: String, answer: String) {
     val colors = Theme.colors
@@ -250,27 +285,39 @@ private fun ReportButton(question: String, answer: String) {
             .size(30.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(if (pressed) colors.surfaceHover else Color.Transparent)
-            .pressable(label = "Report answer", interactionSource = interactions) {
-                val subject = "Report: HomeoRemedica answer"
-                val body = "What is wrong with this answer?\n\n\n" +
-                    "---\nQuestion:\n$question\n\nAnswer:\n$answer\n\nApp version ${BuildConfig.VERSION_NAME}"
-                val email = Intent(Intent.ACTION_SENDTO, "mailto:".toUri())
-                    .putExtra(Intent.EXTRA_EMAIL, arrayOf(REPORT_EMAIL))
-                    .putExtra(Intent.EXTRA_SUBJECT, subject)
-                    .putExtra(Intent.EXTRA_TEXT, body)
-                try {
-                    context.startActivity(email)
-                } catch (_: ActivityNotFoundException) {
-                    val share = Intent(Intent.ACTION_SEND)
-                        .setType("text/plain")
-                        .putExtra(Intent.EXTRA_SUBJECT, subject)
-                        .putExtra(Intent.EXTRA_TEXT, "To: $REPORT_EMAIL\n\n$body")
-                    context.startActivity(Intent.createChooser(share, "Report answer"))
-                }
-            },
+            .pressable(label = "Report answer", interactionSource = interactions) { report(context, question, answer) },
         contentAlignment = Alignment.Center,
     ) {
         Icon(Icons.Flag, if (pressed) colors.text else colors.textMuted, 15.dp, contentDescription = "Report answer")
+    }
+}
+
+/** On phones, one button for the answer's actions, which it lists in a sheet: copy, share and report. */
+@Composable
+private fun MoreButton(question: String, answer: String) {
+    val context = LocalContext.current
+    val clipboard = LocalClipboard.current
+    val haptics = LocalHapticFeedback.current
+    val scope = rememberCoroutineScope()
+    var open by rememberSaveable { mutableStateOf(false) }
+    IconButton(Icons.More, "More actions", { open = true }, size = 48.dp, iconSize = 20.dp)
+    if (open) {
+        BottomSheet("Answer actions", { open = false }) {
+            SheetItem(Icons.Copy, "Copy answer") {
+                scope.launch { clipboard.setClipEntry(ClipEntry(ClipData.newPlainText("HomeoRemedica answer", answer))) }
+                haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                dismiss()
+            }
+            SheetItem(Icons.Share, "Share answer") {
+                dismiss()
+                share(context, answer)
+            }
+            SheetItem(Icons.Flag, "Report answer") {
+                dismiss()
+                report(context, question, answer)
+            }
+            Spacer(Modifier.height(8.dp))
+        }
     }
 }
 
