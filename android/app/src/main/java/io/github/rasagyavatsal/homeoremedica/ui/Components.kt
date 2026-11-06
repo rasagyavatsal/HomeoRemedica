@@ -231,9 +231,9 @@ fun IconButton(
     }
 }
 
-/** The web app's `.toast`: a message that dismisses itself after eight seconds. */
+/** The web app's `.toast`: a message that dismisses itself after eight seconds, with an [action] such as Undo. */
 @Composable
-fun Toast(message: String, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
+fun Toast(message: String, onDismiss: () -> Unit, modifier: Modifier = Modifier, action: String? = null, onAction: () -> Unit = {}) {
     val colors = Theme.colors
     LaunchedEffect(message) {
         delay(8_000)
@@ -256,6 +256,7 @@ fun Toast(message: String, onDismiss: () -> Unit, modifier: Modifier = Modifier)
             style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 13.sp, lineHeight = 18.sp),
             modifier = Modifier.weight(1f, fill = false),
         )
+        if (action != null) Button(action, ButtonStyle.Quiet, onAction, raised = true, color = colors.accentText)
         IconButton(Icons.Close, "Dismiss", onDismiss, raised = true)
     }
 }

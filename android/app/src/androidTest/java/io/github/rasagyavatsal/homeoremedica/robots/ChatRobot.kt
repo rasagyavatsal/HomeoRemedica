@@ -46,6 +46,9 @@ class ChatRobot(rule: ComposeTestRule) : Robot(rule) {
     /** A message shown for a few seconds over the chat, such as a chat that could not be saved. */
     fun seesNotice(text: String) = waitFor(hasText(text, substring = true))
 
+    /** Take back what the notice reports, such as a deleted chat. */
+    fun undo() = tap(button("Undo"))
+
     /** The empty chat, which welcomes the reader with the tagline. */
     fun seesWelcome() = waitFor(hasContentDescription("Ask the classical homoeopathic literature."))
 

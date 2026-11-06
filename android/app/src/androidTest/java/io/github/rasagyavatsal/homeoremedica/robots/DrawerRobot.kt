@@ -3,6 +3,8 @@ package io.github.rasagyavatsal.homeoremedica.robots
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.longClick
+import androidx.compose.ui.test.performTouchInput
 import io.github.rasagyavatsal.homeoremedica.support.AppRule
 
 /**
@@ -27,9 +29,19 @@ class DrawerRobot(rule: ComposeTestRule) : Robot(rule) {
     /** Open the chat titled [title], which closes the drawer. */
     fun openChat(title: String) = tap(chat(title))
 
+    /**
+     * Delete the chat titled [title]: from its long-press sheet on phones, and with its delete button and
+     * the confirmation that follows on wide screens.
+     */
     fun delete(title: String) {
-        tap(hasContentDescription("Delete “$title”"))
-        tap(button("Delete"))
+        waitFor(chat(title))
+        if (exists(hasContentDescription("Delete “$title”"))) {
+            tap(hasContentDescription("Delete “$title”"))
+            tap(button("Delete"))
+        } else {
+            rule.onNode(chat(title)).performTouchInput { longClick() }
+            tap(button("Delete chat"))
+        }
         waitForNo(chat(title))
     }
 

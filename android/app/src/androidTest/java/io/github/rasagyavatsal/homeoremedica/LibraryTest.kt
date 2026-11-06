@@ -44,7 +44,21 @@ class LibraryTest {
     }
 
     @Test
-    fun deletesAChatAfterConfirmation() {
+    fun putsADeletedChatBackWithUndo() {
+        app.start()
+        app.chat { askAndWait("restless legs") }
+        app.drawer { delete("restless legs") }
+        app.chat {
+            seesNotice("Deleted “restless legs”.")
+            undo()
+            seesQuestion("restless legs")
+        }
+        app.drawer { lists("restless legs") }
+        eventually { assertEquals(listOf("restless legs"), Device.chatTitles()) }
+    }
+
+    @Test
+    fun deletesAChat() {
         app.start()
         app.chat { askAndWait("restless legs") }
         app.drawer {

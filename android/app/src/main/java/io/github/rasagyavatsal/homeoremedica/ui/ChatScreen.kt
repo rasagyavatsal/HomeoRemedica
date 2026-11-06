@@ -140,6 +140,7 @@ fun ChatScreen(viewModel: ChatViewModel, footer: (@Composable () -> Unit)? = nul
         onNewChat = viewModel::newChat,
         onOpenChat = viewModel::openChat,
         onDeleteChat = viewModel::deleteChat,
+        onUndoDelete = viewModel::undoDelete,
         onDismissNotice = viewModel::dismissNotice,
         onRate = viewModel::rate,
         onNote = viewModel::note,
@@ -158,6 +159,7 @@ fun ChatScreen(
     onOpenChat: (String) -> Unit,
     onDeleteChat: (String) -> Unit,
     onDismissNotice: () -> Unit,
+    onUndoDelete: () -> Unit = {},
     /** Rates an answer, or one of its sources by number. */
     onRate: (messageId: Long, source: Int?, rating: Rating?) -> Unit = { _, _, _ -> },
     onNote: (messageId: Long, reasons: List<FeedbackReason>?, comment: String?, onSaved: (Boolean) -> Unit) -> Unit = { _, _, _, _ -> },
@@ -317,6 +319,8 @@ fun ChatScreen(
                     .align(Alignment.BottomCenter)
                     .imePadding()
                     .padding(start = 16.dp, end = 16.dp, bottom = composerSpace),
+                action = if (state.restorable) "Undo" else null,
+                onAction = onUndoDelete,
             )
         }
     }

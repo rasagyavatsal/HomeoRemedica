@@ -1,6 +1,14 @@
 package io.github.rasagyavatsal.homeoremedica.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -76,6 +84,7 @@ fun Sidebar(
     footer: (@Composable () -> Unit)? = null,
 ) {
     val colors = Theme.colors
+    val compact = LocalCompact.current
     var query by rememberSaveable { mutableStateOf("") }
     var confirming by rememberSaveable { mutableStateOf<String?>(null) }
     val search = query.trim()
@@ -143,7 +152,9 @@ fun Sidebar(
                         )
                     }
                     items(group.chats, key = { it.id }) { chat ->
-                        if (confirming == chat.id) {
+                        if (compact) {
+                            ChatRow(chat, chat.id == activeId, onOpen = { onOpen(chat.id) }, onDelete = { onDelete(chat.id) })
+                        } else if (confirming == chat.id) {
                             ConfirmDelete(
                                 onDelete = {
                                     confirming = null
@@ -248,6 +259,63 @@ private fun ChatItem(chat: ChatSummary, active: Boolean, onOpen: () -> Unit, onD
             iconSize = 16.dp,
             pressedColor = colors.danger,
         )
+    }
+}
+
+/**
+ * A chat on phones: tapping opens it, and a long press offers to delete it, which the notice that follows
+ * can undo. Swiping is left to the drawer, which a swipe closes.
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ChatRow(chat: ChatSummary, active: Boolean, onOpen: () -> Unit, onDelete: () -> Unit) {
+    val colors = Theme.colors
+    val haptics = LocalHapticFeedback.current
+    val interactions = remember { MutableInteractionSource() }
+    val pressed by interactions.pressed()
+    var actions by rememberSaveable { mutableStateOf(false) }
+    BasicText(
+        chat.title,
+        style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 15.sp, lineHeight = 20.sp),
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(
+                when {
+                    active -> colors.surfaceSelected
+                    pressed || actions -> colors.surfaceHover
+                    else -> Color.Transparent
+                },
+            )
+            .combinedClickable(
+                interactionSource = interactions,
+                indication = null,
+                onClickLabel = "Open chat",
+                onLongClickLabel = "Show actions",
+                onLongClick = {
+                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                    actions = true
+                },
+                onClick = onOpen,
+            )
+            .semantics {
+                selected = active
+                customActions = listOf(CustomAccessibilityAction("Delete") { onDelete(); true })
+            }
+            .heightIn(min = 48.dp)
+            .wrapContentHeight(Alignment.CenterVertically)
+            .padding(horizontal = 12.dp),
+    )
+    if (actions) {
+        BottomSheet("Chat actions", { actions = false }, title = chat.title) {
+            SheetItem(Icons.Trash, "Delete chat", danger = true) {
+                dismiss()
+                onDelete()
+            }
+            Spacer(Modifier.height(8.dp))
+        }
     }
 }
 

@@ -310,6 +310,39 @@ class ChatViewModelTest {
     }
 
     @Test
+    fun putsADeletedChatBackOnUndo() = runTest {
+        val vm = viewModel()
+        vm.ask("Pulsatilla?", "Mild.")
+        val pulsatilla = vm.state.value.id
+
+        vm.deleteChat(pulsatilla)
+        assertEquals("Deleted “Pulsatilla?”.", vm.state.value.notice)
+        assertTrue(vm.state.value.restorable)
+        assertTrue(vm.state.value.messages.isEmpty())
+        assertTrue(library.chats.value.isEmpty())
+
+        vm.undoDelete()
+        assertNull(vm.state.value.notice)
+        assertEquals(listOf(pulsatilla), library.chats.value.map { it.id })
+        assertEquals(listOf(pulsatilla), vm.state.value.chats?.map { it.id })
+        // It was open, so it opens again.
+        assertEquals(pulsatilla, vm.state.value.id)
+        assertEquals(listOf("Pulsatilla?", "Mild."), vm.state.value.messages.map { it.content })
+    }
+
+    @Test
+    fun cannotUndoADeletionOnceItsNoticeIsDismissed() = runTest {
+        val vm = viewModel()
+        vm.ask("Pulsatilla?", "Mild.")
+        vm.deleteChat(vm.state.value.id)
+
+        vm.dismissNotice()
+        assertFalse(vm.state.value.restorable)
+        vm.undoDelete()
+        assertTrue(library.chats.value.isEmpty())
+    }
+
+    @Test
     fun saysWhenAChatNoLongerExists() = runTest {
         val vm = viewModel()
         vm.ask("Pulsatilla?", "Mild.")

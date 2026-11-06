@@ -51,6 +51,8 @@ data class ChatState(
     val chats: List<ChatSummary>? = null,
     /** A message for the reader, such as a chat that could not be saved. */
     val notice: String? = null,
+    /** Whether [notice] is about a chat just deleted, which [ChatViewModel.undoDelete] puts back. */
+    val restorable: Boolean = false,
     /** The open chat's ratings, by message id. */
     val ratings: Map<Long, AnswerRatings> = emptyMap(),
     /** Whether answers can be rated, which needs a verified account. */
@@ -88,6 +90,11 @@ class ChatViewModel(
     /** Chats whose saved ratings were loaded, or are loading. */
     private val loadedRatings = mutableSetOf<String>()
     private val ratingClient: RatingClient? get() = library as? RatingClient
+    /** The chat deleted last, while it can still be put back. */
+    private var deleted: Deleted? = null
+
+    /** A deleted [chat], the library it was deleted from, and whether it was [open]. */
+    private class Deleted(val chat: SavedChat, val library: ChatLibrary, val open: Boolean)
 
     init {
         _state.update { it.copy(canRate = library is RatingClient) }
@@ -108,7 +115,8 @@ class ChatViewModel(
             savedRatings.clear()
             ratingQueues.clear()
             loadedRatings.clear()
-            _state.update { ChatState(newId(), draft = it.draft, notice = it.notice) }
+            deleted = null
+            _state.update { ChatState(newId(), draft = it.draft, notice = it.notice.takeUnless { _ -> it.restorable }) }
         }
         this.library = library
         _state.update { it.copy(chats = null, canRate = library is RatingClient) }
@@ -205,7 +213,7 @@ class ChatViewModel(
                 stored { library.list() }
             } catch (failure: Exception) {
                 if (!unreachable(failure)) throw failure
-                if (this.library === library) _state.update { it.copy(notice = "Your chats could not be loaded. ${reason(failure)}") }
+                if (this.library === library) _state.update { it.copy(restorable = false, notice = "Your chats could not be loaded. ${reason(failure)}") }
                 emptyList()
             }
             if (this.library !== library) return@withLibrary
@@ -304,7 +312,9 @@ class ChatViewModel(
     fun newChat() {
         stop()
         lastChat.set(null)
-        _state.update { ChatState(newId(), draft = it.draft, chats = it.chats, notice = it.notice, canRate = it.canRate) }
+        _state.update {
+            ChatState(newId(), draft = it.draft, chats = it.chats, notice = it.notice, restorable = it.restorable, canRate = it.canRate)
+        }
     }
 
     /** Show a saved chat, stopping any answer in progress. */
@@ -316,12 +326,12 @@ class ChatViewModel(
                 stored { library.open(id) }
             } catch (failure: Exception) {
                 if (!unreachable(failure)) throw failure
-                _state.update { it.copy(notice = "That chat could not be opened. ${reason(failure)}") }
+                _state.update { it.copy(restorable = false, notice = "That chat could not be opened. ${reason(failure)}") }
                 return@withLibrary
             }
             if (this.library !== library) return@withLibrary
             if (saved == null) {
-                _state.update { state -> state.copy(chats = state.chats?.filter { it.id != id }, notice = "That chat no longer exists.") }
+                _state.update { state -> state.copy(chats = state.chats?.filter { it.id != id }, notice = "That chat no longer exists.", restorable = false) }
                 return@withLibrary
             }
             stop()
@@ -329,27 +339,62 @@ class ChatViewModel(
         }
     }
 
+    /** Delete a chat; [undoDelete] puts it back while the notice that says so shows. */
     fun deleteChat(id: String) {
         val library = library ?: return
         withLibrary { delete(library, id) }
     }
 
     private suspend fun delete(library: ChatLibrary, id: String) {
-        try {
-            stored { library.remove(id) }
+        val chat = try {
+            stored { library.open(id) }.also { stored { library.remove(id) } }
         } catch (failure: Exception) {
             if (!unreachable(failure)) throw failure
-            _state.update { it.copy(notice = "That chat could not be deleted. ${reason(failure)}") }
+            _state.update { it.copy(restorable = false, notice = "That chat could not be deleted. ${reason(failure)}") }
             return
         }
         if (this.library !== library) return
-        _state.update { state -> state.copy(chats = state.chats?.filter { it.id != id }) }
-        if (id == _state.value.id) newChat()
+        val open = id == _state.value.id
+        deleted = chat?.let { Deleted(it, library, open) }
+        _state.update { state ->
+            state.copy(
+                chats = state.chats?.filter { it.id != id },
+                notice = if (chat != null) "Deleted “${chat.title}”." else state.notice,
+                restorable = chat != null || state.restorable,
+            )
+        }
+        if (open) newChat()
     }
 
-    fun dismissNotice() = _state.update { it.copy(notice = null) }
+    /** Put back the chat deleted last, reopening it if it was open and nothing has been asked since. */
+    fun undoDelete() {
+        val deleted = deleted ?: return
+        this.deleted = null
+        _state.update { it.copy(notice = null, restorable = false) }
+        withLibrary {
+            if (this.library !== deleted.library) return@withLibrary
+            try {
+                stored { deleted.library.save(deleted.chat) }
+            } catch (failure: Exception) {
+                if (!unreachable(failure)) throw failure
+                _state.update { it.copy(restorable = false, notice = "That chat could not be restored. ${reason(failure)}") }
+                return@withLibrary
+            }
+            if (this.library !== deleted.library) return@withLibrary
+            val summary = deleted.chat.summarize()
+            _state.update { state ->
+                state.copy(chats = state.chats?.let { chats -> (chats.filter { it.id != summary.id } + summary).sortedByDescending { it.updatedAt } })
+            }
+            if (deleted.open && _state.value.messages.isEmpty()) show(deleted.chat)
+        }
+    }
 
-    override fun notify(message: String) = _state.update { it.copy(notice = message) }
+    fun dismissNotice() {
+        if (_state.value.restorable) deleted = null
+        _state.update { it.copy(notice = null, restorable = false) }
+    }
+
+    override fun notify(message: String) = _state.update { it.copy(restorable = false, notice = message) }
 
     private fun show(chat: SavedChat) {
         lastChat.set(chat.id)
@@ -364,6 +409,7 @@ class ChatViewModel(
                 draft = it.draft,
                 chats = it.chats,
                 notice = it.notice,
+                restorable = it.restorable,
                 canRate = it.canRate,
             )
         }
@@ -390,7 +436,7 @@ class ChatViewModel(
             stored { library.save(chat) }
         } catch (failure: Exception) {
             if (!unreachable(failure)) throw failure
-            _state.update { it.copy(notice = "This chat could not be saved. ${reason(failure)}") }
+            _state.update { it.copy(restorable = false, notice = "This chat could not be saved. ${reason(failure)}") }
         }
     }
 

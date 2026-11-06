@@ -7,6 +7,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -38,6 +41,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -257,5 +262,26 @@ private class SheetMotion(private val scope: CoroutineScope, private val fling: 
             settle(available.y)
             return available
         }
+    }
+}
+
+/** One choice in a sheet: a full-width row with an icon, tall enough to tap easily. */
+@Composable
+fun SheetItem(icon: ImageVector, text: String, danger: Boolean = false, onClick: () -> Unit) {
+    val colors = Theme.colors
+    val interactions = remember { MutableInteractionSource() }
+    val pressed by interactions.pressed()
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = 52.dp)
+            .background(if (!pressed) Color.Transparent else if (danger) colors.dangerSoft else colors.surfaceRaisedHover)
+            .pressable(label = text, interactionSource = interactions, onClick = onClick)
+            .padding(horizontal = 24.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(icon, if (danger) colors.danger else colors.textMuted, 20.dp)
+        BasicText(text, style = TextStyle(color = if (danger) colors.danger else colors.text, fontFamily = Fonts.sans, fontSize = 15.sp))
     }
 }
