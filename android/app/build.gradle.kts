@@ -15,9 +15,13 @@ if (file("google-services.json").exists()) apply(plugin = "com.google.gms.google
 // release-please keeps the app version in version.txt.
 val appVersion = rootProject.file("version.txt").readText().trim()
 
+// -Phomeoremedica.e2e builds the app for the end-to-end tests: it talks to the web app's e2e server and the
+// Firebase Auth emulator on this machine, through `adb reverse` (see `make e2e`).
+val e2e = providers.gradleProperty("homeoremedica.e2e").map { it != "false" }.getOrElse(false)
+
 // Point a build at another server with -Phomeoremedica.apiBaseUrl=http://10.0.2.2:8000
 val apiBaseUrl = providers.gradleProperty("homeoremedica.apiBaseUrl")
-    .orElse("https://homeoremedica-619837289655.asia-south1.run.app")
+    .orElse(if (e2e) "http://localhost:8100" else "https://homeoremedica-619837289655.asia-south1.run.app")
     .get()
     .trimEnd('/')
 
@@ -40,6 +44,15 @@ android {
         versionCode = 1
         versionName = appVersion
         buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
+        buildConfigField("boolean", "E2E", "$e2e")
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Each test starts from a fresh install: no saved chats, no account, and the practitioner notice.
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
+    }
+
+    testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
 
     signingConfigs {
@@ -105,8 +118,18 @@ dependencies {
     implementation(libs.androidx.credentials.play.services)
     implementation(libs.googleid)
     debugImplementation(libs.compose.ui.tooling)
+    debugImplementation(libs.compose.ui.test.manifest)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
+
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    // Compose's test library brings Espresso 3.5, which fails on Android 15 and later.
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestUtil(libs.androidx.test.orchestrator)
 }

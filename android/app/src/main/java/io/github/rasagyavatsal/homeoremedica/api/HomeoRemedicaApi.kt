@@ -150,6 +150,14 @@ class HomeoRemedicaApi(
             // Retrieval and generation can pause between events, and Cloud Run may start cold.
             .readTimeout(90, TimeUnit.SECONDS)
             .build()
+
+        /**
+         * For the end-to-end tests: the server limits questions by the last X-Forwarded-For address, as behind
+         * Cloud Run, so each run of the app asks from an [address] of its own, as each web e2e test does.
+         */
+        fun e2eClient(address: String): OkHttpClient = defaultClient().newBuilder()
+            .addInterceptor { chain -> chain.proceed(chain.request().newBuilder().header("X-Forwarded-For", address).build()) }
+            .build()
     }
 }
 

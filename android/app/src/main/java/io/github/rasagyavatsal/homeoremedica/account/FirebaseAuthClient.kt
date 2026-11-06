@@ -12,6 +12,7 @@ import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.FirebaseApp
+import com.google.firebase.FirebaseOptions
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.tasks.await
+import io.github.rasagyavatsal.homeoremedica.BuildConfig
 
 /** Sign-in through the Firebase project the build was configured with. */
 class FirebaseAuthClient private constructor(
@@ -113,11 +115,32 @@ class FirebaseAuthClient private constructor(
         // The web client's ID is a resource only when google-services.json names one.
         @SuppressLint("DiscouragedApi")
         fun create(context: Context): FirebaseAuthClient? {
+            if (BuildConfig.E2E) return emulated(context)
             val app = FirebaseApp.getApps(context).firstOrNull() ?: FirebaseApp.initializeApp(context) ?: return null
             val clientRes = context.resources.getIdentifier("default_web_client_id", "string", context.packageName)
             val clientId = if (clientRes != 0) context.getString(clientRes) else null
             return FirebaseAuthClient(FirebaseAuth.getInstance(app), CredentialManager.create(context), clientId)
         }
+
+        /** The end-to-end tests' accounts: the Auth emulator's demo project (e2e/scenario.ts), without Google sign-in. */
+        private fun emulated(context: Context): FirebaseAuthClient {
+            val existing = FirebaseApp.getApps(context).find { it.name == E2E_APP }
+            val app = existing ?: FirebaseApp.initializeApp(
+                context,
+                FirebaseOptions.Builder()
+                    .setProjectId("demo-homeoremedica")
+                    .setApiKey("e2e-api-key")
+                    .setApplicationId("1:1:android:1")
+                    .build(),
+                E2E_APP,
+            )
+            val auth = FirebaseAuth.getInstance(app)
+            // The emulator can be set only before the instance is first used.
+            if (existing == null) auth.useEmulator("localhost", 9099)
+            return FirebaseAuthClient(auth, CredentialManager.create(context), googleClientId = null)
+        }
+
+        private const val E2E_APP = "e2e"
     }
 }
 

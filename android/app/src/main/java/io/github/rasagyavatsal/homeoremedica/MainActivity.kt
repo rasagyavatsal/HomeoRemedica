@@ -42,11 +42,15 @@ import io.github.rasagyavatsal.homeoremedica.ui.theme.LocalThemeControl
 import io.github.rasagyavatsal.homeoremedica.ui.theme.ThemeChoice
 import io.github.rasagyavatsal.homeoremedica.ui.theme.ThemeControl
 import java.io.File
+import java.util.UUID
 
 class MainActivity : ComponentActivity() {
     private val preferences by lazy { Preferences(getSharedPreferences("homeoremedica", MODE_PRIVATE)) }
 
-    private val api by lazy { HomeoRemedicaApi(BuildConfig.API_BASE_URL) }
+    private val api by lazy {
+        val client = if (BuildConfig.E2E) HomeoRemedicaApi.e2eClient(UUID.randomUUID().toString()) else HomeoRemedicaApi.defaultClient()
+        HomeoRemedicaApi(BuildConfig.API_BASE_URL, client)
+    }
 
     // The account view model tells it where chats are saved once it knows who is signed in.
     private val viewModel: ChatViewModel by viewModels {
