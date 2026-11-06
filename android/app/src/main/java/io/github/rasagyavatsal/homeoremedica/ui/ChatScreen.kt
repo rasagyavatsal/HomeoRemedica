@@ -229,7 +229,12 @@ fun ChatScreen(
         Row(Modifier.fillMaxSize()) {
             if (!drawer) sidebar(Modifier.width(SidebarWidth).fillMaxHeight())
             Column(Modifier.weight(1f).fillMaxHeight().imePadding()) {
-                Topbar(state.title.ifEmpty { "New chat" }, onMenu = if (drawer) ({ sidebarOpen = true }) else null)
+                Topbar(
+                    state.title.ifEmpty { "New chat" },
+                    onMenu = if (drawer) ({ sidebarOpen = true }) else null,
+                    // A chat with nothing in it is already new.
+                    onNewChat = if (compact && state.messages.isNotEmpty()) onNewChat else null,
+                )
                 // Each chat's messages play their entrance when it opens.
                 CompositionLocalProvider(LocalEntrances provides remember(state.id) { Entrances() }) {
                     Box(Modifier.weight(1f).fillMaxWidth()) {
@@ -322,29 +327,38 @@ private fun Scrim(label: String, onClick: () -> Unit) {
     Box(Modifier.fillMaxSize().background(Theme.colors.scrim).pressable(label = label, onClick = onClick))
 }
 
-/** The web app's `.topbar`: the chats button on narrow screens, then the open chat's title. */
+/**
+ * The bar above the chat: on phones, the chats button, the open chat's title and a new chat; on wide
+ * screens, as the web app's `.topbar`, the title alone.
+ */
 @Composable
-private fun Topbar(title: String, onMenu: (() -> Unit)?) {
+private fun Topbar(title: String, onMenu: (() -> Unit)?, onNewChat: (() -> Unit)?) {
     val colors = Theme.colors
+    val compact = LocalCompact.current
     Row(
         Modifier
             .fillMaxWidth()
             .background(colors.canvas)
             .drawBehind { drawLine(colors.border, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
             .statusBarsPadding()
-            .heightIn(min = 44.dp)
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+            .heightIn(min = if (compact) 56.dp else 44.dp)
+            .padding(horizontal = if (compact) 4.dp else 16.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (onMenu != null) IconButton(Icons.Menu, "Open chats", onMenu, Modifier.offset(x = (-8).dp))
+        if (onMenu != null) IconButton(Icons.Menu, "Open chats", onMenu, size = 48.dp, iconSize = 22.dp, color = colors.text)
         BasicText(
             title,
-            style = TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = 13.sp),
+            style = if (compact) {
+                TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            } else {
+                TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = 13.sp)
+            },
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).padding(start = if (onMenu != null) 4.dp else 0.dp).semantics { heading() },
         )
+        if (onNewChat != null) IconButton(Icons.NewChat, "New chat", onNewChat, size = 48.dp, iconSize = 22.dp, color = colors.text)
     }
 }
 
