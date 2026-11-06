@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.1](https://github.com/rasagyavatsal/HomeoRemedica/compare/android-v3.2.0...android-v3.2.1) (2026-11-06)
+
+
+### Bug Fixes
+
+* **android:** keep the notice toast above the composer ([676c99d](https://github.com/rasagyavatsal/HomeoRemedica/commit/676c99d06d01200c0a97e671d9d2318fd9cdb943))
+
 ## [3.2.0](https://github.com/rasagyavatsal/HomeoRemedica-android/compare/v3.1.0...v3.2.0) (2026-11-04)
 
 
