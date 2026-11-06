@@ -1,5 +1,7 @@
 package io.github.rasagyavatsal.homeoremedica.ui
 
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -107,9 +109,11 @@ fun RatingButtons(
 ) {
     // Counts thumbs-ups, so each one plays its burst afresh.
     var bursts by remember { mutableIntStateOf(0) }
+    val haptics = LocalHapticFeedback.current
     val choose = { choice: Rating ->
         val next = if (rating == choice && clears) null else choice
         if (next == Rating.Up && rating != Rating.Up) bursts++
+        if (next != rating) haptics.performHapticFeedback(if (next == null) HapticFeedbackType.ToggleOff else HapticFeedbackType.ToggleOn)
         onRate(next)
     }
     Row(modifier.semantics { contentDescription = label }, horizontalArrangement = Arrangement.spacedBy(2.dp)) {

@@ -1,5 +1,7 @@
 package io.github.rasagyavatsal.homeoremedica.ui
 
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -72,6 +74,7 @@ fun ThemeToggle(modifier: Modifier = Modifier) {
 fun ThemePicker(modifier: Modifier = Modifier) {
     val colors = Theme.colors
     val control = LocalThemeControl.current
+    val haptics = LocalHapticFeedback.current
     val shape = RoundedCornerShape(12.dp)
     Row(
         modifier
@@ -91,7 +94,10 @@ fun ThemePicker(modifier: Modifier = Modifier) {
                     .clip(inner)
                     .background(if (chosen) colors.surfaceRaised else Color.Transparent)
                     .border(1.dp, if (chosen) colors.border else Color.Transparent, inner)
-                    .selectable(chosen, role = Role.RadioButton, interactionSource = null, indication = null) { control.choose(choice) }
+                    .selectable(chosen, role = Role.RadioButton, interactionSource = null, indication = null) {
+                        if (!chosen) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                        control.choose(choice)
+                    }
                     .semantics { contentDescription = choice.label },
                 horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,

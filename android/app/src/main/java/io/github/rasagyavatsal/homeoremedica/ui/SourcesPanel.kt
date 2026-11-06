@@ -1,5 +1,8 @@
 package io.github.rasagyavatsal.homeoremedica.ui
 
+import kotlinx.coroutines.flow.drop
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -102,8 +105,13 @@ fun SourceSheet(
     val pages = remember(numbers, number) { if (number in numbers) numbers else sources.indices.map { it + 1 } }
     val pager = rememberPagerState(pages.indexOf(number).coerceAtLeast(0)) { pages.size }
     val select by rememberUpdatedState(onSelect)
+    val haptics = LocalHapticFeedback.current
     LaunchedEffect(pager, pages) {
         snapshotFlow { pager.settledPage }.collect { page -> pages.getOrNull(page)?.let(select) }
+    }
+    // A tick as each passage settles under the finger.
+    LaunchedEffect(pager) {
+        snapshotFlow { pager.currentPage }.drop(1).collect { haptics.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick) }
     }
     BottomSheet("Source", onClose, closeLabel = "Close source", expandable = true) {
         if (pages.size > 1) Dots(pages.size, pager.currentPage)

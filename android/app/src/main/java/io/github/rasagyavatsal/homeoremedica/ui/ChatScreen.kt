@@ -1,5 +1,7 @@
 package io.github.rasagyavatsal.homeoremedica.ui
 
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -167,8 +169,10 @@ fun ChatScreen(
 ) {
     val colors = Theme.colors
     val keyboard = LocalSoftwareKeyboardController.current
+    val haptics = LocalHapticFeedback.current
     val submit = { text: String ->
         keyboard?.hide()
+        if (text.isNotBlank() && !state.busy) haptics.performHapticFeedback(HapticFeedbackType.ContextClick)
         onSubmit(text)
     }
     var openSource by rememberSaveable(stateSaver = OpenSourceSaver) { mutableStateOf(null) }
