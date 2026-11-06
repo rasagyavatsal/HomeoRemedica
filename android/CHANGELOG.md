@@ -1,5 +1,27 @@
 # Changelog
 
+## [3.3.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/android-v3.2.1...android-v3.3.0) (2026-11-06)
+
+
+### Features
+
+* **android:** answer sending, rating and choices with haptic feedback ([f35455d](https://github.com/rasagyavatsal/HomeoRemedica/commit/f35455d281ff7200b1a7de1b8eef2ae1b6865194))
+* **android:** ask for feedback on an answer in a bottom sheet on phones ([216845d](https://github.com/rasagyavatsal/HomeoRemedica/commit/216845d96223200e30d11484034ea0496934db59))
+* **android:** delete chats from a long press, with undo ([7c06bef](https://github.com/rasagyavatsal/HomeoRemedica/commit/7c06bef231714448e0724f4f1e840f7941f0205e))
+* **android:** drag the chat list open and closed on phones ([ad77c9f](https://github.com/rasagyavatsal/HomeoRemedica/commit/ad77c9fbfe2e1ad9016043f1c52987bacacd55aa))
+* **android:** gather an answer's actions in a sheet on phones, with share ([c3e591e](https://github.com/rasagyavatsal/HomeoRemedica/commit/c3e591e5d7600538bdc76fa768d9031d84f7c437))
+* **android:** give controls finger-sized touch targets on phones ([2bc983b](https://github.com/rasagyavatsal/HomeoRemedica/commit/2bc983bb70ed6202b7ecea56aebe1298eb2f695a))
+* **android:** list an answer's references in a row that scrolls sideways on phones ([976f48c](https://github.com/rasagyavatsal/HomeoRemedica/commit/976f48c70213dc0367c6ac5dc06c493ed14076c3))
+* **android:** open the account in a bottom sheet with the theme on phones ([69f2429](https://github.com/rasagyavatsal/HomeoRemedica/commit/69f24295ff95dc841e059b57f4d3bdf56dedf871))
+* **android:** show cited passages in a bottom sheet on phones ([26ac60e](https://github.com/rasagyavatsal/HomeoRemedica/commit/26ac60ec1225ccc01aba83c1eca3d56b06d909c5))
+* **android:** show dialogs as bottom sheets and sign-in as a page on phones ([7f177ad](https://github.com/rasagyavatsal/HomeoRemedica/commit/7f177ad80baf5fec7e9a5791f610267a74fb6f85))
+* **android:** start a new chat from the top bar on phones ([91cac96](https://github.com/rasagyavatsal/HomeoRemedica/commit/91cac96e9941f052b36f5baf4618b584bc1c5c65))
+
+
+### Bug Fixes
+
+* **android:** always say the account was deleted ([6b59b25](https://github.com/rasagyavatsal/HomeoRemedica/commit/6b59b258b1e42486cfe5a0d7bb225686d87a30b8))
+
 ## [3.2.1](https://github.com/rasagyavatsal/HomeoRemedica/compare/android-v3.2.0...android-v3.2.1) (2026-11-06)
 
 
