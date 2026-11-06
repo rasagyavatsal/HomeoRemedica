@@ -4,6 +4,9 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.longClick
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.swipeLeft
+import androidx.compose.ui.test.swipeRight
 import androidx.compose.ui.test.performTouchInput
 import io.github.rasagyavatsal.homeoremedica.support.AppRule
 
@@ -13,14 +16,28 @@ import io.github.rasagyavatsal.homeoremedica.support.AppRule
  */
 class DrawerRobot(rule: ComposeTestRule) : Robot(rule) {
     fun open() {
-        if (exists(hasContentDescription("Open chats")) && !exists(hasContentDescription("Close chats"))) {
-            tap(hasContentDescription("Open chats"))
-        }
+        if (!exists(button("New chat"))) tap(hasContentDescription("Open chats"))
         waitFor(button("New chat"))
     }
 
+    /** Close the drawer from its scrim; the sidebar on wide screens stays. */
     fun close() {
-        if (exists(hasContentDescription("Close chats"))) tap(hasContentDescription("Close chats"))
+        if (exists(hasClickLabel("Close chats"))) {
+            press(hasClickLabel("Close chats"))
+            waitForNo(button("New chat"))
+        }
+    }
+
+    /** Drag the chat sideways, which pulls the drawer in. */
+    fun swipeOpen() {
+        rule.onRoot().performTouchInput { swipeRight(startX = width * 0.2f, endX = width * 0.9f) }
+        waitFor(button("New chat"))
+    }
+
+    /** Drag the drawer back out of the way. */
+    fun swipeClosed() {
+        rule.onRoot().performTouchInput { swipeLeft(startX = width * 0.6f, endX = width * 0.05f) }
+        waitForNo(button("New chat"))
     }
 
     /** Start a new chat, which closes the drawer. */

@@ -1,6 +1,7 @@
 package io.github.rasagyavatsal.homeoremedica
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import io.github.rasagyavatsal.homeoremedica.robots.DrawerRobot
 import io.github.rasagyavatsal.homeoremedica.robots.chat
 import io.github.rasagyavatsal.homeoremedica.robots.drawer
 import io.github.rasagyavatsal.homeoremedica.robots.start
@@ -41,6 +42,17 @@ class LibraryTest {
             openChat("chilly and constipated")
         }
         app.chat { seesQuestion("chilly and constipated") }
+    }
+
+    @Test
+    fun opensAndClosesTheChatsWithASwipe() {
+        app.start()
+        app.chat { askAndWait("restless legs") }
+        DrawerRobot(app.compose).apply {
+            swipeOpen()
+            lists("restless legs")
+            swipeClosed()
+        }
     }
 
     @Test

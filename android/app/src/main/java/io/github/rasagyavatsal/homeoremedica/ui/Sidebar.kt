@@ -78,8 +78,6 @@ fun Sidebar(
     onNew: () -> Unit,
     onOpen: (String) -> Unit,
     onDelete: (String) -> Unit,
-    /** Closes the drawer; null when the sidebar stays beside the chat. */
-    onClose: (() -> Unit)?,
     modifier: Modifier = Modifier,
     footer: (@Composable () -> Unit)? = null,
 ) {
@@ -107,7 +105,6 @@ fun Sidebar(
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
                 // Phones choose the theme in the account sheet.
                 if (!compact) ThemeToggle()
-                if (onClose != null) IconButton(Icons.Close, "Close chats", onClose)
             }
         }
 

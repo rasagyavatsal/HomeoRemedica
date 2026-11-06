@@ -1,17 +1,18 @@
 package io.github.rasagyavatsal.homeoremedica.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -29,7 +30,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -196,6 +196,11 @@ fun ChatScreen(
     }
     var sidebarOpen by rememberSaveable { mutableStateOf(false) }
     val closeSidebar = { sidebarOpen = false }
+    val drawerShown = remember { Animatable(if (sidebarOpen) 1f else 0f) }
+    LaunchedEffect(sidebarOpen) { drawerShown.animateTo(if (sidebarOpen) 1f else 0f, drawerMotion(sidebarOpen)) }
+    val scope = rememberCoroutineScope()
+    val density = LocalDensity.current
+    val fling = with(density) { 400.dp.toPx() }
     var composerHeight by remember { mutableIntStateOf(0) }
     val composerSpace = with(LocalDensity.current) { composerHeight.toDp() }
 
@@ -204,6 +209,21 @@ fun ChatScreen(
     BoxWithConstraints(Modifier.fillMaxSize().background(colors.canvas)) {
         val drawer = compact
         val wide = maxWidth >= 640.dp
+        val drawerWidth = minOf(320.dp, maxWidth - 56.dp)
+        val drawerPx = with(density) { drawerWidth.toPx() }
+        // How far the drawer has slid in, from 0 to 1; a drag moves it, and letting go settles it.
+        val drawerDrag = rememberDraggableState { delta ->
+            scope.launch { drawerShown.snapTo((drawerShown.value + delta / drawerPx).coerceIn(0f, 1f)) }
+        }
+        val settleDrawer = { velocity: Float ->
+            val open = when {
+                velocity > fling -> true
+                velocity < -fling -> false
+                else -> drawerShown.value > 0.5f
+            }
+            if (open == sidebarOpen) scope.launch { drawerShown.animateTo(if (open) 1f else 0f, drawerMotion(open)) }
+            sidebarOpen = open
+        }
         val panelWidth = (maxWidth * 0.32f).coerceIn(288.dp, 400.dp)
         BackHandler(enabled = (source != null && !compact) || (drawer && sidebarOpen)) {
             closeSource()
@@ -222,7 +242,6 @@ fun ChatScreen(
                     onOpenChat(id)
                 },
                 onDelete = onDeleteChat,
-                onClose = if (drawer) closeSidebar else null,
                 modifier = modifier,
                 footer = footer,
             )
@@ -230,7 +249,14 @@ fun ChatScreen(
 
         Row(Modifier.fillMaxSize()) {
             if (!drawer) sidebar(Modifier.width(SidebarWidth).fillMaxHeight())
-            Column(Modifier.weight(1f).fillMaxHeight().imePadding()) {
+            Column(
+                Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    // Dragging the chat sideways pulls the chat list in; rows that scroll sideways keep their drags.
+                    .draggable(drawerDrag, Orientation.Horizontal, enabled = drawer && !sidebarOpen, onDragStopped = { settleDrawer(it) })
+                    .imePadding(),
+            ) {
                 Topbar(
                     state.title.ifEmpty { "New chat" },
                     onMenu = if (drawer) ({ sidebarOpen = true }) else null,
@@ -296,17 +322,27 @@ fun ChatScreen(
                 )
             }
         }
-        // The chat list slides in over the chat on narrow screens.
-        if (drawer) {
-            AnimatedVisibility(sidebarOpen, enter = fadeIn(tween(200, easing = Ease)), exit = fadeOut(tween(200, easing = EaseExit))) {
-                Scrim("Close chats", closeSidebar)
-            }
-            AnimatedVisibility(
-                sidebarOpen,
-                enter = slideInHorizontally(tween(320, easing = Ease)) { -it },
-                exit = slideOutHorizontally(tween(200, easing = EaseExit)) { -it },
+        // The chat list slides in over the chat on phones, following a finger that drags it.
+        if (drawer && (sidebarOpen || drawerShown.value > 0f)) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .draggable(drawerDrag, Orientation.Horizontal, enabled = sidebarOpen, onDragStopped = { settleDrawer(it) }),
             ) {
-                sidebar(Modifier.width(minOf(SidebarWidth, maxWidth - 48.dp)).fillMaxHeight().shadowLarge(RectangleShape, colors.shadow))
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .graphicsLayer { alpha = drawerShown.value }
+                        .background(colors.scrim)
+                        .pressable(label = "Close chats", onClick = closeSidebar),
+                )
+                sidebar(
+                    Modifier
+                        .width(drawerWidth)
+                        .fillMaxHeight()
+                        .graphicsLayer { translationX = -(1 - drawerShown.value) * drawerWidth.toPx() }
+                        .shadowLarge(RectangleShape, colors.shadow),
+                )
             }
         }
         state.notice?.let { notice ->
@@ -327,10 +363,8 @@ fun ChatScreen(
     }
 }
 
-@Composable
-private fun Scrim(label: String, onClick: () -> Unit) {
-    Box(Modifier.fillMaxSize().background(Theme.colors.scrim).pressable(label = label, onClick = onClick))
-}
+/** The drawer's slide: in with the standard easing, out more quickly. */
+private fun drawerMotion(open: Boolean) = if (open) tween<Float>(320, easing = Ease) else tween(200, easing = EaseExit)
 
 /**
  * The bar above the chat: on phones, the chats button, the open chat's title and a new chat; on wide
