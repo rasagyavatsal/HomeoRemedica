@@ -239,8 +239,9 @@ class ChatViewModelTest {
         answer(reply, listOf(ChatTurn(Role.User, question), ChatTurn(Role.Assistant, reply)))
         submit(question)
         val id = settled().id
-        // Saving finishes after the answer does.
+        // Saving finishes after the answer does, on the network's thread, and holds the library until then.
         library.awaitSaved { chats -> chats.any { it.id == id && it.messages.last().content == reply } }
+        idle()
     }
 
     @Test

@@ -1,5 +1,6 @@
 package io.github.rasagyavatsal.homeoremedica.chat
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.rasagyavatsal.homeoremedica.api.AnswerRatings
@@ -446,6 +447,10 @@ class ChatViewModel(
             storage.withLock { block() }
         }
     }
+
+    /** Wait until every use of the library made so far has finished. */
+    @VisibleForTesting
+    internal suspend fun idle() = storage.withLock {}
 
     private suspend fun <T> stored(read: suspend () -> T): T = withContext(io) { read() }
 
