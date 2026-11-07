@@ -48,9 +48,14 @@ export class VoyageQueryEmbedder {
   }
 
   async embedQuery(text: string): Promise<number[]> {
+    return (await this.embedQueries([text]))[0]!
+  }
+
+  /** One embedding per text, in order, from one request. */
+  async embedQueries(texts: readonly string[]): Promise<number[][]> {
     const body = JSON.stringify({
       model: VOYAGE_EMBEDDING_MODEL,
-      input: [text],
+      input: texts,
       input_type: 'query',
       dimensions: VOYAGE_DIMENSIONS,
       encoding_format: 'float',
@@ -63,7 +68,7 @@ export class VoyageQueryEmbedder {
         { method: 'POST', headers: this.#headers, body },
         { label: LABEL, timeoutMs: this.#timeoutMs },
       )
-      if (response.status === 200) return parseEmbedding(await readJson(response, LABEL))
+      if (response.status === 200) return parseEmbeddings(await readJson(response, LABEL), texts.length)
       if (!RETRYABLE_STATUS_CODES.has(response.status) || attempt === MAX_ATTEMPTS) {
         if (response.status === 408 || response.status === 504) {
           throw new ProviderTimeoutError(`${LABEL} request timed out`)
@@ -76,18 +81,23 @@ export class VoyageQueryEmbedder {
   }
 }
 
-function parseEmbedding(parsed: unknown): number[] {
+function parseEmbeddings(parsed: unknown, count: number): number[][] {
   const data = isRecord(parsed) ? parsed.data : undefined
-  if (!Array.isArray(data) || data.length !== 1 || !isRecord(data[0])) {
-    throw new ProviderError('OpenRouter did not return exactly one embedding for one input')
+  if (!Array.isArray(data) || data.length !== count || !data.every(isRecord)) {
+    throw new ProviderError('OpenRouter did not return one embedding per input')
   }
-  const embedding = data[0].embedding
-  if (
-    !Array.isArray(embedding) ||
-    embedding.length !== VOYAGE_DIMENSIONS ||
-    !embedding.every((value) => typeof value === 'number')
-  ) {
-    throw new ProviderError(`OpenRouter returned an embedding without ${VOYAGE_DIMENSIONS} dimensions`)
-  }
-  return embedding
+  // Each embedding carries its input's index; they are not promised in order.
+  const ordered = data.every((item) => Number.isInteger(item.index))
+    ? [...data].sort((a, b) => (a.index as number) - (b.index as number))
+    : data
+  return ordered.map(({ embedding }) => {
+    if (
+      !Array.isArray(embedding) ||
+      embedding.length !== VOYAGE_DIMENSIONS ||
+      !embedding.every((value) => typeof value === 'number')
+    ) {
+      throw new ProviderError(`OpenRouter returned an embedding without ${VOYAGE_DIMENSIONS} dimensions`)
+    }
+    return embedding
+  })
 }

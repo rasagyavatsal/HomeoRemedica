@@ -240,6 +240,20 @@ describe('voyage query embedder', () => {
     })
   })
 
+  it('embeds several queries in one request, in input order', async () => {
+    const [first, second] = [Array(VOYAGE_DIMENSIONS).fill(0.1), Array(VOYAGE_DIMENSIONS).fill(0.2)]
+    const fetch = fakeFetch(json({ data: [{ index: 1, embedding: second }, { index: 0, embedding: first }] }))
+
+    expect(await embedder(fetch).embedQueries(['one', 'two'])).toEqual([first, second])
+    expect(fetch.calls[0]?.body).toMatchObject({ input: ['one', 'two'] })
+  })
+
+  it('rejects a missing embedding', async () => {
+    const fetch = fakeFetch(json({ data: [{ index: 0, embedding: Array(VOYAGE_DIMENSIONS).fill(0.1) }] }))
+
+    await expect(embedder(fetch).embedQueries(['one', 'two'])).rejects.toThrow(/one embedding per input/)
+  })
+
   it('gives up after three attempts', async () => {
     const fetch = fakeFetch(json({}, 503), json({}, 503), json({}, 503))
 
