@@ -17,6 +17,9 @@ import {
 import { ChatFailure, type FailureKind, ProviderError, TokenExhaustionError, isTimeout } from './errors.ts'
 import { COMPACTION_INSTRUCTION, NO_SOURCES_ANSWER, SYSTEM_INSTRUCTION, compactionPrompt, generationPrompt } from './generation.ts'
 
+/** How many retrieved passages each answer is generated from. */
+export const SOURCE_LIMIT = 8
+
 /** Own the complete retrieve-and-generate sequence behind one narrow chat method. */
 export class ChatService {
   readonly #retriever: Retriever
@@ -29,7 +32,7 @@ export class ChatService {
   constructor({
     retriever,
     generator,
-    sourceLimit = 8,
+    sourceLimit = SOURCE_LIMIT,
     promptCharLimit = MAX_GENERATION_PROMPT_CHARS,
   }: {
     retriever: Retriever

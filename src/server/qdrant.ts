@@ -63,6 +63,7 @@ export class QdrantCorpus {
   readonly #headers: Record<string, string>
   readonly #fetch: Fetch
   readonly #timeoutMs: number
+  readonly #regroup: boolean
 
   constructor({
     url,
@@ -70,18 +71,22 @@ export class QdrantCorpus {
     bookIds = BOOKS.map((book) => book.bookId),
     fetch: fetchImpl = fetch,
     timeoutMs = QDRANT_TIMEOUT_MS,
+    regroup = true,
   }: {
     url: string
     apiKey?: string | undefined
     bookIds?: readonly string[]
     fetch?: Fetch
     timeoutMs?: number
+    /** Whether results that no remedy dominates are regrouped by remedy; false keeps the fused order. */
+    regroup?: boolean
   }) {
     this.#baseUrl = `${url.replace(/\/+$/, '')}/collections/`
     this.#bookIds = bookIds
     this.#headers = { 'Content-Type': 'application/json', ...(apiKey ? { 'api-key': apiKey } : {}) }
     this.#fetch = fetchImpl
     this.#timeoutMs = timeoutMs
+    this.#regroup = regroup
   }
 
   async verify(): Promise<void> {
@@ -124,7 +129,8 @@ export class QdrantCorpus {
         fused.set(key, { ...candidate, score })
       }
     }
-    const best = select(topCandidates([...fused.values()], fused.size), limit)
+    const ranked = topCandidates([...fused.values()], fused.size)
+    const best = this.#regroup ? select(ranked, limit) : ranked.slice(0, limit)
     const payloads = await this.#payloads(best)
     return best.map((candidate) => {
       const payload = payloads.get(candidateKey(candidate.bookId, candidate.id))

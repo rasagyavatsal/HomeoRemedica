@@ -112,6 +112,31 @@ describe('Qdrant corpus', () => {
     ])
   })
 
+  it('keeps the fused order when regrouping is off', async () => {
+    const fetch = fakeFetch(
+      rankings([], [['a1', 9, 'pulsatilla']]),
+      rankings(
+        [['n1', 0.9, 'lyssin'], ['n2', 0.8, 'x-ray'], ['n3', 0.7, 'psorinum']],
+        [['n1', 9, 'lyssin'], ['n2', 8, 'x-ray'], ['n3', 7, 'psorinum']],
+      ),
+      records(
+        ['n1', { ...PAYLOAD, remedy: 'Lyssin' }],
+        ['n2', { ...PAYLOAD, remedy: 'X-Ray' }],
+        ['n3', { ...PAYLOAD, remedy: 'Psorinum' }],
+      ),
+    )
+    const unregrouped = new QdrantCorpus({
+      url: 'https://qdrant.example/',
+      bookIds: ['allen_keynotes', 'allen_nosodes'],
+      fetch,
+      regroup: false,
+    })
+
+    const sources = await unregrouped.search('weeps easily, thirstless, better in open air', [1.0], { limit: 3 })
+
+    expect(sources.map((source) => source.remedyName)).toEqual(['Lyssin', 'X-Ray', 'Psorinum'])
+  })
+
   it.each([
     [{ section_group: 'Mind', sections: ['Mind'] }, 'Mind'],
     [{ section_group: null, sections: ['Mind', 'Head'] }, 'Mind; Head'],
