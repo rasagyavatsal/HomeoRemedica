@@ -29,15 +29,17 @@ const CUTOFFS = [1, 3, 5, SOURCE_LIMIT]
 const CONCURRENCY = 6
 
 /**
- * Ways of searching: whether the fused candidates are regrouped by remedy, and from how many of
- * the repertory's leading remedies a described case's passages come, if any. The first is
- * production's and is reported in detail.
+ * Ways of searching: whether the fused candidates are regrouped by remedy, from how many of the
+ * repertory's leading remedies a described case's passages come, if any, and whether those
+ * remedies keep the repertory's order. The first is production's and is reported in detail.
  */
 const ARMS = [
-  { name: 'production', regroup: true, candidates: null },
-  { name: 'fusion only', regroup: false, candidates: null },
-  { name: 'repertory 20', regroup: true, candidates: 20 },
-  { name: 'repertory 10', regroup: true, candidates: 10 },
+  { name: 'production', regroup: true, candidates: null, remedyOrder: false },
+  { name: 'fusion only', regroup: false, candidates: null, remedyOrder: false },
+  { name: 'repertory 20', regroup: true, candidates: 20, remedyOrder: false },
+  { name: 'repertory 10', regroup: true, candidates: 10, remedyOrder: false },
+  { name: 'rep. order 8', regroup: true, candidates: 8, remedyOrder: true },
+  { name: 'rep. order 20', regroup: true, candidates: 20, remedyOrder: true },
 ] as const
 
 interface Result {
@@ -141,7 +143,12 @@ async function main(): Promise<void> {
   const retrievers = ARMS.map(
     (arm) =>
       new ProductionRetriever(
-        new QdrantCorpus({ url: settings.qdrantUrl!, apiKey: settings.qdrantApiKey, regroup: arm.regroup }),
+        new QdrantCorpus({
+          url: settings.qdrantUrl!,
+          apiKey: settings.qdrantApiKey,
+          regroup: arm.regroup,
+          remedyOrder: arm.remedyOrder,
+        }),
         embedder,
         arm.candidates ? { repertory, candidates: arm.candidates } : {},
       ),
