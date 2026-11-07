@@ -7,6 +7,17 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [9.7.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v9.6.0...web-v9.7.0) (2026-11-07)
+
+
+### Features
+
+* **server:** embed several queries in one request ([80987ea](https://github.com/rasagyavatsal/HomeoRemedica/commit/80987ea14ac3e74ddff3a5bc6fff3ba6ba30e6cd))
+* **server:** keep a narrowed search's remedies in the order given ([fa38923](https://github.com/rasagyavatsal/HomeoRemedica/commit/fa3892391f30473d6016f7faaa71fb165da10ca5))
+* **server:** list every matching remedy for a described case ([23cd843](https://github.com/rasagyavatsal/HomeoRemedica/commit/23cd843bac3776ec7dbb83e6eaed6f45d564af85))
+* **server:** narrow a described case's search to the remedies Kent's Repertory lists ([a1bacc7](https://github.com/rasagyavatsal/HomeoRemedica/commit/a1bacc779019a99729773287d3424bc2fe711d25))
+* **server:** search only the given remedies' passages ([a04d7b2](https://github.com/rasagyavatsal/HomeoRemedica/commit/a04d7b266f3377883aa36bc5ada4a76c9086532f))
+
 ## [9.6.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v9.5.0...web-v9.6.0) (2026-11-06)
 
 
