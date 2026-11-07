@@ -64,6 +64,7 @@ export class QdrantCorpus {
   readonly #fetch: Fetch
   readonly #timeoutMs: number
   readonly #regroup: boolean
+  readonly #remedyOrder: boolean
 
   constructor({
     url,
@@ -72,6 +73,7 @@ export class QdrantCorpus {
     fetch: fetchImpl = fetch,
     timeoutMs = QDRANT_TIMEOUT_MS,
     regroup = true,
+    remedyOrder = false,
   }: {
     url: string
     apiKey?: string | undefined
@@ -80,6 +82,11 @@ export class QdrantCorpus {
     timeoutMs?: number
     /** Whether results that no remedy dominates are regrouped by remedy; false keeps the fused order. */
     regroup?: boolean
+    /**
+     * Whether a search narrowed to given remedies shows the best passage of each in the order
+     * given, rather than regrouping them by the books' support.
+     */
+    remedyOrder?: boolean
   }) {
     this.#baseUrl = `${url.replace(/\/+$/, '')}/collections/`
     this.#bookIds = bookIds
@@ -87,6 +94,7 @@ export class QdrantCorpus {
     this.#fetch = fetchImpl
     this.#timeoutMs = timeoutMs
     this.#regroup = regroup
+    this.#remedyOrder = remedyOrder
   }
 
   async verify(): Promise<void> {
@@ -131,7 +139,12 @@ export class QdrantCorpus {
       }
     }
     const ranked = topCandidates([...fused.values()], fused.size)
-    const best = this.#regroup ? select(ranked, limit) : ranked.slice(0, limit)
+    const best =
+      remedies && this.#remedyOrder
+        ? inRemedyOrder(ranked, remedies, limit)
+        : this.#regroup
+          ? select(ranked, limit)
+          : ranked.slice(0, limit)
     const payloads = await this.#payloads(best)
     return best.map((candidate) => {
       const payload = payloads.get(candidateKey(candidate.bookId, candidate.id))
@@ -251,6 +264,15 @@ function select(ranked: readonly Candidate[], limit: number): Candidate[] {
   const firsts = [...leaders].map((subject) => ranked.find((candidate) => candidate.subject === subject)!)
   const rest = ranked.filter((candidate) => leaders.has(candidate.subject) && !firsts.includes(candidate))
   return [...firsts, ...rest].slice(0, limit)
+}
+
+/** The best passage of each remedy in the given order, then the rest by score. */
+function inRemedyOrder(ranked: readonly Candidate[], remedies: readonly string[], limit: number): Candidate[] {
+  const firsts = remedies
+    .map((remedy) => ranked.find((candidate) => candidate.subject === `remedy:${remedy}`))
+    .filter((candidate) => candidate !== undefined)
+    .slice(0, limit)
+  return [...firsts, ...ranked.filter((candidate) => !firsts.includes(candidate))].slice(0, limit)
 }
 
 function candidateKey(bookId: string, id: PointId): string {

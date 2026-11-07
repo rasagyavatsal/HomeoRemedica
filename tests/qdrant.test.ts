@@ -137,6 +137,29 @@ describe('Qdrant corpus', () => {
     expect(sources.map((source) => source.remedyName)).toEqual(['Lyssin', 'X-Ray', 'Psorinum'])
   })
 
+  it("shows a narrowed search's remedies in the order given", async () => {
+    const fetch = fakeFetch(
+      rankings(
+        [['p1', 0.9, 'pulsatilla'], ['p2', 0.8, 'pulsatilla'], ['s1', 0.7, 'sepia'], ['n1', 0.6, 'natrum-muriaticum']],
+        [['p1', 9, 'pulsatilla'], ['p2', 8, 'pulsatilla'], ['s1', 7, 'sepia'], ['n1', 6, 'natrum-muriaticum']],
+      ),
+      records(
+        ['n1', { ...PAYLOAD, remedy: 'Natrum Muriaticum' }],
+        ['s1', { ...PAYLOAD, remedy: 'Sepia' }],
+        ['p1', { ...PAYLOAD, remedy: 'Pulsatilla' }],
+      ),
+    )
+    const ordered = new QdrantCorpus({ url: 'https://qdrant.example/', bookIds: ['allen_keynotes'], fetch, remedyOrder: true })
+
+    const sources = await ordered.search('weepy', [1.0], {
+      limit: 3,
+      remedies: ['natrum-muriaticum', 'gelsemium', 'sepia', 'pulsatilla'],
+    })
+
+    // Gelsemium has no passage; Pulsatilla's second passage is cut.
+    expect(sources.map((source) => source.remedyName)).toEqual(['Natrum Muriaticum', 'Sepia', 'Pulsatilla'])
+  })
+
   it.each([
     [{ section_group: 'Mind', sections: ['Mind'] }, 'Mind'],
     [{ section_group: null, sections: ['Mind', 'Head'] }, 'Mind; Head'],
