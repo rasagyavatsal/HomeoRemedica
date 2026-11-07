@@ -7,7 +7,7 @@ import { expect, it } from 'vitest'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const MAX_TRACKED_FILE_BYTES = 8_000_000
-const FORBIDDEN_ROOTS = new Set(['build', 'artifacts', 'corpora', 'dataset', 'dist', 'output', 'server-data'])
+const FORBIDDEN_ROOTS = new Set(['build', 'artifacts', 'corpora', 'dataset', 'dist', 'output', 'private', 'server-data'])
 const FORBIDDEN_SUFFIXES = new Set(['.db', '.gz', '.sqlite', '.sqlite3', '.tar', '.tgz', '.whl', '.zip', '.zst'])
 // Only the HTTP entry points may depend on the web framework.
 const HTTP_ENTRY_POINTS = new Set(['src/server/app.ts', 'src/server/server.ts'])

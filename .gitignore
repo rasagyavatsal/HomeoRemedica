@@ -21,8 +21,8 @@ artifacts/corpus/
 *.tsbuildinfo
 eval-results.*
 
-# Proprietary source dataset (private repository)
-/dataset/
+# Private HomeoRemedica work: data, evals, models (HomeoRemedica-private repository)
+/private/
 
 # Local corpus cache and database artifacts
 .cache/

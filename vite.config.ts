@@ -37,6 +37,8 @@ function api(): Plugin {
 
 export default defineConfig({
   plugins: [react(), api()],
+  // The private repository's clone holds tens of thousands of corpus files the app never imports.
+  server: { watch: { ignored: ['**/private/**'] } },
   test: {
     restoreMocks: true,
     projects: [
