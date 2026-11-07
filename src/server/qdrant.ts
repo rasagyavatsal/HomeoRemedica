@@ -108,14 +108,15 @@ export class QdrantCorpus {
     }
   }
 
+  /** The best `limit` passages, from only the given remedies' passages when `remedies` is set. */
   async search(
     query: string,
     embedding: readonly number[],
-    { limit }: { limit: number },
+    { limit, remedies }: { limit: number; remedies?: readonly string[] | undefined },
   ): Promise<RetrievedSource[]> {
     const candidates = limit * PREFETCH_MULTIPLIER
     const rankings = await Promise.all(
-      this.#bookIds.map((bookId) => this.#rank(bookId, query, embedding, candidates)),
+      this.#bookIds.map((bookId) => this.#rank(bookId, query, embedding, candidates, remedies)),
     )
     // Dense scores compare across books, so the dense ranking is global. BM25 IDF is per
     // collection, and a small book such as the Organon scores high on everything, so each book
@@ -145,16 +146,19 @@ export class QdrantCorpus {
     query: string,
     embedding: readonly number[],
     limit: number,
+    remedies: readonly string[] | undefined,
   ): Promise<[Candidate[], Candidate[]]> {
+    const filter = remedies ? { filter: { must: [{ key: 'remedy_id', match: { any: remedies } }] } } : {}
     const response = await this.#request(bookId, '/points/query/batch', {
       method: 'POST',
       body: JSON.stringify({
         searches: [
-          { query: embedding, using: DENSE_VECTOR, limit, with_payload: ['remedy_id'], with_vector: false },
+          { query: embedding, using: DENSE_VECTOR, limit, ...filter, with_payload: ['remedy_id'], with_vector: false },
           {
             query: { text: query, model: SPARSE_MODEL },
             using: SPARSE_VECTOR,
             limit,
+            ...filter,
             with_payload: ['remedy_id'],
             with_vector: false,
           },
