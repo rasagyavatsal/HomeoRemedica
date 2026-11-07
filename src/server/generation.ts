@@ -35,6 +35,7 @@ export class ZaiChatClient implements AnswerGenerator {
   readonly #headers: Record<string, string>
   readonly #fetch: Fetch
   readonly #timeoutMs: number
+  readonly #temperature: number
 
   constructor({
     apiKey,
@@ -43,6 +44,7 @@ export class ZaiChatClient implements AnswerGenerator {
     baseUrl = DEFAULT_ZAI_BASE_URL,
     fetch: fetchImpl = fetch,
     timeoutMs = ZAI_REQUEST_TIMEOUT_MS,
+    temperature = 1.0,
   }: {
     apiKey: string | undefined
     model: string
@@ -50,6 +52,7 @@ export class ZaiChatClient implements AnswerGenerator {
     baseUrl?: string
     fetch?: Fetch
     timeoutMs?: number
+    temperature?: number
   }) {
     if (!apiKey) {
       throw new ConfigurationError('a Z.AI API key is required; set ZAI_API_KEY in the environment or .env')
@@ -60,6 +63,7 @@ export class ZaiChatClient implements AnswerGenerator {
     this.#headers = { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' }
     this.#fetch = fetchImpl
     this.#timeoutMs = timeoutMs
+    this.#temperature = temperature
   }
 
   async generate(prompt: string, { systemInstruction, onText, signal }: GenerateOptions): Promise<string> {
@@ -71,7 +75,7 @@ export class ZaiChatClient implements AnswerGenerator {
       ],
       thinking: { type: 'enabled' },
       reasoning_effort: 'high',
-      temperature: 1.0,
+      temperature: this.#temperature,
       max_tokens: this.#maxOutputTokens,
       stream: true,
     }
