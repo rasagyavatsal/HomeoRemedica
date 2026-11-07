@@ -182,7 +182,7 @@ never reaches the browser bundle.
   remap, which are the only values `styles.css` uses.
 - `tests/` — server test suite. Frontend tests sit next to the components in `src/web/`.
 - `e2e/` — Playwright end-to-end tests of the built app.
-- `evals/` — promptfoo evals of the production pipeline.
+- `evals/` — promptfoo evals of the production pipeline, and a retrieval-only eval.
 
 ### End-to-end tests
 
@@ -226,6 +226,19 @@ them. Run `npx promptfoo@0.124.1 view` to browse the latest results side by side
 promptfoo is fetched by `npx` at a pinned version rather than installed, since it is over a
 gigabyte. The evals stay out of `npm run check`; run them by hand before changing the answer
 model, the prompt, or retrieval.
+
+```sh
+npm run eval:retrieval
+```
+
+`npm run eval:retrieval` scores retrieval alone, without generating answers, in under a minute. It
+asks the `evals/tests.yaml` cases that name a remedy or book, and, when the HomeoRemedica-private
+clone sits in `private/`, its labelled questions, which stay there. For each way of ordering the
+fused results, production's and fusion without the regrouping by remedy, it reports how often a
+source on an expected remedy, book or Organon aphorism ranks first or within the top 3, 5 and 8,
+the mean reciprocal rank, and how often the eight sources cover every expectation. It then lists
+the questions production does not rank first and those the other orderings rank differently. Add
+`-- --out results.json` to keep every question's sources.
 
 ## Deployment
 
