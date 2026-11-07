@@ -1,9 +1,9 @@
 /**
  * Hybrid search over the Qdrant materia medica collections, one collection per book.
  *
- * The collections are built by the HomeoRemedica-dataset repository: each chunk has a
+ * The collections are built by the HomeoRemedica-private repository: each chunk has a
  * voyage-4 dense vector and a BM25 sparse vector. Rankings are fused with reciprocal-rank fusion
- * the same way as the dataset's `scripts/search.py`, which its retrieval evaluation measures.
+ * the same way as that repository's `scripts/search.py`, which its retrieval evaluation measures.
  * Qdrant encodes the BM25 query itself with the same model that indexed the collections.
  *
  * Unlike `scripts/search.py`, results that no remedy dominates are regrouped by remedy: a

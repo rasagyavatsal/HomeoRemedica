@@ -9,7 +9,7 @@ advice.
 **Live app:** <https://homeoremedica-619837289655.asia-south1.run.app>
 
 The project covers hybrid search and answer generation. Search runs against Qdrant collections, one per book,
-built by the private [HomeoRemedica-dataset](https://github.com/rasagyavatsal/HomeoRemedica-dataset) repository; external APIs provide query embeddings and
+built by the [HomeoRemedica-private](https://github.com/rasagyavatsal/HomeoRemedica-private) repository; external APIs provide query embeddings and
 generated answers. A React frontend talks to the production pipeline through a Hono API server on Node.js.
 
 **Stack:** TypeScript · Node.js · Hono · Zod · React · Vite · Qdrant · OpenRouter · Z.AI ·
@@ -29,7 +29,7 @@ Firebase Authentication · Firestore · Vitest · Playwright
 
 ## Architecture
 
-The [HomeoRemedica-dataset](https://github.com/rasagyavatsal/HomeoRemedica-dataset) repository chunks the source texts and indexes them in Qdrant. The `production`
+The [HomeoRemedica-private](https://github.com/rasagyavatsal/HomeoRemedica-private) repository chunks the source texts and indexes them in Qdrant. The `production`
 pipeline searches those collections and generates the answer:
 
 ```mermaid
@@ -55,7 +55,7 @@ answers with `glm-5.3-flash` by default.
 | --- | --- |
 | Qdrant with named dense and sparse vectors | Keeps source metadata, keyword search, and vector search together, in one collection per book. |
 | Reciprocal-rank fusion | Combines keyword and semantic rankings without requiring their raw scores to share a scale. Dense rankings are merged across books; BM25 rankings stay per book, because each collection has its own IDF. |
-| Regrouping by remedy | A list of symptoms matches long proving and nosode symptom lists passage by passage. When no remedy holds half the results, remedies are ranked by their best passage in each book, summed over books, so agreement between books wins. Questions about one remedy or the Organon keep the fused order. This step is not in the dataset's `scripts/search.py`. |
+| Regrouping by remedy | A list of symptoms matches long proving and nosode symptom lists passage by passage. When no remedy holds half the results, remedies are ranked by their best passage in each book, summed over books, so agreement between books wins. Questions about one remedy or the Organon keep the fused order. This step is not in the private repository's `scripts/search.py`. |
 | Same BM25 model at index and query time | Qdrant's server-side `qdrant/bm25` inference tokenizes queries exactly as the dataset indexed them, so the server needs no local model. |
 
 ## Quick start
@@ -72,7 +72,7 @@ cp .env.example .env
 ```
 
 Set `QDRANT_URL`, `QDRANT_API_KEY`, `OPENROUTER_API_KEY`, and `ZAI_API_KEY` in `.env`. The
-collections are built and updated by `scripts/embed.py` in the [HomeoRemedica-dataset](https://github.com/rasagyavatsal/HomeoRemedica-dataset)
+collections are built and updated by `scripts/embed.py` in the [HomeoRemedica-private](https://github.com/rasagyavatsal/HomeoRemedica-private)
 repository.
 
 ## Web app
@@ -248,5 +248,5 @@ its own Google identity, so accounts need no secret. Local `.env` files are not 
 
 ## License
 
-Software and documentation: [MIT](LICENSE). The dataset is proprietary, lives in the private
-[HomeoRemedica-dataset](https://github.com/rasagyavatsal/HomeoRemedica-dataset) repository, and is not distributed with this repository. Underlying historical works retain their applicable rights and source notices.
+Software and documentation: [MIT](LICENSE). The dataset is proprietary, lives in the
+[HomeoRemedica-private](https://github.com/rasagyavatsal/HomeoRemedica-private) repository, and is not distributed with this repository. Underlying historical works retain their applicable rights and source notices.
