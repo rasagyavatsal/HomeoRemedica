@@ -91,9 +91,10 @@ export function tests(): unknown[] {
         type: 'llm-rubric',
         metric: 'relevance',
         value:
-          "Puts forward the remedies the source excerpts match to this patient's case, compares them by " +
-          "which of the case's characteristic symptoms each one covers, and says which fits best, rather " +
-          'than declining, picking from one symptom alone, or giving only general advice.',
+          "Lists the remedies the source excerpts match to this patient's case, and for each gives the " +
+          "case's characteristic symptoms it covers, so a practitioner can narrow them down. Fails if it " +
+          'declines, settles on a single remedy, matches remedies on one symptom alone, or gives only ' +
+          'general advice.',
       },
       {
         type: 'llm-rubric',
