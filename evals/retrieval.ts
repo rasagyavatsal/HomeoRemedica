@@ -3,15 +3,19 @@
  * measured against the current one.
  *
  * It asks the cured cases in the HomeoRemedica-private clone (see `cases.ts`), the same ones the
- * answer eval asks. Every case runs through the production retriever once per arm; each case's
- * symptoms are extracted once, however many arms use them. A case's rank
+ * answer eval asks. Every case runs through the production retriever once per arm. A case's
+ * symptoms are extracted once and kept in .cache/retrieval-symptoms.json, so every arm and every
+ * later run repertorises the same symptoms and differs only in how it searches; `--fresh`
+ * extracts them again. A case's rank
  * is the position of the first source on the remedy that cured it; its differential recall is the
  * share of its differential remedies that some source is about.
  *
- * Usage: npm run eval:retrieval [-- --out results.json]
+ * Usage: npm run eval:retrieval [-- --fresh] [-- --out results.json]
  */
 
-import { writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 
@@ -19,7 +23,7 @@ import { ChatRequestSchema, type RetrievedSource } from '../src/server/contracts
 import { VoyageQueryEmbedder } from '../src/server/embeddings.ts'
 import { QdrantCorpus } from '../src/server/qdrant.ts'
 import {
-  REPERTORY_COLLECTION,
+  EXTRACTION_INSTRUCTION,
   type Repertorisation,
   type Repertoriser,
   type SymptomExtractor,
@@ -32,24 +36,20 @@ import { CASES_PATH, hasPrivateClone, loadCases, remedyIds } from './cases.ts'
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const CUTOFFS = [1, 3, 5, SOURCE_LIMIT]
 const CONCURRENCY = 6
-/** Kent's rubrics embedded in plain words (`worse from motion`), from the private repository's `kent.phrase`. */
-const PHRASED_COLLECTION = 'kent_repertory_phrase'
+const SYMPTOMS_CACHE = join(ROOT, '.cache', 'retrieval-symptoms.json')
 
 /**
  * Ways of searching: whether the fused candidates are regrouped by remedy, from how many of the
  * repertory's leading remedies a described case's passages come, if any, whether those remedies
- * keep the repertory's order, and which rubric collection the symptoms are matched in. The first
- * is production's and is reported in detail.
+ * keep the repertory's order. The first is production's and is reported in detail.
  */
 const ARMS = [
-  { name: 'production', regroup: true, candidates: null, remedyOrder: false, rubrics: REPERTORY_COLLECTION },
-  { name: 'fusion only', regroup: false, candidates: null, remedyOrder: false, rubrics: REPERTORY_COLLECTION },
-  { name: 'repertory 10', regroup: true, candidates: 10, remedyOrder: false, rubrics: REPERTORY_COLLECTION },
-  { name: 'phrased 10', regroup: true, candidates: 10, remedyOrder: false, rubrics: PHRASED_COLLECTION },
-  { name: 'rep. order 8', regroup: true, candidates: 8, remedyOrder: true, rubrics: REPERTORY_COLLECTION },
-  { name: 'phr. order 8', regroup: true, candidates: 8, remedyOrder: true, rubrics: PHRASED_COLLECTION },
-  { name: 'rep. order 20', regroup: true, candidates: 20, remedyOrder: true, rubrics: REPERTORY_COLLECTION },
-  { name: 'phr. order 20', regroup: true, candidates: 20, remedyOrder: true, rubrics: PHRASED_COLLECTION },
+  { name: 'production', regroup: true, candidates: null, remedyOrder: false },
+  { name: 'fusion only', regroup: false, candidates: null, remedyOrder: false },
+  { name: 'repertory 20', regroup: true, candidates: 20, remedyOrder: false },
+  { name: 'repertory 10', regroup: true, candidates: 10, remedyOrder: false },
+  { name: 'rep. order 8', regroup: true, candidates: 8, remedyOrder: true },
+  { name: 'rep. order 20', regroup: true, candidates: 20, remedyOrder: true },
 ] as const
 
 interface Result {
@@ -82,31 +82,51 @@ class CachedEmbedder implements QueryEmbedder {
   }
 }
 
-/** Extracts each query's symptoms once, however many arms and repertories use them, and times it. */
+/**
+ * Extracts each query's symptoms once and keeps them on disk, keyed by the model, the extraction
+ * instruction and the query, so a later run reuses them. Times the extractions it makes.
+ */
 class CachedExtractor implements SymptomExtractor {
   readonly #extractor: SymptomExtractor
+  readonly #model: string
+  readonly #stored: Record<string, string[]>
   readonly #results = new Map<string, Promise<string[]>>()
   readonly seconds: number[] = []
+  reused = 0
 
-  constructor(extractor: SymptomExtractor) {
+  constructor(extractor: SymptomExtractor, model: string, { fresh }: { fresh: boolean }) {
     this.#extractor = extractor
+    this.#model = model
+    this.#stored = !fresh && existsSync(SYMPTOMS_CACHE) ? JSON.parse(readFileSync(SYMPTOMS_CACHE, 'utf8')) : {}
   }
 
   extractSymptoms(text: string): Promise<string[]> {
-    let result = this.#results.get(text)
+    const key = createHash('sha256').update(`${this.#model}\n${EXTRACTION_INSTRUCTION}\n${text}`).digest('hex')
+    let result = this.#results.get(key)
     if (!result) {
-      const start = performance.now()
-      result = this.#extractor.extractSymptoms(text).then((value) => {
-        this.seconds.push((performance.now() - start) / 1000)
-        return value
-      })
-      this.#results.set(text, result)
+      result = this.#extract(key, text)
+      this.#results.set(key, result)
     }
     return result
   }
+
+  async #extract(key: string, text: string): Promise<string[]> {
+    const stored = this.#stored[key]
+    if (stored) {
+      this.reused++
+      return stored
+    }
+    const start = performance.now()
+    const symptoms = await this.#extractor.extractSymptoms(text)
+    this.seconds.push((performance.now() - start) / 1000)
+    this.#stored[key] = symptoms
+    mkdirSync(dirname(SYMPTOMS_CACHE), { recursive: true })
+    writeFileSync(SYMPTOMS_CACHE, JSON.stringify(this.#stored, null, 1))
+    return symptoms
+  }
 }
 
-/** Repertorises each query once per repertory, however many arms search with it. */
+/** Repertorises each query once, however many arms search with it. */
 class CachedRepertory implements Repertoriser {
   readonly #repertory: Repertoriser
   readonly #results = new Map<string, Promise<Repertorisation>>()
@@ -160,7 +180,7 @@ function summary(results: readonly Result[]): string {
 }
 
 async function main(): Promise<void> {
-  const { values } = parseArgs({ options: { out: { type: 'string' } } })
+  const { values } = parseArgs({ options: { out: { type: 'string' }, fresh: { type: 'boolean', default: false } } })
   if (!hasPrivateClone()) throw new Error(`clone HomeoRemedica-private into private/ so ${CASES_PATH} exists`)
   const settings = loadSettings(process.env, ROOT)
   if (!settings.qdrantUrl) throw new Error('set QDRANT_URL in the environment or .env')
@@ -168,11 +188,8 @@ async function main(): Promise<void> {
   const cases = loadCases()
   const voyage = new VoyageQueryEmbedder({ apiKey: settings.openrouterApiKey })
   const embedder = new CachedEmbedder(voyage)
-  const extractor = new CachedExtractor(symptomExtractor(settings))
-  const repertories = new Map<string, Repertoriser>()
-  for (const collection of new Set(ARMS.map((arm) => arm.rubrics))) {
-    repertories.set(collection, new CachedRepertory(await loadRepertory(settings, voyage, { collection, extractor })))
-  }
+  const extractor = new CachedExtractor(symptomExtractor(settings), settings.model, { fresh: values.fresh })
+  const repertory = new CachedRepertory(await loadRepertory(settings, voyage, { extractor }))
   const retrievers = ARMS.map(
     (arm) =>
       new ProductionRetriever(
@@ -183,7 +200,7 @@ async function main(): Promise<void> {
           remedyOrder: arm.remedyOrder,
         }),
         embedder,
-        arm.candidates ? { repertory: repertories.get(arm.rubrics)!, candidates: arm.candidates } : {},
+        arm.candidates ? { repertory, candidates: arm.candidates } : {},
       ),
   )
   await new QdrantCorpus({ url: settings.qdrantUrl, apiKey: settings.qdrantApiKey }).verify()
@@ -218,6 +235,7 @@ async function main(): Promise<void> {
   }
   console.log('\ndiff: the average share of each case\'s differential remedies that some source is about')
   const seconds = [...extractor.seconds].sort((a, b) => a - b)
+  if (extractor.reused) console.log(`symptoms of ${extractor.reused} cases reused from ${SYMPTOMS_CACHE}; --fresh extracts them again`)
   if (seconds.length) {
     const median = seconds[Math.floor(seconds.length / 2)]!
     console.log(`symptom extraction took ${median.toFixed(1)} s median, ${seconds.at(-1)!.toFixed(1)} s at most`)
