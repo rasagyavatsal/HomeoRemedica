@@ -10,7 +10,14 @@ import { ZaiChatClient } from './generation.ts'
 import { ChatService } from './service.ts'
 import { VoyageQueryEmbedder } from './embeddings.ts'
 import { CorpusError, QdrantCorpus } from './qdrant.ts'
-import { EXTRACTION_MAX_OUTPUT_TOKENS, ModelSymptomExtractor, QdrantRubrics, Repertory } from './repertory.ts'
+import {
+  EXTRACTION_MAX_OUTPUT_TOKENS,
+  ModelSymptomExtractor,
+  QdrantRubrics,
+  REPERTORY_COLLECTION,
+  Repertory,
+  type SymptomExtractor,
+} from './repertory.ts'
 import { ProductionRetriever } from './retrieval.ts'
 
 export const DEFAULT_MODEL = 'glm-5.3-flash'
@@ -83,19 +90,30 @@ export async function buildService(settings: Settings): Promise<ChatService> {
 }
 
 /** Repertorisation with the answer model, checked to have its Qdrant collection. */
-export async function loadRepertory(settings: Settings, embedder: VoyageQueryEmbedder): Promise<Repertory> {
+export async function loadRepertory(
+  settings: Settings,
+  embedder: VoyageQueryEmbedder,
+  {
+    collection = REPERTORY_COLLECTION,
+    extractor = symptomExtractor(settings),
+  }: { collection?: string; extractor?: SymptomExtractor } = {},
+): Promise<Repertory> {
   if (!settings.qdrantUrl) {
     throw new ConfigurationError('a Qdrant URL is required; set QDRANT_URL in the environment or .env')
   }
-  const rubrics = new QdrantRubrics({ url: settings.qdrantUrl, apiKey: settings.qdrantApiKey })
-  if (!(await rubrics.exists())) throw new CorpusError('the Qdrant repertory collection does not exist')
-  const extractor = new ZaiChatClient({
+  const rubrics = new QdrantRubrics({ url: settings.qdrantUrl, apiKey: settings.qdrantApiKey, collection })
+  if (!(await rubrics.exists())) throw new CorpusError(`the Qdrant collection ${collection} does not exist`)
+  return new Repertory({ extractor, embedder, rubrics })
+}
+
+export function symptomExtractor(settings: Settings): SymptomExtractor {
+  const generator = new ZaiChatClient({
     apiKey: settings.zaiApiKey,
     model: settings.model,
     maxOutputTokens: EXTRACTION_MAX_OUTPUT_TOKENS,
     temperature: 0.2,
   })
-  return new Repertory({ extractor: new ModelSymptomExtractor(extractor), embedder, rubrics })
+  return new ModelSymptomExtractor(generator)
 }
 
 export function loadCorpus(settings: Settings): QdrantCorpus {
