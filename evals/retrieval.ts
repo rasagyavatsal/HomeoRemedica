@@ -3,7 +3,8 @@
  * measured against the current one.
  *
  * It asks the cured cases in the HomeoRemedica-private clone (see `cases.ts`), the same ones the
- * answer eval asks. Every case runs through the production retriever once per arm. A case's rank
+ * answer eval asks. Every case runs through the production retriever once per arm; each case is
+ * repertorised once, however many arms use it. A case's rank
  * is the position of the first source on the remedy that cured it; its differential recall is the
  * share of its differential remedies that some source is about.
  *
@@ -17,8 +18,9 @@ import { parseArgs } from 'node:util'
 import { ChatRequestSchema, type RetrievedSource } from '../src/server/contracts.ts'
 import { VoyageQueryEmbedder } from '../src/server/embeddings.ts'
 import { QdrantCorpus } from '../src/server/qdrant.ts'
+import type { Repertorisation, Repertoriser } from '../src/server/repertory.ts'
 import { type QueryEmbedder, ProductionRetriever } from '../src/server/retrieval.ts'
-import { loadSettings } from '../src/server/runtime.ts'
+import { loadRepertory, loadSettings } from '../src/server/runtime.ts'
 import { SOURCE_LIMIT } from '../src/server/service.ts'
 import { CASES_PATH, hasPrivateClone, loadCases, remedyIds } from './cases.ts'
 
@@ -26,10 +28,16 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const CUTOFFS = [1, 3, 5, SOURCE_LIMIT]
 const CONCURRENCY = 6
 
-/** Ways of ordering the fused candidates. The first is production's and is reported in detail. */
+/**
+ * Ways of searching: whether the fused candidates are regrouped by remedy, and from how many of
+ * the repertory's leading remedies a described case's passages come, if any. The first is
+ * production's and is reported in detail.
+ */
 const ARMS = [
-  { name: 'production', regroup: true },
-  { name: 'fusion only', regroup: false },
+  { name: 'production', regroup: true, candidates: null },
+  { name: 'fusion only', regroup: false, candidates: null },
+  { name: 'repertory 20', regroup: true, candidates: 20 },
+  { name: 'repertory 10', regroup: true, candidates: 10 },
 ] as const
 
 interface Result {
@@ -59,6 +67,30 @@ class CachedEmbedder implements QueryEmbedder {
       this.#embeddings.set(text, embedding)
     }
     return embedding
+  }
+}
+
+/** Repertorises each query once, however many arms search with it, and times it. */
+class CachedRepertory implements Repertoriser {
+  readonly #repertory: Repertoriser
+  readonly #results = new Map<string, Promise<Repertorisation>>()
+  readonly seconds: number[] = []
+
+  constructor(repertory: Repertoriser) {
+    this.#repertory = repertory
+  }
+
+  repertorise(text: string): Promise<Repertorisation> {
+    let result = this.#results.get(text)
+    if (!result) {
+      const start = performance.now()
+      result = this.#repertory.repertorise(text).then((value) => {
+        this.seconds.push((performance.now() - start) / 1000)
+        return value
+      })
+      this.#results.set(text, result)
+    }
+    return result
   }
 }
 
@@ -103,12 +135,15 @@ async function main(): Promise<void> {
   if (!settings.qdrantUrl) throw new Error('set QDRANT_URL in the environment or .env')
 
   const cases = loadCases()
-  const embedder = new CachedEmbedder(new VoyageQueryEmbedder({ apiKey: settings.openrouterApiKey }))
+  const voyage = new VoyageQueryEmbedder({ apiKey: settings.openrouterApiKey })
+  const embedder = new CachedEmbedder(voyage)
+  const repertory = new CachedRepertory(await loadRepertory(settings, voyage))
   const retrievers = ARMS.map(
     (arm) =>
       new ProductionRetriever(
         new QdrantCorpus({ url: settings.qdrantUrl!, apiKey: settings.qdrantApiKey, regroup: arm.regroup }),
         embedder,
+        arm.candidates ? { repertory, candidates: arm.candidates } : {},
       ),
   )
   await new QdrantCorpus({ url: settings.qdrantUrl, apiKey: settings.qdrantApiKey }).verify()
@@ -142,6 +177,11 @@ async function main(): Promise<void> {
     console.log(`  ${arm.name.padEnd(12)}${summary(results.filter((result) => result.arm === arm.name))}`)
   }
   console.log('\ndiff: the average share of each case\'s differential remedies that some source is about')
+  const seconds = [...repertory.seconds].sort((a, b) => a - b)
+  if (seconds.length) {
+    const median = seconds[Math.floor(seconds.length / 2)]!
+    console.log(`repertorisation took ${median.toFixed(1)} s median, ${seconds.at(-1)!.toFixed(1)} s at most`)
+  }
 
   const [production, ...others] = ARMS.map((arm) => results.filter((result) => result.arm === arm.name))
   const misses = production!.filter((result) => result.rank !== 1)
