@@ -2,38 +2,27 @@
  * Score retrieval on its own, without generating answers, so a change to the ranking can be
  * measured against the current one.
  *
- * Questions come from two places:
- * - the `tests.yaml` cases that name an expected `remedy` or `book`, written as practitioners
- *   type them, follow-ups included;
- * - when the HomeoRemedica-private clone is present, its labelled `eval/questions.jsonl`, scored
- *   against the remedy ids and Organon aphorisms in its `chunks/`. Those stay in that clone.
- *
- * Every question runs through the production retriever once per arm. A question's rank is the
- * position of the first source that meets any of its expectations; `all@k` counts the questions
- * whose sources meet every expectation, which is what a differential of several remedies needs.
+ * It asks the cured cases in the HomeoRemedica-private clone (see `cases.ts`), the same ones the
+ * answer eval asks. Every case runs through the production retriever once per arm. A case's rank
+ * is the position of the first source on the remedy that cured it; its differential recall is the
+ * share of its differential remedies that some source is about.
  *
  * Usage: npm run eval:retrieval [-- --out results.json]
  */
 
-import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 
-import { parse } from 'yaml'
-
 import { ChatRequestSchema, type RetrievedSource } from '../src/server/contracts.ts'
 import { VoyageQueryEmbedder } from '../src/server/embeddings.ts'
-import { BOOKS, QdrantCorpus } from '../src/server/qdrant.ts'
+import { QdrantCorpus } from '../src/server/qdrant.ts'
 import { type QueryEmbedder, ProductionRetriever } from '../src/server/retrieval.ts'
 import { loadSettings } from '../src/server/runtime.ts'
 import { SOURCE_LIMIT } from '../src/server/service.ts'
+import { CASES_PATH, hasPrivateClone, loadCases, remedyIds } from './cases.ts'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
-const CASES = join(ROOT, 'evals', 'tests.yaml')
-const PRIVATE_QUESTIONS = join(ROOT, 'private', 'eval', 'questions.jsonl')
-const PRIVATE_CHUNKS = join(ROOT, 'private', 'chunks')
-const ORGANON = 'hahnemann_organon'
 const CUTOFFS = [1, 3, 5, SOURCE_LIMIT]
 const CONCURRENCY = 6
 
@@ -43,101 +32,15 @@ const ARMS = [
   { name: 'fusion only', regroup: false },
 ] as const
 
-interface Expectation {
-  label: string
-  met(source: RetrievedSource): boolean
-}
-
-interface Question {
-  set: 'cases' | 'private'
-  label: string
-  message: string
-  history: unknown
-  /** The books to search, or every book. */
-  books: readonly string[] | undefined
-  expected: readonly Expectation[]
-}
-
 interface Result {
   arm: string
-  set: Question['set']
-  label: string
-  want: string[]
-  /** Position of the first source meeting any expectation, from 1, or null. */
+  id: string
+  expected: readonly string[]
+  /** Position of the first source on an expected remedy, from 1, or null. */
   rank: number | null
-  /** Whether the sources meet every expectation. */
-  all: boolean
+  /** Share of the differential remedies some source is about. */
+  differentialRecall: number
   sources: string[]
-}
-
-function caseQuestions(): Question[] {
-  const tests = parse(readFileSync(CASES, 'utf8')) as { description: string; vars: Record<string, unknown> }[]
-  return tests.flatMap(({ description, vars }) => {
-    const expected: Expectation[] = []
-    if (typeof vars.remedy === 'string') {
-      for (const stem of vars.remedy.toLowerCase().split('|').map((part) => part.trim()).filter(Boolean)) {
-        expected.push({ label: stem, met: (source) => Boolean(source.remedyName?.toLowerCase().includes(stem)) })
-      }
-    }
-    if (typeof vars.book === 'string') {
-      const book = vars.book
-      expected.push({ label: book, met: (source) => source.bookId === book })
-    }
-    if (!expected.length) return []
-    const history = typeof vars.history === 'string' ? JSON.parse(vars.history) : []
-    return [{ set: 'cases', label: description, message: String(vars.query), history, books: undefined, expected }]
-  })
-}
-
-interface ChunkLabel {
-  remedyId: string | null
-  aphorisms: readonly number[]
-}
-
-/** Remedy ids and aphorisms by chunk id, read from the private clone's chunk files. */
-function chunkLabels(): Map<string, ChunkLabel> {
-  const labels = new Map<string, ChunkLabel>()
-  for (const name of readdirSync(PRIVATE_CHUNKS).filter((file) => file.endsWith('.jsonl'))) {
-    for (const line of readFileSync(join(PRIVATE_CHUNKS, name), 'utf8').split('\n')) {
-      if (!line.trim()) continue
-      const chunk = JSON.parse(line) as { id: string; remedy_id?: string | null; aphorisms?: number[] | null }
-      labels.set(chunk.id, { remedyId: chunk.remedy_id ?? null, aphorisms: chunk.aphorisms ?? [] })
-    }
-  }
-  return labels
-}
-
-function privateQuestions(): Question[] {
-  const labels = chunkLabels()
-  const remedyIds = new Set([...labels.values()].map((label) => label.remedyId))
-  const lines = readFileSync(PRIVATE_QUESTIONS, 'utf8').split('\n').filter((line) => line.trim())
-  return lines.map((line, index) => {
-    const question = JSON.parse(line) as { q: string; remedy?: string[]; aphorisms?: number[]; book?: string[] }
-    const label = (source: RetrievedSource) => labels.get(source.chunkId)
-    let expectation: Expectation
-    if (question.aphorisms) {
-      const wanted = new Set(question.aphorisms)
-      expectation = {
-        label: `§ ${question.aphorisms.join(', ')}`,
-        met: (source) => source.bookId === ORGANON && Boolean(label(source)?.aphorisms.some((number) => wanted.has(number))),
-      }
-    } else {
-      const wanted = new Set(question.remedy ?? [])
-      const unknown = [...wanted].filter((id) => !remedyIds.has(id))
-      if (!wanted.size || unknown.length) {
-        throw new Error(`${PRIVATE_QUESTIONS}:${index + 1}: no chunk has remedy id ${unknown.join(', ') || '(none given)'}`)
-      }
-      expectation = { label: [...wanted].join(' or '), met: (source) => wanted.has(label(source)?.remedyId ?? '') }
-    }
-    return {
-      set: 'private',
-      label: question.q,
-      message: question.q,
-      history: [],
-      books: question.book,
-      expected: [expectation],
-    }
-  })
 }
 
 /** Embeds each query once, however many arms search with it. */
@@ -173,67 +76,58 @@ async function pool<T, R>(items: readonly T[], limit: number, run: (item: T) => 
   return results
 }
 
+function remedyOf(source: RetrievedSource): string | null {
+  return remedyIds().get(source.chunkId) ?? null
+}
+
 function sourceName(source: RetrievedSource): string {
-  return `${source.bookId} ${source.remedyName ?? source.sectionTitle}`
+  return `${source.bookId} ${remedyOf(source) ?? source.sectionTitle}`
 }
 
-function percent(count: number, total: number): string {
-  return `${Math.round((100 * count) / total)}%`.padStart(7)
+function percent(fraction: number): string {
+  return `${Math.round(100 * fraction)}%`.padStart(7)
 }
 
-function summary(label: string, results: readonly Result[]): string {
+function summary(results: readonly Result[]): string {
   const ranks = results.map((result) => result.rank)
-  const hits = CUTOFFS.map((cutoff) => percent(ranks.filter((rank) => rank !== null && rank <= cutoff).length, ranks.length))
+  const hits = CUTOFFS.map((cutoff) => percent(ranks.filter((rank) => rank !== null && rank <= cutoff).length / ranks.length))
   const mrr = ranks.reduce<number>((sum, rank) => sum + (rank ? 1 / rank : 0), 0) / ranks.length
-  const all = percent(results.filter((result) => result.all).length, results.length)
-  return `  ${label.padEnd(10)}${String(results.length).padStart(5)}${hits.join('')}${mrr.toFixed(3).padStart(7)}${all}`
+  const recall = results.reduce((sum, result) => sum + result.differentialRecall, 0) / results.length
+  return `${String(results.length).padStart(5)}${hits.join('')}${mrr.toFixed(3).padStart(7)}${percent(recall)}`
 }
 
 async function main(): Promise<void> {
   const { values } = parseArgs({ options: { out: { type: 'string' } } })
+  if (!hasPrivateClone()) throw new Error(`clone HomeoRemedica-private into private/ so ${CASES_PATH} exists`)
   const settings = loadSettings(process.env, ROOT)
   if (!settings.qdrantUrl) throw new Error('set QDRANT_URL in the environment or .env')
 
-  const questions = caseQuestions()
-  if (existsSync(PRIVATE_QUESTIONS) && existsSync(PRIVATE_CHUNKS)) {
-    questions.push(...privateQuestions())
-  } else {
-    console.log('The private clone is missing, so only the tests.yaml cases are scored.\n')
-  }
-
+  const cases = loadCases()
   const embedder = new CachedEmbedder(new VoyageQueryEmbedder({ apiKey: settings.openrouterApiKey }))
-  const retrievers = new Map<string, ProductionRetriever>()
-  const retriever = (regroup: boolean, books: readonly string[] | undefined) => {
-    const key = `${regroup}:${books?.join(',') ?? ''}`
-    let found = retrievers.get(key)
-    if (!found) {
-      const corpus = new QdrantCorpus({
-        url: settings.qdrantUrl!,
-        apiKey: settings.qdrantApiKey,
-        bookIds: books ?? BOOKS.map((book) => book.bookId),
-        regroup,
-      })
-      found = new ProductionRetriever(corpus, embedder)
-      retrievers.set(key, found)
-    }
-    return found
-  }
+  const retrievers = ARMS.map(
+    (arm) =>
+      new ProductionRetriever(
+        new QdrantCorpus({ url: settings.qdrantUrl!, apiKey: settings.qdrantApiKey, regroup: arm.regroup }),
+        embedder,
+      ),
+  )
   await new QdrantCorpus({ url: settings.qdrantUrl, apiKey: settings.qdrantApiKey }).verify()
 
   const results = (
-    await pool(questions, CONCURRENCY, async (question) => {
-      const request = ChatRequestSchema.parse({ message: question.message, history: question.history })
+    await pool(cases, CONCURRENCY, async (item) => {
+      const request = ChatRequestSchema.parse({ message: item.query, history: [] })
       const scored: Result[] = []
-      for (const arm of ARMS) {
-        const sources = await retriever(arm.regroup, question.books).retrieve(request, { limit: SOURCE_LIMIT })
-        const index = sources.findIndex((source) => question.expected.some((expected) => expected.met(source)))
+      for (const [index, arm] of ARMS.entries()) {
+        const sources = await retrievers[index]!.retrieve(request, { limit: SOURCE_LIMIT })
+        const remedies = sources.map(remedyOf)
+        const first = remedies.findIndex((remedy) => remedy !== null && item.expected.includes(remedy))
+        const covered = item.differential.filter((remedy) => remedies.includes(remedy)).length
         scored.push({
           arm: arm.name,
-          set: question.set,
-          label: question.label,
-          want: question.expected.map((expected) => expected.label),
-          rank: index < 0 ? null : index + 1,
-          all: question.expected.every((expected) => sources.some((source) => expected.met(source))),
+          id: item.id,
+          expected: item.expected,
+          rank: first < 0 ? null : first + 1,
+          differentialRecall: item.differential.length ? covered / item.differential.length : 1,
           sources: sources.map(sourceName),
         })
       }
@@ -241,29 +135,25 @@ async function main(): Promise<void> {
     })
   ).flat()
 
-  console.log(`${questions.length} questions, ${SOURCE_LIMIT} sources each\n`)
-  console.log(`  ${''.padEnd(10)}${'n'.padStart(5)}${CUTOFFS.map((cutoff) => `hit@${cutoff}`.padStart(7)).join('')}${'MRR'.padStart(7)}${`all@${SOURCE_LIMIT}`.padStart(7)}`)
+  console.log(`${cases.length} cases, ${SOURCE_LIMIT} sources each\n`)
+  const header = CUTOFFS.map((cutoff) => `hit@${cutoff}`.padStart(7)).join('')
+  console.log(`  ${''.padEnd(12)}${'n'.padStart(5)}${header}${'MRR'.padStart(7)}${'diff'.padStart(7)}`)
   for (const arm of ARMS) {
-    const armResults = results.filter((result) => result.arm === arm.name)
-    console.log(arm.name)
-    for (const set of ['cases', 'private'] as const) {
-      const setResults = armResults.filter((result) => result.set === set)
-      if (setResults.length) console.log(summary(set, setResults))
-    }
-    console.log(summary('all', armResults))
+    console.log(`  ${arm.name.padEnd(12)}${summary(results.filter((result) => result.arm === arm.name))}`)
   }
+  console.log('\ndiff: the average share of each case\'s differential remedies that some source is about')
 
   const [production, ...others] = ARMS.map((arm) => results.filter((result) => result.arm === arm.name))
-  const misses = production!.filter((result) => result.rank !== 1 || !result.all)
-  console.log(`\n${ARMS[0].name}: not ranked first or missing an expectation (${misses.length})`)
+  const misses = production!.filter((result) => result.rank !== 1)
+  console.log(`\n${ARMS[0].name}: cured remedy not ranked first (${misses.length})`)
   for (const miss of misses) {
-    console.log(`  rank=${miss.rank ?? '-'} want=${miss.want.join(', ')}  ${miss.label.slice(0, 70)}`)
+    console.log(`  rank=${miss.rank ?? '-'} want=${miss.expected.join(' or ')}  ${miss.id}`)
     console.log(`       got: ${miss.sources.slice(0, 3).join(' | ')}`)
   }
   for (const [offset, other] of others.entries()) {
     const changed = other.flatMap((result, index) => {
       const before = production![index]!.rank
-      return result.rank === before ? [] : [`  ${String(before ?? '-').padStart(2)} -> ${String(result.rank ?? '-').padEnd(2)}  ${result.label.slice(0, 70)}`]
+      return result.rank === before ? [] : [`  ${String(before ?? '-').padStart(2)} -> ${String(result.rank ?? '-').padEnd(2)}  ${result.id}`]
     })
     console.log(`\n${ARMS[offset + 1]!.name}: ranked differently from ${ARMS[0].name} (${changed.length})`)
     for (const line of changed) console.log(line)

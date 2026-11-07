@@ -39,7 +39,13 @@ export default class HomeoRemedicaProvider {
         metadata: {
           model: response.model,
           corpusVersion: response.corpusVersion,
-          sources: response.sources.map(({ bookId, remedyName, sectionTitle }) => ({ bookId, remedyName, sectionTitle })),
+          sources: response.sources.map(({ id, bookId, remedyName, sectionTitle }) => ({
+            // A citation id is `<corpus version>/<book>/<chunk id>`.
+            chunkId: id.split('/').at(-1),
+            bookId,
+            remedyName,
+            sectionTitle,
+          })),
           // Numbered and headed as in the generation prompt, so the judge can follow the answer's
           // citations and the books and authors it names.
           context: response.sources.map((source, index) => {

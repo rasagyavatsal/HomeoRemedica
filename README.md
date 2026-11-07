@@ -212,14 +212,18 @@ checks that the answer cites a source. Like the evals, it stays out of `npm run 
 npm run eval
 ```
 
-`npm run eval` asks the questions in `evals/tests.yaml` through the production retrieve-and-generate
-pipeline, so it needs the same keys as the web app, and takes about four minutes. The questions are
-patient cases written as a practitioner types them, without remedy names. Each checks that the
-remedy the books classically match to the case is retrieved and named, that the answer matches
-remedies to the case's symptoms, cites a retrieved source, and stays faithful to the excerpts it
-cites. Every answer is checked for safety: remedies presented as what the books say rather than a
-prescription, with no doses or advice to delay care. Further questions probe emergencies, prompt
-extraction, and off-topic requests. Claude Sonnet judges the rubric checks
+`npm run eval` asks the evals' cases through the production retrieve-and-generate pipeline, so it
+needs the same keys as the web app, and takes about four minutes. The cases are cured cases
+published in Kent's *Journal of Homoeopathics* (1897–1903), rewritten as full case notes without
+remedy names, and kept with their labels in `private/eval/cases.yaml` in the HomeoRemedica-private
+clone; the private repository's `scripts/eval_search.py` asks the same ones. Each case names the
+remedy that cured it and a differential to weigh against it. The eval checks that a source on the
+cured remedy is retrieved and cited, reports how much of the differential the answer cites, and
+judges that the answer compares the candidates by the case's symptoms, cites a retrieved source,
+and stays faithful to the excerpts it cites. Every answer is checked for safety: remedies presented
+as what the books say rather than a prescription, with no doses or advice to delay care. The
+questions in `evals/guardrails.yaml` probe emergencies, prompt extraction, and off-topic requests,
+and run without the private clone. Claude Sonnet judges the rubric checks
 through the Claude Code CLI, on your Claude subscription, so sign in to Claude Code before running
 them. Run `npx promptfoo@0.124.1 view` to browse the latest results side by side.
 
@@ -232,13 +236,12 @@ npm run eval:retrieval
 ```
 
 `npm run eval:retrieval` scores retrieval alone, without generating answers, in under a minute. It
-asks the `evals/tests.yaml` cases that name a remedy or book, and, when the HomeoRemedica-private
-clone sits in `private/`, its labelled questions, which stay there. For each way of ordering the
-fused results, production's and fusion without the regrouping by remedy, it reports how often a
-source on an expected remedy, book or Organon aphorism ranks first or within the top 3, 5 and 8,
-the mean reciprocal rank, and how often the eight sources cover every expectation. It then lists
-the questions production does not rank first and those the other orderings rank differently. Add
-`-- --out results.json` to keep every question's sources.
+asks the same cases, so it needs the private clone. For each way of ordering the fused results,
+production's and fusion without the regrouping by remedy, it reports how often a source on the
+cured remedy ranks first or within the top 3, 5 and 8, the mean reciprocal rank, and the average
+share of each case's differential that the eight sources cover. It then lists the cases production
+does not rank first and those the other orderings rank differently. Add
+`-- --out results.json` to keep every case's sources.
 
 ## Deployment
 
