@@ -8,10 +8,12 @@
  * cases are published ones Claude may have read, so it is also asked whether it recognises each,
  * and the scores are given apart for the cases it says it does not.
  *
- * It runs through the Claude Code CLI on its signed-in subscription. Replies are kept in
- * .cache/unaided.json, keyed by the model, the instructions and the case, so a later run reuses them.
+ * A Claude model runs through the Claude Code CLI on its signed-in subscription; any other model is
+ * asked through Z.AI like production's answer model, so `--model glm-5.3-flash` shows whether that
+ * model could propose a case's remedies itself. Replies are kept in .cache/unaided.json, keyed by
+ * the model, the instructions and the case, so a later run reuses them.
  *
- * Usage: npm run eval:unaided [-- --model claude-opus-5-5] [-- --against retrieval-results.json]
+ * Usage: npm run eval:unaided [-- --model glm-5.3-flash] [-- --against retrieval-results.json]
  */
 
 import { createHash } from 'node:crypto'
@@ -20,6 +22,9 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 
+import { ZaiChatClient } from '../src/server/generation.ts'
+import { EXTRACTION_MAX_OUTPUT_TOKENS } from '../src/server/repertory.ts'
+import { loadSettings } from '../src/server/runtime.ts'
 import { CASES_PATH, hasPrivateClone, loadCases, remedyIds } from './cases.ts'
 import { askClaude } from './claude.ts'
 
@@ -61,6 +66,21 @@ function parseAnswer(text: string, known: ReadonlySet<string>): Answer {
     unknown: named.filter((remedy) => !known.has(remedy)),
     recognised: parsed.recognised === true,
   }
+}
+
+/** Asks a Claude model through the CLI, or any other through Z.AI with production's settings. */
+function asker(model: string): (prompt: string, system: string) => Promise<string> {
+  if (model.startsWith('claude-')) return async (prompt, system) => (await askClaude(prompt, { model, system })).text
+  const client = new ZaiChatClient({
+    apiKey: loadSettings(process.env, ROOT).zaiApiKey,
+    model,
+    // The model reasons first, and its reasoning counts against this, as for symptom extraction.
+    maxOutputTokens: EXTRACTION_MAX_OUTPUT_TOKENS,
+    temperature: 0.2,
+    // Reasoning over the case and the corpus's remedy ids takes longer than an answer.
+    timeoutMs: 300_000,
+  })
+  return (prompt, system) => client.generate(prompt, { systemInstruction: system })
 }
 
 async function pool<T, R>(items: readonly T[], limit: number, run: (item: T) => Promise<R>): Promise<R[]> {
@@ -107,6 +127,7 @@ async function main(): Promise<void> {
   const { values } = parseArgs({ options: { model: { type: 'string', default: DEFAULT_MODEL }, against: { type: 'string' } } })
   if (!hasPrivateClone()) throw new Error(`clone HomeoRemedica-private into private/ so ${CASES_PATH} exists`)
   const model = values.model
+  const ask = asker(model)
   const known = [...new Set([...remedyIds().values()].filter((remedy) => remedy !== null))].sort()
   const knownSet = new Set(known)
   const system = instructions(known)
@@ -120,7 +141,7 @@ async function main(): Promise<void> {
     if (text === undefined) {
       for (let attempt = 1; ; attempt++) {
         try {
-          text = (await askClaude(item.query, { model, system })).text
+          text = await ask(item.query, system)
           parseAnswer(text, knownSet)
           break
         } catch (error) {
