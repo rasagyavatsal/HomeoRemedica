@@ -112,6 +112,23 @@ describe('Qdrant corpus', () => {
     ])
   })
 
+  it('reports the candidates of each step without fetching passages', async () => {
+    const fetch = fakeFetch(
+      rankings([], [['a1', 9, 'pulsatilla']]),
+      rankings([['n1', 0.9, 'lyssin'], ['n2', 0.8, 'x-ray']], [['n2', 8, 'x-ray']]),
+    )
+
+    const stages = await corpus(fetch, ['allen_keynotes', 'allen_nosodes']).stages('weepy', [1.0], { limit: 3 })
+
+    expect(fetch.calls).toHaveLength(2)
+    const subjects = (candidates: readonly { subject: string }[]) => candidates.map((candidate) => candidate.subject)
+    expect(subjects(stages.dense)).toEqual(['remedy:lyssin', 'remedy:x-ray'])
+    expect(stages.sparse.map(subjects)).toEqual([['remedy:pulsatilla'], ['remedy:x-ray']])
+    expect(subjects(stages.fused)).toEqual(['remedy:x-ray', 'remedy:lyssin', 'remedy:pulsatilla'])
+    expect(stages.support).toEqual(['remedy:x-ray', 'remedy:lyssin', 'remedy:pulsatilla'])
+    expect(subjects(stages.best)).toEqual(['remedy:x-ray', 'remedy:lyssin', 'remedy:pulsatilla'])
+  })
+
   it('keeps the fused order when regrouping is off', async () => {
     const fetch = fakeFetch(
       rankings([], [['a1', 9, 'pulsatilla']]),

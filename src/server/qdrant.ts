@@ -48,12 +48,26 @@ export class CorpusError extends Error {
 
 type PointId = string | number
 
-interface Candidate {
+export interface Candidate {
   bookId: string
   id: PointId
   score: number
-  /** The passage's remedy, or its book when it has none, such as an Organon passage. */
+  /** The passage's remedy as `remedy:<id>`, or its book as `book:<id>` when it has none, such as an Organon passage. */
   subject: string
+}
+
+/** What a search found at each step, so an evaluation can see where a remedy was lost. */
+export interface SearchStages {
+  /** The dense candidates of all books together, best first. */
+  dense: readonly Candidate[]
+  /** Each book's BM25 candidates, best first. */
+  sparse: readonly (readonly Candidate[])[]
+  /** Both rankings fused, best first. */
+  fused: readonly Candidate[]
+  /** Subjects by the books' support, best first, when the fused results were regrouped; otherwise null. */
+  support: readonly string[] | null
+  /** The candidates the search returns. */
+  best: readonly Candidate[]
 }
 
 export class QdrantCorpus {
@@ -120,8 +134,23 @@ export class QdrantCorpus {
   async search(
     query: string,
     embedding: readonly number[],
-    { limit, remedies }: { limit: number; remedies?: readonly string[] | undefined },
+    options: { limit: number; remedies?: readonly string[] | undefined },
   ): Promise<RetrievedSource[]> {
+    const { best } = await this.stages(query, embedding, options)
+    const payloads = await this.#payloads(best)
+    return best.map((candidate) => {
+      const payload = payloads.get(candidateKey(candidate.bookId, candidate.id))
+      if (!payload) throw new ProviderError('Qdrant returned no payload for a query point')
+      return toSource(candidate.bookId, payload, candidate.score)
+    })
+  }
+
+  /** The candidates `search` ranks at each step, without fetching the passages. */
+  async stages(
+    query: string,
+    embedding: readonly number[],
+    { limit, remedies }: { limit: number; remedies?: readonly string[] | undefined },
+  ): Promise<SearchStages> {
     const candidates = limit * PREFETCH_MULTIPLIER
     const rankings = await Promise.all(
       this.#bookIds.map((bookId) => this.#rank(bookId, query, embedding, candidates, remedies)),
@@ -130,8 +159,9 @@ export class QdrantCorpus {
     // collection, and a small book such as the Organon scores high on everything, so each book
     // keeps its own BM25 ranking.
     const dense = topCandidates(rankings.flatMap(([denseRanking]) => denseRanking), candidates)
+    const sparse = rankings.map(([, sparseRanking]) => sparseRanking)
     const fused = new Map<string, Candidate>()
-    for (const ranking of [dense, ...rankings.map(([, sparseRanking]) => sparseRanking)]) {
+    for (const ranking of [dense, ...sparse]) {
       for (const [position, candidate] of ranking.entries()) {
         const key = candidateKey(candidate.bookId, candidate.id)
         const score = (fused.get(key)?.score ?? 0) + 1 / (RRF_K + position + 1)
@@ -139,18 +169,11 @@ export class QdrantCorpus {
       }
     }
     const ranked = topCandidates([...fused.values()], fused.size)
-    const best =
-      remedies && this.#remedyOrder
-        ? inRemedyOrder(ranked, remedies, limit)
-        : this.#regroup
-          ? select(ranked, limit)
-          : ranked.slice(0, limit)
-    const payloads = await this.#payloads(best)
-    return best.map((candidate) => {
-      const payload = payloads.get(candidateKey(candidate.bookId, candidate.id))
-      if (!payload) throw new ProviderError('Qdrant returned no payload for a query point')
-      return toSource(candidate.bookId, payload, candidate.score)
-    })
+    const found = { dense, sparse, fused: ranked }
+    if (remedies && this.#remedyOrder) return { ...found, support: null, best: inRemedyOrder(ranked, remedies, limit) }
+    if (!this.#regroup || dominated(ranked, limit)) return { ...found, support: null, best: ranked.slice(0, limit) }
+    const support = bySupport(ranked)
+    return { ...found, support, best: select(ranked, support, limit) }
   }
 
   /** One collection's dense and BM25 candidates, best first. */
@@ -240,17 +263,21 @@ function topCandidates(candidates: Candidate[], limit: number): Candidate[] {
 }
 
 /**
- * The best `limit` of the ranked candidates. When no subject dominates them, the question describes
- * symptoms rather than naming a remedy, so remedies are ranked by how well the books together
- * support them, and the best passage of each leading remedy comes first, then more of theirs.
+ * Whether one subject holds enough of the best `limit` candidates that the question is about it,
+ * such as a question that names a remedy, so the fused order stands.
  */
-function select(ranked: readonly Candidate[], limit: number): Candidate[] {
-  const top = ranked.slice(0, limit)
+function dominated(ranked: readonly Candidate[], limit: number): boolean {
   const counts = new Map<string, number>()
-  for (const { subject } of top) counts.set(subject, (counts.get(subject) ?? 0) + 1)
-  if (Math.max(0, ...counts.values()) >= limit * DOMINANT_SHARE) return top
-  // A subject's support sums its best passage in each book, so agreement between books outweighs
-  // many passages from one, such as the long symptom lists of the provings and the nosodes.
+  for (const { subject } of ranked.slice(0, limit)) counts.set(subject, (counts.get(subject) ?? 0) + 1)
+  return Math.max(0, ...counts.values()) >= limit * DOMINANT_SHARE
+}
+
+/**
+ * Subjects by how well the books together support them, best first. A subject's support sums its
+ * best passage in each book, so agreement between books outweighs many passages from one, such as
+ * the long symptom lists of the provings and the nosodes.
+ */
+function bySupport(ranked: readonly Candidate[]): string[] {
   const counted = new Set<string>()
   const support = new Map<string, number>()
   for (const { subject, bookId, score } of ranked) {
@@ -258,9 +285,16 @@ function select(ranked: readonly Candidate[], limit: number): Candidate[] {
     counted.add(candidateKey(bookId, subject))
     support.set(subject, (support.get(subject) ?? 0) + score)
   }
-  const leaders = new Set(
-    [...support.keys()].sort((a, b) => support.get(b)! - support.get(a)!).slice(0, DIFFERENTIAL_REMEDIES),
-  )
+  return [...support.keys()].sort((a, b) => support.get(b)! - support.get(a)!)
+}
+
+/**
+ * The best `limit` of the ranked candidates when no subject dominates them: the question describes
+ * symptoms rather than naming a remedy, so the best passage of each of the best-supported remedies
+ * comes first, then more of theirs.
+ */
+function select(ranked: readonly Candidate[], support: readonly string[], limit: number): Candidate[] {
+  const leaders = new Set(support.slice(0, DIFFERENTIAL_REMEDIES))
   const firsts = [...leaders].map((subject) => ranked.find((candidate) => candidate.subject === subject)!)
   const rest = ranked.filter((candidate) => leaders.has(candidate.subject) && !firsts.includes(candidate))
   return [...firsts, ...rest].slice(0, limit)
