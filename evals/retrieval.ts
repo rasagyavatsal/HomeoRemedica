@@ -43,7 +43,9 @@ import {
   type SearchStages,
 } from '../src/server/qdrant.ts'
 import {
+  BOERICKE_COLLECTION,
   EXTRACTION_INSTRUCTION,
+  REPERTORY_COLLECTION,
   type Repertorisation,
   type Repertoriser,
   type SymptomExtractor,
@@ -80,8 +82,11 @@ interface Arm {
   rerank: boolean
   /** The books it searches, when not all of them. */
   books?: readonly string[]
-  /** Whose ranking of remedies narrows or weighs the search: the repertory's, or the remedies the answer model proposes. */
-  ranking?: 'repertory' | 'proposals'
+  /**
+   * Whose ranking of remedies narrows or weighs the search: Kent's Repertory's (the default),
+   * Boericke's, both repertories' together, or the remedies the answer model proposes.
+   */
+  ranking?: 'repertory' | 'boericke' | 'both' | 'proposals'
 }
 
 /** The model whose proposed remedies the proposal arms use: production's answer model. */
@@ -108,6 +113,10 @@ const ARMS: Arm[] = [
   { ...SEARCH, name: 'fusion only', regroup: false },
   { ...SEARCH, name: 'repertory 20', candidates: 20 },
   { ...SEARCH, name: 'repertory 10', candidates: 10 },
+  { ...SEARCH, name: 'boericke 20', candidates: 20, ranking: 'boericke' },
+  { ...SEARCH, name: 'both 20', candidates: 20, ranking: 'both' },
+  { ...SEARCH, name: 'boericke prior', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'boericke' },
+  { ...SEARCH, name: 'both prior', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'both' },
   { ...SEARCH, name: 'rep. order 8', candidates: 8, remedyOrder: true },
   { ...SEARCH, name: 'rep. order 20', candidates: 20, remedyOrder: true },
   { ...SEARCH, name: 'rerank', rerank: true },
@@ -812,15 +821,22 @@ async function main(): Promise<void> {
   const embedder = new CachedEmbedder(voyage)
   const extractor = new CachedExtractor(symptomExtractor(settings), settings.model, { fresh: values.fresh })
   const repertory = new CachedRepertory(await loadRepertory(settings, voyage, { extractor }))
+  const rankings: Record<NonNullable<Arm['ranking']>, Repertoriser> = {
+    repertory,
+    boericke: new CachedRepertory(await loadRepertory(settings, voyage, { extractor, collections: [BOERICKE_COLLECTION] })),
+    both: new CachedRepertory(
+      await loadRepertory(settings, voyage, { extractor, collections: [REPERTORY_COLLECTION, BOERICKE_COLLECTION] }),
+    ),
+    proposals: new ProposedRemedies(new Proposer(PROPOSER), cases),
+  }
   const reranker = new CachedReranker(
     new OpenRouterReranker({ apiKey: settings.openrouterApiKey, timeoutMs: 120_000, attempts: 6, backoffMs: 10_000, fetch: retryingFetch }),
     RERANK_MODEL,
     { fresh: values.fresh },
   )
   const qdrantFetch = memoizedFetch(retryingFetch)
-  const proposals = new ProposedRemedies(new Proposer(PROPOSER), cases)
   const arms: { name: string; retriever: Retriever }[] = ARMS.map((arm) => {
-    const ranking = arm.ranking === 'proposals' ? proposals : repertory
+    const ranking = rankings[arm.ranking ?? 'repertory']
     return {
       name: arm.name,
       retriever: new ProductionRetriever(
@@ -904,6 +920,7 @@ async function main(): Promise<void> {
   console.log(`${BASELINE}: the ${SOURCE_LIMIT} remedies with the most passages, whatever the query`)
   console.log(`rerank: the fused candidates rescored by ${RERANK_MODEL}`)
   console.log(`glm: the remedies ${PROPOSER} proposes from the case alone, in place of the repertory's`)
+  console.log(`boericke, both: Boericke's Repertory, or each symptom's rubrics from Kent's and Boericke's together, in place of Kent's`)
   console.log(`prior w/k: the repertory's ranking at weight w against the books' support, fused with constant k; production's is ${DEFAULT_PRIOR}`)
   const chosen = [...Map.groupBy(choices, (choice) => choice).entries()].map(([name, times]) => `${name} ${times.length}`)
   console.log(`${TUNED}: each case scored with the prior that does best on the other cases (chose ${chosen.join(', ')})`)
