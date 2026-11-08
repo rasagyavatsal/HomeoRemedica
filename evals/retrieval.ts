@@ -33,6 +33,7 @@ import { parseArgs } from 'node:util'
 import { ChatRequestSchema, type RetrievedSource, type Retriever } from '../src/server/contracts.ts'
 import { VoyageQueryEmbedder } from '../src/server/embeddings.ts'
 import {
+  BOOKS,
   type Candidate,
   DIFFERENTIAL_REMEDIES,
   PREFETCH_MULTIPLIER,
@@ -76,9 +77,18 @@ interface Arm {
   remedyOrder: boolean
   prior: { weight: number; k: number } | null
   rerank: boolean
+  /** The books it searches, when not all of them. */
+  books?: readonly string[]
 }
 
 const SEARCH = { regroup: true, candidates: null, remedyOrder: false, prior: null, rerank: false }
+
+/**
+ * Books that describe few remedies in long symptom lists, whose passages match nearly any question;
+ * the arms that leave them out show how much of the ranking they take.
+ */
+const LONG_LISTS = ['allen_nosodes', 'hahnemann_mm_pura']
+const allBut = (left: readonly string[]) => BOOKS.map((book) => book.bookId).filter((bookId) => !left.includes(bookId))
 
 /** Weights and constants with which the repertory's ranking is weighed against the books' support. */
 const PRIOR_WEIGHTS = [0.25, 0.5, 1, 2, 4]
@@ -96,6 +106,9 @@ const ARMS: Arm[] = [
   { ...SEARCH, name: 'rep. order 20', candidates: 20, remedyOrder: true },
   { ...SEARCH, name: 'rerank', rerank: true },
   { ...SEARCH, name: 'rerank only', regroup: false, rerank: true },
+  { ...SEARCH, name: 'no nosodes', books: allBut(['allen_nosodes']) },
+  { ...SEARCH, name: 'no long lists', books: allBut(LONG_LISTS) },
+  { ...SEARCH, name: 'prior, no long', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, books: allBut(LONG_LISTS) },
   ...SWEEP,
 ]
 
@@ -288,6 +301,138 @@ class CachedRepertory implements Repertoriser {
 }
 
 /**
+ * How a symptom search ranks remedies: by their places in each symptom's results, the same with
+ * each symptom weighed by how few remedies its nearest rubric lists, or by how many symptoms rank
+ * them among their first `COUNTED_REMEDIES`.
+ */
+type Weighing = 'plain' | 'rare' | 'count'
+const SYMPTOM_ARMS: readonly { name: string; weighing: Weighing; books?: readonly string[] }[] = [
+  { name: 'symptoms', weighing: 'plain' },
+  { name: 'symptoms rare', weighing: 'rare' },
+  { name: 'symptoms count', weighing: 'count' },
+  { name: 'symptoms, no long', weighing: 'plain', books: allBut(LONG_LISTS) },
+]
+/** A remedy gets 1 / (SYMPTOM_K + place) for its place among a symptom's remedies. */
+const SYMPTOM_K = 10
+const COUNTED_REMEDIES = 20
+
+interface SymptomRanking {
+  symptom: string
+  /** How many remedies the symptom's nearest rubric lists, or null when it matched none. */
+  rubricSize: number | null
+  /** The remedies the symptom's fused passages are about, best first. */
+  remedies: string[]
+  /** The book of each remedy's best passage for the symptom. */
+  books: Map<string, string>
+}
+
+/**
+ * Each symptom the repertory extracts from a case searched in the books on its own, so that a
+ * remedy is ranked by how many of the case's symptoms the books support, as a repertory ranks it,
+ * rather than by how well single passages match the whole case. Searches each case once, however
+ * many arms rank its symptoms.
+ */
+class SymptomSearches {
+  readonly #corpus: QdrantCorpus
+  readonly #embedder: VoyageQueryEmbedder
+  readonly #repertory: Repertoriser
+  readonly #results = new Map<string, Promise<SymptomRanking[]>>()
+
+  constructor(corpus: QdrantCorpus, embedder: VoyageQueryEmbedder, repertory: Repertoriser) {
+    this.#corpus = corpus
+    this.#embedder = embedder
+    this.#repertory = repertory
+  }
+
+  rankings(query: string): Promise<SymptomRanking[]> {
+    let result = this.#results.get(query)
+    if (!result) {
+      result = this.#search(query)
+      this.#results.set(query, result)
+    }
+    return result
+  }
+
+  async #search(query: string): Promise<SymptomRanking[]> {
+    const { symptoms } = await this.#repertory.repertorise(query)
+    if (!symptoms.length) return []
+    const embeddings = await retried(() => this.#embedder.embedQueries(symptoms.map((match) => match.symptom)))
+    const rankings: SymptomRanking[] = []
+    // One symptom at a time, so that the cases searched together keep Qdrant's requests few.
+    for (const [index, match] of symptoms.entries()) {
+      const { fused } = await this.#corpus.stages(match.symptom, embeddings[index]!, { limit: SOURCE_LIMIT })
+      const remedies: string[] = []
+      const books = new Map<string, string>()
+      for (const { subject, bookId } of fused) {
+        if (!subject.startsWith('remedy:')) continue
+        const remedy = subject.slice('remedy:'.length)
+        if (books.has(remedy)) continue
+        books.set(remedy, bookId)
+        remedies.push(remedy)
+      }
+      rankings.push({ symptom: match.symptom, rubricSize: match.rubrics[0]?.remedies.length ?? null, remedies, books })
+    }
+    return rankings
+  }
+}
+
+/** The remedies of a case's symptom searches, best first, as the weighing ranks them. */
+function rankBySymptoms(rankings: readonly SymptomRanking[], weighing: Weighing, corpusRemedies: number): string[] {
+  const credit = new Map<string, number>()
+  const counted = new Map<string, number>()
+  for (const { remedies, rubricSize } of rankings) {
+    const weight = weighing === 'rare' && rubricSize ? Math.log(1 + corpusRemedies / rubricSize) : 1
+    for (const [place, remedy] of remedies.entries()) {
+      credit.set(remedy, (credit.get(remedy) ?? 0) + weight / (SYMPTOM_K + place + 1))
+      if (place < COUNTED_REMEDIES) counted.set(remedy, (counted.get(remedy) ?? 0) + 1)
+    }
+  }
+  const count = (remedy: string) => (weighing === 'count' ? (counted.get(remedy) ?? 0) : 0)
+  return [...credit.keys()].sort((a, b) => count(b) - count(a) || credit.get(b)! - credit.get(a)! || a.localeCompare(b))
+}
+
+/**
+ * The leading remedies of a symptom search, one source each, as many as production's regrouped
+ * results lead with. Only a source's remedy and book are scored, so each names some passage of its
+ * remedy rather than the one that matched.
+ */
+class SymptomRetriever implements Retriever {
+  readonly corpusVersion = 'symptoms'
+  /** Each query's remedies, best first, for the report. */
+  readonly ranked = new Map<string, string[]>()
+  readonly #searches: SymptomSearches
+  readonly #weighing: Weighing
+  readonly #chunks: Map<string, string>
+
+  constructor(searches: SymptomSearches, weighing: Weighing) {
+    this.#searches = searches
+    this.#weighing = weighing
+    this.#chunks = new Map()
+    for (const [chunkId, remedy] of remedyIds()) if (remedy && !this.#chunks.has(remedy)) this.#chunks.set(remedy, chunkId)
+  }
+
+  async retrieve(request: { message: string }): Promise<readonly RetrievedSource[]> {
+    const rankings = await this.#searches.rankings(request.message)
+    const remedies = rankBySymptoms(rankings, this.#weighing, this.#chunks.size)
+    this.ranked.set(request.message, remedies)
+    return remedies.slice(0, DIFFERENTIAL_REMEDIES).map((remedy) => {
+      const bookId = rankings.find((ranking) => ranking.books.has(remedy))!.books.get(remedy)!
+      return {
+        chunkId: this.#chunks.get(remedy)!,
+        bookId,
+        bookTitle: bookId,
+        author: null,
+        remedyName: remedy,
+        sectionTitle: remedy,
+        passageIndexes: [],
+        text: '',
+        score: 0,
+      }
+    })
+  }
+}
+
+/**
  * The baseline: whatever the query, one passage each on the remedies with the most passages in the
  * corpus, which are the most fully proved and the most prescribed.
  */
@@ -401,6 +546,40 @@ function tunePrior(results: Result[]): string[] {
     results.push({ ...byArm.get(best)![index]!, arm: TUNED })
   }
   return choices
+}
+
+/**
+ * Where each way of ranking remedies puts the cured remedy among all the remedies it ranks, not
+ * only those it shows: production by the books' support (or the fused order when it did not
+ * regroup), the repertory, and the symptom searches.
+ */
+function remedyPlaces(
+  cases: readonly { id: string; query: string; expected: readonly string[] }[],
+  diagnoses: readonly Diagnosis[],
+  symptomArms: readonly { name: string; retriever: SymptomRetriever }[],
+): void {
+  const byId = new Map(diagnoses.map((diagnosis) => [diagnosis.id, diagnosis]))
+  const ways: [string, (number | null)[]][] = [
+    ['production', cases.map(({ id }) => { const d = byId.get(id)!; return d.regrouped ? d.support : d.fused })],
+    ['repertory', cases.map(({ id }) => byId.get(id)!.repertory.rank)],
+    ...symptomArms.map(({ name, retriever }): [string, (number | null)[]] => [
+      name,
+      cases.map(({ query, expected }) => {
+        const { message } = ChatRequestSchema.parse({ message: query, history: [] })
+        const place = (retriever.ranked.get(message) ?? []).findIndex((remedy) => expected.includes(remedy))
+        return place < 0 ? null : place + 1
+      }),
+    ]),
+  ]
+  const cutoffs = [1, DIFFERENTIAL_REMEDIES, 10, 20, 50]
+  console.log(`\nthe cured remedy's place among all the remedies each way ranks, of ${cases.length} cases`)
+  console.log(`  ${''.padEnd(16)}${cutoffs.map((cutoff) => `top ${cutoff}`.padStart(8)).join('')}${'ranked'.padStart(8)}${'median'.padStart(8)}`)
+  for (const [name, places] of ways) {
+    const within = (cutoff: number) => places.filter((place) => place !== null && place <= cutoff).length
+    const present = places.filter((place) => place !== null)
+    const counts = cutoffs.map((cutoff) => String(within(cutoff)).padStart(8)).join('')
+    console.log(`  ${name.padEnd(16)}${counts}${String(present.length).padStart(8)}${median(present).padStart(8)}`)
+  }
 }
 
 function remedyOf(source: RetrievedSource): string | null {
@@ -616,6 +795,7 @@ async function main(): Promise<void> {
         url: settings.qdrantUrl!,
         apiKey: settings.qdrantApiKey,
         fetch: qdrantFetch,
+        ...(arm.books ? { bookIds: arm.books } : {}),
         regroup: arm.regroup,
         remedyOrder: arm.remedyOrder,
         reranker: arm.rerank ? reranker : undefined,
@@ -625,6 +805,18 @@ async function main(): Promise<void> {
       arm.prior ? { repertory, prior: true } : arm.candidates ? { repertory, candidates: arm.candidates } : {},
     ),
   }))
+  const symptomSearches = (books: readonly string[] | undefined) =>
+    new SymptomSearches(
+      new QdrantCorpus({ url: settings.qdrantUrl!, apiKey: settings.qdrantApiKey, fetch: qdrantFetch, ...(books ? { bookIds: books } : {}) }),
+      voyage,
+      repertory,
+    )
+  const searches = symptomSearches(undefined)
+  const symptomRetrievers = SYMPTOM_ARMS.map((arm) => ({
+    name: arm.name,
+    retriever: new SymptomRetriever(arm.books ? symptomSearches(arm.books) : searches, arm.weighing),
+  }))
+  arms.push(...symptomRetrievers)
   arms.push({ name: BASELINE, retriever: new PopularRemedies() })
   const corpus = new QdrantCorpus({ url: settings.qdrantUrl, apiKey: settings.qdrantApiKey, fetch: qdrantFetch })
   await corpus.verify()
@@ -714,6 +906,7 @@ async function main(): Promise<void> {
 
   const order = new Map(cases.map((item, index) => [item.id, index]))
   report(diagnoses.sort((a, b) => order.get(a.id)! - order.get(b.id)!))
+  remedyPlaces(cases, diagnoses, symptomRetrievers)
 
   if (values.out) writeFileSync(values.out, JSON.stringify({ results, diagnoses }, null, 1))
 }
