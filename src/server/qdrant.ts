@@ -14,6 +14,7 @@
 import type { BookSummary, RetrievedSource } from './contracts.ts'
 import { ProviderError } from './errors.ts'
 import { type Fetch, isRecord, readJson, send } from './http.ts'
+import type { PassageReranker } from './rerank.ts'
 
 export const CORPUS_VERSION = 'homeoremedica'
 export const DENSE_VECTOR = 'dense'
@@ -68,6 +69,8 @@ export interface SearchStages {
   sparse: readonly (readonly Candidate[])[]
   /** Both rankings fused, best first. */
   fused: readonly Candidate[]
+  /** The fused candidates rescored by the reranker, best first, when there is one; otherwise null. */
+  reranked: readonly Candidate[] | null
   /**
    * Subjects by the books' support, fused with the prior ranking when one was given, best first,
    * when the fused results were regrouped; otherwise null.
@@ -86,6 +89,7 @@ export class QdrantCorpus {
   readonly #timeoutMs: number
   readonly #regroup: boolean
   readonly #remedyOrder: boolean
+  readonly #reranker: PassageReranker | undefined
 
   constructor({
     url,
@@ -95,6 +99,7 @@ export class QdrantCorpus {
     timeoutMs = QDRANT_TIMEOUT_MS,
     regroup = true,
     remedyOrder = false,
+    reranker,
   }: {
     url: string
     apiKey?: string | undefined
@@ -108,6 +113,8 @@ export class QdrantCorpus {
      * given, rather than regrouping them by the books' support.
      */
     remedyOrder?: boolean
+    /** Rescores the fused candidates before they are regrouped, in place of their fused scores. */
+    reranker?: PassageReranker | undefined
   }) {
     this.#baseUrl = `${url.replace(/\/+$/, '')}/collections/`
     this.#bookIds = bookIds
@@ -116,6 +123,7 @@ export class QdrantCorpus {
     this.#timeoutMs = timeoutMs
     this.#regroup = regroup
     this.#remedyOrder = remedyOrder
+    this.#reranker = reranker
   }
 
   async verify(): Promise<void> {
@@ -183,12 +191,29 @@ export class QdrantCorpus {
         fused.set(key, { ...candidate, score })
       }
     }
-    const ranked = topCandidates([...fused.values()], fused.size)
-    const found = { dense, sparse, fused: ranked }
+    const fusedRanking = topCandidates([...fused.values()], fused.size)
+    const reranked = this.#reranker ? await this.#rerank(query, fusedRanking) : null
+    const ranked = reranked ?? fusedRanking
+    const found = { dense, sparse, fused: fusedRanking, reranked }
     if (remedies && this.#remedyOrder) return { ...found, support: null, best: inRemedyOrder(ranked, remedies, limit) }
     if (!this.#regroup || dominated(ranked, limit)) return { ...found, support: null, best: ranked.slice(0, limit) }
     const support = prior ? withPrior(bySupport(ranked), prior) : bySupport(ranked)
     return { ...found, support, best: select(ranked, support, limit) }
+  }
+
+  /** The candidates with the reranker's scores for their passages, best first. */
+  async #rerank(query: string, candidates: readonly Candidate[]): Promise<Candidate[]> {
+    const payloads = await this.#payloads(candidates)
+    const passages = candidates.map((candidate) => {
+      const payload = payloads.get(candidateKey(candidate.bookId, candidate.id))
+      if (!payload) throw new ProviderError('Qdrant returned no payload for a query point')
+      return requiredText(payload, 'content')
+    })
+    const scores = await this.#reranker!.rerank(query, passages)
+    return topCandidates(
+      candidates.map((candidate, index) => ({ ...candidate, score: scores[index]! })),
+      candidates.length,
+    )
   }
 
   /** One collection's dense and BM25 candidates, best first. */

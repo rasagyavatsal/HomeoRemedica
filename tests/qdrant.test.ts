@@ -145,6 +145,41 @@ describe('Qdrant corpus', () => {
     expect(stages.best.map((candidate) => candidate.subject)).toEqual(['remedy:pulsatilla', 'remedy:x-ray', 'remedy:lyssin'])
   })
 
+  it('regroups by the reranker\'s scores for the fused passages', async () => {
+    const fetch = fakeFetch(
+      rankings(
+        [['n1', 0.9, 'lyssin'], ['n2', 0.8, 'x-ray'], ['n3', 0.7, 'psorinum']],
+        [['n1', 9, 'lyssin'], ['n2', 8, 'x-ray'], ['n3', 7, 'psorinum']],
+      ),
+      records(
+        ['n1', { ...PAYLOAD, content: 'Lyssin passage' }],
+        ['n2', { ...PAYLOAD, content: 'X-Ray passage' }],
+        ['n3', { ...PAYLOAD, content: 'Psorinum passage' }],
+      ),
+    )
+    const asked: [string, readonly string[]][] = []
+    const reranker = {
+      async rerank(query: string, passages: readonly string[]) {
+        asked.push([query, passages])
+        return passages.map((passage) => (passage.startsWith('Psorinum') ? 0.9 : passage.startsWith('X-Ray') ? 0.5 : 0.1))
+      },
+    }
+    const reranking = new QdrantCorpus({ url: 'https://qdrant.example/', bookIds: ['allen_nosodes'], fetch, reranker })
+
+    const stages = await reranking.stages('chilly, offensive sweat', [1.0], { limit: 3 })
+
+    expect(asked).toEqual([['chilly, offensive sweat', ['Lyssin passage', 'X-Ray passage', 'Psorinum passage']]])
+    const subjects = (candidates: readonly { subject: string }[]) => candidates.map((candidate) => candidate.subject)
+    expect(subjects(stages.fused)).toEqual(['remedy:lyssin', 'remedy:x-ray', 'remedy:psorinum'])
+    expect(stages.reranked?.map((candidate) => [candidate.subject, candidate.score])).toEqual([
+      ['remedy:psorinum', 0.9],
+      ['remedy:x-ray', 0.5],
+      ['remedy:lyssin', 0.1],
+    ])
+    expect(stages.support).toEqual(['remedy:psorinum', 'remedy:x-ray', 'remedy:lyssin'])
+    expect(subjects(stages.best)).toEqual(['remedy:psorinum', 'remedy:x-ray', 'remedy:lyssin'])
+  })
+
   it('keeps the fused order when regrouping is off', async () => {
     const fetch = fakeFetch(
       rankings([], [['a1', 9, 'pulsatilla']]),
