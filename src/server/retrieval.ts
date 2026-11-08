@@ -22,7 +22,7 @@ export interface SearchableRelease {
   search(
     query: string,
     embedding: readonly number[],
-    options: { limit: number; remedies?: readonly string[] | undefined },
+    options: { limit: number; remedies?: readonly string[] | undefined; prior?: readonly string[] | undefined },
   ): Promise<readonly RetrievedSource[]>
 }
 
@@ -32,20 +32,27 @@ export class ProductionRetriever implements Retriever {
   readonly #embedder: QueryEmbedder
   readonly #repertory: Repertoriser | undefined
   readonly #candidates: number
+  readonly #prior: boolean
 
   /**
    * With a repertory, a question that describes a patient is searched only among the passages of
-   * the remedies the repertory ranks highest for its symptoms.
+   * the remedies the repertory ranks highest for its symptoms, or, with `prior`, the whole corpus is
+   * searched and the repertory's ranking is weighed with the books' support for each remedy.
    */
   constructor(
     corpus: SearchableRelease,
     embedder: QueryEmbedder,
-    { repertory, candidates = CANDIDATE_REMEDIES }: { repertory?: Repertoriser | undefined; candidates?: number } = {},
+    {
+      repertory,
+      candidates = CANDIDATE_REMEDIES,
+      prior = false,
+    }: { repertory?: Repertoriser | undefined; candidates?: number; prior?: boolean } = {},
   ) {
     this.#corpus = corpus
     this.#embedder = embedder
     this.#repertory = repertory
     this.#candidates = candidates
+    this.#prior = prior
     this.corpusVersion = corpus.corpusVersion
   }
 
@@ -56,8 +63,9 @@ export class ProductionRetriever implements Retriever {
     const query = [...questions.map((turn) => turn.content), request.message]
       .join('\n')
       .slice(-MAX_RETRIEVAL_QUERY_CHARS)
-    const [embedding, remedies] = await Promise.all([this.#embed(query), this.#candidateRemedies(query)])
-    return this.#corpus.search(query, embedding, { limit, remedies })
+    const [embedding, ranking] = await Promise.all([this.#embed(query), this.#repertoryRanking(query)])
+    if (this.#prior) return this.#corpus.search(query, embedding, { limit, prior: ranking })
+    return this.#corpus.search(query, embedding, { limit, remedies: ranking?.slice(0, this.#candidates) })
   }
 
   async #embed(query: string): Promise<readonly number[]> {
@@ -70,15 +78,15 @@ export class ProductionRetriever implements Retriever {
     }
   }
 
-  /** The repertory's leading remedies for the case the query describes, if it describes one. */
-  async #candidateRemedies(query: string): Promise<string[] | undefined> {
+  /** The repertory's remedies for the case the query describes, best first, if it describes one. */
+  async #repertoryRanking(query: string): Promise<string[] | undefined> {
     if (!this.#repertory) return undefined
     try {
       const { remedies } = await this.#repertory.repertorise(query)
-      return remedies.length ? remedies.slice(0, this.#candidates).map((remedy) => remedy.remedyId) : undefined
+      return remedies.length ? remedies.map((remedy) => remedy.remedyId) : undefined
     } catch (error) {
-      // The repertory narrows the search; without it the whole corpus is still searched.
-      console.error('Repertorisation failed; searching the whole corpus', error)
+      // The repertory only narrows or reorders the search; without it the corpus is searched as usual.
+      console.error('Repertorisation failed; searching without it', error)
       return undefined
     }
   }

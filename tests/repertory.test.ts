@@ -193,6 +193,17 @@ describe('production retriever with a repertory', () => {
     expect(calls).toEqual([{ limit: 8, remedies: ['puls', 'sep'] }])
   })
 
+  it("weighs the repertory's whole ranking with the books' support when it is a prior", async () => {
+    const { corpus, calls } = searching()
+
+    await new ProductionRetriever(corpus, embedder, { repertory: repertoryOf('puls', 'sep', 'nat-m'), candidates: 2, prior: true }).retrieve(
+      request('A weepy, thirstless woman.'),
+      { limit: 8 },
+    )
+
+    expect(calls).toEqual([{ limit: 8, prior: ['puls', 'sep', 'nat-m'] }])
+  })
+
   it('searches the whole corpus when the question describes no patient', async () => {
     const { corpus, calls } = searching()
 

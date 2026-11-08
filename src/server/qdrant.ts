@@ -27,6 +27,10 @@ export const RRF_K = 60
 export const DOMINANT_SHARE = 0.5
 // Regrouped results start with the best passage of each of this many remedies.
 export const DIFFERENTIAL_REMEDIES = 5
+// A prior ranking, such as the repertory's, is fused with the books' support by reciprocal rank with
+// this constant, at this weight against the support's.
+export const PRIOR_K = 10
+export const PRIOR_WEIGHT = 0.5
 export const QDRANT_TIMEOUT_MS = 30_000
 const LABEL = 'Qdrant'
 
@@ -64,7 +68,10 @@ export interface SearchStages {
   sparse: readonly (readonly Candidate[])[]
   /** Both rankings fused, best first. */
   fused: readonly Candidate[]
-  /** Subjects by the books' support, best first, when the fused results were regrouped; otherwise null. */
+  /**
+   * Subjects by the books' support, fused with the prior ranking when one was given, best first,
+   * when the fused results were regrouped; otherwise null.
+   */
   support: readonly string[] | null
   /** The candidates the search returns. */
   best: readonly Candidate[]
@@ -130,11 +137,15 @@ export class QdrantCorpus {
     }
   }
 
-  /** The best `limit` passages, from only the given remedies' passages when `remedies` is set. */
+  /**
+   * The best `limit` passages, from only the given remedies' passages when `remedies` is set. A
+   * `prior` ranking of remedy ids, best first, is weighed with the books' support when the results
+   * are regrouped.
+   */
   async search(
     query: string,
     embedding: readonly number[],
-    options: { limit: number; remedies?: readonly string[] | undefined },
+    options: { limit: number; remedies?: readonly string[] | undefined; prior?: readonly string[] | undefined },
   ): Promise<RetrievedSource[]> {
     const { best } = await this.stages(query, embedding, options)
     const payloads = await this.#payloads(best)
@@ -149,7 +160,11 @@ export class QdrantCorpus {
   async stages(
     query: string,
     embedding: readonly number[],
-    { limit, remedies }: { limit: number; remedies?: readonly string[] | undefined },
+    {
+      limit,
+      remedies,
+      prior,
+    }: { limit: number; remedies?: readonly string[] | undefined; prior?: readonly string[] | undefined },
   ): Promise<SearchStages> {
     const candidates = limit * PREFETCH_MULTIPLIER
     const rankings = await Promise.all(
@@ -172,7 +187,7 @@ export class QdrantCorpus {
     const found = { dense, sparse, fused: ranked }
     if (remedies && this.#remedyOrder) return { ...found, support: null, best: inRemedyOrder(ranked, remedies, limit) }
     if (!this.#regroup || dominated(ranked, limit)) return { ...found, support: null, best: ranked.slice(0, limit) }
-    const support = bySupport(ranked)
+    const support = prior ? withPrior(bySupport(ranked), prior) : bySupport(ranked)
     return { ...found, support, best: select(ranked, support, limit) }
   }
 
@@ -286,6 +301,18 @@ function bySupport(ranked: readonly Candidate[]): string[] {
     support.set(subject, (support.get(subject) ?? 0) + score)
   }
   return [...support.keys()].sort((a, b) => support.get(b)! - support.get(a)!)
+}
+
+/** The supported subjects reordered by reciprocal-rank fusion with a prior ranking of remedy ids. */
+function withPrior(support: readonly string[], prior: readonly string[]): string[] {
+  const places = new Map(prior.map((remedy, index) => [`remedy:${remedy}`, index + 1]))
+  const scores = new Map(
+    support.map((subject, index) => {
+      const place = places.get(subject)
+      return [subject, 1 / (PRIOR_K + index + 1) + (place ? PRIOR_WEIGHT / (PRIOR_K + place) : 0)]
+    }),
+  )
+  return [...support].sort((a, b) => scores.get(b)! - scores.get(a)!)
 }
 
 /**

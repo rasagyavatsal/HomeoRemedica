@@ -129,6 +129,22 @@ describe('Qdrant corpus', () => {
     expect(subjects(stages.best)).toEqual(['remedy:x-ray', 'remedy:lyssin', 'remedy:pulsatilla'])
   })
 
+  it("weighs a prior ranking with the books' support", async () => {
+    const fetch = fakeFetch(
+      rankings([], [['a1', 9, 'pulsatilla']]),
+      rankings([['n1', 0.9, 'lyssin'], ['n2', 0.8, 'x-ray']], [['n2', 8, 'x-ray']]),
+    )
+
+    const stages = await corpus(fetch, ['allen_keynotes', 'allen_nosodes']).stages('weepy', [1.0], {
+      limit: 3,
+      prior: ['pulsatilla', 'sepia'],
+    })
+
+    // Pulsatilla is last by support but first in the prior, which lifts it above the other two.
+    expect(stages.support).toEqual(['remedy:pulsatilla', 'remedy:x-ray', 'remedy:lyssin'])
+    expect(stages.best.map((candidate) => candidate.subject)).toEqual(['remedy:pulsatilla', 'remedy:x-ray', 'remedy:lyssin'])
+  })
+
   it('keeps the fused order when regrouping is off', async () => {
     const fetch = fakeFetch(
       rankings([], [['a1', 9, 'pulsatilla']]),
