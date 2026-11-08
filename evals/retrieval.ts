@@ -6,7 +6,7 @@
  * answer eval asks. Every case runs through the production retriever once per arm. A case's
  * symptoms are extracted once and kept in .cache/retrieval-symptoms.json, so every arm and every
  * later run repertorises the same symptoms and differs only in how it searches; `--fresh`
- * extracts them again. A case's rank is the position of the first source on the remedy that cured
+ * extracts them again. Rerank scores are kept the same way in .cache/retrieval-rerank.json. A case's rank is the position of the first source on the remedy that cured
  * it; its differential recall is the share of its differential remedies that some source is about.
  *
  * With few cases a difference of one or two is noise, so MRR carries a 95% bootstrap interval over
@@ -39,6 +39,7 @@ import {
   type Repertoriser,
   type SymptomExtractor,
 } from '../src/server/repertory.ts'
+import { OpenRouterReranker, type PassageReranker, RERANK_MODEL } from '../src/server/rerank.ts'
 import { type QueryEmbedder, ProductionRetriever } from '../src/server/retrieval.ts'
 import { loadRepertory, loadSettings, symptomExtractor } from '../src/server/runtime.ts'
 import { SOURCE_LIMIT } from '../src/server/service.ts'
@@ -48,6 +49,7 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const CUTOFFS = [1, 3, 5, SOURCE_LIMIT]
 const CONCURRENCY = 6
 const SYMPTOMS_CACHE = join(ROOT, '.cache', 'retrieval-symptoms.json')
+const RERANK_CACHE = join(ROOT, '.cache', 'retrieval-rerank.json')
 const RESAMPLES = 10_000
 const BASELINE = 'popular'
 /** The deeper search asks each ranking for this many times production's candidates. */
@@ -56,17 +58,20 @@ const DEEP_FACTOR = 25
 /**
  * Ways of searching: whether the fused candidates are regrouped by remedy, from how many of the
  * repertory's leading remedies a described case's passages come, if any, whether those remedies
- * keep the repertory's order, and whether the repertory's ranking is instead weighed with the books'
- * support. The first is production's and is reported in detail.
+ * keep the repertory's order, whether the repertory's ranking is instead weighed with the books'
+ * support, and whether a reranker rescores the fused candidates first. The first is production's
+ * and is reported in detail.
  */
 const ARMS = [
-  { name: 'production', regroup: true, candidates: null, remedyOrder: false, prior: false },
-  { name: 'fusion only', regroup: false, candidates: null, remedyOrder: false, prior: false },
-  { name: 'repertory 20', regroup: true, candidates: 20, remedyOrder: false, prior: false },
-  { name: 'repertory 10', regroup: true, candidates: 10, remedyOrder: false, prior: false },
-  { name: 'rep. order 8', regroup: true, candidates: 8, remedyOrder: true, prior: false },
-  { name: 'rep. order 20', regroup: true, candidates: 20, remedyOrder: true, prior: false },
-  { name: 'rep. prior', regroup: true, candidates: null, remedyOrder: false, prior: true },
+  { name: 'production', regroup: true, candidates: null, remedyOrder: false, prior: false, rerank: false },
+  { name: 'fusion only', regroup: false, candidates: null, remedyOrder: false, prior: false, rerank: false },
+  { name: 'repertory 20', regroup: true, candidates: 20, remedyOrder: false, prior: false, rerank: false },
+  { name: 'repertory 10', regroup: true, candidates: 10, remedyOrder: false, prior: false, rerank: false },
+  { name: 'rep. order 8', regroup: true, candidates: 8, remedyOrder: true, prior: false, rerank: false },
+  { name: 'rep. order 20', regroup: true, candidates: 20, remedyOrder: true, prior: false, rerank: false },
+  { name: 'rep. prior', regroup: true, candidates: null, remedyOrder: false, prior: true, rerank: false },
+  { name: 'rerank', regroup: true, candidates: null, remedyOrder: false, prior: false, rerank: true },
+  { name: 'rerank only', regroup: false, candidates: null, remedyOrder: false, prior: false, rerank: true },
 ] as const
 
 interface Result {
@@ -78,6 +83,33 @@ interface Result {
   /** Share of the differential remedies some source is about. */
   differentialRecall: number
   sources: string[]
+}
+
+/**
+ * fetch, retrying a request whose connection dropped, so that one dropped request among the run's
+ * hundreds does not end it. A request that timed out is not retried.
+ */
+async function retryingFetch(input: string | URL | Request, init?: RequestInit): Promise<Response> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await fetch(input, init)
+    } catch (error) {
+      if (init?.signal?.aborted || attempt === 4) throw error
+      await new Promise((resolve) => setTimeout(resolve, 2_000 * attempt))
+    }
+  }
+}
+
+/** The result of `run`, tried up to three times, so that a slow provider does not end the run. */
+async function retried<T>(run: () => Promise<T>): Promise<T> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await run()
+    } catch (error) {
+      if (attempt === 3) throw error
+      console.error(`retrying after ${error instanceof Error ? error.message : 'an error'}`)
+    }
+  }
 }
 
 /** Embeds each query once, however many arms search with it. */
@@ -92,7 +124,7 @@ class CachedEmbedder implements QueryEmbedder {
   embedQuery(text: string): Promise<readonly number[]> {
     let embedding = this.#embeddings.get(text)
     if (!embedding) {
-      embedding = this.#embedder.embedQuery(text)
+      embedding = retried(() => this.#embedder.embedQuery(text))
       this.#embeddings.set(text, embedding)
     }
     return embedding
@@ -140,6 +172,51 @@ class CachedExtractor implements SymptomExtractor {
     mkdirSync(dirname(SYMPTOMS_CACHE), { recursive: true })
     writeFileSync(SYMPTOMS_CACHE, JSON.stringify(this.#stored, null, 1))
     return symptoms
+  }
+}
+
+/**
+ * Reranks each query's passages once, however many arms search with them, and keeps the scores on
+ * disk, keyed by the model, the query and the passages, so a later run reuses them. Queries are
+ * reranked one at a time so that the cases' hundreds of passages stay within the provider's rate
+ * limit.
+ */
+class CachedReranker implements PassageReranker {
+  readonly #reranker: PassageReranker
+  readonly #model: string
+  readonly #stored: Record<string, number[]>
+  readonly #results = new Map<string, Promise<number[]>>()
+  #queue: Promise<unknown> = Promise.resolve()
+  reused = 0
+
+  constructor(reranker: PassageReranker, model: string, { fresh }: { fresh: boolean }) {
+    this.#reranker = reranker
+    this.#model = model
+    this.#stored = !fresh && existsSync(RERANK_CACHE) ? JSON.parse(readFileSync(RERANK_CACHE, 'utf8')) : {}
+  }
+
+  rerank(query: string, passages: readonly string[]): Promise<number[]> {
+    const key = createHash('sha256').update(JSON.stringify([this.#model, query, passages])).digest('hex')
+    let result = this.#results.get(key)
+    if (!result) {
+      result = this.#rerank(key, query, passages)
+      this.#results.set(key, result)
+    }
+    return result
+  }
+
+  async #rerank(key: string, query: string, passages: readonly string[]): Promise<number[]> {
+    const stored = this.#stored[key]
+    if (stored) {
+      this.reused++
+      return stored
+    }
+    const scores = this.#queue.then(() => retried(() => this.#reranker.rerank(query, passages)))
+    this.#queue = scores.catch(() => {})
+    this.#stored[key] = await scores
+    mkdirSync(dirname(RERANK_CACHE), { recursive: true })
+    writeFileSync(RERANK_CACHE, JSON.stringify(this.#stored))
+    return this.#stored[key]
   }
 }
 
@@ -450,25 +527,32 @@ async function main(): Promise<void> {
   if (!settings.qdrantUrl) throw new Error('set QDRANT_URL in the environment or .env')
 
   const cases = loadCases()
-  const voyage = new VoyageQueryEmbedder({ apiKey: settings.openrouterApiKey })
+  const voyage = new VoyageQueryEmbedder({ apiKey: settings.openrouterApiKey, fetch: retryingFetch, timeoutMs: 90_000 })
   const embedder = new CachedEmbedder(voyage)
   const extractor = new CachedExtractor(symptomExtractor(settings), settings.model, { fresh: values.fresh })
   const repertory = new CachedRepertory(await loadRepertory(settings, voyage, { extractor }))
+  const reranker = new CachedReranker(
+    new OpenRouterReranker({ apiKey: settings.openrouterApiKey, timeoutMs: 120_000, attempts: 6, backoffMs: 10_000, fetch: retryingFetch }),
+    RERANK_MODEL,
+    { fresh: values.fresh },
+  )
   const arms: { name: string; retriever: Retriever }[] = ARMS.map((arm) => ({
     name: arm.name,
     retriever: new ProductionRetriever(
         new QdrantCorpus({
           url: settings.qdrantUrl!,
           apiKey: settings.qdrantApiKey,
+          fetch: retryingFetch,
           regroup: arm.regroup,
           remedyOrder: arm.remedyOrder,
+          reranker: arm.rerank ? reranker : undefined,
         }),
         embedder,
       arm.prior ? { repertory, prior: true } : arm.candidates ? { repertory, candidates: arm.candidates } : {},
     ),
   }))
   arms.push({ name: BASELINE, retriever: new PopularRemedies() })
-  const corpus = new QdrantCorpus({ url: settings.qdrantUrl, apiKey: settings.qdrantApiKey })
+  const corpus = new QdrantCorpus({ url: settings.qdrantUrl, apiKey: settings.qdrantApiKey, fetch: retryingFetch })
   await corpus.verify()
   const diagnoses: Diagnosis[] = []
 
@@ -517,7 +601,9 @@ async function main(): Promise<void> {
   console.log('\n95%: bootstrap interval of MRR over the cases')
   console.log('diff: the average share of each case\'s differential remedies that some source is about')
   console.log(`${BASELINE}: the ${SOURCE_LIMIT} remedies with the most passages, whatever the query`)
+  console.log(`rerank: the fused candidates rescored by ${RERANK_MODEL}`)
   const seconds = [...extractor.seconds].sort((a, b) => a - b)
+  if (reranker.reused) console.log(`rerank scores of ${reranker.reused} queries reused from ${RERANK_CACHE}`)
   if (extractor.reused) console.log(`symptoms of ${extractor.reused} cases reused from ${SYMPTOMS_CACHE}; --fresh extracts them again`)
   if (seconds.length) {
     const median = seconds[Math.floor(seconds.length / 2)]!
