@@ -10,78 +10,21 @@
  *
  * A Claude model runs through the Claude Code CLI on its signed-in subscription; any other model is
  * asked through Z.AI like production's answer model, so `--model glm-5.3-flash` shows whether that
- * model could propose a case's remedies itself. Replies are kept in .cache/unaided.json, keyed by
- * the model, the instructions and the case, so a later run reuses them.
+ * model could propose a case's remedies itself. Replies are kept as `proposals.ts` keeps them.
  *
  * Usage: npm run eval:unaided [-- --model glm-5.3-flash] [-- --against retrieval-results.json]
  */
 
-import { createHash } from 'node:crypto'
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { readFileSync } from 'node:fs'
 import { parseArgs } from 'node:util'
 
-import { ZaiChatClient } from '../src/server/generation.ts'
-import { EXTRACTION_MAX_OUTPUT_TOKENS } from '../src/server/repertory.ts'
-import { loadSettings } from '../src/server/runtime.ts'
-import { CASES_PATH, hasPrivateClone, loadCases, remedyIds } from './cases.ts'
-import { askClaude } from './claude.ts'
+import { CASES_PATH, hasPrivateClone, loadCases } from './cases.ts'
+import { PROPOSED_REMEDIES, Proposer } from './proposals.ts'
 
-const ROOT = fileURLToPath(new URL('..', import.meta.url))
-const CACHE = join(ROOT, '.cache', 'unaided.json')
 const DEFAULT_MODEL = 'claude-opus-5-5'
-const REMEDIES = 10
 const CUTOFFS = [1, 3, 5, 10]
 const CONCURRENCY = 4
 const RESAMPLES = 10_000
-
-interface Answer {
-  remedies: string[]
-  unknown: string[]
-  recognised: boolean
-}
-
-function instructions(known: readonly string[]): string {
-  return `You are an experienced classical homoeopath. The user gives you a patient's case. Name the
-${REMEDIES} remedies most likely to be the simillimum, best first, as a homoeopath would choose them
-from the totality of the case and its strange, rare and peculiar symptoms.
-
-Name each remedy by its id from this list, exactly as written:
-${known.join(', ')}
-
-Also say whether you recognise this case from the homoeopathic literature, that is, whether you
-have read this very case before.
-
-Reply with JSON only, in this form:
-{"remedies": ["id", ...], "recognised": true or false}`
-}
-
-function parseAnswer(text: string, known: ReadonlySet<string>): Answer {
-  const json = text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1)
-  const parsed = JSON.parse(json) as { remedies?: unknown; recognised?: unknown }
-  const named = Array.isArray(parsed.remedies) ? parsed.remedies.filter((remedy) => typeof remedy === 'string') : []
-  return {
-    remedies: [...new Set(named.filter((remedy) => known.has(remedy)))].slice(0, REMEDIES),
-    unknown: named.filter((remedy) => !known.has(remedy)),
-    recognised: parsed.recognised === true,
-  }
-}
-
-/** Asks a Claude model through the CLI, or any other through Z.AI with production's settings. */
-function asker(model: string): (prompt: string, system: string) => Promise<string> {
-  if (model.startsWith('claude-')) return async (prompt, system) => (await askClaude(prompt, { model, system })).text
-  const client = new ZaiChatClient({
-    apiKey: loadSettings(process.env, ROOT).zaiApiKey,
-    model,
-    // The model reasons first, and its reasoning counts against this, as for symptom extraction.
-    maxOutputTokens: EXTRACTION_MAX_OUTPUT_TOKENS,
-    temperature: 0.2,
-    // Reasoning over the case and the corpus's remedy ids takes longer than an answer.
-    timeoutMs: 300_000,
-  })
-  return (prompt, system) => client.generate(prompt, { systemInstruction: system })
-}
 
 async function pool<T, R>(items: readonly T[], limit: number, run: (item: T) => Promise<R>): Promise<R[]> {
   const results: R[] = new Array(items.length)
@@ -127,40 +70,16 @@ async function main(): Promise<void> {
   const { values } = parseArgs({ options: { model: { type: 'string', default: DEFAULT_MODEL }, against: { type: 'string' } } })
   if (!hasPrivateClone()) throw new Error(`clone HomeoRemedica-private into private/ so ${CASES_PATH} exists`)
   const model = values.model
-  const ask = asker(model)
-  const known = [...new Set([...remedyIds().values()].filter((remedy) => remedy !== null))].sort()
-  const knownSet = new Set(known)
-  const system = instructions(known)
-  const stored: Record<string, string> = existsSync(CACHE) ? JSON.parse(readFileSync(CACHE, 'utf8')) : {}
+  const proposer = new Proposer(model)
   const cases = loadCases()
-  let reused = 0
 
   const answers = await pool(cases, CONCURRENCY, async (item) => {
-    const key = createHash('sha256').update(`${model}\n${system}\n${item.query}`).digest('hex')
-    let text = stored[key]
-    if (text === undefined) {
-      for (let attempt = 1; ; attempt++) {
-        try {
-          text = await ask(item.query, system)
-          parseAnswer(text, knownSet)
-          break
-        } catch (error) {
-          if (attempt === 3) throw error
-          console.error(`${item.id}: retrying after ${error instanceof Error ? error.message : 'an error'}`)
-        }
-      }
-      stored[key] = text
-      mkdirSync(dirname(CACHE), { recursive: true })
-      writeFileSync(CACHE, JSON.stringify(stored, null, 1))
-    } else {
-      reused++
-    }
-    const answer = parseAnswer(text, knownSet)
+    const answer = await proposer.propose(item.query)
     const place = answer.remedies.findIndex((remedy) => item.expected.includes(remedy))
     return { item, answer, rank: place < 0 ? null : place + 1 }
   })
 
-  console.log(`${cases.length} cases, ${model} unaided, ${REMEDIES} remedies each\n`)
+  console.log(`${cases.length} cases, ${model} unaided, ${PROPOSED_REMEDIES} remedies each\n`)
   const header = CUTOFFS.map((cutoff) => `top ${cutoff}`.padStart(7)).join('')
   console.log(`  ${''.padEnd(22)}${'n'.padStart(5)}${header}${'MRR'.padStart(7)}${'95%'.padStart(11)}`)
   console.log(summary('all cases', answers.map((answer) => answer.rank)))
@@ -168,7 +87,7 @@ async function main(): Promise<void> {
   console.log(summary('recognised', answers.filter((answer) => answer.answer.recognised).map((answer) => answer.rank)))
   const unknown = answers.flatMap((answer) => answer.answer.unknown)
   if (unknown.length) console.log(`\nnames not among the corpus's remedy ids, left out: ${[...new Set(unknown)].join(', ')}`)
-  if (reused) console.log(`replies to ${reused} cases reused from ${CACHE}`)
+  if (proposer.reused) console.log(`replies to ${proposer.reused} cases reused from the cache`)
 
   // Production's place for the cured remedy among its sources, from a retrieval eval's --out file.
   let production = new Map<string, number | null>()
