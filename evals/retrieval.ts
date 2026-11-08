@@ -11,7 +11,9 @@
  *
  * With few cases a difference of one or two is noise, so MRR carries a 95% bootstrap interval over
  * the cases, and every arm is compared with production on the same cases: a paired bootstrap
- * interval of the difference and a sign test on which ranks it improves.
+ * interval of the difference and a sign test on which ranks it improves. A baseline that ignores the
+ * query and returns the remedies with the most passages shows how much a score owes to the cures
+ * being well-documented remedies.
  *
  * Usage: npm run eval:retrieval [-- --fresh] [-- --out results.json]
  */
@@ -41,6 +43,7 @@ const CUTOFFS = [1, 3, 5, SOURCE_LIMIT]
 const CONCURRENCY = 6
 const SYMPTOMS_CACHE = join(ROOT, '.cache', 'retrieval-symptoms.json')
 const RESAMPLES = 10_000
+const BASELINE = 'popular'
 
 /**
  * Ways of searching: whether the fused candidates are regrouped by remedy, from how many of the
@@ -146,6 +149,39 @@ class CachedRepertory implements Repertoriser {
       this.#results.set(text, result)
     }
     return result
+  }
+}
+
+/**
+ * The baseline: whatever the query, one passage each on the remedies with the most passages in the
+ * corpus, which are the most fully proved and the most prescribed.
+ */
+class PopularRemedies implements Retriever {
+  readonly corpusVersion = BASELINE
+  readonly #sources: RetrievedSource[]
+
+  constructor() {
+    const passages = new Map<string, string[]>()
+    for (const [chunkId, remedy] of remedyIds()) {
+      if (remedy) passages.set(remedy, [...(passages.get(remedy) ?? []), chunkId])
+    }
+    this.#sources = [...passages.entries()]
+      .sort(([a, x], [b, y]) => y.length - x.length || a.localeCompare(b))
+      .map(([remedy, [chunkId]]) => ({
+        chunkId: chunkId!,
+        bookId: BASELINE,
+        bookTitle: BASELINE,
+        author: null,
+        remedyName: remedy,
+        sectionTitle: remedy,
+        passageIndexes: [],
+        text: '',
+        score: 0,
+      }))
+  }
+
+  async retrieve(_request: unknown, { limit }: { limit: number }): Promise<readonly RetrievedSource[]> {
+    return this.#sources.slice(0, limit)
   }
 }
 
@@ -273,6 +309,7 @@ async function main(): Promise<void> {
       arm.candidates ? { repertory, candidates: arm.candidates } : {},
     ),
   }))
+  arms.push({ name: BASELINE, retriever: new PopularRemedies() })
   await new QdrantCorpus({ url: settings.qdrantUrl, apiKey: settings.qdrantApiKey }).verify()
 
   const results = (
@@ -305,6 +342,7 @@ async function main(): Promise<void> {
   }
   console.log('\n95%: bootstrap interval of MRR over the cases')
   console.log('diff: the average share of each case\'s differential remedies that some source is about')
+  console.log(`${BASELINE}: the ${SOURCE_LIMIT} remedies with the most passages, whatever the query`)
   const seconds = [...extractor.seconds].sort((a, b) => a - b)
   if (extractor.reused) console.log(`symptoms of ${extractor.reused} cases reused from ${SYMPTOMS_CACHE}; --fresh extracts them again`)
   if (seconds.length) {
