@@ -32,7 +32,15 @@ import { parseArgs } from 'node:util'
 
 import { ChatRequestSchema, type RetrievedSource, type Retriever } from '../src/server/contracts.ts'
 import { VoyageQueryEmbedder } from '../src/server/embeddings.ts'
-import { type Candidate, DIFFERENTIAL_REMEDIES, PREFETCH_MULTIPLIER, QdrantCorpus, type SearchStages } from '../src/server/qdrant.ts'
+import {
+  type Candidate,
+  DIFFERENTIAL_REMEDIES,
+  PREFETCH_MULTIPLIER,
+  PRIOR_K,
+  PRIOR_WEIGHT,
+  QdrantCorpus,
+  type SearchStages,
+} from '../src/server/qdrant.ts'
 import {
   EXTRACTION_INSTRUCTION,
   type Repertorisation,
@@ -56,23 +64,44 @@ const BASELINE = 'popular'
 const DEEP_FACTOR = 25
 
 /**
- * Ways of searching: whether the fused candidates are regrouped by remedy, from how many of the
+ * A way of searching: whether the fused candidates are regrouped by remedy, from how many of the
  * repertory's leading remedies a described case's passages come, if any, whether those remedies
  * keep the repertory's order, whether the repertory's ranking is instead weighed with the books'
- * support, and whether a reranker rescores the fused candidates first. The first is production's
- * and is reported in detail.
+ * support and how, and whether a reranker rescores the fused candidates first.
  */
-const ARMS = [
-  { name: 'production', regroup: true, candidates: null, remedyOrder: false, prior: false, rerank: false },
-  { name: 'fusion only', regroup: false, candidates: null, remedyOrder: false, prior: false, rerank: false },
-  { name: 'repertory 20', regroup: true, candidates: 20, remedyOrder: false, prior: false, rerank: false },
-  { name: 'repertory 10', regroup: true, candidates: 10, remedyOrder: false, prior: false, rerank: false },
-  { name: 'rep. order 8', regroup: true, candidates: 8, remedyOrder: true, prior: false, rerank: false },
-  { name: 'rep. order 20', regroup: true, candidates: 20, remedyOrder: true, prior: false, rerank: false },
-  { name: 'rep. prior', regroup: true, candidates: null, remedyOrder: false, prior: true, rerank: false },
-  { name: 'rerank', regroup: true, candidates: null, remedyOrder: false, prior: false, rerank: true },
-  { name: 'rerank only', regroup: false, candidates: null, remedyOrder: false, prior: false, rerank: true },
-] as const
+interface Arm {
+  name: string
+  regroup: boolean
+  candidates: number | null
+  remedyOrder: boolean
+  prior: { weight: number; k: number } | null
+  rerank: boolean
+}
+
+const SEARCH = { regroup: true, candidates: null, remedyOrder: false, prior: null, rerank: false }
+
+/** Weights and constants with which the repertory's ranking is weighed against the books' support. */
+const PRIOR_WEIGHTS = [0.25, 0.5, 1, 2, 4]
+const PRIOR_KS = [5, 10, 30]
+const priorName = ({ weight, k }: { weight: number; k: number }) => `prior ${weight}/${k}`
+const SWEEP: Arm[] = PRIOR_KS.flatMap((k) => PRIOR_WEIGHTS.map((weight) => ({ ...SEARCH, name: priorName({ weight, k }), prior: { weight, k } })))
+
+/** The first is production's and is reported in detail; the prior sweep follows the others. */
+const ARMS: Arm[] = [
+  { ...SEARCH, name: 'production' },
+  { ...SEARCH, name: 'fusion only', regroup: false },
+  { ...SEARCH, name: 'repertory 20', candidates: 20 },
+  { ...SEARCH, name: 'repertory 10', candidates: 10 },
+  { ...SEARCH, name: 'rep. order 8', candidates: 8, remedyOrder: true },
+  { ...SEARCH, name: 'rep. order 20', candidates: 20, remedyOrder: true },
+  { ...SEARCH, name: 'rerank', rerank: true },
+  { ...SEARCH, name: 'rerank only', regroup: false, rerank: true },
+  ...SWEEP,
+]
+
+/** The sweep's arm with production's prior weight and constant, which wins its ties. */
+const DEFAULT_PRIOR = priorName({ weight: PRIOR_WEIGHT, k: PRIOR_K })
+const TUNED = 'tuned prior'
 
 interface Result {
   arm: string
@@ -109,6 +138,25 @@ async function retried<T>(run: () => Promise<T>): Promise<T> {
       if (attempt === 3) throw error
       console.error(`retrying after ${error instanceof Error ? error.message : 'an error'}`)
     }
+  }
+}
+
+/**
+ * Answers a request the same as an identical one made before, so that arms that search alike ask
+ * Qdrant once. A failed request is forgotten, so a retry asks again.
+ */
+function memoizedFetch(fetchImpl: typeof fetch): typeof fetch {
+  const responses = new Map<string, Promise<{ status: number; body: string }>>()
+  return async (input, init) => {
+    const key = `${init?.method ?? 'GET'} ${String(input)}\n${typeof init?.body === 'string' ? init.body : ''}`
+    let response = responses.get(key)
+    if (!response) {
+      response = fetchImpl(input, init).then(async (answer) => ({ status: answer.status, body: await answer.text() }))
+      responses.set(key, response)
+      response.catch(() => responses.delete(key))
+    }
+    const { status, body } = await response
+    return new Response(body, { status, headers: { 'Content-Type': 'application/json' } })
   }
 }
 
@@ -331,6 +379,30 @@ async function pool<T, R>(items: readonly T[], limit: number, run: (item: T) => 
   return results
 }
 
+/**
+ * Adds to `results` the tuned arm: each case is scored with the sweep's prior that has the best MRR
+ * on the other cases, production's winning ties, so that choosing a prior on these cases does not
+ * flatter it. Returns the prior chosen for each case.
+ */
+function tunePrior(results: Result[]): string[] {
+  const sweep = [DEFAULT_PRIOR, ...SWEEP.map((arm) => arm.name).filter((name) => name !== DEFAULT_PRIOR)]
+  const byArm = new Map(sweep.map((name) => [name, results.filter((result) => result.arm === name)]))
+  const totals = new Map(sweep.map((name) => [name, byArm.get(name)!.reduce((sum, result) => sum + reciprocal(result), 0)]))
+  const cases = byArm.get(DEFAULT_PRIOR)!.length
+  const choices: string[] = []
+  for (let index = 0; index < cases; index++) {
+    let best = sweep[0]!
+    let bestScore = -Infinity
+    for (const name of sweep) {
+      const score = totals.get(name)! - reciprocal(byArm.get(name)![index]!)
+      if (score > bestScore + 1e-12) [best, bestScore] = [name, score]
+    }
+    choices.push(best)
+    results.push({ ...byArm.get(best)![index]!, arm: TUNED })
+  }
+  return choices
+}
+
 function remedyOf(source: RetrievedSource): string | null {
   return remedyIds().get(source.chunkId) ?? null
 }
@@ -536,23 +608,25 @@ async function main(): Promise<void> {
     RERANK_MODEL,
     { fresh: values.fresh },
   )
+  const qdrantFetch = memoizedFetch(retryingFetch)
   const arms: { name: string; retriever: Retriever }[] = ARMS.map((arm) => ({
     name: arm.name,
     retriever: new ProductionRetriever(
-        new QdrantCorpus({
-          url: settings.qdrantUrl!,
-          apiKey: settings.qdrantApiKey,
-          fetch: retryingFetch,
-          regroup: arm.regroup,
-          remedyOrder: arm.remedyOrder,
-          reranker: arm.rerank ? reranker : undefined,
-        }),
-        embedder,
+      new QdrantCorpus({
+        url: settings.qdrantUrl!,
+        apiKey: settings.qdrantApiKey,
+        fetch: qdrantFetch,
+        regroup: arm.regroup,
+        remedyOrder: arm.remedyOrder,
+        reranker: arm.rerank ? reranker : undefined,
+        ...(arm.prior ? { priorWeight: arm.prior.weight, priorK: arm.prior.k } : {}),
+      }),
+      embedder,
       arm.prior ? { repertory, prior: true } : arm.candidates ? { repertory, candidates: arm.candidates } : {},
     ),
   }))
   arms.push({ name: BASELINE, retriever: new PopularRemedies() })
-  const corpus = new QdrantCorpus({ url: settings.qdrantUrl, apiKey: settings.qdrantApiKey, fetch: retryingFetch })
+  const corpus = new QdrantCorpus({ url: settings.qdrantUrl, apiKey: settings.qdrantApiKey, fetch: qdrantFetch })
   await corpus.verify()
   const diagnoses: Diagnosis[] = []
 
@@ -591,17 +665,21 @@ async function main(): Promise<void> {
       return scored
     })
   ).flat()
+  const choices = tunePrior(results)
 
   console.log(`${cases.length} cases, ${SOURCE_LIMIT} sources each\n`)
   const header = CUTOFFS.map((cutoff) => `hit@${cutoff}`.padStart(7)).join('')
   console.log(`  ${''.padEnd(15)}${'n'.padStart(5)}${header}${'MRR'.padStart(7)}${'95%'.padStart(11)}${'diff'.padStart(7)}`)
-  for (const arm of arms) {
-    console.log(`  ${arm.name.padEnd(15)}${summary(results.filter((result) => result.arm === arm.name))}`)
+  for (const arm of [...arms.map((arm) => arm.name), TUNED]) {
+    console.log(`  ${arm.padEnd(15)}${summary(results.filter((result) => result.arm === arm))}`)
   }
   console.log('\n95%: bootstrap interval of MRR over the cases')
   console.log('diff: the average share of each case\'s differential remedies that some source is about')
   console.log(`${BASELINE}: the ${SOURCE_LIMIT} remedies with the most passages, whatever the query`)
   console.log(`rerank: the fused candidates rescored by ${RERANK_MODEL}`)
+  console.log(`prior w/k: the repertory's ranking at weight w against the books' support, fused with constant k; production's is ${DEFAULT_PRIOR}`)
+  const chosen = [...Map.groupBy(choices, (choice) => choice).entries()].map(([name, times]) => `${name} ${times.length}`)
+  console.log(`${TUNED}: each case scored with the prior that does best on the other cases (chose ${chosen.join(', ')})`)
   const seconds = [...extractor.seconds].sort((a, b) => a - b)
   if (reranker.reused) console.log(`rerank scores of ${reranker.reused} queries reused from ${RERANK_CACHE}`)
   if (extractor.reused) console.log(`symptoms of ${extractor.reused} cases reused from ${SYMPTOMS_CACHE}; --fresh extracts them again`)
@@ -610,10 +688,11 @@ async function main(): Promise<void> {
     console.log(`symptom extraction took ${median.toFixed(1)} s median, ${seconds.at(-1)!.toFixed(1)} s at most`)
   }
 
-  const [production, ...others] = arms.map((arm) => results.filter((result) => result.arm === arm.name))
-  console.log(`\nagainst ${arms[0]!.name} on the same cases, with 95% paired bootstrap intervals`)
+  const names = [...arms.map((arm) => arm.name), TUNED]
+  const [production, ...others] = names.map((name) => results.filter((result) => result.arm === name))
+  console.log(`\nagainst ${names[0]} on the same cases, with 95% paired bootstrap intervals`)
   for (const [offset, other] of others.entries()) {
-    console.log(`  ${arms[offset + 1]!.name.padEnd(15)}${comparison(production!, other)}`)
+    console.log(`  ${names[offset + 1]!.padEnd(15)}${comparison(production!, other)}`)
   }
 
   const misses = production!.filter((result) => result.rank !== 1)
@@ -622,12 +701,14 @@ async function main(): Promise<void> {
     console.log(`  rank=${miss.rank ?? '-'} want=${miss.expected.join(' or ')}  ${miss.id}`)
     console.log(`       got: ${miss.sources.slice(0, 3).join(' | ')}`)
   }
+  const swept = new Set(SWEEP.map((arm) => arm.name))
   for (const [offset, other] of others.entries()) {
+    if (swept.has(names[offset + 1]!)) continue
     const changed = other.flatMap((result, index) => {
       const before = production![index]!.rank
       return result.rank === before ? [] : [`  ${String(before ?? '-').padStart(2)} -> ${String(result.rank ?? '-').padEnd(2)}  ${result.id}`]
     })
-    console.log(`\n${arms[offset + 1]!.name}: ranked differently from ${arms[0]!.name} (${changed.length})`)
+    console.log(`\n${names[offset + 1]}: ranked differently from ${names[0]} (${changed.length})`)
     for (const line of changed) console.log(line)
   }
 
