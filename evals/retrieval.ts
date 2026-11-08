@@ -53,6 +53,7 @@ import { type QueryEmbedder, ProductionRetriever } from '../src/server/retrieval
 import { loadRepertory, loadSettings, symptomExtractor } from '../src/server/runtime.ts'
 import { SOURCE_LIMIT } from '../src/server/service.ts'
 import { CASES_PATH, hasPrivateClone, loadCases, remedyIds } from './cases.ts'
+import { Proposer } from './proposals.ts'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const CUTOFFS = [1, 3, 5, SOURCE_LIMIT]
@@ -79,7 +80,12 @@ interface Arm {
   rerank: boolean
   /** The books it searches, when not all of them. */
   books?: readonly string[]
+  /** Whose ranking of remedies narrows or weighs the search: the repertory's, or the remedies the answer model proposes. */
+  ranking?: 'repertory' | 'proposals'
 }
+
+/** The model whose proposed remedies the proposal arms use: production's answer model. */
+const PROPOSER = 'glm-5.3-flash'
 
 const SEARCH = { regroup: true, candidates: null, remedyOrder: false, prior: null, rerank: false }
 
@@ -109,6 +115,10 @@ const ARMS: Arm[] = [
   { ...SEARCH, name: 'no nosodes', books: allBut(['allen_nosodes']) },
   { ...SEARCH, name: 'no long lists', books: allBut(LONG_LISTS) },
   { ...SEARCH, name: 'prior, no long', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, books: allBut(LONG_LISTS) },
+  { ...SEARCH, name: 'glm prior', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'proposals' },
+  { ...SEARCH, name: 'glm prior 2/10', prior: { weight: 2, k: PRIOR_K }, ranking: 'proposals' },
+  { ...SEARCH, name: 'glm narrow 10', candidates: 10, ranking: 'proposals' },
+  { ...SEARCH, name: 'glm order 10', candidates: 10, remedyOrder: true, ranking: 'proposals' },
   ...SWEEP,
 ]
 
@@ -278,6 +288,26 @@ class CachedReranker implements PassageReranker {
     mkdirSync(dirname(RERANK_CACHE), { recursive: true })
     writeFileSync(RERANK_CACHE, JSON.stringify(this.#stored))
     return this.#stored[key]
+  }
+}
+
+/**
+ * The remedies a model proposes for a case, as a repertory's ranking, so the retriever weighs or
+ * narrows the search with them. Proposals are asked for the case's own text, as the unaided eval
+ * asks them, so the two evals share their cached replies.
+ */
+class ProposedRemedies implements Repertoriser {
+  readonly #proposer: Proposer
+  readonly #cases: Map<string, string>
+
+  constructor(proposer: Proposer, cases: readonly { query: string }[]) {
+    this.#proposer = proposer
+    this.#cases = new Map(cases.map(({ query }) => [ChatRequestSchema.parse({ message: query, history: [] }).message, query]))
+  }
+
+  async repertorise(text: string): Promise<Repertorisation> {
+    const { remedies } = await this.#proposer.propose(this.#cases.get(text) ?? text)
+    return { symptoms: [], remedies: remedies.map((remedyId) => ({ remedyId, symptoms: 0, grades: 0 })) }
   }
 }
 
@@ -788,23 +818,27 @@ async function main(): Promise<void> {
     { fresh: values.fresh },
   )
   const qdrantFetch = memoizedFetch(retryingFetch)
-  const arms: { name: string; retriever: Retriever }[] = ARMS.map((arm) => ({
-    name: arm.name,
-    retriever: new ProductionRetriever(
-      new QdrantCorpus({
-        url: settings.qdrantUrl!,
-        apiKey: settings.qdrantApiKey,
-        fetch: qdrantFetch,
-        ...(arm.books ? { bookIds: arm.books } : {}),
-        regroup: arm.regroup,
-        remedyOrder: arm.remedyOrder,
-        reranker: arm.rerank ? reranker : undefined,
-        ...(arm.prior ? { priorWeight: arm.prior.weight, priorK: arm.prior.k } : {}),
-      }),
-      embedder,
-      arm.prior ? { repertory, prior: true } : arm.candidates ? { repertory, candidates: arm.candidates } : {},
-    ),
-  }))
+  const proposals = new ProposedRemedies(new Proposer(PROPOSER), cases)
+  const arms: { name: string; retriever: Retriever }[] = ARMS.map((arm) => {
+    const ranking = arm.ranking === 'proposals' ? proposals : repertory
+    return {
+      name: arm.name,
+      retriever: new ProductionRetriever(
+        new QdrantCorpus({
+          url: settings.qdrantUrl!,
+          apiKey: settings.qdrantApiKey,
+          fetch: qdrantFetch,
+          ...(arm.books ? { bookIds: arm.books } : {}),
+          regroup: arm.regroup,
+          remedyOrder: arm.remedyOrder,
+          reranker: arm.rerank ? reranker : undefined,
+          ...(arm.prior ? { priorWeight: arm.prior.weight, priorK: arm.prior.k } : {}),
+        }),
+        embedder,
+        arm.prior ? { repertory: ranking, prior: true } : arm.candidates ? { repertory: ranking, candidates: arm.candidates } : {},
+      ),
+    }
+  })
   const symptomSearches = (books: readonly string[] | undefined) =>
     new SymptomSearches(
       new QdrantCorpus({ url: settings.qdrantUrl!, apiKey: settings.qdrantApiKey, fetch: qdrantFetch, ...(books ? { bookIds: books } : {}) }),
@@ -869,6 +903,7 @@ async function main(): Promise<void> {
   console.log('diff: the average share of each case\'s differential remedies that some source is about')
   console.log(`${BASELINE}: the ${SOURCE_LIMIT} remedies with the most passages, whatever the query`)
   console.log(`rerank: the fused candidates rescored by ${RERANK_MODEL}`)
+  console.log(`glm: the remedies ${PROPOSER} proposes from the case alone, in place of the repertory's`)
   console.log(`prior w/k: the repertory's ranking at weight w against the books' support, fused with constant k; production's is ${DEFAULT_PRIOR}`)
   const chosen = [...Map.groupBy(choices, (choice) => choice).entries()].map(([name, times]) => `${name} ${times.length}`)
   console.log(`${TUNED}: each case scored with the prior that does best on the other cases (chose ${chosen.join(', ')})`)
