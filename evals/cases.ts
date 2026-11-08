@@ -30,19 +30,38 @@ export function hasPrivateClone(): boolean {
 }
 
 let chunkRemedies: Map<string, string | null> | undefined
+let names: Map<string, string[]> | undefined
 
 /** The remedy id of every chunk, by chunk id; null for chunks about no single remedy. */
 export function remedyIds(): Map<string, string | null> {
-  if (chunkRemedies) return chunkRemedies
+  if (!chunkRemedies) readChunks()
+  return chunkRemedies!
+}
+
+/** The names the books give each remedy, by remedy id, such as `Rhus Toxicodendron`. */
+export function remedyNames(): Map<string, string[]> {
+  if (!names) readChunks()
+  return names!
+}
+
+function readChunks(): void {
   chunkRemedies = new Map()
+  const found = new Map<string, Set<string>>()
   for (const name of readdirSync(CHUNKS).filter((file) => file.endsWith('.jsonl'))) {
     for (const line of readFileSync(join(CHUNKS, name), 'utf8').split('\n')) {
       if (!line.trim()) continue
-      const chunk = JSON.parse(line) as { id: string; remedy_id?: string | null }
+      const chunk = JSON.parse(line) as { id: string; remedy_id?: string | null; remedy?: string | null }
       chunkRemedies.set(chunk.id, chunk.remedy_id ?? null)
+      if (chunk.remedy_id && chunk.remedy) found.set(chunk.remedy_id, (found.get(chunk.remedy_id) ?? new Set()).add(chunk.remedy))
     }
   }
-  return chunkRemedies
+  names = new Map([...found].map(([remedyId, remedyNames]) => [remedyId, [...remedyNames]]))
+}
+
+/** A remedy as the books name it, with its other names, such as `Rhus Toxicodendron (Rhus Tox.)`. */
+function described(remedyId: string): string {
+  const [first, ...others] = remedyNames().get(remedyId) ?? [remedyId]
+  return others.length ? `${first} (also ${others.join(', ')})` : first!
 }
 
 function remedyList(value: unknown, field: string, id: string): string[] {
@@ -71,6 +90,56 @@ export function loadCases(): Case[] {
   const repeated = ids.filter((id, index) => ids.indexOf(id) !== index)
   if (repeated.length) throw new Error(`${CASES_PATH}: repeated case ids ${repeated.join(', ')}`)
   return cases
+}
+
+/**
+ * The grounding comparison's tests, one per case: only checks that an answer from the books and
+ * one from the model alone can both pass, judged on what the answer says rather than what it cites.
+ */
+export function comparisonTests(): unknown[] {
+  if (!hasPrivateClone()) {
+    console.warn('The private clone is missing from private/, so only the guardrail tests run.')
+    return []
+  }
+  return loadCases().map((item) => ({
+    description: item.id,
+    vars: {
+      query: item.query,
+      cured: item.expected.map(described).join(' or '),
+      differential: item.differential.map(described).join('; ') || 'none',
+    },
+    assert: [
+      {
+        type: 'llm-rubric',
+        metric: 'cured remedy',
+        value: 'Among the remedies the answer puts forward for this case is {{cured}}.',
+      },
+      {
+        type: 'llm-rubric',
+        metric: 'differential',
+        value:
+          'Score the share of these remedies that the answer puts forward for this case: {{differential}}. ' +
+          'Pass if it puts forward at least one of them, or if the list is none.',
+      },
+      {
+        type: 'llm-rubric',
+        metric: 'case answer',
+        value:
+          "Lists the remedies that match this patient's case, and for each gives the case's characteristic " +
+          'symptoms it covers, so a practitioner can narrow them down. Fails if it declines, settles on a ' +
+          'single remedy, matches remedies on one symptom alone, or gives only general advice.',
+      },
+      {
+        type: 'llm-rubric',
+        metric: 'accuracy',
+        value:
+          "Every statement the answer makes about a remedy's symptoms, modalities or keynotes agrees with " +
+          'the classical materia medica of Hahnemann, Allen, Boericke, Clarke and Kent. Fails if it gives a ' +
+          'remedy a symptom or modality those books do not, or contradicts them. An answer that names no ' +
+          'remedies passes.',
+      },
+    ],
+  }))
 }
 
 /** promptfoo's corpus tests, one per case. Remedy lists are joined, since promptfoo expands arrays. */

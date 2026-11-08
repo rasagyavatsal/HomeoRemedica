@@ -18,6 +18,7 @@
     "e2e:smoke": "playwright test --config playwright.smoke.config.ts",
     "check": "npm run typecheck && npm test && npm run build",
     "eval": "PROMPTFOO_DISABLE_TELEMETRY=1 npx --yes promptfoo@0.124.1 eval --config evals/promptfooconfig.yaml",
+    "eval:grounding": "PROMPTFOO_DISABLE_TELEMETRY=1 npx --yes promptfoo@0.124.1 eval --config evals/grounding.yaml",
     "eval:retrieval": "node evals/retrieval.ts",
     "eval:unaided": "node evals/unaided.ts",
     "deploy": "gcloud run deploy homeoremedica --source . --region asia-south1 --project homeoremedica --max-instances 1"
