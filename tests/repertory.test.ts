@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { ChatRequestSchema, type ChatRequest } from '../src/server/contracts.ts'
 import { ProviderError } from '../src/server/errors.ts'
 import {
+  CombinedRubrics,
   MAX_SYMPTOMS,
   ModelSymptomExtractor,
   QdrantRubrics,
@@ -120,6 +121,22 @@ describe('Repertory', () => {
 
     expect(await repertory.repertorise('What is Sulphur?')).toEqual({ symptoms: [], remedies: [] })
     expect(embedQueries).not.toHaveBeenCalled()
+  })
+})
+
+describe('CombinedRubrics', () => {
+  it("takes each symptom's nearest rubrics from every repertory, one after another", async () => {
+    const kent = { search: vi.fn(async () => [[rubric('Mind: weeping', ['puls', 3])], [rubric('Stomach: thirstless', ['puls', 2])]]) }
+    const boericke = { search: vi.fn(async () => [[rubric('Mind: weeping, from music', ['nat-s', 1])], []]) }
+
+    const found = await new CombinedRubrics([kent, boericke]).search([[0], [1]], { limit: 3 })
+
+    expect(kent.search).toHaveBeenCalledWith([[0], [1]], { limit: 3 })
+    expect(boericke.search).toHaveBeenCalledWith([[0], [1]], { limit: 3 })
+    expect(found.map((rubrics) => rubrics.map((found) => found.text))).toEqual([
+      ['Mind: weeping', 'Mind: weeping, from music'],
+      ['Stomach: thirstless'],
+    ])
   })
 })
 

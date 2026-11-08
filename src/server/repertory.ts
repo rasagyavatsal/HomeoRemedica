@@ -1,12 +1,13 @@
 /**
- * Repertorisation of a described case against Kent's Repertory.
+ * Repertorisation of a described case against Kent's Repertory, and optionally Boericke's.
  *
  * The case is split into symptoms by the chat model, each symptom is matched to its nearest
  * rubrics by voyage-4 embedding, and remedies are ranked the way a homoeopath works a repertory:
  * by how many of the case's symptoms they cover, then by their grades. The rubrics are the
- * `kent_repertory` Qdrant collection, which the HomeoRemedica-private repository builds with
- * `scripts/rubrics.py` and `scripts/embed.py`; its `scripts/eval_repertory.py` measured this
- * matching and scoring against keyword matching and other weightings.
+ * `kent_repertory` and `boericke_repertory` Qdrant collections, which the HomeoRemedica-private
+ * repository builds with `scripts/rubrics.py` and `scripts/embed.py`; its
+ * `scripts/eval_repertory.py` measured this matching and scoring against keyword matching and
+ * other weightings.
  */
 
 import type { AnswerGenerator } from './contracts.ts'
@@ -14,6 +15,8 @@ import { ProviderError } from './errors.ts'
 import { type Fetch, isRecord, readJson, send } from './http.ts'
 
 export const REPERTORY_COLLECTION = 'kent_repertory'
+/** Boericke's clinical repertory, whose headings are often the names of diseases. */
+export const BOERICKE_COLLECTION = 'boericke_repertory'
 /** More rubrics per symptom adds loosely related ones, which made the ranking worse. */
 export const RUBRICS_PER_SYMPTOM = 3
 export const MAX_SYMPTOMS = 15
@@ -49,7 +52,7 @@ export interface Rubric {
   chapter: string
   /** The rubric as one line, such as `Head: pain, hammering, morning`. */
   text: string
-  /** Remedy ids and their grades, from 1 (plain) to 3 (bold). */
+  /** Remedy ids and their grades, from 1 (plain) to 3 (bold); Boericke's are 1 or 2 (italic). */
   remedies: readonly (readonly [remedyId: string, grade: number])[]
 }
 
@@ -163,6 +166,20 @@ export class ModelSymptomExtractor implements SymptomExtractor {
   async extractSymptoms(text: string): Promise<string[]> {
     const reply = await this.#generator.generate(`<case>\n${text}\n</case>`, { systemInstruction: EXTRACTION_INSTRUCTION })
     return parseSymptoms(reply)
+  }
+}
+
+/** Each symptom's nearest rubrics in every one of several repertories, one repertory after another. */
+export class CombinedRubrics implements RubricSearch {
+  readonly #searches: readonly RubricSearch[]
+
+  constructor(searches: readonly RubricSearch[]) {
+    this.#searches = searches
+  }
+
+  async search(embeddings: readonly (readonly number[])[], options: { limit: number }): Promise<Rubric[][]> {
+    const found = await Promise.all(this.#searches.map((search) => search.search(embeddings, options)))
+    return embeddings.map((_, index) => found.flatMap((rubrics) => rubrics[index] ?? []))
   }
 }
 

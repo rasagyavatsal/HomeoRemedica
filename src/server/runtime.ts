@@ -11,6 +11,7 @@ import { ChatService } from './service.ts'
 import { VoyageQueryEmbedder } from './embeddings.ts'
 import { CorpusError, QdrantCorpus } from './qdrant.ts'
 import {
+  CombinedRubrics,
   EXTRACTION_MAX_OUTPUT_TOKENS,
   ModelSymptomExtractor,
   QdrantRubrics,
@@ -89,20 +90,27 @@ export async function buildService(settings: Settings): Promise<ChatService> {
   return new ChatService({ retriever: new ProductionRetriever(corpus, embedder), generator })
 }
 
-/** Repertorisation with the answer model, checked to have its Qdrant collection. */
+/**
+ * Repertorisation with the answer model, checked to have its Qdrant collections. With several
+ * collections, each symptom is matched to its nearest rubrics in each.
+ */
 export async function loadRepertory(
   settings: Settings,
   embedder: VoyageQueryEmbedder,
   {
-    collection = REPERTORY_COLLECTION,
+    collections = [REPERTORY_COLLECTION],
     extractor = symptomExtractor(settings),
-  }: { collection?: string; extractor?: SymptomExtractor } = {},
+  }: { collections?: readonly string[]; extractor?: SymptomExtractor } = {},
 ): Promise<Repertory> {
-  if (!settings.qdrantUrl) {
+  const { qdrantUrl: url, qdrantApiKey: apiKey } = settings
+  if (!url) {
     throw new ConfigurationError('a Qdrant URL is required; set QDRANT_URL in the environment or .env')
   }
-  const rubrics = new QdrantRubrics({ url: settings.qdrantUrl, apiKey: settings.qdrantApiKey, collection })
-  if (!(await rubrics.exists())) throw new CorpusError(`the Qdrant collection ${collection} does not exist`)
+  const searches = collections.map((collection) => new QdrantRubrics({ url, apiKey, collection }))
+  for (const [index, search] of searches.entries()) {
+    if (!(await search.exists())) throw new CorpusError(`the Qdrant collection ${collections[index]} does not exist`)
+  }
+  const rubrics = searches.length === 1 ? searches[0]! : new CombinedRubrics(searches)
   return new Repertory({ extractor, embedder, rubrics })
 }
 
