@@ -56,15 +56,17 @@ const DEEP_FACTOR = 25
 /**
  * Ways of searching: whether the fused candidates are regrouped by remedy, from how many of the
  * repertory's leading remedies a described case's passages come, if any, whether those remedies
- * keep the repertory's order. The first is production's and is reported in detail.
+ * keep the repertory's order, and whether the repertory's ranking is instead weighed with the books'
+ * support. The first is production's and is reported in detail.
  */
 const ARMS = [
-  { name: 'production', regroup: true, candidates: null, remedyOrder: false },
-  { name: 'fusion only', regroup: false, candidates: null, remedyOrder: false },
-  { name: 'repertory 20', regroup: true, candidates: 20, remedyOrder: false },
-  { name: 'repertory 10', regroup: true, candidates: 10, remedyOrder: false },
-  { name: 'rep. order 8', regroup: true, candidates: 8, remedyOrder: true },
-  { name: 'rep. order 20', regroup: true, candidates: 20, remedyOrder: true },
+  { name: 'production', regroup: true, candidates: null, remedyOrder: false, prior: false },
+  { name: 'fusion only', regroup: false, candidates: null, remedyOrder: false, prior: false },
+  { name: 'repertory 20', regroup: true, candidates: 20, remedyOrder: false, prior: false },
+  { name: 'repertory 10', regroup: true, candidates: 10, remedyOrder: false, prior: false },
+  { name: 'rep. order 8', regroup: true, candidates: 8, remedyOrder: true, prior: false },
+  { name: 'rep. order 20', regroup: true, candidates: 20, remedyOrder: true, prior: false },
+  { name: 'rep. prior', regroup: true, candidates: null, remedyOrder: false, prior: true },
 ] as const
 
 interface Result {
@@ -462,7 +464,7 @@ async function main(): Promise<void> {
           remedyOrder: arm.remedyOrder,
         }),
         embedder,
-      arm.candidates ? { repertory, candidates: arm.candidates } : {},
+      arm.prior ? { repertory, prior: true } : arm.candidates ? { repertory, candidates: arm.candidates } : {},
     ),
   }))
   arms.push({ name: BASELINE, retriever: new PopularRemedies() })
