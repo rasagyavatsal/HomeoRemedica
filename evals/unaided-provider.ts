@@ -49,6 +49,9 @@ export default class UnaidedProvider {
       apiKey: settings.zaiApiKey,
       model: settings.model,
       maxOutputTokens: settings.maxOutputTokens,
+      // Without excerpts to lean on, the model reasons longer than production's 60 seconds allow on
+      // many cases; the comparison is of what the answers say, so it waits for them.
+      timeoutMs: 300_000,
     })
     const history = typeof context?.vars?.history === 'string' ? JSON.parse(context.vars.history) : []
     const request = ChatRequestSchema.parse({ message: prompt, history })
