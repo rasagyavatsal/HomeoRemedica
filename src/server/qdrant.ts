@@ -90,6 +90,8 @@ export class QdrantCorpus {
   readonly #regroup: boolean
   readonly #remedyOrder: boolean
   readonly #reranker: PassageReranker | undefined
+  readonly #priorWeight: number
+  readonly #priorK: number
 
   constructor({
     url,
@@ -100,6 +102,8 @@ export class QdrantCorpus {
     regroup = true,
     remedyOrder = false,
     reranker,
+    priorWeight = PRIOR_WEIGHT,
+    priorK = PRIOR_K,
   }: {
     url: string
     apiKey?: string | undefined
@@ -115,6 +119,10 @@ export class QdrantCorpus {
     remedyOrder?: boolean
     /** Rescores the fused candidates before they are regrouped, in place of their fused scores. */
     reranker?: PassageReranker | undefined
+    /** How much a prior ranking weighs against the books' support. */
+    priorWeight?: number
+    /** The reciprocal-rank constant with which a prior ranking is fused with the books' support. */
+    priorK?: number
   }) {
     this.#baseUrl = `${url.replace(/\/+$/, '')}/collections/`
     this.#bookIds = bookIds
@@ -124,6 +132,8 @@ export class QdrantCorpus {
     this.#regroup = regroup
     this.#remedyOrder = remedyOrder
     this.#reranker = reranker
+    this.#priorWeight = priorWeight
+    this.#priorK = priorK
   }
 
   async verify(): Promise<void> {
@@ -197,7 +207,7 @@ export class QdrantCorpus {
     const found = { dense, sparse, fused: fusedRanking, reranked }
     if (remedies && this.#remedyOrder) return { ...found, support: null, best: inRemedyOrder(ranked, remedies, limit) }
     if (!this.#regroup || dominated(ranked, limit)) return { ...found, support: null, best: ranked.slice(0, limit) }
-    const support = prior ? withPrior(bySupport(ranked), prior) : bySupport(ranked)
+    const support = prior ? withPrior(bySupport(ranked), prior, this.#priorWeight, this.#priorK) : bySupport(ranked)
     return { ...found, support, best: select(ranked, support, limit) }
   }
 
@@ -329,12 +339,12 @@ function bySupport(ranked: readonly Candidate[]): string[] {
 }
 
 /** The supported subjects reordered by reciprocal-rank fusion with a prior ranking of remedy ids. */
-function withPrior(support: readonly string[], prior: readonly string[]): string[] {
+function withPrior(support: readonly string[], prior: readonly string[], weight: number, k: number): string[] {
   const places = new Map(prior.map((remedy, index) => [`remedy:${remedy}`, index + 1]))
   const scores = new Map(
     support.map((subject, index) => {
       const place = places.get(subject)
-      return [subject, 1 / (PRIOR_K + index + 1) + (place ? PRIOR_WEIGHT / (PRIOR_K + place) : 0)]
+      return [subject, 1 / (k + index + 1) + (place ? weight / (k + place) : 0)]
     }),
   )
   return [...support].sort((a, b) => scores.get(b)! - scores.get(a)!)

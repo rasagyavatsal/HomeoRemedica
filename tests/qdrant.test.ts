@@ -180,6 +180,23 @@ describe('Qdrant corpus', () => {
     expect(subjects(stages.best)).toEqual(['remedy:psorinum', 'remedy:x-ray', 'remedy:lyssin'])
   })
 
+  it('weighs a prior ranking as heavily as it is told to', async () => {
+    const stagesWith = (priorWeight: number) =>
+      new QdrantCorpus({
+        url: 'https://qdrant.example/',
+        bookIds: ['allen_keynotes', 'allen_nosodes'],
+        fetch: fakeFetch(
+          rankings([], [['a1', 9, 'pulsatilla']]),
+          rankings([['n1', 0.9, 'lyssin'], ['n2', 0.8, 'x-ray']], [['n2', 8, 'x-ray']]),
+        ),
+        priorWeight,
+      }).stages('weepy', [1.0], { limit: 3, prior: ['lyssin'] })
+
+    // X-Ray leads by support; a light prior leaves it first, a heavy one puts Lyssin before it.
+    expect((await stagesWith(0.01)).support).toEqual(['remedy:x-ray', 'remedy:lyssin', 'remedy:pulsatilla'])
+    expect((await stagesWith(2)).support).toEqual(['remedy:lyssin', 'remedy:x-ray', 'remedy:pulsatilla'])
+  })
+
   it('keeps the fused order when regrouping is off', async () => {
     const fetch = fakeFetch(
       rankings([], [['a1', 9, 'pulsatilla']]),
