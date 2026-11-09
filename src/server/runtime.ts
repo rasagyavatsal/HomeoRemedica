@@ -11,6 +11,7 @@ import { ChatService } from './service.ts'
 import { VoyageQueryEmbedder } from './embeddings.ts'
 import { CorpusError, QdrantCorpus } from './qdrant.ts'
 import {
+  BOERICKE_COLLECTION,
   CombinedRubrics,
   EXTRACTION_MAX_OUTPUT_TOKENS,
   ModelSymptomExtractor,
@@ -87,7 +88,10 @@ export async function buildService(settings: Settings): Promise<ChatService> {
   })
   const corpus = loadCorpus(settings)
   await corpus.verify()
-  return new ChatService({ retriever: new ProductionRetriever(corpus, embedder), generator })
+  // Every book is searched while Kent's and Boericke's Repertories rank the remedies for the case's
+  // symptoms; their ranking is weighed with the books' support rather than narrowing the search.
+  const repertory = await loadRepertory(settings, embedder, { collections: [REPERTORY_COLLECTION, BOERICKE_COLLECTION] })
+  return new ChatService({ retriever: new ProductionRetriever(corpus, embedder, { repertory, prior: true }), generator })
 }
 
 /**
