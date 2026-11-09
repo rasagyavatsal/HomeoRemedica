@@ -45,6 +45,7 @@ import {
 import {
   BOERICKE_COLLECTION,
   EXTRACTION_INSTRUCTION,
+  parseSymptoms,
   REPERTORY_COLLECTION,
   type Repertorisation,
   type Repertoriser,
@@ -55,6 +56,7 @@ import { type QueryEmbedder, ProductionRetriever } from '../src/server/retrieval
 import { loadRepertory, loadSettings, symptomExtractor } from '../src/server/runtime.ts'
 import { SOURCE_LIMIT } from '../src/server/service.ts'
 import { CASES_PATH, hasPrivateClone, loadCases, remedyIds } from './cases.ts'
+import { askClaude } from './claude.ts'
 import { Proposer } from './proposals.ts'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
@@ -84,13 +86,20 @@ interface Arm {
   books?: readonly string[]
   /**
    * Whose ranking of remedies narrows or weighs the search: Kent's Repertory's (the default),
-   * Boericke's, both repertories' together, or the remedies the answer model proposes.
+   * Boericke's, both repertories' together, Kent's or both from the symptoms a stronger model
+   * extracts, or the remedies the answer model proposes.
    */
-  ranking?: 'repertory' | 'boericke' | 'both' | 'proposals'
+  ranking?: 'repertory' | 'boericke' | 'both' | 'opus' | 'opus both' | 'proposals'
 }
 
 /** The model whose proposed remedies the proposal arms use: production's answer model. */
 const PROPOSER = 'glm-5.3-flash'
+/**
+ * A stronger model that extracts the symptoms for the opus arms, with production's instructions, so
+ * they show how much the repertory's results owe to the symptoms it is given rather than to how
+ * they are matched and ranked.
+ */
+const STRONG_EXTRACTOR = 'claude-opus-5-5'
 
 const SEARCH = { regroup: true, candidates: null, remedyOrder: false, prior: null, rerank: false }
 
@@ -117,6 +126,10 @@ const ARMS: Arm[] = [
   { ...SEARCH, name: 'both 20', candidates: 20, ranking: 'both' },
   { ...SEARCH, name: 'boericke prior', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'boericke' },
   { ...SEARCH, name: 'both prior', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'both' },
+  { ...SEARCH, name: 'opus rep. 20', candidates: 20, ranking: 'opus' },
+  { ...SEARCH, name: 'opus both 20', candidates: 20, ranking: 'opus both' },
+  { ...SEARCH, name: 'opus prior', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'opus' },
+  { ...SEARCH, name: 'opus both prior', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'opus both' },
   { ...SEARCH, name: 'rep. order 8', candidates: 8, remedyOrder: true },
   { ...SEARCH, name: 'rep. order 20', candidates: 20, remedyOrder: true },
   { ...SEARCH, name: 'rerank', rerank: true },
@@ -211,6 +224,11 @@ class CachedEmbedder implements QueryEmbedder {
   }
 }
 
+/** The symptoms extracted before, by key, or none with `--fresh`; every extractor shares them. */
+function storedSymptoms({ fresh }: { fresh: boolean }): Record<string, string[]> {
+  return !fresh && existsSync(SYMPTOMS_CACHE) ? JSON.parse(readFileSync(SYMPTOMS_CACHE, 'utf8')) : {}
+}
+
 /**
  * Extracts each query's symptoms once and keeps them on disk, keyed by the model, the extraction
  * instruction and the query, so a later run reuses them. Times the extractions it makes.
@@ -223,10 +241,10 @@ class CachedExtractor implements SymptomExtractor {
   readonly seconds: number[] = []
   reused = 0
 
-  constructor(extractor: SymptomExtractor, model: string, { fresh }: { fresh: boolean }) {
+  constructor(extractor: SymptomExtractor, model: string, stored: Record<string, string[]>) {
     this.#extractor = extractor
     this.#model = model
-    this.#stored = !fresh && existsSync(SYMPTOMS_CACHE) ? JSON.parse(readFileSync(SYMPTOMS_CACHE, 'utf8')) : {}
+    this.#stored = stored
   }
 
   extractSymptoms(text: string): Promise<string[]> {
@@ -252,6 +270,20 @@ class CachedExtractor implements SymptomExtractor {
     mkdirSync(dirname(SYMPTOMS_CACHE), { recursive: true })
     writeFileSync(SYMPTOMS_CACHE, JSON.stringify(this.#stored, null, 1))
     return symptoms
+  }
+}
+
+/** Symptoms from a Claude model on the signed-in subscription, with production's instructions. */
+class ClaudeExtractor implements SymptomExtractor {
+  readonly #model: string
+
+  constructor(model: string) {
+    this.#model = model
+  }
+
+  async extractSymptoms(text: string): Promise<string[]> {
+    const reply = await retried(() => askClaude(`<case>\n${text}\n</case>`, { model: this.#model, system: EXTRACTION_INSTRUCTION }))
+    return parseSymptoms(reply.text)
   }
 }
 
@@ -590,17 +622,30 @@ function tunePrior(results: Result[]): string[] {
 /**
  * Where each way of ranking remedies puts the cured remedy among all the remedies it ranks, not
  * only those it shows: production by the books' support (or the fused order when it did not
- * regroup), the repertory, and the symptom searches.
+ * regroup), each repertorisation, and the symptom searches.
  */
-function remedyPlaces(
+async function remedyPlaces(
   cases: readonly { id: string; query: string; expected: readonly string[] }[],
   diagnoses: readonly Diagnosis[],
+  repertories: readonly [name: string, repertory: Repertoriser][],
   symptomArms: readonly { name: string; retriever: SymptomRetriever }[],
-): void {
+): Promise<void> {
   const byId = new Map(diagnoses.map((diagnosis) => [diagnosis.id, diagnosis]))
+  const repertorised = await Promise.all(
+    repertories.map(async ([name, repertory]): Promise<[string, (number | null)[]]> => [
+      name,
+      await Promise.all(
+        cases.map(async ({ query, expected }) => {
+          const { message } = ChatRequestSchema.parse({ message: query, history: [] })
+          const place = (await repertory.repertorise(message)).remedies.findIndex(({ remedyId }) => expected.includes(remedyId))
+          return place < 0 ? null : place + 1
+        }),
+      ),
+    ]),
+  )
   const ways: [string, (number | null)[]][] = [
     ['production', cases.map(({ id }) => { const d = byId.get(id)!; return d.regrouped ? d.support : d.fused })],
-    ['repertory', cases.map(({ id }) => byId.get(id)!.repertory.rank)],
+    ...repertorised,
     ...symptomArms.map(({ name, retriever }): [string, (number | null)[]] => [
       name,
       cases.map(({ query, expected }) => {
@@ -819,13 +864,18 @@ async function main(): Promise<void> {
   const cases = loadCases()
   const voyage = new VoyageQueryEmbedder({ apiKey: settings.openrouterApiKey, fetch: retryingFetch, timeoutMs: 90_000 })
   const embedder = new CachedEmbedder(voyage)
-  const extractor = new CachedExtractor(symptomExtractor(settings), settings.model, { fresh: values.fresh })
+  const stored = storedSymptoms({ fresh: values.fresh })
+  const extractor = new CachedExtractor(symptomExtractor(settings), settings.model, stored)
+  const strongExtractor = new CachedExtractor(new ClaudeExtractor(STRONG_EXTRACTOR), STRONG_EXTRACTOR, stored)
   const repertory = new CachedRepertory(await loadRepertory(settings, voyage, { extractor }))
+  const kentAndBoericke = [REPERTORY_COLLECTION, BOERICKE_COLLECTION]
   const rankings: Record<NonNullable<Arm['ranking']>, Repertoriser> = {
     repertory,
     boericke: new CachedRepertory(await loadRepertory(settings, voyage, { extractor, collections: [BOERICKE_COLLECTION] })),
-    both: new CachedRepertory(
-      await loadRepertory(settings, voyage, { extractor, collections: [REPERTORY_COLLECTION, BOERICKE_COLLECTION] }),
+    both: new CachedRepertory(await loadRepertory(settings, voyage, { extractor, collections: kentAndBoericke })),
+    opus: new CachedRepertory(await loadRepertory(settings, voyage, { extractor: strongExtractor })),
+    'opus both': new CachedRepertory(
+      await loadRepertory(settings, voyage, { extractor: strongExtractor, collections: kentAndBoericke }),
     ),
     proposals: new ProposedRemedies(new Proposer(PROPOSER), cases),
   }
@@ -921,15 +971,18 @@ async function main(): Promise<void> {
   console.log(`rerank: the fused candidates rescored by ${RERANK_MODEL}`)
   console.log(`glm: the remedies ${PROPOSER} proposes from the case alone, in place of the repertory's`)
   console.log(`boericke, both: Boericke's Repertory, or each symptom's rubrics from Kent's and Boericke's together, in place of Kent's`)
+  console.log(`opus: the repertory given the symptoms ${STRONG_EXTRACTOR} extracts, with production's instructions, in place of ${settings.model}'s`)
   console.log(`prior w/k: the repertory's ranking at weight w against the books' support, fused with constant k; production's is ${DEFAULT_PRIOR}`)
   const chosen = [...Map.groupBy(choices, (choice) => choice).entries()].map(([name, times]) => `${name} ${times.length}`)
   console.log(`${TUNED}: each case scored with the prior that does best on the other cases (chose ${chosen.join(', ')})`)
-  const seconds = [...extractor.seconds].sort((a, b) => a - b)
   if (reranker.reused) console.log(`rerank scores of ${reranker.reused} queries reused from ${RERANK_CACHE}`)
-  if (extractor.reused) console.log(`symptoms of ${extractor.reused} cases reused from ${SYMPTOMS_CACHE}; --fresh extracts them again`)
-  if (seconds.length) {
-    const median = seconds[Math.floor(seconds.length / 2)]!
-    console.log(`symptom extraction took ${median.toFixed(1)} s median, ${seconds.at(-1)!.toFixed(1)} s at most`)
+  for (const [model, cached] of [[settings.model, extractor], [STRONG_EXTRACTOR, strongExtractor]] as const) {
+    if (cached.reused) console.log(`${model}'s symptoms of ${cached.reused} cases reused from ${SYMPTOMS_CACHE}; --fresh extracts them again`)
+    const seconds = [...cached.seconds].sort((a, b) => a - b)
+    if (seconds.length) {
+      const median = seconds[Math.floor(seconds.length / 2)]!
+      console.log(`${model}'s symptom extraction took ${median.toFixed(1)} s median, ${seconds.at(-1)!.toFixed(1)} s at most`)
+    }
   }
 
   const names = [...arms.map((arm) => arm.name), TUNED]
@@ -958,7 +1011,10 @@ async function main(): Promise<void> {
 
   const order = new Map(cases.map((item, index) => [item.id, index]))
   report(diagnoses.sort((a, b) => order.get(a.id)! - order.get(b.id)!))
-  remedyPlaces(cases, diagnoses, symptomRetrievers)
+  const repertorisations = (['repertory', 'boericke', 'both', 'opus', 'opus both'] as const).map(
+    (name): [string, Repertoriser] => [name, rankings[name]],
+  )
+  await remedyPlaces(cases, diagnoses, repertorisations, symptomRetrievers)
 
   if (values.out) writeFileSync(values.out, JSON.stringify({ results, diagnoses }, null, 1))
 }
