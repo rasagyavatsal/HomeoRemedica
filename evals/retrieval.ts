@@ -15,10 +15,11 @@
  * query and returns the remedies with the most passages shows how much a score owes to the cures
  * being well-documented remedies.
  *
- * Where production ranks the cured remedy below first, the run says at which step it was lost: it
- * was in neither the dense nor any book's BM25 candidates, one remedy held so much of the results
- * that they were not regrouped, the books supported other remedies more, or it was shown but below
- * another. A deeper search, with many more candidates, says how far off a lost remedy was, and the
+ * Production searches every book and weighs Kent's and Boericke's Repertories' ranking with the
+ * books' support; the books only arm leaves the repertories out. Where production ranks the cured
+ * remedy below first, the run says at which step it was lost: it was in neither the dense nor any
+ * book's BM25 candidates, one remedy held so much of the results that they were not regrouped, the
+ * books and repertories together favoured other remedies, or it was shown but below another. A deeper search, with many more candidates, says how far off a lost remedy was, and the
  * repertory says whether the extracted symptoms point to it at all.
  *
  * Usage: npm run eval:retrieval [-- --fresh] [-- --out results.json]
@@ -118,14 +119,14 @@ const SWEEP: Arm[] = PRIOR_KS.flatMap((k) => PRIOR_WEIGHTS.map((weight) => ({ ..
 
 /** The first is production's and is reported in detail; the prior sweep follows the others. */
 const ARMS: Arm[] = [
-  { ...SEARCH, name: 'production' },
+  { ...SEARCH, name: 'production', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'both' },
+  { ...SEARCH, name: 'books only' },
   { ...SEARCH, name: 'fusion only', regroup: false },
   { ...SEARCH, name: 'repertory 20', candidates: 20 },
   { ...SEARCH, name: 'repertory 10', candidates: 10 },
   { ...SEARCH, name: 'boericke 20', candidates: 20, ranking: 'boericke' },
   { ...SEARCH, name: 'both 20', candidates: 20, ranking: 'both' },
   { ...SEARCH, name: 'boericke prior', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'boericke' },
-  { ...SEARCH, name: 'both prior', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'both' },
   { ...SEARCH, name: 'opus rep. 20', candidates: 20, ranking: 'opus' },
   { ...SEARCH, name: 'opus both 20', candidates: 20, ranking: 'opus both' },
   { ...SEARCH, name: 'opus prior', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'opus' },
@@ -621,8 +622,8 @@ function tunePrior(results: Result[]): string[] {
 
 /**
  * Where each way of ranking remedies puts the cured remedy among all the remedies it ranks, not
- * only those it shows: production by the books' support (or the fused order when it did not
- * regroup), each repertorisation, and the symptom searches.
+ * only those it shows: production by the books' support weighed with the repertories' (or the fused
+ * order when it did not regroup), each repertorisation, and the symptom searches.
  */
 async function remedyPlaces(
   cases: readonly { id: string; query: string; expected: readonly string[] }[],
@@ -732,7 +733,10 @@ interface Diagnosis {
   dense: number | null
   sparse: number | null
   fused: number | null
-  /** Its place by the books' support, or null when the results were not regrouped. */
+  /**
+   * Its place by the books' support weighed with the repertories' ranking, or null when the
+   * results were not regrouped.
+   */
   support: number | null
   regrouped: boolean
   /** The subject that held the results when they were not regrouped. */
@@ -754,7 +758,7 @@ function loss(diagnosis: Diagnosis): Loss | null {
 const LOSSES: Record<Loss, string> = {
   'not a candidate': `in neither the dense nor any book's BM25 top ${SOURCE_LIMIT * PREFETCH_MULTIPLIER}`,
   'not regrouped': 'a candidate, but one subject held the results so they were not regrouped',
-  'outsupported': `a candidate, but not among the ${DIFFERENTIAL_REMEDIES} remedies the books support most`,
+  'outsupported': `a candidate, but not among the ${DIFFERENTIAL_REMEDIES} remedies the books and repertories favour most`,
   'below another': `in the ${SOURCE_LIMIT} sources, below another remedy`,
 }
 
@@ -810,7 +814,7 @@ function report(diagnoses: readonly Diagnosis[]): void {
   step(`among some book's BM25 top ${pool}`, diagnoses.filter((d) => d.sparse !== null).length)
   step('a candidate after fusion', diagnoses.filter((d) => d.fused !== null).length)
   step(
-    `among the ${DIFFERENTIAL_REMEDIES} best-supported remedies`,
+    `among the ${DIFFERENTIAL_REMEDIES} most favoured remedies`,
     diagnoses.filter((d) => d.support !== null && d.support <= DIFFERENTIAL_REMEDIES).length,
   )
   step(`in the ${SOURCE_LIMIT} sources`, diagnoses.filter((d) => d.rank !== null).length)
@@ -836,7 +840,7 @@ function report(diagnoses: readonly Diagnosis[]): void {
   const repertory = diagnoses.map((d) => d.repertory.rank)
   const within = (cutoff: number) => repertory.filter((rank) => rank !== null && rank <= cutoff).length
   console.log(
-    `\n  the repertory ranks the cured remedy in its top 10 in ${within(10)} cases, top 20 in ${within(20)}, ` +
+    `\n  Kent's and Boericke's together rank the cured remedy in their top 10 in ${within(10)} cases, top 20 in ${within(20)}, ` +
       `anywhere in ${within(Infinity)}, of ${n}`,
   )
 
@@ -942,12 +946,17 @@ async function main(): Promise<void> {
           sources: sources.map(sourceName),
         })
       }
-      // Production searches the bare message, as a first question with no history.
-      const embedding = await embedder.embedQuery(request.message)
-      const [stages, deep, repertorisation] = await Promise.all([
-        corpus.stages(request.message, embedding, { limit: SOURCE_LIMIT }),
-        corpus.stages(request.message, embedding, { limit: SOURCE_LIMIT * DEEP_FACTOR }),
-        repertory.repertorise(request.message),
+      // Production searches the bare message, as a first question with no history, weighing both
+      // repertories' ranking with the books' support.
+      const [embedding, repertorisation] = await Promise.all([
+        embedder.embedQuery(request.message),
+        rankings.both.repertorise(request.message),
+      ])
+      const ranked = repertorisation.remedies.map((remedy) => remedy.remedyId)
+      const prior = ranked.length ? ranked : undefined
+      const [stages, deep] = await Promise.all([
+        corpus.stages(request.message, embedding, { limit: SOURCE_LIMIT, prior }),
+        corpus.stages(request.message, embedding, { limit: SOURCE_LIMIT * DEEP_FACTOR, prior }),
       ])
       const staged = stages.best.map(({ subject }) => (subject.startsWith('remedy:') ? subject.slice('remedy:'.length) : null))
       if (JSON.stringify(staged) !== JSON.stringify(productionRemedies)) {
@@ -972,7 +981,9 @@ async function main(): Promise<void> {
   console.log(`glm: the remedies ${PROPOSER} proposes from the case alone, in place of the repertory's`)
   console.log(`boericke, both: Boericke's Repertory, or each symptom's rubrics from Kent's and Boericke's together, in place of Kent's`)
   console.log(`opus: the repertory given the symptoms ${STRONG_EXTRACTOR} extracts, with production's instructions, in place of ${settings.model}'s`)
-  console.log(`prior w/k: the repertory's ranking at weight w against the books' support, fused with constant k; production's is ${DEFAULT_PRIOR}`)
+  console.log(`production: every book searched, with Kent's and Boericke's ranking at weight ${PRIOR_WEIGHT} against the books' support, fused with constant ${PRIOR_K}`)
+  console.log('books only: every book searched, without the repertories')
+  console.log(`prior w/k: Kent's ranking at weight w against the books' support, fused with constant k`)
   const chosen = [...Map.groupBy(choices, (choice) => choice).entries()].map(([name, times]) => `${name} ${times.length}`)
   console.log(`${TUNED}: each case scored with the prior that does best on the other cases (chose ${chosen.join(', ')})`)
   if (reranker.reused) console.log(`rerank scores of ${reranker.reused} queries reused from ${RERANK_CACHE}`)
