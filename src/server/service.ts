@@ -12,6 +12,7 @@ import {
   MAX_GENERATED_ANSWER_CHARS,
   MAX_GENERATION_PROMPT_CHARS,
   MAX_TURN_CHARS,
+  type Retrieval,
   type Retriever,
 } from './contracts.ts'
 import { shouldCompact } from './conversation.ts'
@@ -53,18 +54,27 @@ export class ChatService {
   async chat(request: ChatRequest, { onSources, onText, signal }: ChatOptions = {}): Promise<ChatResponse> {
     // Condense a nearly full chat while the books are searched. A failure answers from the
     // context as it was, and the earliest turns are dropped instead.
+    // Stops the compaction when the question fails before its summary is used.
+    const abandoned = new AbortController()
+    const stopped = signal ? AbortSignal.any([signal, abandoned.signal]) : abandoned.signal
     const compacting = shouldCompact(request)
-      ? this.compact(request, { signal }).catch((error: unknown) => {
-          if (!signal?.aborted) console.error('Compacting a chat failed; answering without it', error)
+      ? this.compact(request, { signal: stopped }).catch((error: unknown) => {
+          if (!stopped.aborted) console.error('Compacting a chat failed; answering without it', error)
           return undefined
         })
       : undefined
-    const retrieval = await this.#retriever.retrieve(request, { limit: this.#sourceLimit })
-    const { sources } = retrieval
-    // Reject an unusable corpus before paying for an answer.
-    if (sources.some((source) => source.text.length > MAX_CITATION_TEXT_CHARS)) {
-      throw new RangeError('citation text is too long')
+    let retrieval: Retrieval
+    try {
+      retrieval = await this.#retriever.retrieve(request, { limit: this.#sourceLimit })
+      // Reject an unusable corpus before paying for an answer.
+      if (retrieval.sources.some((source) => source.text.length > MAX_CITATION_TEXT_CHARS)) {
+        throw new RangeError('citation text is too long')
+      }
+    } catch (error) {
+      abandoned.abort()
+      throw error
     }
+    const { sources } = retrieval
 
     const citations: Citation[] = sources.map((source) => ({
       id: `${CORPUS_VERSION}/${source.bookId}/${source.chunkId}`,

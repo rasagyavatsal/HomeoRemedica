@@ -309,17 +309,19 @@ describe('compaction', () => {
   /** A service whose generator answers a compaction with `summary` and a question with "Answer [1]." */
   function answering(summary: string | Error) {
     const prompts: string[] = []
+    const signals: (AbortSignal | undefined)[] = []
     const retriever = new StubRetriever()
     const generator: AnswerGenerator = {
       model: 'glm-5.3-flash',
-      async generate(prompt, { systemInstruction }) {
+      async generate(prompt, { systemInstruction, signal }) {
         prompts.push(prompt)
+        signals.push(signal)
         if (systemInstruction !== COMPACTION_INSTRUCTION) return 'Answer [1].'
         if (summary instanceof Error) throw summary
         return summary
       },
     }
-    return { prompts, retriever, service: new ChatService({ retriever, generator }) }
+    return { prompts, signals, retriever, service: new ChatService({ retriever, generator }) }
   }
 
   it('condenses a nearly full chat before answering it', async () => {
@@ -344,6 +346,16 @@ describe('compaction', () => {
 
     expect(response.compacted).toBeUndefined()
     expect(prompts).toHaveLength(1)
+  })
+
+  it('stops condensing a chat whose search fails', async () => {
+    const { signals, retriever, service } = answering('unused')
+    retriever.failure = new ProviderError('search failed')
+
+    await expect(service.chat(request({ message: 'And Sepia?', history: long(16) }))).rejects.toBe(retriever.failure)
+
+    expect(signals).toHaveLength(1)
+    expect(signals[0]?.aborted).toBe(true)
   })
 
   it('answers from the whole context when condensing fails', async () => {
