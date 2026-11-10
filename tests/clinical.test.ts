@@ -121,7 +121,7 @@ describe('production retriever with Clarke', () => {
   it("weighs Clarke's ranking beside the repertory's", async () => {
     const { corpus, calls } = searching()
 
-    await new ProductionRetriever(corpus, embedder, { repertory, prior: true, clinical, clinicalWeight: 0.25 }).retrieve(
+    await new ProductionRetriever(corpus, embedder, { repertory, clinical, clinicalWeight: 0.25 }).retrieve(
       request('Left sciatica, better walking.'),
       { limit: 8 },
     )
@@ -140,7 +140,7 @@ describe('production retriever with Clarke', () => {
     }
 
     for (const ranker of [none, failing]) {
-      await new ProductionRetriever(corpus, embedder, { repertory, prior: true, clinical: ranker }).retrieve(request('A weepy woman.'), {
+      await new ProductionRetriever(corpus, embedder, { repertory, clinical: ranker }).retrieve(request('A weepy woman.'), {
         limit: 8,
       })
     }

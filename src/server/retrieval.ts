@@ -11,8 +11,6 @@ import { ChatFailure, ProviderError, isTimeout } from './errors.ts'
 import type { Repertoriser } from './repertory.ts'
 
 const PREVIOUS_QUESTIONS = 2
-/** A described case's passages come from this many of the repertory's leading remedies. */
-export const CANDIDATE_REMEDIES = 20
 
 export interface QueryEmbedder {
   embedQuery(text: string): Promise<readonly number[]>
@@ -25,7 +23,6 @@ export interface SearchableRelease {
     embedding: readonly number[],
     options: {
       limit: number
-      remedies?: readonly string[] | undefined
       prior?: readonly string[] | undefined
       priors?: readonly { ranking: readonly string[]; weight: number }[] | undefined
     },
@@ -37,31 +34,24 @@ export class ProductionRetriever implements Retriever {
   readonly #corpus: SearchableRelease
   readonly #embedder: QueryEmbedder
   readonly #repertory: Repertoriser | undefined
-  readonly #candidates: number
-  readonly #prior: boolean
   readonly #clinical: ClinicalRanker | undefined
   readonly #clinicalWeight: number
 
   /**
-   * With a repertory, a question that describes a patient is searched only among the passages of
-   * the remedies the repertory ranks highest for its symptoms, or, with `prior`, the whole corpus is
-   * searched and the repertory's ranking is weighed with the books' support for each remedy. With
-   * `prior` and `clinical`, Clarke's remedies for the diseases the case names are weighed with the
-   * books' support beside the repertory's, at `clinicalWeight`.
+   * The whole corpus is searched. With a repertory, its ranking of remedies for the symptoms of a
+   * question that describes a patient is weighed with the books' support for each remedy. With
+   * `clinical`, Clarke's remedies for the diseases the case names are weighed beside it, at
+   * `clinicalWeight`.
    */
   constructor(
     corpus: SearchableRelease,
     embedder: QueryEmbedder,
     {
       repertory,
-      candidates = CANDIDATE_REMEDIES,
-      prior = false,
       clinical,
       clinicalWeight = CLINICAL_WEIGHT,
     }: {
       repertory?: Repertoriser | undefined
-      candidates?: number
-      prior?: boolean
       clinical?: ClinicalRanker | undefined
       clinicalWeight?: number
     } = {},
@@ -69,8 +59,6 @@ export class ProductionRetriever implements Retriever {
     this.#corpus = corpus
     this.#embedder = embedder
     this.#repertory = repertory
-    this.#candidates = candidates
-    this.#prior = prior
     this.#clinical = clinical
     this.#clinicalWeight = clinicalWeight
     this.corpusVersion = corpus.corpusVersion
@@ -88,11 +76,8 @@ export class ProductionRetriever implements Retriever {
       this.#repertoryRanking(query),
       this.#clinicalRanking(query),
     ])
-    if (this.#prior) {
-      const priors = clinical ? [{ ranking: clinical, weight: this.#clinicalWeight }] : undefined
-      return this.#corpus.search(query, embedding, { limit, prior: ranking, priors })
-    }
-    return this.#corpus.search(query, embedding, { limit, remedies: ranking?.slice(0, this.#candidates) })
+    const priors = clinical ? [{ ranking: clinical, weight: this.#clinicalWeight }] : undefined
+    return this.#corpus.search(query, embedding, { limit, prior: ranking, priors })
   }
 
   async #embed(query: string): Promise<readonly number[]> {
@@ -105,9 +90,9 @@ export class ProductionRetriever implements Retriever {
     }
   }
 
-  /** Clarke's remedies for the diseases the query names, best first, when weighing a prior. */
+  /** Clarke's remedies for the diseases the query names, best first. */
   async #clinicalRanking(query: string): Promise<readonly string[] | undefined> {
-    if (!this.#clinical || !this.#prior) return undefined
+    if (!this.#clinical) return undefined
     try {
       const { ranking } = await this.#clinical.rank(query)
       return ranking.length ? ranking : undefined
@@ -125,7 +110,7 @@ export class ProductionRetriever implements Retriever {
       const { remedies } = await this.#repertory.repertorise(query)
       return remedies.length ? remedies.map((remedy) => remedy.remedyId) : undefined
     } catch (error) {
-      // The repertory only narrows or reorders the search; without it the corpus is searched as usual.
+      // The repertory only reorders the search; without it the corpus is searched as usual.
       console.error('Repertorisation failed; searching without it', error)
       return undefined
     }

@@ -196,16 +196,6 @@ describe('Qdrant corpus', () => {
     expect(source?.sectionTitle).toBe(title)
   })
 
-  it("searches only the given remedies' passages", async () => {
-    const fetch = fakeFetch(rankings([['p', 0.5, 'pulsatilla']], []), records(['p', PAYLOAD]))
-
-    await corpus(fetch).search('weepy', [1.0], { limit: 1, remedies: ['pulsatilla', 'sepia'] })
-
-    const filter = { must: [{ key: 'remedy_id', match: { any: ['pulsatilla', 'sepia'] } }] }
-    const searches = (fetch.calls[0]?.body as { searches: Record<string, unknown>[] }).searches
-    expect(searches.map((search) => search.filter)).toEqual([filter, filter])
-  })
-
   it('accepts passages without a remedy', async () => {
     const [source] = await searchOne({ ...PAYLOAD, remedy: null })
 

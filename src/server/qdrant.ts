@@ -42,8 +42,6 @@ export interface WeighedRanking {
 
 export interface SearchOptions {
   limit: number
-  /** Searches only these remedies' passages. */
-  remedies?: readonly string[] | undefined
   /** A ranking weighed with the books' support at the corpus's prior weight. */
   prior?: readonly string[] | undefined
   /** Further rankings weighed with the books' support beside `prior`, each at its own weight. */
@@ -151,9 +149,9 @@ export class QdrantCorpus {
   }
 
   /**
-   * The best `limit` passages, from only the given remedies' passages when `remedies` is set. A
-   * `prior` ranking of remedy ids, best first, is weighed with the books' support when the results
-   * are regrouped, at the corpus's prior weight, and each of `priors` beside it at its own weight.
+   * The best `limit` passages. A `prior` ranking of remedy ids, best first, is weighed with the
+   * books' support when the results are regrouped, at the corpus's prior weight, and each of
+   * `priors` beside it at its own weight.
    */
   async search(
     query: string,
@@ -175,14 +173,13 @@ export class QdrantCorpus {
     embedding: readonly number[],
     {
       limit,
-      remedies,
       prior,
       priors = [],
     }: SearchOptions,
   ): Promise<SearchStages> {
     const candidates = limit * PREFETCH_MULTIPLIER
     const rankings = await Promise.all(
-      this.#bookIds.map((bookId) => this.#rank(bookId, query, embedding, candidates, remedies)),
+      this.#bookIds.map((bookId) => this.#rank(bookId, query, embedding, candidates)),
     )
     // Dense scores compare across books, so the dense ranking is global. BM25 IDF is per
     // collection, and a small book such as the Organon scores high on everything, so each book
@@ -211,19 +208,16 @@ export class QdrantCorpus {
     query: string,
     embedding: readonly number[],
     limit: number,
-    remedies: readonly string[] | undefined,
   ): Promise<[Candidate[], Candidate[]]> {
-    const filter = remedies ? { filter: { must: [{ key: 'remedy_id', match: { any: remedies } }] } } : {}
     const response = await this.#request(bookId, '/points/query/batch', {
       method: 'POST',
       body: JSON.stringify({
         searches: [
-          { query: embedding, using: DENSE_VECTOR, limit, ...filter, with_payload: ['remedy_id'], with_vector: false },
+          { query: embedding, using: DENSE_VECTOR, limit, with_payload: ['remedy_id'], with_vector: false },
           {
             query: { text: query, model: SPARSE_MODEL },
             using: SPARSE_VECTOR,
             limit,
-            ...filter,
             with_payload: ['remedy_id'],
             with_vector: false,
           },

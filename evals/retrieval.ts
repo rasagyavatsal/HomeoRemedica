@@ -462,7 +462,7 @@ async function main(): Promise<void> {
   })
   const corpus = new QdrantCorpus({ url: settings.qdrantUrl, apiKey: settings.qdrantApiKey, fetch: memoizedFetch(retryingFetch) })
   await corpus.verify()
-  const retriever = new ProductionRetriever(corpus, embedder, { repertory, prior: true, clinical })
+  const retriever = new ProductionRetriever(corpus, embedder, { repertory, clinical })
   const diagnoses: Diagnosis[] = []
 
   const results = await pool(cases, CONCURRENCY, async (item): Promise<Result> => {

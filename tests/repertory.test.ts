@@ -199,21 +199,10 @@ describe('production retriever with a repertory', () => {
     }),
   })
 
-  it("searches only the repertory's leading remedies for a described case", async () => {
+  it("weighs the repertory's whole ranking with the books' support", async () => {
     const { corpus, calls } = searching()
 
-    await new ProductionRetriever(corpus, embedder, { repertory: repertoryOf('puls', 'sep', 'nat-m'), candidates: 2 }).retrieve(
-      request('A weepy, thirstless woman.'),
-      { limit: 8 },
-    )
-
-    expect(calls).toEqual([{ limit: 8, remedies: ['puls', 'sep'] }])
-  })
-
-  it("weighs the repertory's whole ranking with the books' support when it is a prior", async () => {
-    const { corpus, calls } = searching()
-
-    await new ProductionRetriever(corpus, embedder, { repertory: repertoryOf('puls', 'sep', 'nat-m'), candidates: 2, prior: true }).retrieve(
+    await new ProductionRetriever(corpus, embedder, { repertory: repertoryOf('puls', 'sep', 'nat-m') }).retrieve(
       request('A weepy, thirstless woman.'),
       { limit: 8 },
     )
@@ -228,7 +217,7 @@ describe('production retriever with a repertory', () => {
       limit: 8,
     })
 
-    expect(calls).toEqual([{ limit: 8, remedies: undefined }])
+    expect(calls).toEqual([{ limit: 8 }])
   })
 
   it('searches the whole corpus when repertorisation fails', async () => {
@@ -242,7 +231,7 @@ describe('production retriever with a repertory', () => {
 
     await new ProductionRetriever(corpus, embedder, { repertory }).retrieve(request('A weepy woman.'), { limit: 8 })
 
-    expect(calls).toEqual([{ limit: 8, remedies: undefined }])
+    expect(calls).toEqual([{ limit: 8 }])
     expect(logged).toHaveBeenCalledOnce()
     logged.mockRestore()
   })
