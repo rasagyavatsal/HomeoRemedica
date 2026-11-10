@@ -14,7 +14,6 @@
 import type { BookSummary, RetrievedSource } from './contracts.ts'
 import { ProviderError } from './errors.ts'
 import { type Fetch, isRecord, readJson, send } from './http.ts'
-import type { PassageReranker } from './rerank.ts'
 
 export const CORPUS_VERSION = 'homeoremedica'
 export const DENSE_VECTOR = 'dense'
@@ -85,8 +84,6 @@ export interface SearchStages {
   sparse: readonly (readonly Candidate[])[]
   /** Both rankings fused, best first. */
   fused: readonly Candidate[]
-  /** The fused candidates rescored by the reranker, best first, when there is one; otherwise null. */
-  reranked: readonly Candidate[] | null
   /**
    * Subjects by the books' support, fused with the prior ranking when one was given, best first,
    * when the fused results were regrouped; otherwise null.
@@ -103,9 +100,6 @@ export class QdrantCorpus {
   readonly #headers: Record<string, string>
   readonly #fetch: Fetch
   readonly #timeoutMs: number
-  readonly #regroup: boolean
-  readonly #remedyOrder: boolean
-  readonly #reranker: PassageReranker | undefined
   readonly #priorWeight: number
   readonly #priorK: number
 
@@ -115,9 +109,6 @@ export class QdrantCorpus {
     bookIds = BOOKS.map((book) => book.bookId),
     fetch: fetchImpl = fetch,
     timeoutMs = QDRANT_TIMEOUT_MS,
-    regroup = true,
-    remedyOrder = false,
-    reranker,
     priorWeight = PRIOR_WEIGHT,
     priorK = PRIOR_K,
   }: {
@@ -126,15 +117,6 @@ export class QdrantCorpus {
     bookIds?: readonly string[]
     fetch?: Fetch
     timeoutMs?: number
-    /** Whether results that no remedy dominates are regrouped by remedy; false keeps the fused order. */
-    regroup?: boolean
-    /**
-     * Whether a search narrowed to given remedies shows the best passage of each in the order
-     * given, rather than regrouping them by the books' support.
-     */
-    remedyOrder?: boolean
-    /** Rescores the fused candidates before they are regrouped, in place of their fused scores. */
-    reranker?: PassageReranker | undefined
     /** How much a prior ranking weighs against the books' support. */
     priorWeight?: number
     /** The reciprocal-rank constant with which a prior ranking is fused with the books' support. */
@@ -145,9 +127,6 @@ export class QdrantCorpus {
     this.#headers = { 'Content-Type': 'application/json', ...(apiKey ? { 'api-key': apiKey } : {}) }
     this.#fetch = fetchImpl
     this.#timeoutMs = timeoutMs
-    this.#regroup = regroup
-    this.#remedyOrder = remedyOrder
-    this.#reranker = reranker
     this.#priorWeight = priorWeight
     this.#priorK = priorK
   }
@@ -218,30 +197,12 @@ export class QdrantCorpus {
         fused.set(key, { ...candidate, score })
       }
     }
-    const fusedRanking = topCandidates([...fused.values()], fused.size)
-    const reranked = this.#reranker ? await this.#rerank(query, fusedRanking) : null
-    const ranked = reranked ?? fusedRanking
-    const found = { dense, sparse, fused: fusedRanking, reranked }
-    if (remedies && this.#remedyOrder) return { ...found, support: null, best: inRemedyOrder(ranked, remedies, limit) }
-    if (!this.#regroup || dominated(ranked, limit)) return { ...found, support: null, best: ranked.slice(0, limit) }
+    const ranked = topCandidates([...fused.values()], fused.size)
+    const found = { dense, sparse, fused: ranked }
+    if (dominated(ranked, limit)) return { ...found, support: null, best: ranked.slice(0, limit) }
     const weighed = [...(prior ? [{ ranking: prior, weight: this.#priorWeight }] : []), ...priors]
     const support = weighed.length ? withPriors(bySupport(ranked), weighed, this.#priorK) : bySupport(ranked)
     return { ...found, support, best: select(ranked, support, limit) }
-  }
-
-  /** The candidates with the reranker's scores for their passages, best first. */
-  async #rerank(query: string, candidates: readonly Candidate[]): Promise<Candidate[]> {
-    const payloads = await this.#payloads(candidates)
-    const passages = candidates.map((candidate) => {
-      const payload = payloads.get(candidateKey(candidate.bookId, candidate.id))
-      if (!payload) throw new ProviderError('Qdrant returned no payload for a query point')
-      return requiredText(payload, 'content')
-    })
-    const scores = await this.#reranker!.rerank(query, passages)
-    return topCandidates(
-      candidates.map((candidate, index) => ({ ...candidate, score: scores[index]! })),
-      candidates.length,
-    )
   }
 
   /** One collection's dense and BM25 candidates, best first. */
@@ -382,15 +343,6 @@ function select(ranked: readonly Candidate[], support: readonly string[], limit:
   const firsts = [...leaders].map((subject) => ranked.find((candidate) => candidate.subject === subject)!)
   const rest = ranked.filter((candidate) => leaders.has(candidate.subject) && !firsts.includes(candidate))
   return [...firsts, ...rest].slice(0, limit)
-}
-
-/** The best passage of each remedy in the given order, then the rest by score. */
-function inRemedyOrder(ranked: readonly Candidate[], remedies: readonly string[], limit: number): Candidate[] {
-  const firsts = remedies
-    .map((remedy) => ranked.find((candidate) => candidate.subject === `remedy:${remedy}`))
-    .filter((candidate) => candidate !== undefined)
-    .slice(0, limit)
-  return [...firsts, ...ranked.filter((candidate) => !firsts.includes(candidate))].slice(0, limit)
 }
 
 function candidateKey(bookId: string, id: PointId): string {

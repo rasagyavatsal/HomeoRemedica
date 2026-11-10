@@ -145,41 +145,6 @@ describe('Qdrant corpus', () => {
     expect(stages.best.map((candidate) => candidate.subject)).toEqual(['remedy:pulsatilla', 'remedy:x-ray', 'remedy:lyssin'])
   })
 
-  it('regroups by the reranker\'s scores for the fused passages', async () => {
-    const fetch = fakeFetch(
-      rankings(
-        [['n1', 0.9, 'lyssin'], ['n2', 0.8, 'x-ray'], ['n3', 0.7, 'psorinum']],
-        [['n1', 9, 'lyssin'], ['n2', 8, 'x-ray'], ['n3', 7, 'psorinum']],
-      ),
-      records(
-        ['n1', { ...PAYLOAD, content: 'Lyssin passage' }],
-        ['n2', { ...PAYLOAD, content: 'X-Ray passage' }],
-        ['n3', { ...PAYLOAD, content: 'Psorinum passage' }],
-      ),
-    )
-    const asked: [string, readonly string[]][] = []
-    const reranker = {
-      async rerank(query: string, passages: readonly string[]) {
-        asked.push([query, passages])
-        return passages.map((passage) => (passage.startsWith('Psorinum') ? 0.9 : passage.startsWith('X-Ray') ? 0.5 : 0.1))
-      },
-    }
-    const reranking = new QdrantCorpus({ url: 'https://qdrant.example/', bookIds: ['allen_nosodes'], fetch, reranker })
-
-    const stages = await reranking.stages('chilly, offensive sweat', [1.0], { limit: 3 })
-
-    expect(asked).toEqual([['chilly, offensive sweat', ['Lyssin passage', 'X-Ray passage', 'Psorinum passage']]])
-    const subjects = (candidates: readonly { subject: string }[]) => candidates.map((candidate) => candidate.subject)
-    expect(subjects(stages.fused)).toEqual(['remedy:lyssin', 'remedy:x-ray', 'remedy:psorinum'])
-    expect(stages.reranked?.map((candidate) => [candidate.subject, candidate.score])).toEqual([
-      ['remedy:psorinum', 0.9],
-      ['remedy:x-ray', 0.5],
-      ['remedy:lyssin', 0.1],
-    ])
-    expect(stages.support).toEqual(['remedy:psorinum', 'remedy:x-ray', 'remedy:lyssin'])
-    expect(subjects(stages.best)).toEqual(['remedy:psorinum', 'remedy:x-ray', 'remedy:lyssin'])
-  })
-
   it('weighs a prior ranking as heavily as it is told to', async () => {
     const stagesWith = (priorWeight: number) =>
       new QdrantCorpus({
@@ -216,54 +181,6 @@ describe('Qdrant corpus', () => {
       'remedy:x-ray',
       'remedy:pulsatilla',
     ])
-  })
-
-  it('keeps the fused order when regrouping is off', async () => {
-    const fetch = fakeFetch(
-      rankings([], [['a1', 9, 'pulsatilla']]),
-      rankings(
-        [['n1', 0.9, 'lyssin'], ['n2', 0.8, 'x-ray'], ['n3', 0.7, 'psorinum']],
-        [['n1', 9, 'lyssin'], ['n2', 8, 'x-ray'], ['n3', 7, 'psorinum']],
-      ),
-      records(
-        ['n1', { ...PAYLOAD, remedy: 'Lyssin' }],
-        ['n2', { ...PAYLOAD, remedy: 'X-Ray' }],
-        ['n3', { ...PAYLOAD, remedy: 'Psorinum' }],
-      ),
-    )
-    const unregrouped = new QdrantCorpus({
-      url: 'https://qdrant.example/',
-      bookIds: ['allen_keynotes', 'allen_nosodes'],
-      fetch,
-      regroup: false,
-    })
-
-    const sources = await unregrouped.search('weeps easily, thirstless, better in open air', [1.0], { limit: 3 })
-
-    expect(sources.map((source) => source.remedyName)).toEqual(['Lyssin', 'X-Ray', 'Psorinum'])
-  })
-
-  it("shows a narrowed search's remedies in the order given", async () => {
-    const fetch = fakeFetch(
-      rankings(
-        [['p1', 0.9, 'pulsatilla'], ['p2', 0.8, 'pulsatilla'], ['s1', 0.7, 'sepia'], ['n1', 0.6, 'natrum-muriaticum']],
-        [['p1', 9, 'pulsatilla'], ['p2', 8, 'pulsatilla'], ['s1', 7, 'sepia'], ['n1', 6, 'natrum-muriaticum']],
-      ),
-      records(
-        ['n1', { ...PAYLOAD, remedy: 'Natrum Muriaticum' }],
-        ['s1', { ...PAYLOAD, remedy: 'Sepia' }],
-        ['p1', { ...PAYLOAD, remedy: 'Pulsatilla' }],
-      ),
-    )
-    const ordered = new QdrantCorpus({ url: 'https://qdrant.example/', bookIds: ['allen_keynotes'], fetch, remedyOrder: true })
-
-    const sources = await ordered.search('weepy', [1.0], {
-      limit: 3,
-      remedies: ['natrum-muriaticum', 'gelsemium', 'sepia', 'pulsatilla'],
-    })
-
-    // Gelsemium has no passage; Pulsatilla's second passage is cut.
-    expect(sources.map((source) => source.remedyName)).toEqual(['Natrum Muriaticum', 'Sepia', 'Pulsatilla'])
   })
 
   it.each([
