@@ -139,7 +139,6 @@ describe('production retriever with Clarke', () => {
   const searching = () => {
     const calls: unknown[] = []
     const corpus: SearchableRelease = {
-      corpusVersion: 'local-v1',
       async search(_query, _embedding, options) {
         calls.push(options)
         return []

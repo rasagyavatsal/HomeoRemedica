@@ -15,7 +15,6 @@ import type { BookSummary, RetrievedSource } from './contracts.ts'
 import { ProviderError } from './errors.ts'
 import { type Fetch, isRecord, readJson, send } from './http.ts'
 
-export const CORPUS_VERSION = 'homeoremedica'
 export const DENSE_VECTOR = 'dense'
 export const SPARSE_VECTOR = 'bm25'
 export const SPARSE_MODEL = 'qdrant/bm25'
@@ -84,7 +83,6 @@ export interface SearchStages {
 }
 
 export class QdrantCorpus {
-  readonly corpusVersion = CORPUS_VERSION
   readonly #baseUrl: string
   readonly #bookIds: readonly string[]
   readonly #headers: Record<string, string>

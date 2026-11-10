@@ -18,7 +18,6 @@ import { ChatService } from '../src/server/service.ts'
 const request = (input: Record<string, unknown>): ChatRequest => ChatRequestSchema.parse(input)
 
 class StubRetriever implements Retriever {
-  readonly corpusVersion = '2026-08-15.v1'
   searchCall: { request: ChatRequest; limit: number } | null = null
   failure: unknown = null
 
@@ -87,9 +86,9 @@ it('grounds a conversation-aware answer in versioned sources', async () => {
   expect(generator.generationPrompt).toContain('untrusted user-provided context')
   expect(generator.generationPrompt).toContain('untrusted reference data')
   expect(response.answer).toBe('Kent describes irritability and oversensitivity [1].')
-  expect(response.corpusVersion).toBe('2026-08-15.v1')
+  expect(response.corpusVersion).toBe('homeoremedica')
   expect(response.model).toBe('glm-5.3-flash')
-  expect(response.sources[0]?.id).toBe('2026-08-15.v1/kent_lectures/chk_1')
+  expect(response.sources[0]?.id).toBe('homeoremedica/kent_lectures/chk_1')
 })
 
 it('names passages without a remedy by their section', async () => {
@@ -142,8 +141,8 @@ it('gives the model the rankings with the rubrics they point to, and cites the r
     '[2] Kent, Repertory of the Homoeopathic Materia Medica — Mind: irritability\nRemedies and their grades: Nux vomica (3)',
   )
   expect(response.sources.map((source) => source.id)).toEqual([
-    '2026-08-15.v1/kent_lectures/chk_1',
-    '2026-08-15.v1/kent_repertory/kent_repertory-00042',
+    'homeoremedica/kent_lectures/chk_1',
+    'homeoremedica/kent_repertory/kent_repertory-00042',
   ])
 })
 
@@ -167,11 +166,11 @@ it('reports sources before streaming answer text', async () => {
   })
 
   expect(events).toEqual([
-    'sources:2026-08-15.v1/kent_lectures/chk_1',
+    'sources:homeoremedica/kent_lectures/chk_1',
     'text:Kent describes irritability ',
     'text:and oversensitivity [1].',
   ])
-  expect(response.sources.map((source) => source.id)).toEqual(['2026-08-15.v1/kent_lectures/chk_1'])
+  expect(response.sources.map((source) => source.id)).toEqual(['homeoremedica/kent_lectures/chk_1'])
   expect(generator.signal).toBe(controller.signal)
 })
 
@@ -363,7 +362,7 @@ it('rejects book filters', () => {
 
 it('production retriever searches on recent questions only', async () => {
   let embedded: string | null = null
-  const corpus: SearchableRelease = { corpusVersion: 'local-v1', search: async () => [] }
+  const corpus: SearchableRelease = { search: async () => [] }
   const embedder = {
     async embedQuery(text: string) {
       embedded = text
@@ -392,7 +391,6 @@ it('production retriever searches on recent questions only', async () => {
 it('production retriever embeds the conversation', async () => {
   let searchCall: unknown[] | null = null
   const corpus: SearchableRelease = {
-    corpusVersion: 'local-v1',
     async search(query, embedding, { limit }) {
       searchCall = [query, embedding, limit]
       return []
@@ -425,7 +423,6 @@ it.each([
   [new TypeError('embedding secret'), 'internal'],
 ])('production retriever classifies embedding failures (%s)', async (cause, kind) => {
   const corpus: SearchableRelease = {
-    corpusVersion: 'local-v1',
     search: async () => [],
   }
   const embedder = {

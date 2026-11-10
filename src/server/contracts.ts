@@ -118,6 +118,9 @@ export interface Citation {
   text: string
 }
 
+/** The corpus every answer cites; it leads each citation id. */
+export const CORPUS_VERSION = 'homeoremedica'
+
 export interface ChatResponse {
   answer: string
   corpusVersion: string
@@ -297,7 +300,6 @@ export function answerRatings({ rating, sources, reasons, comment }: SavedRating
 }
 
 export interface Retriever {
-  readonly corpusVersion: string
   /** `limit` bounds the books' passages; the rubrics come on top of it. */
   retrieve(request: ChatRequest, options: { limit: number }): Promise<Retrieval>
 }

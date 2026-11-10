@@ -251,7 +251,6 @@ describe('production retriever with a repertory', () => {
   const searching = () => {
     const calls: unknown[] = []
     const corpus: SearchableRelease = {
-      corpusVersion: 'local-v1',
       async search(_query, _embedding, options) {
         calls.push(options)
         return []
@@ -279,7 +278,7 @@ describe('production retriever with a repertory', () => {
 
   it('returns the leading remedies and their rubrics after the passages', async () => {
     const passage = { chunkId: 'chk_1', bookId: 'kent_lectures', bookTitle: "Kent's Lectures", author: null, remedyName: 'PULSATILLA', sectionTitle: 'MIND', passageIndexes: [1], text: 'Weeps.', score: 0.03 }
-    const corpus: SearchableRelease = { corpusVersion: 'local-v1', search: async () => [passage] }
+    const corpus: SearchableRelease = { search: async () => [passage] }
     const symptoms = [{ symptom: 'Mind: weeps easily', rubrics: [rubric('Mind: weeping', ['pulsatilla', 3])] }]
     const repertory: Repertoriser = { repertorise: async () => ({ symptoms, remedies: rankRemedies(symptoms) }) }
 

@@ -18,7 +18,6 @@ export interface QueryEmbedder {
 }
 
 export interface SearchableRelease {
-  readonly corpusVersion: string
   search(
     query: string,
     embedding: readonly number[],
@@ -27,7 +26,6 @@ export interface SearchableRelease {
 }
 
 export class ProductionRetriever implements Retriever {
-  readonly corpusVersion: string
   readonly #corpus: SearchableRelease
   readonly #embedder: QueryEmbedder
   readonly #repertory: Repertoriser | undefined
@@ -50,7 +48,6 @@ export class ProductionRetriever implements Retriever {
     this.#embedder = embedder
     this.#repertory = repertory
     this.#clinical = clinical
-    this.corpusVersion = corpus.corpusVersion
   }
 
   async retrieve(request: ChatRequest, { limit }: { limit: number }): Promise<Retrieval> {

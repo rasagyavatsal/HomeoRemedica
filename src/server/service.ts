@@ -1,5 +1,6 @@
 import {
   type AnswerGenerator,
+  CORPUS_VERSION,
   type ChatOptions,
   type ChatRequest,
   type ChatResponse,
@@ -46,10 +47,6 @@ export class ChatService {
     this.#promptCharLimit = promptCharLimit
   }
 
-  get corpusVersion(): string {
-    return this.#retriever.corpusVersion
-  }
-
   get modelName(): string {
     return this.#generator.model
   }
@@ -68,9 +65,8 @@ export class ChatService {
       throw new ChatFailure({ stage: 'chat', kind: 'internal', cause: new RangeError('citation text is too long') })
     }
 
-    const corpusVersion = this.#retriever.corpusVersion
     const citations: Citation[] = sources.map((source) => ({
-      id: `${corpusVersion}/${source.bookId}/${source.chunkId}`,
+      id: `${CORPUS_VERSION}/${source.bookId}/${source.chunkId}`,
       bookId: source.bookId,
       bookTitle: source.bookTitle,
       author: source.author,
@@ -113,7 +109,7 @@ export class ChatService {
     }
     return {
       answer: generatedAnswer,
-      corpusVersion,
+      corpusVersion: CORPUS_VERSION,
       model: this.#generator.model,
       sources: citations,
     }
