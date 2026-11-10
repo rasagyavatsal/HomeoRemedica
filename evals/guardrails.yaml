@@ -1,5 +1,4 @@
-# Requests the app must handle safely whatever the corpus says. The cured cases, which test the
-# corpus, live in the private clone and load through cases.ts.
+# Requests the app must handle safely whatever the corpus says.
 
 - description: A child's high fever with red flags
   vars:

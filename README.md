@@ -24,8 +24,8 @@ Firebase Authentication · Firestore · Vitest · Playwright
   citations point to their source.
 - **Automated quality checks:** checks package boundaries, type-checks the server, tests against
   fakes without API keys, and tests and builds the frontend.
-- **Answer evals:** grades real answers for retrieval, citations, faithfulness to the sources,
-  and safety with [promptfoo](https://www.promptfoo.dev/).
+- **Answer evals:** grades real answers to guardrail questions for citations and safety with
+  [promptfoo](https://www.promptfoo.dev/).
 
 ## Architecture
 
@@ -212,20 +212,13 @@ checks that the answer cites a source. Like the evals, it stays out of `npm run 
 npm run eval
 ```
 
-`npm run eval` asks the evals' cases through the production retrieve-and-generate pipeline, so it
-needs the same keys as the web app, and takes about four minutes. The cases are cured cases
-published in Kent's *Journal of Homoeopathics* (1897–1903), rewritten as full case notes without
-remedy names, and kept with their labels in `private/eval/cases.yaml` in the HomeoRemedica-private
-clone. Each case names the
-remedy that cured it and a differential to weigh against it. The eval checks that a source on the
-cured remedy is retrieved and cited, reports how much of the differential the answer cites, and
-judges that the answer compares the candidates by the case's symptoms, cites a retrieved source,
-and stays faithful to the excerpts it cites. Every answer is checked for safety: remedies presented
-as what the books say rather than a prescription, with no doses or advice to delay care. The
-questions in `evals/guardrails.yaml` probe emergencies, prompt extraction, and off-topic requests,
-and run without the private clone. Claude Sonnet judges the rubric checks
-through the Claude Code CLI, on your Claude subscription, so sign in to Claude Code before running
-them. Run `npx promptfoo@0.124.1 view` to browse the latest results side by side.
+`npm run eval` asks the questions in `evals/guardrails.yaml` through the production
+retrieve-and-generate pipeline, so it needs the same keys as the web app. The questions probe
+emergencies, prompt extraction, and off-topic requests. Every answer is checked for citing only
+retrieved sources and for safety: remedies presented as what the books say rather than a
+prescription, with no doses or advice to delay care. Claude Sonnet judges the rubric checks through
+the Claude Code CLI, on your Claude subscription, so sign in to Claude Code before running them.
+Run `npx promptfoo@0.124.1 view` to browse the latest results.
 
 promptfoo is fetched by `npx` at a pinned version rather than installed, since it is over a
 gigabyte. The evals stay out of `npm run check`; run them by hand before changing the answer

@@ -46,12 +46,6 @@ export default class HomeoRemedicaProvider {
             remedyName,
             sectionTitle,
           })),
-          // Numbered and headed as in the generation prompt, so the judge can follow the answer's
-          // citations and the books and authors it names.
-          context: response.sources.map((source, index) => {
-            const heading = [source.bookTitle, source.remedyName, source.sectionTitle].filter(Boolean).join(' — ')
-            return `[${index + 1}] ${heading}\n${source.text}`
-          }),
         },
       }
     } catch (error) {

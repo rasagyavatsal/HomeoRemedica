@@ -18,7 +18,6 @@
     "e2e:smoke": "playwright test --config playwright.smoke.config.ts",
     "check": "npm run typecheck && npm test && npm run build",
     "eval": "PROMPTFOO_DISABLE_TELEMETRY=1 npx --yes promptfoo@0.124.1 eval --config evals/promptfooconfig.yaml",
-    "eval:grounding": "PROMPTFOO_DISABLE_TELEMETRY=1 npx --yes promptfoo@0.124.1 eval --config evals/grounding.yaml",
     "deploy": "gcloud run deploy homeoremedica --source . --region asia-south1 --project homeoremedica --max-instances 1"
   },
   "dependencies": {
@@ -43,8 +42,7 @@
     "jsdom": "30.1.2",
     "typescript": "7.0.2",
     "vite": "8.3.4",
-    "vitest": "5.0.4",
-    "yaml": "2.9.1"
+    "vitest": "5.0.4"
   },
   "overrides": {
     "@firebase/firestore": {
