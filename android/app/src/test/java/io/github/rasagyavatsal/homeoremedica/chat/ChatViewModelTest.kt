@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import io.github.rasagyavatsal.homeoremedica.api.ApiJson
 import io.github.rasagyavatsal.homeoremedica.api.ChatRequest
 import io.github.rasagyavatsal.homeoremedica.api.ChatTurn
-import io.github.rasagyavatsal.homeoremedica.api.CompactRequest
 import io.github.rasagyavatsal.homeoremedica.api.HomeoRemedicaApi
 import io.github.rasagyavatsal.homeoremedica.api.Role
 import kotlinx.coroutines.Dispatchers
@@ -39,8 +38,6 @@ class ChatViewModelTest {
     private val server = MockWebServer()
     private val chatResponses = LinkedBlockingQueue<MockResponse>()
     private val chatRequests = mutableListOf<ChatRequest>()
-    private val compactResponses = LinkedBlockingQueue<MockResponse>()
-    private val compactRequests = mutableListOf<CompactRequest>()
     private val library = MemoryLibrary()
     private val lastChat = MemoryLastChat()
     private var now = 1_000L
@@ -51,15 +48,9 @@ class ChatViewModelTest {
     fun start() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
         server.dispatcher = object : Dispatcher() {
-            override fun dispatch(request: RecordedRequest): MockResponse = when (request.path) {
-                "/api/chat/compact" -> {
-                    synchronized(compactRequests) { compactRequests += ApiJson.decodeFromString<CompactRequest>(request.body.readUtf8()) }
-                    compactResponses.take()
-                }
-                else -> {
-                    synchronized(chatRequests) { chatRequests += ApiJson.decodeFromString<ChatRequest>(request.body.readUtf8()) }
-                    chatResponses.take()
-                }
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                synchronized(chatRequests) { chatRequests += ApiJson.decodeFromString<ChatRequest>(request.body.readUtf8()) }
+                return chatResponses.take()
             }
         }
         server.start()
@@ -83,8 +74,9 @@ class ChatViewModelTest {
             newId = { "chat-${ids++}" },
         ).also { viewModels += it }
 
-    private fun answer(text: String, history: List<ChatTurn>) {
-        val body = """{"answer":"$text","corpusVersion":"v9","model":"glm","sources":[],"history":${ApiJson.encodeToString(history)}}"""
+    private fun answer(text: String, history: List<ChatTurn>, summary: String? = null) {
+        val condensed = summary?.let { ",\"summary\":\"$it\"" }.orEmpty()
+        val body = """{"answer":"$text","corpusVersion":"v9","model":"glm","sources":[],"history":${ApiJson.encodeToString(history)}$condensed}"""
         chatResponses += MockResponse().setHeader("Content-Type", "text/event-stream")
             .setBody("event: text\ndata: {\"text\":\"$text\"}\n\nevent: done\ndata: $body\n\n")
     }
@@ -107,59 +99,21 @@ class ChatViewModelTest {
         assertEquals("", state.draft)
     }
 
-    /** A history as long as the server keeps, which is past the point of compacting. */
-    private fun fullHistory(count: Int = 16) = List(count) { index ->
-        ChatTurn(if (index % 2 == 0) Role.User else Role.Assistant, "Turn $index")
-    }
-
     @Test
-    fun compactsALongChatBeforeTheNextQuestion() = runTest {
+    fun sendsTheSummaryTheServerCondensedAChatInto() = runTest {
         val vm = viewModel()
-        answer("One.", fullHistory())
+        val kept = listOf(ChatTurn(Role.User, "First?"), ChatTurn(Role.Assistant, "One."))
+        answer("One.", kept, summary = "Earlier turns.")
         vm.submit("First?")
+        assertEquals("Earlier turns.", vm.settled().summary)
+
+        answer("Two.", kept, summary = "Earlier turns.")
+        vm.submit("Second?")
         vm.settled()
 
-        val kept = fullHistory().takeLast(2)
-        compactResponses += MockResponse().setBody("""{"summary":"Earlier turns.","history":${ApiJson.encodeToString(kept)}}""")
-        answer("Two.", kept + listOf(ChatTurn(Role.User, "Second?"), ChatTurn(Role.Assistant, "Two.")))
-        vm.submit("Second?")
-        val state = vm.settled()
-
-        assertEquals(listOf(CompactRequest(fullHistory())), compactRequests)
         assertEquals(kept, chatRequests.last().history)
         assertEquals("Earlier turns.", chatRequests.last().summary)
-        assertEquals("Earlier turns.", state.summary)
-        assertFalse(state.compacting)
         assertEquals("Earlier turns.", library.awaitSaved { it.singleOrNull()?.messages?.size == 4 }.single().summary)
-    }
-
-    @Test
-    fun asksAnywayWhenCompactingFails() = runTest {
-        val vm = viewModel()
-        answer("One.", fullHistory())
-        vm.submit("First?")
-        vm.settled()
-
-        compactResponses += MockResponse().setResponseCode(502)
-        answer("Two.", fullHistory())
-        vm.submit("Second?")
-        val state = vm.settled()
-
-        assertEquals(fullHistory(), chatRequests.last().history)
-        assertNull(chatRequests.last().summary)
-        assertEquals("Two.", state.messages.last().content)
-        assertFalse(state.compacting)
-    }
-
-    @Test
-    fun compactsOnlyNearTheServerLimits() {
-        assertFalse(shouldCompact(fullHistory(14), null))
-        assertTrue(shouldCompact(fullHistory(16), null))
-        val long = listOf(ChatTurn(Role.User, "x".repeat(6_500)), ChatTurn(Role.Assistant, "y".repeat(6_500)))
-        // Only turns older than the latest exchange can be condensed.
-        assertFalse(shouldCompact(long, null))
-        assertTrue(shouldCompact(long + long, null))
-        assertTrue(shouldCompact(fullHistory(4), "z".repeat(13_000)))
     }
 
     @Test
@@ -197,23 +151,6 @@ class ChatViewModelTest {
             assertEquals(detail, vm.settled().messages.last().error)
             vm.newChat()
         }
-    }
-
-    @Test
-    fun asksAnywayWhenCompactingIsRateLimited() = runTest {
-        val vm = viewModel()
-        answer("One.", fullHistory())
-        vm.submit("First?")
-        vm.settled()
-
-        // Compacting counts as a question, so a client at its limit is refused both.
-        val detail = "Too many questions in a short time. Please wait a minute and try again."
-        compactResponses += MockResponse().setResponseCode(429).setBody("""{"detail":"$detail"}""")
-        chatResponses += MockResponse().setResponseCode(429).setBody("""{"detail":"$detail"}""")
-        vm.submit("Second?")
-
-        assertEquals(detail, vm.settled().messages.last().error)
-        assertEquals(1, compactRequests.size)
     }
 
     @Test

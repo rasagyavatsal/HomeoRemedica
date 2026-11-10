@@ -14,9 +14,8 @@ The app is a client of the web app's API, so it holds no provider keys:
 
 - `POST /api/chat` with `Accept: text/event-stream` streams `sources`, then `text` pieces, then `done` with
   the full answer and the server-trimmed history to send with the next question, or `error` with a
-  safe `detail`.
-- `POST /api/chat/compact` condenses a chat's earlier turns into a `summary`, sent with later questions,
-  once the history nears the server's 20-turn or 16,000-character limit.
+  safe `detail`. Once a chat nears the server's limits, `done` also carries a `summary` of its earlier
+  turns, sent with later questions.
 
 Signed in, the saved-chat endpoints take a Firebase ID token as `Authorization: Bearer <token>`:
 `GET /api/chats`, `GET`, `PUT` and `DELETE /api/chats/:id`, `GET /api/chats/:id/feedback`,

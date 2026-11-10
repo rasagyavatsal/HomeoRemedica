@@ -7,6 +7,7 @@ import io.github.rasagyavatsal.homeoremedica.api.AnswerRatings
 import io.github.rasagyavatsal.homeoremedica.api.ApiException
 import io.github.rasagyavatsal.homeoremedica.api.FeedbackReason
 import io.github.rasagyavatsal.homeoremedica.api.Rating
+import io.github.rasagyavatsal.homeoremedica.api.ChatResponse
 import io.github.rasagyavatsal.homeoremedica.api.ChatTurn
 import io.github.rasagyavatsal.homeoremedica.api.GENERIC_ERROR
 import io.github.rasagyavatsal.homeoremedica.api.HomeoRemedicaApi
@@ -43,11 +44,10 @@ data class ChatState(
     val updatedAt: Long = 0,
     val messages: List<Message> = emptyList(),
     val history: List<ChatTurn> = emptyList(),
-    /** What compacting the chat condensed its earlier turns into. */
+    /** What the server condensed the chat's earlier turns into, returned with an answer. */
     val summary: String? = null,
     val draft: String = "",
     /** Whether the chat's earlier turns are being condensed before the latest question is answered. */
-    val compacting: Boolean = false,
     /** Saved chats, newest first; null while they load. */
     val chats: List<ChatSummary>? = null,
     /** A message for the reader, such as a chat that could not be saved. */
@@ -248,35 +248,17 @@ class ChatViewModel(
         val job = viewModelScope.launch(start = CoroutineStart.LAZY) {
             val self = coroutineContext.job
             fun current() = request === self
-            var history = start.history
-            var summary = start.summary
-            // A chat near the server's limits is condensed first, so its earliest turns are summarized
-            // rather than dropped.
-            if (shouldCompact(history, summary)) {
-                _state.update { it.copy(compacting = true) }
-                try {
-                    val compacted = api.compactChat(history, summary)
-                    if (!current()) return@launch
-                    history = compacted.history
-                    summary = compacted.summary
-                    _state.update { it.copy(history = history, summary = summary) }
-                } catch (_: ApiException) {
-                    // A failure still asks, and the server drops the earliest turns instead.
-                } finally {
-                    if (current()) _state.update { it.copy(compacting = false) }
-                }
-            }
             try {
                 val response = api.sendMessage(
                     question,
-                    history,
-                    summary,
+                    start.history,
+                    start.summary,
                     onSources = { sources -> if (current()) updateAnswer { it.copy(sources = sources) } },
                     onText = { piece -> if (current()) updateAnswer { it.copy(content = it.content + piece) } },
                 )
                 if (!current()) return@launch
                 request = null
-                updateAnswer(history = response.history, settled = true) {
+                updateAnswer(response, settled = true) {
                     Message(it.id, Role.Assistant, response.answer, response.sources)
                 }
                 save()
@@ -304,7 +286,6 @@ class ChatViewModel(
         val job = request ?: return
         request = null
         job.cancel()
-        _state.update { it.copy(compacting = false) }
         updateAnswer(settled = true) { it.copy(status = MessageStatus.Stopped) }
         save()
     }
@@ -463,11 +444,12 @@ class ChatViewModel(
     }
 
     /** Change the last message, the answer being streamed; a [settled] answer marks the chat updated. */
-    private fun updateAnswer(history: List<ChatTurn>? = null, settled: Boolean = false, change: (Message) -> Message) = _state.update {
+    private fun updateAnswer(response: ChatResponse? = null, settled: Boolean = false, change: (Message) -> Message) = _state.update {
         val answer = it.messages.lastOrNull() ?: return@update it
         it.copy(
             messages = it.messages.dropLast(1) + change(answer),
-            history = history ?: it.history,
+            history = response?.history ?: it.history,
+            summary = if (response != null) response.summary else it.summary,
             updatedAt = if (settled) clock() else it.updatedAt,
         )
     }

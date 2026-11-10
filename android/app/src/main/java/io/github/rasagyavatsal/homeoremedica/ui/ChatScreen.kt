@@ -447,7 +447,6 @@ private fun Conversation(
                         activeSource = openSource?.takeIf { it.messageId == message.id }?.number,
                         onSource = { number -> onSource(message.id, number) },
                         onRetry = onRetry.takeIf { index == state.messages.lastIndex },
-                        compacting = state.compacting && index == state.messages.lastIndex,
                         modifier = itemModifier.rise(message.id),
                         ratings = state.ratings[message.id],
                         onRate = if (state.canRate) ({ rating -> onRate(message.id, null, rating) }) else null,
@@ -488,7 +487,6 @@ private fun Reply(
     activeSource: Int?,
     onSource: (Int) -> Unit,
     onRetry: (() -> Unit)?,
-    compacting: Boolean,
     modifier: Modifier,
     ratings: AnswerRatings?,
     /** Rates the answer; it cannot be rated without this. */
@@ -501,11 +499,7 @@ private fun Reply(
     when {
         message.status == MessageStatus.Error -> ReplyError(message.error.orEmpty(), onRetry, modifier)
         streaming && message.content.isEmpty() -> Progress(
-            when {
-                compacting -> "Summarizing earlier messages…"
-                message.sources != null -> "Reading the passages…"
-                else -> "Searching the books…"
-            },
+            if (message.sources != null) "Reading the passages…" else "Searching the books…",
             modifier,
         )
         else -> Column(modifier) {
