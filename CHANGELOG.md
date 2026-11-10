@@ -7,6 +7,15 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [10.1.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v10.0.0...web-v10.1.0) (2026-11-10)
+
+
+### Features
+
+* **server:** answer from the five best passages instead of eight ([baf26bd](https://github.com/rasagyavatsal/HomeoRemedica/commit/baf26bd3449d3a800c69e474b791432dd8dcadfc))
+* **server:** name each ranking's first three remedies and cite the rubrics ([2d5092b](https://github.com/rasagyavatsal/HomeoRemedica/commit/2d5092bc07aa9dd5869090874d44b058a56aa550))
+* **server:** search without a ranking that does not tell remedies apart ([ae81012](https://github.com/rasagyavatsal/HomeoRemedica/commit/ae81012429e13a9c4f4abcb95cbc3b22153cb23f))
+
 ## [10.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v9.6.0...web-v10.0.0) (2026-11-10)
 
 
