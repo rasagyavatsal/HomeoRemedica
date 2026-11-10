@@ -10,7 +10,7 @@ import { serve } from '@hono/node-server'
 import { firebaseAccounts } from '../src/server/accounts.ts'
 import { type ChatHandler, createApp } from '../src/server/app.ts'
 import type { ChatOptions, ChatRequest, ChatResponse, CompactRequest, CompactResponse } from '../src/server/contracts.ts'
-import { ChatFailure } from '../src/server/errors.ts'
+import { ProviderTimeoutError } from '../src/server/errors.ts'
 import { RateLimiter } from '../src/server/rate-limit.ts'
 import {
   API_KEY,
@@ -38,7 +38,7 @@ class ScriptedChat implements ChatHandler {
     await sleep(50, undefined, { signal })
     if (message.includes(FAIL_ONCE) && !this.#failed.has(message)) {
       this.#failed.add(message)
-      throw new ChatFailure({ stage: 'answer_generation', kind: 'timeout' })
+      throw new ProviderTimeoutError('scripted timeout')
     }
     onSources?.(SOURCES)
     const answer = answerTo(message, history.findLast((turn) => turn.role === 'user')?.content)

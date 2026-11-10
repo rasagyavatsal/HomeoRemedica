@@ -1,4 +1,3 @@
-export type ChatStage = 'embedding' | 'corpus_search' | 'answer_generation' | 'compaction' | 'chat'
 export type FailureKind = 'timeout' | 'provider' | 'token_exhaustion' | 'internal'
 
 export const FAILURE_DETAILS: Record<FailureKind, string> = {
@@ -29,21 +28,6 @@ export class TokenExhaustionError extends Error {
 
   constructor() {
     super('chat response reached the output token limit')
-  }
-}
-
-/** A safe, classified failure from one stage of a chat request. */
-export class ChatFailure extends Error {
-  override name = 'ChatFailure'
-  readonly stage: ChatStage
-  readonly kind: FailureKind
-  readonly errorType: string | undefined
-
-  constructor({ stage, kind, cause }: { stage: ChatStage; kind: FailureKind; cause?: unknown }) {
-    super(`${stage} ${kind} failure`, { cause })
-    this.stage = stage
-    this.kind = kind
-    this.errorType = cause instanceof Error ? cause.name : undefined
   }
 }
 

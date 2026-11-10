@@ -12,7 +12,7 @@
  */
 
 import type { BookSummary, RetrievedSource } from './contracts.ts'
-import { ProviderError } from './errors.ts'
+import { ProviderError, isTimeout } from './errors.ts'
 import { type Fetch, isRecord, readJson, send } from './http.ts'
 
 export const DENSE_VECTOR = 'dense'
@@ -50,7 +50,7 @@ export const BOOKS: readonly BookSummary[] = [
   { bookId: 'kent_lectures', title: 'Kent, Lectures on Homoeopathic Materia Medica', author: 'James Tyler Kent' },
 ]
 
-/** A Qdrant collection is missing or unreachable. */
+/** A Qdrant collection is missing or unreachable, or a search of the collections failed. */
 export class CorpusError extends Error {
   override name = 'CorpusError'
 }
@@ -142,13 +142,19 @@ export class QdrantCorpus {
     embedding: readonly number[],
     options: SearchOptions,
   ): Promise<RetrievedSource[]> {
-    const { best } = await this.stages(query, embedding, options)
-    const payloads = await this.#payloads(best)
-    return best.map((candidate) => {
-      const payload = payloads.get(candidateKey(candidate.bookId, candidate.id))
-      if (!payload) throw new ProviderError('Qdrant returned no payload for a query point')
-      return toSource(candidate.bookId, payload, candidate.score)
-    })
+    try {
+      const { best } = await this.stages(query, embedding, options)
+      const payloads = await this.#payloads(best)
+      return best.map((candidate) => {
+        const payload = payloads.get(candidateKey(candidate.bookId, candidate.id))
+        if (!payload) throw new ProviderError('Qdrant returned no payload for a query point')
+        return toSource(candidate.bookId, payload, candidate.score)
+      })
+    } catch (error) {
+      // A failed search is not the chat provider's failure, so it is not reported as one.
+      if (isTimeout(error)) throw error
+      throw new CorpusError(`Qdrant search failed: ${error instanceof Error ? error.message : 'error'}`, { cause: error })
+    }
   }
 
   /** The candidates `search` ranks at each step, without fetching the passages. */

@@ -34,7 +34,14 @@ import {
 } from './contracts.ts'
 import { advanceHistory } from './conversation.ts'
 import { CHAT_SAVE_RATE_LIMITS, FEEDBACK_RATE_LIMITS, RateLimiter, TOTAL_CHAT_RATE_LIMITS, clientKey } from './rate-limit.ts'
-import { ChatFailure, ConfigurationError, FAILURE_DETAILS, type FailureKind } from './errors.ts'
+import {
+  ConfigurationError,
+  FAILURE_DETAILS,
+  type FailureKind,
+  ProviderError,
+  TokenExhaustionError,
+  isTimeout,
+} from './errors.ts'
 
 export interface ChatHandler {
   chat(request: ChatRequest, options?: ChatOptions): Promise<ChatResponse>
@@ -346,9 +353,17 @@ async function readBody<S extends z.ZodType>(c: Context, schema: S): Promise<z.o
 }
 
 function chatFailure(error: unknown): { detail: string; status: ContentfulStatusCode } {
-  if (error instanceof ChatFailure) return { detail: FAILURE_DETAILS[error.kind], status: FAILURE_STATUS[error.kind] }
   console.error('Production chat failed', error)
-  return { detail: FAILURE_DETAILS.internal, status: 500 }
+  const kind = failureKind(error)
+  return { detail: FAILURE_DETAILS[kind], status: FAILURE_STATUS[kind] }
+}
+
+// Anything that is not a provider's failure, such as a CorpusError from Qdrant, is internal.
+function failureKind(error: unknown): FailureKind {
+  if (error instanceof TokenExhaustionError) return 'token_exhaustion'
+  if (isTimeout(error)) return 'timeout'
+  if (error instanceof ProviderError) return 'provider'
+  return 'internal'
 }
 
 function setupFailure(c: Context, error: unknown, logMessage: string) {

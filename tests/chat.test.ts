@@ -12,7 +12,7 @@ import {
   type Retrieval,
   type Retriever,
 } from '../src/server/contracts.ts'
-import { ChatFailure, ProviderError, ProviderTimeoutError, TokenExhaustionError } from '../src/server/errors.ts'
+import { ProviderError, ProviderTimeoutError, TokenExhaustionError } from '../src/server/errors.ts'
 import { ChatService } from '../src/server/service.ts'
 
 const request = (input: Record<string, unknown>): ChatRequest => ChatRequestSchema.parse(input)
@@ -59,15 +59,6 @@ class StubGenerator implements AnswerGenerator {
     for (const piece of this.pieces) onText?.(piece)
     return this.pieces.join('')
   }
-}
-
-async function failure(promise: Promise<unknown>): Promise<ChatFailure> {
-  const error = await promise.then(
-    () => undefined,
-    (error: unknown) => error,
-  )
-  expect(error).toBeInstanceOf(ChatFailure)
-  return error as ChatFailure
 }
 
 it('grounds a conversation-aware answer in versioned sources', async () => {
@@ -189,62 +180,26 @@ it('streams no more than the answer limit', async () => {
   expect(response.answer).toBe(`${streamed}…`)
 })
 
-it('classifies retrieval errors without exposing details', async () => {
-  const retriever = new StubRetriever()
-  retriever.failure = new Error('database secret')
-
-  const error = await failure(
-    new ChatService({ retriever, generator: new StubGenerator() }).chat(request({ message: 'question' })),
-  )
-
-  expect([error.stage, error.kind]).toEqual(['corpus_search', 'internal'])
-  expect(error.message).not.toContain('database secret')
-})
-
-it('classifies a corpus search timeout', async () => {
+it('leaves a retrieval failure for the caller to classify', async () => {
   const retriever = new StubRetriever()
   retriever.failure = new ProviderTimeoutError('Qdrant request timed out')
 
-  const error = await failure(
+  await expect(
     new ChatService({ retriever, generator: new StubGenerator() }).chat(request({ message: 'question' })),
-  )
-
-  expect([error.stage, error.kind]).toEqual(['corpus_search', 'timeout'])
+  ).rejects.toBe(retriever.failure)
 })
 
-it('preserves the embedding failure stage', async () => {
-  const retriever = new StubRetriever()
-  retriever.failure = new ChatFailure({ stage: 'embedding', kind: 'timeout' })
+it.each([new ProviderError('provider secret'), new TokenExhaustionError()])(
+  'leaves an answer failure for the caller to classify (%s)',
+  async (cause) => {
+    const generator = new StubGenerator()
+    generator.failure = cause
 
-  const error = await failure(
-    new ChatService({ retriever, generator: new StubGenerator() }).chat(request({ message: 'question' })),
-  )
-
-  expect([error.stage, error.kind]).toEqual(['embedding', 'timeout'])
-})
-
-it('classifies answer provider errors', async () => {
-  const generator = new StubGenerator()
-  generator.failure = new ProviderError('provider secret')
-
-  const error = await failure(
-    new ChatService({ retriever: new StubRetriever(), generator }).chat(request({ message: 'question' })),
-  )
-
-  expect([error.stage, error.kind, error.errorType]).toEqual(['answer_generation', 'provider', 'ProviderError'])
-  expect(error.message).not.toContain('provider secret')
-})
-
-it('classifies token exhaustion without returning partial content', async () => {
-  const generator = new StubGenerator()
-  generator.failure = new TokenExhaustionError()
-
-  const error = await failure(
-    new ChatService({ retriever: new StubRetriever(), generator }).chat(request({ message: 'question' })),
-  )
-
-  expect([error.stage, error.kind]).toEqual(['answer_generation', 'token_exhaustion'])
-})
+    await expect(
+      new ChatService({ retriever: new StubRetriever(), generator }).chat(request({ message: 'question' })),
+    ).rejects.toBe(cause)
+  },
+)
 
 it('rejects oversized citation text before generating an answer', async () => {
   const retriever = new StubRetriever()
@@ -252,9 +207,9 @@ it('rejects oversized citation text before generating an answer', async () => {
   const retrieval = await retriever.retrieve(request({ message: 'question' }), { limit: 8 })
   retriever.retrieve = async () => ({ ...retrieval, sources: [{ ...retrieval.sources[0]!, text: 'x'.repeat(8_001) }] })
 
-  const error = await failure(new ChatService({ retriever, generator }).chat(request({ message: 'question' })))
-
-  expect([error.stage, error.kind]).toEqual(['chat', 'internal'])
+  await expect(new ChatService({ retriever, generator }).chat(request({ message: 'question' }))).rejects.toThrow(
+    RangeError,
+  )
   expect(generator.generationPrompt).toBeNull()
 })
 
@@ -342,13 +297,11 @@ describe('compaction', () => {
     expect(summary.endsWith('…')).toBe(true)
   })
 
-  it('classifies provider errors', async () => {
-    const { service } = summarizer(new ProviderTimeoutError('provider secret'))
+  it('leaves a provider failure for the caller to classify', async () => {
+    const cause = new ProviderTimeoutError('provider secret')
+    const { service } = summarizer(cause)
 
-    const error = await failure(service.compact({ history }))
-
-    expect([error.stage, error.kind]).toEqual(['compaction', 'timeout'])
-    expect(error.message).not.toContain('provider secret')
+    await expect(service.compact({ history })).rejects.toBe(cause)
   })
 })
 
@@ -417,11 +370,8 @@ it('production retriever embeds the conversation', async () => {
   expect(searchCall).toEqual([query, [1.0, 0.0], 8])
 })
 
-it.each([
-  [new ProviderTimeoutError('embedding secret'), 'timeout'],
-  [new ProviderError('embedding secret'), 'provider'],
-  [new TypeError('embedding secret'), 'internal'],
-])('production retriever classifies embedding failures (%s)', async (cause, kind) => {
+it('production retriever leaves an embedding failure for the caller to classify', async () => {
+  const cause = new ProviderError('embedding secret')
   const corpus: SearchableRelease = {
     search: async () => [],
   }
@@ -431,10 +381,7 @@ it.each([
     },
   }
 
-  const error = await failure(
+  await expect(
     new ProductionRetriever(corpus, embedder).retrieve(request({ message: 'question' }), { limit: 8 }),
-  )
-
-  expect([error.stage, error.kind]).toEqual(['embedding', kind])
-  expect(error.message).not.toContain('embedding secret')
+  ).rejects.toBe(cause)
 })

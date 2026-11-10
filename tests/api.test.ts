@@ -9,7 +9,7 @@ import { BOOKS, CorpusError } from '../src/server/qdrant.ts'
 import { RateLimiter } from '../src/server/rate-limit.ts'
 import type { Settings } from '../src/server/runtime.ts'
 import type { BookSummary, ChatOptions, ChatRequest, ChatResponse, CompactRequest, CompactResponse } from '../src/server/contracts.ts'
-import { ChatFailure, ConfigurationError, type FailureKind } from '../src/server/errors.ts'
+import { ConfigurationError, ProviderError, ProviderTimeoutError, TokenExhaustionError } from '../src/server/errors.ts'
 
 const BOOK: BookSummary = { bookId: 'kent_lectures', title: "Kent's Lectures", author: 'Kent' }
 const INTERNAL = 'Something went wrong while preparing the answer. Please try again.'
@@ -170,8 +170,9 @@ describe('streamed chat', () => {
   })
 
   it('reports chat failures as an error event without details', async () => {
+    quiet()
     const { service, postStream } = setup()
-    service.failure = new ChatFailure({ stage: 'answer_generation', kind: 'timeout', cause: new Error('private-secret') })
+    service.failure = new ProviderTimeoutError('private-secret')
 
     const response = await postStream({ message: 'question' })
 
@@ -303,8 +304,9 @@ describe('compaction', () => {
   })
 
   it('has friendly failure details', async () => {
+    quiet()
     const { app, service } = setup()
-    service.failure = new ChatFailure({ stage: 'compaction', kind: 'timeout', cause: new Error('private-secret') })
+    service.failure = new ProviderTimeoutError('private-secret')
 
     const response = await compact(app, { history })
 
@@ -362,14 +364,16 @@ describe('invalid requests are rejected before chat', () => {
   })
 })
 
-it.each<[FailureKind, number, string]>([
-  ['timeout', 504, 'The request took too long. Please try again.'],
-  ['provider', 502, 'The chat provider is temporarily unavailable. Please try again shortly.'],
-  ['token_exhaustion', 502, 'Response limit reached. Please try again.'],
-  ['internal', 500, INTERNAL],
-])('classified %s failures have friendly details', async (kind, status, detail) => {
+it.each<[Error, number, string]>([
+  [new ProviderTimeoutError('private-secret'), 504, 'The request took too long. Please try again.'],
+  [new DOMException('private-secret', 'TimeoutError'), 504, 'The request took too long. Please try again.'],
+  [new ProviderError('private-secret'), 502, 'The chat provider is temporarily unavailable. Please try again shortly.'],
+  [new TokenExhaustionError(), 502, 'Response limit reached. Please try again.'],
+  [new CorpusError('private-secret'), 500, INTERNAL],
+])('%s failures have friendly details', async (failure, status, detail) => {
+  quiet()
   const { service, post } = setup()
-  service.failure = new ChatFailure({ stage: 'answer_generation', kind, cause: new Error('private-secret') })
+  service.failure = failure
 
   const response = await post({ message: 'question' })
 

@@ -12,10 +12,8 @@ import {
   MAX_GENERATED_ANSWER_CHARS,
   MAX_GENERATION_PROMPT_CHARS,
   MAX_TURN_CHARS,
-  type Retrieval,
   type Retriever,
 } from './contracts.ts'
-import { ChatFailure, type FailureKind, ProviderError, TokenExhaustionError, isTimeout } from './errors.ts'
 import { COMPACTION_INSTRUCTION, NO_SOURCES_ANSWER, SYSTEM_INSTRUCTION, compactionPrompt, generationPrompt } from './generation.ts'
 
 /** How many of the books' passages each answer is generated from. */
@@ -52,17 +50,11 @@ export class ChatService {
   }
 
   async chat(request: ChatRequest, { onSources, onText, signal }: ChatOptions = {}): Promise<ChatResponse> {
-    let retrieval: Retrieval
-    try {
-      retrieval = await this.#retriever.retrieve(request, { limit: this.#sourceLimit })
-    } catch (error) {
-      if (error instanceof ChatFailure) throw error
-      throw new ChatFailure({ stage: 'corpus_search', kind: isTimeout(error) ? 'timeout' : 'internal', cause: error })
-    }
+    const retrieval = await this.#retriever.retrieve(request, { limit: this.#sourceLimit })
     const { sources } = retrieval
     // Reject an unusable corpus before paying for an answer.
     if (sources.some((source) => source.text.length > MAX_CITATION_TEXT_CHARS)) {
-      throw new ChatFailure({ stage: 'chat', kind: 'internal', cause: new RangeError('citation text is too long') })
+      throw new RangeError('citation text is too long')
     }
 
     const citations: Citation[] = sources.map((source) => ({
@@ -84,25 +76,20 @@ export class ChatService {
       onText?.(generatedAnswer)
     } else {
       let streamed = 0
-      try {
-        generatedAnswer = (
-          await this.#generator.generate(generationPrompt(request, retrieval, { maxChars: this.#promptCharLimit }), {
-            systemInstruction: SYSTEM_INSTRUCTION,
-            signal,
-            // Stream no more than the answer limit; the final answer is authoritative.
-            onText:
-              onText &&
-              ((text) => {
-                const piece = text.slice(0, MAX_GENERATED_ANSWER_CHARS - streamed)
-                streamed += piece.length
-                if (piece) onText(piece)
-              }),
-          })
-        ).trim()
-      } catch (error) {
-        if (error instanceof ChatFailure) throw error
-        throw new ChatFailure({ stage: 'answer_generation', kind: generationFailureKind(error), cause: error })
-      }
+      generatedAnswer = (
+        await this.#generator.generate(generationPrompt(request, retrieval, { maxChars: this.#promptCharLimit }), {
+          systemInstruction: SYSTEM_INSTRUCTION,
+          signal,
+          // Stream no more than the answer limit; the final answer is authoritative.
+          onText:
+            onText &&
+            ((text) => {
+              const piece = text.slice(0, MAX_GENERATED_ANSWER_CHARS - streamed)
+              streamed += piece.length
+              if (piece) onText(piece)
+            }),
+        })
+      ).trim()
     }
     if (generatedAnswer.length > MAX_GENERATED_ANSWER_CHARS) {
       generatedAnswer = `${generatedAnswer.slice(0, MAX_GENERATED_ANSWER_CHARS).trimEnd()}…`
@@ -118,26 +105,13 @@ export class ChatService {
   /** Condense all but the latest exchange, and any earlier summary, into a new summary. */
   async compact({ history, summary }: CompactRequest, { signal }: { signal?: AbortSignal } = {}): Promise<CompactResponse> {
     const older = { history: history.slice(0, -KEPT_TURNS), summary }
-    let condensed: string
-    try {
-      condensed = (
-        await this.#generator.generate(compactionPrompt(older, { maxChars: this.#promptCharLimit }), {
-          systemInstruction: COMPACTION_INSTRUCTION,
-          signal,
-        })
-      ).trim()
-    } catch (error) {
-      if (error instanceof ChatFailure) throw error
-      throw new ChatFailure({ stage: 'compaction', kind: generationFailureKind(error), cause: error })
-    }
+    let condensed = (
+      await this.#generator.generate(compactionPrompt(older, { maxChars: this.#promptCharLimit }), {
+        systemInstruction: COMPACTION_INSTRUCTION,
+        signal,
+      })
+    ).trim()
     if (condensed.length > MAX_TURN_CHARS) condensed = `${condensed.slice(0, MAX_TURN_CHARS - 1).trimEnd()}…`
     return { summary: condensed, history: history.slice(-KEPT_TURNS) }
   }
-}
-
-function generationFailureKind(error: unknown): FailureKind {
-  if (error instanceof TokenExhaustionError) return 'token_exhaustion'
-  if (isTimeout(error)) return 'timeout'
-  if (error instanceof ProviderError) return 'provider'
-  return 'internal'
 }

@@ -8,7 +8,6 @@ import {
   type Retriever,
 } from './contracts.ts'
 import { type ClinicalMatch, type ClinicalRanker, decisiveMatch, leadingClinicalRemedies } from './clinical.ts'
-import { ChatFailure, ProviderError, isTimeout } from './errors.ts'
 import { type Repertorisation, type Repertoriser, decisive, leadingRemedies } from './repertory.ts'
 
 const PREVIOUS_QUESTIONS = 2
@@ -58,7 +57,7 @@ export class ProductionRetriever implements Retriever {
       .join('\n')
       .slice(-MAX_RETRIEVAL_QUERY_CHARS)
     const [embedding, repertorisation, match] = await Promise.all([
-      this.#embed(query),
+      this.#embedder.embedQuery(query),
       this.#repertorisation(query),
       this.#clinicalMatch(query),
     ])
@@ -73,16 +72,6 @@ export class ProductionRetriever implements Retriever {
       sources: [...passages, ...rubrics],
       repertory: remedies,
       clinical: match ? leadingClinicalRemedies(match) : [],
-    }
-  }
-
-  async #embed(query: string): Promise<readonly number[]> {
-    try {
-      return await this.#embedder.embedQuery(query)
-    } catch (error) {
-      if (error instanceof ChatFailure) throw error
-      const kind = isTimeout(error) ? 'timeout' : error instanceof ProviderError ? 'provider' : 'internal'
-      throw new ChatFailure({ stage: 'embedding', kind, cause: error })
     }
   }
 

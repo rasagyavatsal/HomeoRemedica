@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { VOYAGE_DIMENSIONS, VoyageQueryEmbedder } from '../src/server/embeddings.ts'
 import { BOOKS, CorpusError, QdrantCorpus } from '../src/server/qdrant.ts'
-import { ProviderError, ProviderTimeoutError } from '../src/server/errors.ts'
+import { ProviderTimeoutError } from '../src/server/errors.ts'
 import { fakeFetch, json, timeout } from './fakes.ts'
 
 const PAYLOAD = {
@@ -194,15 +194,21 @@ describe('Qdrant corpus', () => {
     await expect(corpus(fetch).search('question', [1.0], { limit: 1 })).rejects.toThrow(/no payload/)
   })
 
-  it('raises provider errors without the response body', async () => {
+  it('raises corpus errors without the response body', async () => {
     const fetch = fakeFetch(new Response('provider secret', { status: 500 }))
 
     const error = await corpus(fetch)
       .search('question', [1.0], { limit: 1 })
       .catch((error: unknown) => error)
 
-    expect(error).toBeInstanceOf(ProviderError)
+    expect(error).toBeInstanceOf(CorpusError)
     expect(String(error)).not.toContain('provider secret')
+  })
+
+  it('leaves a search timeout as a timeout', async () => {
+    await expect(corpus(fakeFetch(timeout())).search('question', [1.0], { limit: 1 })).rejects.toThrow(
+      ProviderTimeoutError,
+    )
   })
 
   it('searches every book by default', () => {
