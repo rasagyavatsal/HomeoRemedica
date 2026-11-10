@@ -1,6 +1,6 @@
 /**
  * The diseases a model names for each case, asked once and kept in .cache/retrieval-diseases.json,
- * keyed by the model, production's disease instruction and the case, so every arm and every later
+ * keyed by the model, production's disease instruction and the case, so every later
  * run of the retrieval eval matches the same diseases to Clarke's clinical terms.
  */
 

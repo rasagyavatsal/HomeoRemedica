@@ -236,11 +236,10 @@ npm run eval:retrieval
 ```
 
 `npm run eval:retrieval` scores retrieval alone, without generating answers, in under a minute. It
-asks the same cases, so it needs the private clone. For each way of ordering the fused results,
-production's and fusion without the regrouping by remedy, it reports how often a source on the
-cured remedy ranks first or within the top 3, 5 and 8, the mean reciprocal rank, and the average
-share of each case's differential that the eight sources cover. It then lists the cases production
-does not rank first and those the other orderings rank differently. Add
+asks the same cases, so it needs the private clone. For production's retrieval it reports how
+often a source on the cured remedy ranks first or within the top 3, 5 and 8, the mean reciprocal
+rank, and the average share of each case's differential that the eight sources cover. It then
+lists the cases it does not rank first and the step at which each lost the cured remedy. Add
 `-- --out results.json` to keep every case's sources.
 
 ## Deployment

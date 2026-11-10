@@ -1,10 +1,10 @@
 /**
  * A model's remedies for a case from the case alone, without retrieval, as the unaided eval scores
- * them and as the retrieval eval weighs them.
+ * them.
  *
  * A Claude model runs through the Claude Code CLI on its signed-in subscription, a model named
  * `vendor/model` through OpenRouter, and any other through Z.AI like production's answer model. Replies are kept in .cache/unaided.json, keyed
- * by the model, the instructions and the case, so later runs of either eval reuse them.
+ * by the model, the instructions and the case, so later runs reuse them.
  */
 
 import { createHash } from 'node:crypto'
