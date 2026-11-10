@@ -14,6 +14,7 @@ import {
   MAX_TURN_CHARS,
   type Retriever,
 } from './contracts.ts'
+import { shouldCompact } from './conversation.ts'
 import { COMPACTION_INSTRUCTION, NO_SOURCES_ANSWER, SYSTEM_INSTRUCTION, compactionPrompt, generationPrompt } from './generation.ts'
 
 /** How many of the books' passages each answer is generated from. */
@@ -50,6 +51,14 @@ export class ChatService {
   }
 
   async chat(request: ChatRequest, { onSources, onText, signal }: ChatOptions = {}): Promise<ChatResponse> {
+    // Condense a nearly full chat while the books are searched. A failure answers from the
+    // context as it was, and the earliest turns are dropped instead.
+    const compacting = shouldCompact(request)
+      ? this.compact(request, { signal }).catch((error: unknown) => {
+          if (!signal?.aborted) console.error('Compacting a chat failed; answering without it', error)
+          return undefined
+        })
+      : undefined
     const retrieval = await this.#retriever.retrieve(request, { limit: this.#sourceLimit })
     const { sources } = retrieval
     // Reject an unusable corpus before paying for an answer.
@@ -69,6 +78,7 @@ export class ChatService {
     }))
     onSources?.(citations)
 
+    const compacted = await compacting
     let generatedAnswer: string
     if (!sources.length) {
       // Without evidence the model could only decline, so skip the call.
@@ -77,7 +87,7 @@ export class ChatService {
     } else {
       let streamed = 0
       generatedAnswer = (
-        await this.#generator.generate(generationPrompt(request, retrieval, { maxChars: this.#promptCharLimit }), {
+        await this.#generator.generate(generationPrompt({ ...request, ...compacted }, retrieval, { maxChars: this.#promptCharLimit }), {
           systemInstruction: SYSTEM_INSTRUCTION,
           signal,
           // Stream no more than the answer limit; the final answer is authoritative.
@@ -99,6 +109,7 @@ export class ChatService {
       corpusVersion: CORPUS_VERSION,
       model: this.#generator.model,
       sources: citations,
+      ...(compacted && { compacted }),
     }
   }
 

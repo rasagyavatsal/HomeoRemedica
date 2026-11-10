@@ -126,6 +126,8 @@ export interface ChatResponse {
   corpusVersion: string
   model: string
   sources: readonly Citation[]
+  /** The context a nearly full chat was condensed into before it was answered. */
+  compacted?: CompactResponse
 }
 
 /** Optional progress callbacks for a chat request. */
@@ -142,12 +144,14 @@ export interface BookCatalog {
   books: readonly BookSummary[]
 }
 
-/** `POST /api/chat`: the answer plus the trimmed history to send with the next question. */
-export interface WebChatResponse extends ChatResponse {
+/** `POST /api/chat`: the answer plus the trimmed history and the summary to send with the next question. */
+export interface WebChatResponse extends Omit<ChatResponse, 'compacted'> {
   history: ChatTurn[]
+  /** What the chat's earlier turns were condensed into, now or before. */
+  summary?: string
 }
 
-/** `POST /api/chat/compact`: the summary and history to send with the next question. */
+/** A chat's context once condensed; also what `POST /api/chat/compact` answers released Android builds. */
 export interface CompactResponse {
   summary: string
   history: ChatTurn[]
