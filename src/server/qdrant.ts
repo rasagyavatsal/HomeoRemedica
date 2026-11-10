@@ -35,6 +35,22 @@ export const PRIOR_WEIGHT = 0.5
 export const QDRANT_TIMEOUT_MS = 30_000
 const LABEL = 'Qdrant'
 
+/** A ranking of remedy ids, best first, weighed with the books' support at `weight`. */
+export interface WeighedRanking {
+  ranking: readonly string[]
+  weight: number
+}
+
+export interface SearchOptions {
+  limit: number
+  /** Searches only these remedies' passages. */
+  remedies?: readonly string[] | undefined
+  /** A ranking weighed with the books' support at the corpus's prior weight. */
+  prior?: readonly string[] | undefined
+  /** Further rankings weighed with the books' support beside `prior`, each at its own weight. */
+  priors?: readonly WeighedRanking[] | undefined
+}
+
 // Book IDs are the books' Qdrant collection names.
 export const BOOKS: readonly BookSummary[] = [
   { bookId: 'allen_keynotes', title: 'Allen, Keynotes and Characteristics', author: 'H. C. Allen' },
@@ -158,12 +174,12 @@ export class QdrantCorpus {
   /**
    * The best `limit` passages, from only the given remedies' passages when `remedies` is set. A
    * `prior` ranking of remedy ids, best first, is weighed with the books' support when the results
-   * are regrouped.
+   * are regrouped, at the corpus's prior weight, and each of `priors` beside it at its own weight.
    */
   async search(
     query: string,
     embedding: readonly number[],
-    options: { limit: number; remedies?: readonly string[] | undefined; prior?: readonly string[] | undefined },
+    options: SearchOptions,
   ): Promise<RetrievedSource[]> {
     const { best } = await this.stages(query, embedding, options)
     const payloads = await this.#payloads(best)
@@ -182,7 +198,8 @@ export class QdrantCorpus {
       limit,
       remedies,
       prior,
-    }: { limit: number; remedies?: readonly string[] | undefined; prior?: readonly string[] | undefined },
+      priors = [],
+    }: SearchOptions,
   ): Promise<SearchStages> {
     const candidates = limit * PREFETCH_MULTIPLIER
     const rankings = await Promise.all(
@@ -207,7 +224,8 @@ export class QdrantCorpus {
     const found = { dense, sparse, fused: fusedRanking, reranked }
     if (remedies && this.#remedyOrder) return { ...found, support: null, best: inRemedyOrder(ranked, remedies, limit) }
     if (!this.#regroup || dominated(ranked, limit)) return { ...found, support: null, best: ranked.slice(0, limit) }
-    const support = prior ? withPrior(bySupport(ranked), prior, this.#priorWeight, this.#priorK) : bySupport(ranked)
+    const weighed = [...(prior ? [{ ranking: prior, weight: this.#priorWeight }] : []), ...priors]
+    const support = weighed.length ? withPriors(bySupport(ranked), weighed, this.#priorK) : bySupport(ranked)
     return { ...found, support, best: select(ranked, support, limit) }
   }
 
@@ -338,13 +356,17 @@ function bySupport(ranked: readonly Candidate[]): string[] {
   return [...support.keys()].sort((a, b) => support.get(b)! - support.get(a)!)
 }
 
-/** The supported subjects reordered by reciprocal-rank fusion with a prior ranking of remedy ids. */
-function withPrior(support: readonly string[], prior: readonly string[], weight: number, k: number): string[] {
-  const places = new Map(prior.map((remedy, index) => [`remedy:${remedy}`, index + 1]))
+/** The supported subjects reordered by reciprocal-rank fusion with weighed rankings of remedy ids. */
+function withPriors(support: readonly string[], priors: readonly WeighedRanking[], k: number): string[] {
+  const places = priors.map(({ ranking }) => new Map(ranking.map((remedy, index) => [`remedy:${remedy}`, index + 1])))
   const scores = new Map(
     support.map((subject, index) => {
-      const place = places.get(subject)
-      return [subject, 1 / (k + index + 1) + (place ? weight / (k + place) : 0)]
+      let score = 1 / (k + index + 1)
+      for (const [at, { weight }] of priors.entries()) {
+        const place = places[at]!.get(subject)
+        if (place) score += weight / (k + place)
+      }
+      return [subject, score]
     }),
   )
   return [...support].sort((a, b) => scores.get(b)! - scores.get(a)!)
