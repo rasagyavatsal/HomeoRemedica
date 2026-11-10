@@ -9,7 +9,7 @@ import {
   MAX_HISTORY_CHARS,
   MAX_HISTORY_TURNS,
   type GenerateOptions,
-  type RetrievedSource,
+  type Retrieval,
   type Retriever,
 } from '../src/server/contracts.ts'
 import { ChatFailure, ProviderError, ProviderTimeoutError, TokenExhaustionError } from '../src/server/errors.ts'
@@ -22,11 +22,14 @@ class StubRetriever implements Retriever {
   searchCall: { request: ChatRequest; limit: number } | null = null
   failure: unknown = null
 
-  async retrieve(request: ChatRequest, { limit }: { limit: number }): Promise<RetrievedSource[]> {
+  async retrieve(request: ChatRequest, { limit }: { limit: number }): Promise<Retrieval> {
     this.searchCall = { request, limit }
     if (this.failure) throw this.failure
-    return [
-      {
+    return {
+      repertory: [],
+      clinical: [],
+      sources: [
+        {
         chunkId: 'chk_1',
         bookId: 'kent_lectures',
         bookTitle: "Kent's Lectures",
@@ -37,7 +40,8 @@ class StubRetriever implements Retriever {
         text: 'The patient is irritable and oversensitive.',
         score: 0.03,
       },
-    ]
+      ],
+    }
   }
 }
 
@@ -90,15 +94,65 @@ it('grounds a conversation-aware answer in versioned sources', async () => {
 
 it('names passages without a remedy by their section', async () => {
   const retriever = new StubRetriever()
-  const [source] = await retriever.retrieve(request({ message: 'question' }), { limit: 1 })
-  retriever.retrieve = async () => [
-    { ...source!, bookTitle: 'Hahnemann, Organon of Medicine', remedyName: null, sectionTitle: 'Organon of Medicine: § 5' },
-  ]
+  const retrieval = await retriever.retrieve(request({ message: 'question' }), { limit: 1 })
+  const source = retrieval.sources[0]!
+  retriever.retrieve = async () => ({
+    ...retrieval,
+    sources: [{ ...source, bookTitle: 'Hahnemann, Organon of Medicine', remedyName: null, sectionTitle: 'Organon of Medicine: § 5' }],
+  })
   const generator = new StubGenerator()
 
   await new ChatService({ retriever, generator }).chat(request({ message: 'What is § 5 about?' }))
 
   expect(generator.generationPrompt).toContain('[1] Hahnemann, Organon of Medicine — Organon of Medicine: § 5\n')
+})
+
+it('gives the model the rankings with the rubrics they point to, and cites the rubrics', async () => {
+  const retriever = new StubRetriever()
+  const retrieval = await retriever.retrieve(request({ message: 'question' }), { limit: 5 })
+  retriever.retrieve = async () => ({
+    sources: [
+      ...retrieval.sources,
+      {
+        chunkId: 'kent_repertory-00042',
+        bookId: 'kent_repertory',
+        bookTitle: 'Kent, Repertory of the Homoeopathic Materia Medica',
+        author: 'James Tyler Kent',
+        remedyName: null,
+        sectionTitle: 'Mind: irritability',
+        passageIndexes: [],
+        text: 'Remedies and their grades: Nux vomica (3)',
+        score: 0,
+      },
+    ],
+    repertory: [
+      { remedyName: 'Nux vomica', matched: [{ text: 'Mind: irritable', source: 2 }, { text: 'Sleep: waking at 3 a.m.' }] },
+    ],
+    clinical: [{ remedyName: 'Colocynthis', matched: [{ text: 'sciatica' }] }],
+  })
+  const generator = new StubGenerator()
+
+  const response = await new ChatService({ retriever, generator }).chat(request({ message: 'An irritable man with sciatica.' }))
+
+  expect(generator.generationPrompt).toContain(
+    '<repertory_ranking>\n1. Nux vomica: Mind: irritable [2]; Sleep: waking at 3 a.m.\n</repertory_ranking>\n' +
+      '<clinical_ranking>\n1. Colocynthis: sciatica\n</clinical_ranking>\n',
+  )
+  expect(generator.generationPrompt).toContain(
+    '[2] Kent, Repertory of the Homoeopathic Materia Medica — Mind: irritability\nRemedies and their grades: Nux vomica (3)',
+  )
+  expect(response.sources.map((source) => source.id)).toEqual([
+    '2026-08-15.v1/kent_lectures/chk_1',
+    '2026-08-15.v1/kent_repertory/kent_repertory-00042',
+  ])
+})
+
+it('gives the model no rankings when there are none', async () => {
+  const generator = new StubGenerator()
+
+  await new ChatService({ retriever: new StubRetriever(), generator }).chat(request({ message: 'question' }))
+
+  expect(generator.generationPrompt).not.toContain('ranking')
 })
 
 it('reports sources before streaming answer text', async () => {
@@ -196,8 +250,8 @@ it('classifies token exhaustion without returning partial content', async () => 
 it('rejects oversized citation text before generating an answer', async () => {
   const retriever = new StubRetriever()
   const generator = new StubGenerator()
-  const sources = await retriever.retrieve(request({ message: 'question' }), { limit: 8 })
-  retriever.retrieve = async () => [{ ...sources[0]!, text: 'x'.repeat(8_001) }]
+  const retrieval = await retriever.retrieve(request({ message: 'question' }), { limit: 8 })
+  retriever.retrieve = async () => ({ ...retrieval, sources: [{ ...retrieval.sources[0]!, text: 'x'.repeat(8_001) }] })
 
   const error = await failure(new ChatService({ retriever, generator }).chat(request({ message: 'question' })))
 
@@ -207,7 +261,7 @@ it('rejects oversized citation text before generating an answer', async () => {
 
 it('answers without the model when retrieval finds no sources', async () => {
   const retriever = new StubRetriever()
-  retriever.retrieve = async () => []
+  retriever.retrieve = async () => ({ sources: [], repertory: [], clinical: [] })
   const generator = new StubGenerator()
 
   const streamed: string[] = []

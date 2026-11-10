@@ -77,12 +77,33 @@ export interface RetrievedSource {
   bookId: string
   bookTitle: string
   author: string | null
-  /** Null for chunks about principles rather than a remedy, such as the Organon's. */
+  /** Null for chunks about principles rather than a remedy, such as the Organon's, and for rubrics. */
   remedyName: string | null
   sectionTitle: string
   passageIndexes: readonly number[]
   text: string
+  /** The passage's fused search score; 0 for a rubric, which the search does not rank. */
   score: number
+}
+
+/** A remedy that the repertories or Clarke's Clinical sections rank among the first for a case. */
+export interface RankedRemedy {
+  remedyName: string
+  /**
+   * The case's symptoms the remedy covers, or the diseases Clarke lists it for. `source` is the
+   * place, from 1, of the rubric among the retrieved sources that lists the remedy for a symptom.
+   */
+  matched: readonly { text: string; source?: number }[]
+}
+
+/** What an answer is generated from. */
+export interface Retrieval {
+  /** The books' passages, then the repertory rubrics that `repertory` points to. */
+  sources: readonly RetrievedSource[]
+  /** The repertories' leading remedies, best first; empty when they rank none for the question. */
+  repertory: readonly RankedRemedy[]
+  /** Clarke's leading remedies, best first; empty when he ranks none for the question. */
+  clinical: readonly RankedRemedy[]
 }
 
 export interface Citation {
@@ -277,7 +298,8 @@ export function answerRatings({ rating, sources, reasons, comment }: SavedRating
 
 export interface Retriever {
   readonly corpusVersion: string
-  retrieve(request: ChatRequest, options: { limit: number }): Promise<readonly RetrievedSource[]>
+  /** `limit` bounds the books' passages; the rubrics come on top of it. */
+  retrieve(request: ChatRequest, options: { limit: number }): Promise<Retrieval>
 }
 
 export interface GenerateOptions {

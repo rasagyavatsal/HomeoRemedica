@@ -10,10 +10,10 @@
  * repertories'; merged into the repertories' symptoms, it made their ranking worse.
  */
 
-import type { AnswerGenerator } from './contracts.ts'
+import type { AnswerGenerator, RankedRemedy } from './contracts.ts'
 import { ProviderError } from './errors.ts'
 import { type Fetch, isRecord, readJson, send } from './http.ts'
-import { INDECISIVE_TIES } from './repertory.ts'
+import { INDECISIVE_TIES, LEADING_REMEDIES, remedyName } from './repertory.ts'
 
 export const CLINICAL_COLLECTION = 'clarke_clinical'
 const LABEL = 'Qdrant clinical terms'
@@ -128,6 +128,14 @@ export function decisiveMatch({ terms, ranking }: ClinicalMatch): boolean {
   if (!lead) return false
   if (lead > 1) return true
   return [...counts.values()].filter((count) => count === lead).length < INDECISIVE_TIES
+}
+
+/** The match's first `limit` remedies, each with the matched terms that list it. */
+export function leadingClinicalRemedies({ terms, ranking }: ClinicalMatch, limit = LEADING_REMEDIES): RankedRemedy[] {
+  return ranking.slice(0, limit).map((remedyId) => ({
+    remedyName: remedyName(remedyId),
+    matched: terms.filter((term) => term.remedies.includes(remedyId)).map(({ text }) => ({ text })),
+  }))
 }
 
 export interface DiseaseExtractor {

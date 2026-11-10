@@ -20,6 +20,10 @@ Firebase Authentication · Firestore · Vitest · Playwright
 - **Hybrid retrieval:** fuses BM25 and voyage-4 vector rankings from every book's collection
   through reciprocal-rank fusion, with up to five retrieved chunks per answer. A list of symptoms
   gets the remedies that most books support.
+- **Repertorisation:** for a described case, ranks remedies by the symptoms they cover in Kent's
+  and Boericke's Repertories and by the diseases Clarke's Clinical sections list them for. Both
+  rankings count the same as the books' support, and the answer names the first three remedies of
+  each, citing the rubrics. A ranking that many remedies lead together at a low score is left out.
 - **Structured corpus:** preserves book, remedy, and section metadata on every chunk, so
   citations point to their source.
 - **Automated quality checks:** checks package boundaries, type-checks the server, tests against
@@ -40,7 +44,11 @@ flowchart TD
     V --> R
     E --> R
     R --> D[Regrouping by remedy when no remedy dominates]
+    Q --> X[Repertory and clinical rankings of remedies]
+    X --> D
     D --> P[Up to five chunks with source metadata]
+    X --> T[First three remedies of each ranking, with rubrics]
+    T --> G
     Q --> G[Answer generation via Z.AI]
     P --> G
     G --> O[Answer with numbered source references]

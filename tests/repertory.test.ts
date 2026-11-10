@@ -11,6 +11,7 @@ import {
   Repertory,
   type Rubric,
   decisive,
+  leadingRemedies,
   parseSymptoms,
   rankRemedies,
 } from '../src/server/repertory.ts'
@@ -19,6 +20,7 @@ import { fakeFetch, json } from './fakes.ts'
 
 const rubric = (text: string, ...remedies: [string, number][]): Rubric => ({
   id: text,
+  bookId: 'kent_repertory',
   chapter: text.split(':')[0]!,
   text,
   remedies,
@@ -68,6 +70,52 @@ describe('decisive', () => {
     expect(decisive({ symptoms: symptoms(1), remedies: remedies(1, 1, 1, 1) })).toBe(true)
     expect(decisive({ symptoms: symptoms(7), remedies: remedies(3, 2, 2, 2, 2, 2) })).toBe(true)
     expect(decisive({ symptoms: symptoms(6), remedies: remedies(3, 3, 3, 3, 3, 3) })).toBe(true)
+  })
+})
+
+describe('leadingRemedies', () => {
+  const matches = [
+    {
+      symptom: 'Mind: weeps easily',
+      rubrics: [rubric('Mind: weeping', ['pulsatilla', 3], ['natrum-muriaticum', 2]), rubric('Mind: weeping, alone', ['natrum-muriaticum', 3])],
+    },
+    { symptom: 'Stomach: no thirst', rubrics: [rubric('Stomach: thirstless', ['pulsatilla', 3], ['gelsemium', 2])] },
+  ]
+  const repertorisation = { symptoms: matches, remedies: rankRemedies(matches) }
+
+  it('gives the first remedies with their symptoms and the rubric that grades each highest', () => {
+    const { remedies, rubrics } = leadingRemedies(repertorisation, { firstSource: 6, limit: 2 })
+
+    expect(remedies).toEqual([
+      { remedyName: 'Pulsatilla', matched: [{ text: 'Mind: weeps easily', source: 6 }, { text: 'Stomach: no thirst', source: 8 }] },
+      { remedyName: 'Natrum muriaticum', matched: [{ text: 'Mind: weeps easily', source: 7 }] },
+    ])
+    expect(rubrics.map((source) => [source.bookTitle, source.sectionTitle, source.text])).toEqual([
+      ['Kent, Repertory of the Homoeopathic Materia Medica', 'Mind: weeping', 'Remedies and their grades: Pulsatilla (3), Natrum muriaticum (2)'],
+      ['Kent, Repertory of the Homoeopathic Materia Medica', 'Mind: weeping, alone', 'Remedies and their grades: Natrum muriaticum (3)'],
+      ['Kent, Repertory of the Homoeopathic Materia Medica', 'Stomach: thirstless', 'Remedies and their grades: Pulsatilla (3), Gelsemium (2)'],
+    ])
+    expect(rubrics[0]).toMatchObject({ chunkId: 'Mind: weeping', bookId: 'kent_repertory', remedyName: null, passageIndexes: [] })
+  })
+
+  it('names three remedies and cites no more rubrics than it may', () => {
+    const { remedies, rubrics } = leadingRemedies(repertorisation, { firstSource: 1, maxRubrics: 1 })
+
+    expect(remedies.map((remedy) => remedy.remedyName)).toEqual(['Pulsatilla', 'Natrum muriaticum', 'Gelsemium'])
+    expect(remedies[1]?.matched).toEqual([{ text: 'Mind: weeps easily' }])
+    expect(rubrics).toHaveLength(1)
+  })
+
+  it("lists the leading remedies first in a long rubric's source, then the rest by grade", () => {
+    const many = Array.from({ length: 45 }, (_, index): [string, number] => [`remedy-${index}`, index === 44 ? 3 : 1])
+    const long = [{ symptom: 'Mind: anxious', rubrics: [rubric('Mind: anxiety', ...many, ['sulphur', 1])] }]
+
+    const { rubrics } = leadingRemedies(
+      { symptoms: long, remedies: [{ remedyId: 'sulphur', symptoms: 1, grades: 1 }] },
+      { firstSource: 1 },
+    )
+
+    expect(rubrics[0]?.text).toMatch(/^Remedies and their grades: Sulphur \(1\), Remedy 44 \(3\), Remedy 0 \(1\), .*, and 6 more$/)
   })
 })
 
@@ -181,7 +229,7 @@ describe('Qdrant rubrics', () => {
         with_vector: false,
       })),
     })
-    expect(found).toEqual([[{ id: 'kent_repertory-00002', chapter: 'Mind', text: 'Mind: absent minded', remedies: [['nux', 2]] }], []])
+    expect(found).toEqual([[{ id: 'kent_repertory-00002', bookId: 'kent_repertory', chapter: 'Mind', text: 'Mind: absent minded', remedies: [['nux', 2]] }], []])
   })
 
   it('rejects malformed rubrics', async () => {
@@ -227,6 +275,19 @@ describe('production retriever with a repertory', () => {
     )
 
     expect(calls).toEqual([{ limit: 8, priors: [['puls', 'sep', 'nat-m']] }])
+  })
+
+  it('returns the leading remedies and their rubrics after the passages', async () => {
+    const passage = { chunkId: 'chk_1', bookId: 'kent_lectures', bookTitle: "Kent's Lectures", author: null, remedyName: 'PULSATILLA', sectionTitle: 'MIND', passageIndexes: [1], text: 'Weeps.', score: 0.03 }
+    const corpus: SearchableRelease = { corpusVersion: 'local-v1', search: async () => [passage] }
+    const symptoms = [{ symptom: 'Mind: weeps easily', rubrics: [rubric('Mind: weeping', ['pulsatilla', 3])] }]
+    const repertory: Repertoriser = { repertorise: async () => ({ symptoms, remedies: rankRemedies(symptoms) }) }
+
+    const retrieval = await new ProductionRetriever(corpus, embedder, { repertory }).retrieve(request('A weepy woman.'), { limit: 5 })
+
+    expect(retrieval.sources.map((source) => source.chunkId)).toEqual(['chk_1', 'Mind: weeping'])
+    expect(retrieval.repertory).toEqual([{ remedyName: 'Pulsatilla', matched: [{ text: 'Mind: weeps easily', source: 2 }] }])
+    expect(retrieval.clinical).toEqual([])
   })
 
   it('searches without a ranking that many remedies lead together at a low score', async () => {

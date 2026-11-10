@@ -7,6 +7,7 @@ import {
   DISEASE_INSTRUCTION,
   ModelDiseaseExtractor,
   decisiveMatch,
+  leadingClinicalRemedies,
   loadClinicalTerms,
   parseDiseases,
   termWords,
@@ -69,6 +70,20 @@ describe('decisiveMatch', () => {
   it('is when few remedies are listed, or several terms list the lead', () => {
     expect(decisiveMatch(terms.match(['hay fever']))).toBe(true)
     expect(decisiveMatch(terms.match(['bronchial asthma']))).toBe(true)
+  })
+})
+
+describe('leadingClinicalRemedies', () => {
+  it('gives the first remedies with the terms that list them', () => {
+    const terms = new ClinicalTerms([
+      { text: 'asthma', remedies: ['arsenicum-album', 'natrum-sulphuricum'] },
+      { text: 'asthma, bronchial', remedies: ['natrum-sulphuricum'] },
+    ])
+
+    expect(leadingClinicalRemedies(terms.match(['bronchial asthma']), 1)).toEqual([
+      { remedyName: 'Natrum sulphuricum', matched: [{ text: 'asthma' }, { text: 'asthma, bronchial' }] },
+    ])
+    expect(leadingClinicalRemedies(terms.match(['bronchial asthma']))).toHaveLength(2)
   })
 })
 
@@ -140,12 +155,16 @@ describe('production retriever with Clarke', () => {
   it("fuses Clarke's ranking beside the repertory's", async () => {
     const { corpus, calls } = searching()
 
-    await new ProductionRetriever(corpus, embedder, { repertory, clinical }).retrieve(
+    const retrieval = await new ProductionRetriever(corpus, embedder, { repertory, clinical }).retrieve(
       request('Left sciatica, better walking.'),
       { limit: 8 },
     )
 
     expect(calls).toEqual([{ limit: 8, priors: [['puls'], ['coloc', 'gnaph']] }])
+    expect(retrieval.clinical).toEqual([
+      { remedyName: 'Coloc', matched: [{ text: 'sciatica' }] },
+      { remedyName: 'Gnaph', matched: [{ text: 'sciatica' }] },
+    ])
   })
 
   it('searches without Clarke when he lists many remedies for the one disease the case names', async () => {

@@ -9,7 +9,7 @@
  * repository builds with `scripts/rubrics.py` and `scripts/embed.py`.
  */
 
-import type { AnswerGenerator } from './contracts.ts'
+import type { AnswerGenerator, BookSummary, RankedRemedy, RetrievedSource } from './contracts.ts'
 import { ProviderError } from './errors.ts'
 import { type Fetch, isRecord, readJson, send } from './http.ts'
 
@@ -23,7 +23,20 @@ export const MAX_SYMPTOMS = 15
 export const INDECISIVE_TIES = 5
 /** The extraction model reasons first, and its reasoning counts against this. */
 export const EXTRACTION_MAX_OUTPUT_TOKENS = 16_000
+/** How many of a ranking's remedies an answer names. */
+export const LEADING_REMEDIES = 3
+/** How many rubrics an answer can cite for the leading remedies; with the passages, as many as a saved answer keeps. */
+export const MAX_RUBRIC_SOURCES = 15
+/** How many of a rubric's remedies its source lists. */
+export const MAX_RUBRIC_REMEDIES = 40
+const MAX_RUBRIC_TITLE_CHARS = 500
 const LABEL = 'Qdrant repertory'
+
+// Book IDs are the repertories' Qdrant collection names.
+export const REPERTORIES: readonly BookSummary[] = [
+  { bookId: REPERTORY_COLLECTION, title: 'Kent, Repertory of the Homoeopathic Materia Medica', author: 'James Tyler Kent' },
+  { bookId: BOERICKE_COLLECTION, title: 'Boericke, Repertory', author: 'Oscar E. Boericke' },
+]
 
 export const CHAPTERS = [
   'Mind', 'Vertigo', 'Head', 'Eye', 'Vision', 'Ear', 'Hearing', 'Nose', 'Face', 'Mouth', 'Teeth',
@@ -50,6 +63,8 @@ a principle, reply only NONE.`
 
 export interface Rubric {
   id: string
+  /** The repertory's Qdrant collection. */
+  bookId: string
   chapter: string
   /** The rubric as one line, such as `Head: pain, hammering, morning`. */
   text: string
@@ -156,6 +171,67 @@ export function decisive({ symptoms, remedies }: Repertorisation): boolean {
   return remedies.filter((remedy) => remedy.symptoms === lead).length < INDECISIVE_TIES
 }
 
+/** A remedy's name from its id: `Natrum muriaticum` for `natrum-muriaticum`. */
+export function remedyName(remedyId: string): string {
+  const name = remedyId.replaceAll('-', ' ')
+  return name.charAt(0).toUpperCase() + name.slice(1)
+}
+
+/**
+ * The ranking's first `limit` remedies, each with the case's symptoms it covers, and the rubrics
+ * that list them, as sources an answer can cite. A covered symptom points to the rubric that
+ * grades the remedy highest for it; `firstSource` is the place, from 1, of the first rubric among
+ * the answer's sources.
+ */
+export function leadingRemedies(
+  { symptoms, remedies }: Repertorisation,
+  { firstSource, limit = LEADING_REMEDIES, maxRubrics = MAX_RUBRIC_SOURCES }: { firstSource: number; limit?: number; maxRubrics?: number },
+): { remedies: RankedRemedy[]; rubrics: RetrievedSource[] } {
+  const leaders = remedies.slice(0, limit).map((remedy) => remedy.remedyId)
+  const matched = leaders.map((): { text: string; source?: number }[] => [])
+  const cited: Rubric[] = []
+  for (const { symptom, rubrics } of symptoms) {
+    for (const [index, remedyId] of leaders.entries()) {
+      let best: Rubric | undefined
+      for (const rubric of rubrics) {
+        if (gradeIn(rubric, remedyId) > (best ? gradeIn(best, remedyId) : 0)) best = rubric
+      }
+      if (!best) continue
+      let at = cited.findIndex((rubric) => rubric.bookId === best.bookId && rubric.id === best.id)
+      if (at < 0 && cited.length < maxRubrics) at = cited.push(best) - 1
+      matched[index]!.push(at < 0 ? { text: symptom } : { text: symptom, source: firstSource + at })
+    }
+  }
+  return {
+    remedies: leaders.map((remedyId, index) => ({ remedyName: remedyName(remedyId), matched: matched[index]! })),
+    rubrics: cited.map((rubric) => rubricSource(rubric, leaders)),
+  }
+}
+
+function gradeIn(rubric: Rubric, remedyId: string): number {
+  return rubric.remedies.find(([listed]) => listed === remedyId)?.[1] ?? 0
+}
+
+/** A rubric as a source: its remedies with their grades, the leading ones first, then by grade. */
+function rubricSource(rubric: Rubric, leaders: readonly string[]): RetrievedSource {
+  const book = REPERTORIES.find(({ bookId }) => bookId === rubric.bookId)
+  const place = (remedyId: string) => (leaders.indexOf(remedyId) + 1 || leaders.length + 1)
+  const ordered = [...rubric.remedies].sort((a, b) => place(a[0]) - place(b[0]) || b[1] - a[1])
+  const listed = ordered.slice(0, MAX_RUBRIC_REMEDIES).map(([remedyId, grade]) => `${remedyName(remedyId)} (${grade})`)
+  const more = ordered.length - listed.length
+  return {
+    chunkId: rubric.id,
+    bookId: rubric.bookId,
+    bookTitle: book?.title ?? rubric.bookId,
+    author: book?.author ?? null,
+    remedyName: null,
+    sectionTitle: rubric.text.slice(0, MAX_RUBRIC_TITLE_CHARS),
+    passageIndexes: [],
+    text: `Remedies and their grades: ${listed.join(', ')}${more ? `, and ${more} more` : ''}`,
+    score: 0,
+  }
+}
+
 /** Symptoms from the chat model's reply: `Chapter: symptom` lines in a known chapter. */
 export function parseSymptoms(reply: string): string[] {
   const chapters = new Map(CHAPTERS.map((chapter) => [chapter.toLowerCase(), chapter]))
@@ -198,6 +274,7 @@ export class CombinedRubrics implements RubricSearch {
 
 /** Nearest-rubric search over the repertory's Qdrant collection. */
 export class QdrantRubrics implements RubricSearch {
+  readonly #collection: string
   readonly #url: string
   readonly #headers: Record<string, string>
   readonly #fetch: Fetch
@@ -216,6 +293,7 @@ export class QdrantRubrics implements RubricSearch {
     fetch?: Fetch
     timeoutMs?: number
   }) {
+    this.#collection = collection
     this.#url = `${url.replace(/\/+$/, '')}/collections/${encodeURIComponent(collection)}`
     this.#headers = { 'Content-Type': 'application/json', ...(apiKey ? { 'api-key': apiKey } : {}) }
     this.#fetch = fetchImpl
@@ -250,7 +328,7 @@ export class QdrantRubrics implements RubricSearch {
     return results.map((result) => {
       const points = isRecord(result) ? result.points : undefined
       if (!Array.isArray(points)) throw new ProviderError('Qdrant returned no rubrics')
-      return points.map((point) => toRubric(isRecord(point) ? point.payload : undefined))
+      return points.map((point) => toRubric(this.#collection, isRecord(point) ? point.payload : undefined))
     })
   }
 
@@ -266,7 +344,7 @@ export class QdrantRubrics implements RubricSearch {
   }
 }
 
-function toRubric(payload: unknown): Rubric {
+function toRubric(bookId: string, payload: unknown): Rubric {
   if (
     !isRecord(payload) ||
     typeof payload.id !== 'string' ||
@@ -282,5 +360,5 @@ function toRubric(payload: unknown): Rubric {
     }
     return [entry[0], entry[1] as number] as const
   })
-  return { id: payload.id, chapter: payload.chapter, text: payload.text, remedies }
+  return { id: payload.id, bookId, chapter: payload.chapter, text: payload.text, remedies }
 }

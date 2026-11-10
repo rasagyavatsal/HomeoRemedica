@@ -11,13 +11,13 @@ import {
   MAX_GENERATED_ANSWER_CHARS,
   MAX_GENERATION_PROMPT_CHARS,
   MAX_TURN_CHARS,
-  type RetrievedSource,
+  type Retrieval,
   type Retriever,
 } from './contracts.ts'
 import { ChatFailure, type FailureKind, ProviderError, TokenExhaustionError, isTimeout } from './errors.ts'
 import { COMPACTION_INSTRUCTION, NO_SOURCES_ANSWER, SYSTEM_INSTRUCTION, compactionPrompt, generationPrompt } from './generation.ts'
 
-/** How many retrieved passages each answer is generated from. */
+/** How many of the books' passages each answer is generated from. */
 export const SOURCE_LIMIT = 5
 
 /** Own the complete retrieve-and-generate sequence behind one narrow chat method. */
@@ -55,13 +55,14 @@ export class ChatService {
   }
 
   async chat(request: ChatRequest, { onSources, onText, signal }: ChatOptions = {}): Promise<ChatResponse> {
-    let sources: readonly RetrievedSource[]
+    let retrieval: Retrieval
     try {
-      sources = await this.#retriever.retrieve(request, { limit: this.#sourceLimit })
+      retrieval = await this.#retriever.retrieve(request, { limit: this.#sourceLimit })
     } catch (error) {
       if (error instanceof ChatFailure) throw error
       throw new ChatFailure({ stage: 'corpus_search', kind: isTimeout(error) ? 'timeout' : 'internal', cause: error })
     }
+    const { sources } = retrieval
     // Reject an unusable corpus before paying for an answer.
     if (sources.some((source) => source.text.length > MAX_CITATION_TEXT_CHARS)) {
       throw new ChatFailure({ stage: 'chat', kind: 'internal', cause: new RangeError('citation text is too long') })
@@ -89,7 +90,7 @@ export class ChatService {
       let streamed = 0
       try {
         generatedAnswer = (
-          await this.#generator.generate(generationPrompt(request, sources, { maxChars: this.#promptCharLimit }), {
+          await this.#generator.generate(generationPrompt(request, retrieval, { maxChars: this.#promptCharLimit }), {
             systemInstruction: SYSTEM_INSTRUCTION,
             signal,
             // Stream no more than the answer limit; the final answer is authoritative.
