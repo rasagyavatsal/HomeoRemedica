@@ -22,6 +22,10 @@
  * books and repertories together favoured other remedies, or it was shown but below another. A deeper search, with many more candidates, says how far off a lost remedy was, and the
  * repertory says whether the extracted symptoms point to it at all.
  *
+ * The clarke arms weigh Clarke's Clinical sections' remedies for the diseases a case names (see
+ * `clinical.ts`) with the books' support as a ranking of their own, beside production's repertory
+ * ranking rather than merged into it, or, for clarke alone, in place of it.
+ *
  * Usage: npm run eval:retrieval [-- --fresh] [-- --out results.json]
  */
 
@@ -31,7 +35,13 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 
-import { ChatRequestSchema, type RetrievedSource, type Retriever } from '../src/server/contracts.ts'
+import {
+  type ChatRequest,
+  ChatRequestSchema,
+  MAX_RETRIEVAL_QUERY_CHARS,
+  type RetrievedSource,
+  type Retriever,
+} from '../src/server/contracts.ts'
 import { VoyageQueryEmbedder } from '../src/server/embeddings.ts'
 import {
   BOOKS,
@@ -58,7 +68,8 @@ import { loadRepertory, loadSettings, symptomExtractor } from '../src/server/run
 import { SOURCE_LIMIT } from '../src/server/service.ts'
 import { CASES_PATH, hasPrivateClone, loadCases, remedyIds } from './cases.ts'
 import { askClaude } from './claude.ts'
-import { Proposer } from './proposals.ts'
+import { ClarkeClinical } from './clinical.ts'
+import { asker, Proposer } from './proposals.ts'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const CUTOFFS = [1, 3, 5, SOURCE_LIMIT]
@@ -144,6 +155,11 @@ const ARMS: Arm[] = [
   { ...SEARCH, name: 'glm order 10', candidates: 10, remedyOrder: true, ranking: 'proposals' },
   ...SWEEP,
 ]
+
+/** The weights at which Clarke's clinical ranking is weighed beside production's repertory ranking. */
+const CLINICAL_WEIGHTS = [0.25, 0.5, 1]
+const CLARKE_ALONE = 'clarke alone'
+const clinicalName = (weight: number) => `clarke ${weight}`
 
 /** The sweep's arm with production's prior weight and constant, which wins its ties. */
 const DEFAULT_PRIOR = priorName({ weight: PRIOR_WEIGHT, k: PRIOR_K })
@@ -505,6 +521,44 @@ class SymptomRetriever implements Retriever {
 }
 
 /**
+ * Production's search with Clarke's ranking for the diseases the case names weighed with the books'
+ * support at `weight`, beside Kent's and Boericke's ranking at production's weight, or, without a
+ * repertory, alone.
+ */
+class ClinicalRetriever implements Retriever {
+  readonly corpusVersion = 'clinical'
+  readonly #corpus: QdrantCorpus
+  readonly #embedder: QueryEmbedder
+  readonly #repertory: Repertoriser | null
+  readonly #clinical: ClarkeClinical
+  readonly #weight: number
+
+  constructor(corpus: QdrantCorpus, embedder: QueryEmbedder, repertory: Repertoriser | null, clinical: ClarkeClinical, weight: number) {
+    this.#corpus = corpus
+    this.#embedder = embedder
+    this.#repertory = repertory
+    this.#clinical = clinical
+    this.#weight = weight
+  }
+
+  async retrieve(request: ChatRequest, { limit }: { limit: number }): Promise<readonly RetrievedSource[]> {
+    // A first question with no history, searched as production searches it.
+    const query = request.message.slice(-MAX_RETRIEVAL_QUERY_CHARS)
+    const [embedding, repertorisation, clinical] = await Promise.all([
+      this.#embedder.embedQuery(query),
+      this.#repertory?.repertorise(query),
+      this.#clinical.match(request.message),
+    ])
+    const ranked = repertorisation?.remedies.map((remedy) => remedy.remedyId) ?? []
+    return this.#corpus.search(query, embedding, {
+      limit,
+      prior: ranked.length ? ranked : undefined,
+      priors: clinical.ranking.length ? [{ ranking: clinical.ranking, weight: this.#weight }] : [],
+    })
+  }
+}
+
+/**
  * The baseline: whatever the query, one passage each on the remedies with the most passages in the
  * corpus, which are the most fully proved and the most prescribed.
  */
@@ -859,6 +913,28 @@ function report(diagnoses: readonly Diagnosis[]): void {
   console.log(`    repertory: rank (symptoms the cured remedy covers / the leader covers of those extracted)`)
 }
 
+/** Which cases name a disease, the terms of Clarke's it matches, and where Clarke ranks the cure. */
+async function clinicalReport(cases: readonly { id: string; query: string; expected: readonly string[] }[], clinical: ClarkeClinical) {
+  const rows = await Promise.all(
+    cases.map(async ({ id, query, expected }) => {
+      const match = await clinical.match(ChatRequestSchema.parse({ message: query, history: [] }).message)
+      const place = match.ranking.findIndex((remedy) => expected.includes(remedy))
+      return { id, match, place: place < 0 ? null : place + 1 }
+    }),
+  )
+  const named = rows.filter(({ match }) => match.diseases.length)
+  const matched = named.filter(({ match }) => match.terms.length)
+  const listed = matched.filter(({ place }) => place !== null)
+  console.log(
+    `\nClarke's clinical terms: a disease named in ${named.length} of ${cases.length} cases, matching some term in ${matched.length}; ` +
+      `the cured remedy listed in ${listed.length}, at median place ${median(listed.map(({ place }) => place!))} of median ${median(matched.map(({ match }) => match.ranking.length))}`,
+  )
+  for (const { id, match, place } of named) {
+    const terms = match.terms.map(({ text, remedies }) => `${text} (${remedies})`).join('; ') || 'no term'
+    console.log(`  ${String(place ?? '-').padStart(4)}  ${id}: ${match.diseases.join('; ')} -> ${terms}`)
+  }
+}
+
 async function main(): Promise<void> {
   const { values } = parseArgs({ options: { out: { type: 'string' }, fresh: { type: 'boolean', default: false } } })
   if (!hasPrivateClone()) throw new Error(`clone HomeoRemedica-private into private/ so ${CASES_PATH} exists`)
@@ -909,6 +985,15 @@ async function main(): Promise<void> {
       ),
     }
   })
+  const clinical = new ClarkeClinical(settings.model, asker(settings.model))
+  const clinicalCorpus = new QdrantCorpus({ url: settings.qdrantUrl!, apiKey: settings.qdrantApiKey, fetch: qdrantFetch })
+  arms.push(
+    ...CLINICAL_WEIGHTS.map((weight) => ({
+      name: clinicalName(weight),
+      retriever: new ClinicalRetriever(clinicalCorpus, embedder, rankings.both, clinical, weight),
+    })),
+    { name: CLARKE_ALONE, retriever: new ClinicalRetriever(clinicalCorpus, embedder, null, clinical, PRIOR_WEIGHT) },
+  )
   const symptomSearches = (books: readonly string[] | undefined) =>
     new SymptomSearches(
       new QdrantCorpus({ url: settings.qdrantUrl!, apiKey: settings.qdrantApiKey, fetch: qdrantFetch, ...(books ? { bookIds: books } : {}) }),
@@ -983,6 +1068,11 @@ async function main(): Promise<void> {
   console.log(`opus: the repertory given the symptoms ${STRONG_EXTRACTOR} extracts, with production's instructions, in place of ${settings.model}'s`)
   console.log(`production: every book searched, with Kent's and Boericke's ranking at weight ${PRIOR_WEIGHT} against the books' support, fused with constant ${PRIOR_K}`)
   console.log('books only: every book searched, without the repertories')
+  console.log(
+    `clarke w: production, with Clarke's remedies for the diseases a case names (by ${settings.model}) weighed at w beside the repertories'; ` +
+      `${CLARKE_ALONE}: the same at ${PRIOR_WEIGHT}, without the repertories`,
+  )
+  if (clinical.reused) console.log(`${settings.model}'s diseases of ${clinical.reused} cases reused from .cache/retrieval-diseases.json`)
   console.log(`prior w/k: Kent's ranking at weight w against the books' support, fused with constant k`)
   const chosen = [...Map.groupBy(choices, (choice) => choice).entries()].map(([name, times]) => `${name} ${times.length}`)
   console.log(`${TUNED}: each case scored with the prior that does best on the other cases (chose ${chosen.join(', ')})`)
@@ -1002,6 +1092,10 @@ async function main(): Promise<void> {
   for (const [offset, other] of others.entries()) {
     console.log(`  ${names[offset + 1]!.padEnd(15)}${comparison(production!, other)}`)
   }
+
+  const booksOnly = results.filter((result) => result.arm === 'books only')
+  console.log(`  ${`${CLARKE_ALONE} vs books only`.padEnd(15)} ${comparison(booksOnly, results.filter((result) => result.arm === CLARKE_ALONE))}`)
+  await clinicalReport(cases, clinical)
 
   const misses = production!.filter((result) => result.rank !== 1)
   console.log(`\n${arms[0]!.name}: cured remedy not ranked first (${misses.length})`)

@@ -58,7 +58,7 @@ function parseProposal(text: string, known: ReadonlySet<string>): Proposal {
 }
 
 /** Asks a Claude model through the CLI, or any other through Z.AI with production's settings. */
-function asker(model: string): (prompt: string, system: string) => Promise<string> {
+export function asker(model: string): (prompt: string, system: string) => Promise<string> {
   if (model.startsWith('claude-')) return async (prompt, system) => (await askClaude(prompt, { model, system })).text
   const client = new ZaiChatClient({
     apiKey: loadSettings(process.env, ROOT).zaiApiKey,
