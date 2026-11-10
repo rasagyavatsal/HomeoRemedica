@@ -216,7 +216,7 @@ npm run eval
 needs the same keys as the web app, and takes about four minutes. The cases are cured cases
 published in Kent's *Journal of Homoeopathics* (1897–1903), rewritten as full case notes without
 remedy names, and kept with their labels in `private/eval/cases.yaml` in the HomeoRemedica-private
-clone; the private repository's `scripts/eval_search.py` asks the same ones. Each case names the
+clone. Each case names the
 remedy that cured it and a differential to weigh against it. The eval checks that a source on the
 cured remedy is retrieved and cited, reports how much of the differential the answer cites, and
 judges that the answer compares the candidates by the case's symptoms, cites a retrieved source,
