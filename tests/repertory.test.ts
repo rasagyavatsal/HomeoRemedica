@@ -10,6 +10,7 @@ import {
   type Repertoriser,
   Repertory,
   type Rubric,
+  decisive,
   parseSymptoms,
   rankRemedies,
 } from '../src/server/repertory.ts'
@@ -49,6 +50,24 @@ describe('rankRemedies', () => {
     ])
 
     expect(ranked).toEqual([{ remedyId: 'bry', symptoms: 1, grades: 3 }])
+  })
+})
+
+describe('decisive', () => {
+  const symptoms = (count: number) => Array.from({ length: count }, (_, index) => ({ symptom: `Mind: ${index}`, rubrics: [] }))
+  const remedies = (...covered: number[]) =>
+    covered.map((symptoms, index) => ({ remedyId: `remedy-${index}`, symptoms, grades: symptoms }))
+
+  it('is not when many remedies lead together on one symptom or under half of them', () => {
+    expect(decisive({ symptoms: symptoms(1), remedies: remedies(1, 1, 1, 1, 1) })).toBe(false)
+    expect(decisive({ symptoms: symptoms(7), remedies: remedies(3, 3, 3, 3, 3, 2) })).toBe(false)
+    expect(decisive({ symptoms: [], remedies: [] })).toBe(false)
+  })
+
+  it('is when few remedies lead, or the lead covers half of the symptoms', () => {
+    expect(decisive({ symptoms: symptoms(1), remedies: remedies(1, 1, 1, 1) })).toBe(true)
+    expect(decisive({ symptoms: symptoms(7), remedies: remedies(3, 2, 2, 2, 2, 2) })).toBe(true)
+    expect(decisive({ symptoms: symptoms(6), remedies: remedies(3, 3, 3, 3, 3, 3) })).toBe(true)
   })
 })
 
@@ -208,6 +227,17 @@ describe('production retriever with a repertory', () => {
     )
 
     expect(calls).toEqual([{ limit: 8, priors: [['puls', 'sep', 'nat-m']] }])
+  })
+
+  it('searches without a ranking that many remedies lead together at a low score', async () => {
+    const { corpus, calls } = searching()
+
+    await new ProductionRetriever(corpus, embedder, { repertory: repertoryOf('puls', 'sep', 'nat-m', 'ign', 'lach') }).retrieve(
+      request('A weepy woman.'),
+      { limit: 8 },
+    )
+
+    expect(calls).toEqual([{ limit: 8, priors: [] }])
   })
 
   it('searches the whole corpus when the question describes no patient', async () => {

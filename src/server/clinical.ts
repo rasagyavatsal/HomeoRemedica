@@ -13,6 +13,7 @@
 import type { AnswerGenerator } from './contracts.ts'
 import { ProviderError } from './errors.ts'
 import { type Fetch, isRecord, readJson, send } from './http.ts'
+import { INDECISIVE_TIES } from './repertory.ts'
 
 export const CLINICAL_COLLECTION = 'clarke_clinical'
 const LABEL = 'Qdrant clinical terms'
@@ -111,6 +112,22 @@ export class ClinicalTerms {
       ranking,
     }
   }
+}
+
+/**
+ * Whether a match tells the remedies apart. It does not when only one of the matched terms lists
+ * its leading remedy and INDECISIVE_TIES or more remedies are listed as often, as when the case
+ * names one disease that Clarke lists many remedies for.
+ */
+export function decisiveMatch({ terms, ranking }: ClinicalMatch): boolean {
+  const counts = new Map<string, number>()
+  for (const { remedies } of terms) {
+    for (const remedy of remedies) counts.set(remedy, (counts.get(remedy) ?? 0) + 1)
+  }
+  const lead = counts.get(ranking[0] ?? '')
+  if (!lead) return false
+  if (lead > 1) return true
+  return [...counts.values()].filter((count) => count === lead).length < INDECISIVE_TIES
 }
 
 export interface DiseaseExtractor {

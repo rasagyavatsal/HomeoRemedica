@@ -3,7 +3,8 @@
  *
  * The case is split into symptoms by the chat model, each symptom is matched to its nearest
  * rubrics by voyage-4 embedding, and remedies are ranked the way a homoeopath works a repertory:
- * by how many of the case's symptoms they cover, then by their grades. The rubrics are the
+ * by how many of the case's symptoms they cover, then by their grades. A ranking that many remedies
+ * lead together at a low score is left out of the search. The rubrics are the
  * `kent_repertory` and `boericke_repertory` Qdrant collections, which the HomeoRemedica-private
  * repository builds with `scripts/rubrics.py` and `scripts/embed.py`.
  */
@@ -18,6 +19,8 @@ export const BOERICKE_COLLECTION = 'boericke_repertory'
 /** More rubrics per symptom adds loosely related ones, which made the ranking worse. */
 export const RUBRICS_PER_SYMPTOM = 3
 export const MAX_SYMPTOMS = 15
+/** A ranking that this many remedies lead together, at a low score, does not tell them apart. */
+export const INDECISIVE_TIES = 5
 /** The extraction model reasons first, and its reasoning counts against this. */
 export const EXTRACTION_MAX_OUTPUT_TOKENS = 16_000
 const LABEL = 'Qdrant repertory'
@@ -139,6 +142,18 @@ export function rankRemedies(matches: readonly SymptomMatch[]): RemedyCandidate[
   return [...totals.values()].sort(
     (a, b) => b.symptoms - a.symptoms || b.grades - a.grades || a.remedyId.localeCompare(b.remedyId),
   )
+}
+
+/**
+ * Whether a repertorisation tells the remedies apart. It does not when its leading remedy covers
+ * only one symptom, or fewer than half of the case's, and INDECISIVE_TIES or more remedies cover
+ * as many.
+ */
+export function decisive({ symptoms, remedies }: Repertorisation): boolean {
+  const lead = remedies[0]?.symptoms
+  if (!lead) return false
+  if (lead > 1 && lead * 2 >= symptoms.length) return true
+  return remedies.filter((remedy) => remedy.symptoms === lead).length < INDECISIVE_TIES
 }
 
 /** Symptoms from the chat model's reply: `Chapter: symptom` lines in a known chapter. */

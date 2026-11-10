@@ -6,6 +6,7 @@ import {
   ClinicalTerms,
   DISEASE_INSTRUCTION,
   ModelDiseaseExtractor,
+  decisiveMatch,
   loadClinicalTerms,
   parseDiseases,
   termWords,
@@ -50,6 +51,24 @@ describe('ClinicalTerms', () => {
     // Natrum sulph. is in both asthma terms; Sulphur, also in eczema, is in two terms of all four.
     expect(terms.match(['bronchial asthma']).ranking).toEqual(['nat-s', 'sulph', 'ars', 'ip'])
     expect(terms.match(['asthma', 'eczema']).ranking).toEqual(['sulph', 'graph', 'nat-s', 'ars', 'ip'])
+  })
+})
+
+describe('decisiveMatch', () => {
+  const terms = new ClinicalTerms([
+    { text: 'asthma', remedies: ['ars', 'ip', 'kali-c', 'nat-s', 'spong'] },
+    { text: 'asthma, bronchial', remedies: ['nat-s'] },
+    { text: 'hay fever', remedies: ['sabad'] },
+  ])
+
+  it('is not when one term lists many remedies, or nothing matches', () => {
+    expect(decisiveMatch(terms.match(['asthma']))).toBe(false)
+    expect(decisiveMatch(terms.match(['gout']))).toBe(false)
+  })
+
+  it('is when few remedies are listed, or several terms list the lead', () => {
+    expect(decisiveMatch(terms.match(['hay fever']))).toBe(true)
+    expect(decisiveMatch(terms.match(['bronchial asthma']))).toBe(true)
   })
 })
 
@@ -127,6 +146,20 @@ describe('production retriever with Clarke', () => {
     )
 
     expect(calls).toEqual([{ limit: 8, priors: [['puls'], ['coloc', 'gnaph']] }])
+  })
+
+  it('searches without Clarke when he lists many remedies for the one disease the case names', async () => {
+    const { corpus, calls } = searching()
+    const common = new Clinical({
+      extractor: { extractDiseases: async () => ['asthma'] },
+      terms: new ClinicalTerms([{ text: 'asthma', remedies: ['ars', 'ip', 'kali-c', 'nat-s', 'spong'] }]),
+    })
+
+    await new ProductionRetriever(corpus, embedder, { repertory, clinical: common }).retrieve(request('Asthma at night.'), {
+      limit: 8,
+    })
+
+    expect(calls).toEqual([{ limit: 8, priors: [['puls']] }])
   })
 
   it('searches without Clarke when the case names no disease he lists, or matching fails', async () => {

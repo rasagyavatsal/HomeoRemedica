@@ -6,9 +6,9 @@ import {
   type RetrievedSource,
   type Retriever,
 } from './contracts.ts'
-import type { ClinicalRanker } from './clinical.ts'
+import { type ClinicalRanker, decisiveMatch } from './clinical.ts'
 import { ChatFailure, ProviderError, isTimeout } from './errors.ts'
-import type { Repertoriser } from './repertory.ts'
+import { type Repertoriser, decisive } from './repertory.ts'
 
 const PREVIOUS_QUESTIONS = 2
 
@@ -36,7 +36,8 @@ export class ProductionRetriever implements Retriever {
    * The whole corpus is searched. With a repertory, its ranking of remedies for the symptoms of a
    * question that describes a patient is fused with the books' support for each remedy. With
    * `clinical`, Clarke's remedies for the diseases the case names are fused beside it. The
-   * rankings and the books' support all count the same.
+   * rankings and the books' support all count the same. A ranking that many remedies lead together
+   * at a low score is left out.
    */
   constructor(
     corpus: SearchableRelease,
@@ -76,12 +77,12 @@ export class ProductionRetriever implements Retriever {
     }
   }
 
-  /** Clarke's remedies for the diseases the query names, best first. */
+  /** Clarke's remedies for the diseases the query names, best first, if they tell remedies apart. */
   async #clinicalRanking(query: string): Promise<readonly string[] | undefined> {
     if (!this.#clinical) return undefined
     try {
-      const { ranking } = await this.#clinical.rank(query)
-      return ranking.length ? ranking : undefined
+      const match = await this.#clinical.rank(query)
+      return decisiveMatch(match) ? match.ranking : undefined
     } catch (error) {
       // Like the repertory, Clarke's terms only reorder the search.
       console.error("Matching Clarke's clinical terms failed; searching without them", error)
@@ -89,12 +90,15 @@ export class ProductionRetriever implements Retriever {
     }
   }
 
-  /** The repertory's remedies for the case the query describes, best first, if it describes one. */
+  /**
+   * The repertory's remedies for the case the query describes, best first, if it describes one and
+   * they tell remedies apart.
+   */
   async #repertoryRanking(query: string): Promise<string[] | undefined> {
     if (!this.#repertory) return undefined
     try {
-      const { remedies } = await this.#repertory.repertorise(query)
-      return remedies.length ? remedies.map((remedy) => remedy.remedyId) : undefined
+      const repertorisation = await this.#repertory.repertorise(query)
+      return decisive(repertorisation) ? repertorisation.remedies.map((remedy) => remedy.remedyId) : undefined
     } catch (error) {
       // The repertory only reorders the search; without it the corpus is searched as usual.
       console.error('Repertorisation failed; searching without it', error)
