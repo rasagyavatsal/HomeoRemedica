@@ -10,6 +10,7 @@ import { serve } from '@hono/node-server'
 import { firebaseAccounts } from '../src/server/accounts.ts'
 import { type ChatHandler, createApp } from '../src/server/app.ts'
 import type { ChatOptions, ChatRequest, ChatResponse, CompactRequest, CompactResponse } from '../src/server/contracts.ts'
+import { shouldCompact } from '../src/server/conversation.ts'
 import { ProviderTimeoutError } from '../src/server/errors.ts'
 import { RateLimiter } from '../src/server/rate-limit.ts'
 import {
@@ -34,7 +35,9 @@ process.env.FIRESTORE_EMULATOR_HOST ??= FIRESTORE_EMULATOR
 class ScriptedChat implements ChatHandler {
   readonly #failed = new Set<string>()
 
-  async chat({ message, history }: ChatRequest, { onSources, onText, signal }: ChatOptions = {}): Promise<ChatResponse> {
+  async chat(request: ChatRequest, { onSources, onText, signal }: ChatOptions = {}): Promise<ChatResponse> {
+    const { message, history } = request
+    const compacted = shouldCompact(request) ? await this.compact(request, { signal }) : undefined
     await sleep(50, undefined, { signal })
     if (message.includes(FAIL_ONCE) && !this.#failed.has(message)) {
       this.#failed.add(message)
@@ -47,7 +50,7 @@ class ScriptedChat implements ChatHandler {
       await sleep(delay, undefined, { signal })
       onText?.(word)
     }
-    return { answer, corpusVersion: 'e2e', model: 'scripted', sources: SOURCES }
+    return { answer, corpusVersion: 'e2e', model: 'scripted', sources: SOURCES, ...(compacted && { compacted }) }
   }
 
   async compact({ history }: CompactRequest, { signal }: { signal?: AbortSignal } = {}): Promise<CompactResponse> {

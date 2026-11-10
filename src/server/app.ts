@@ -224,8 +224,8 @@ export function createApp(
     return c.body(null, 204)
   })
 
-  // Check the client first, so a client over its own limit does not use up everyone's. Compacting
-  // costs a model call too, so it counts as a question.
+  // Check the client first, so a client over its own limit does not use up everyone's. A compaction
+  // asked for by itself costs a model call too, so it counts as a question.
   const questionLimits = createMiddleware(async (c, next) => {
     const limits = [
       [rateLimiter, clientKey(clientAddress(c)), 'Too many questions in a short time. Please wait a minute and try again.'],
@@ -253,10 +253,14 @@ export function createApp(
       return setupFailure(c, error, 'Failed to initialize production chat')
     }
 
-    const complete = (response: ChatResponse): WebChatResponse => ({
-      ...response,
-      history: advanceHistory(request.history, request.message, response.answer, request.summary),
-    })
+    const complete = ({ compacted, ...response }: ChatResponse): WebChatResponse => {
+      const { history, summary } = compacted ?? request
+      return {
+        ...response,
+        history: advanceHistory(history, request.message, response.answer, summary),
+        ...(summary !== undefined && { summary }),
+      }
+    }
 
     // Browsers ask for a stream: `sources`, then `text` pieces, then `done` or `error`.
     if (c.req.header('Accept')?.includes('text/event-stream')) {
@@ -290,6 +294,7 @@ export function createApp(
     }
   })
 
+  // Released Android builds compact a chat themselves before asking; newer clients leave it to `/api/chat`.
   app.post('/api/chat/compact', async (c) => {
     const request = await readBody(c, CompactRequestSchema)
     if (request instanceof Response) return request

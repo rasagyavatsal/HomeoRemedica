@@ -1,18 +1,16 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { ProductionRetriever, type SearchableRelease } from '../src/server/retrieval.ts'
-import { CONTEXT_CHARS, CONTEXT_TURNS } from '../src/web/conversation.ts'
 import {
   type AnswerGenerator,
   type ChatRequest,
   ChatRequestSchema,
-  MAX_HISTORY_CHARS,
-  MAX_HISTORY_TURNS,
   type GenerateOptions,
   type Retrieval,
   type Retriever,
 } from '../src/server/contracts.ts'
 import { ProviderError, ProviderTimeoutError, TokenExhaustionError } from '../src/server/errors.ts'
+import { COMPACTION_INSTRUCTION } from '../src/server/generation.ts'
 import { ChatService } from '../src/server/service.ts'
 
 const request = (input: Record<string, unknown>): ChatRequest => ChatRequestSchema.parse(input)
@@ -303,10 +301,75 @@ describe('compaction', () => {
 
     await expect(service.compact({ history })).rejects.toBe(cause)
   })
-})
 
-it('gives the browser the same context limits the server keeps', () => {
-  expect([CONTEXT_CHARS, CONTEXT_TURNS]).toEqual([MAX_HISTORY_CHARS, MAX_HISTORY_TURNS])
+  /** A chat of `turns` short turns, which is nearly full from 16. */
+  const long = (turns: number) =>
+    Array.from({ length: turns }, (_, index) => ({ role: index % 2 ? ('assistant' as const) : ('user' as const), content: `turn ${index}` }))
+
+  /** A service whose generator answers a compaction with `summary` and a question with "Answer [1]." */
+  function answering(summary: string | Error) {
+    const prompts: string[] = []
+    const signals: (AbortSignal | undefined)[] = []
+    const retriever = new StubRetriever()
+    const generator: AnswerGenerator = {
+      model: 'glm-5.3-flash',
+      async generate(prompt, { systemInstruction, signal }) {
+        prompts.push(prompt)
+        signals.push(signal)
+        if (systemInstruction !== COMPACTION_INSTRUCTION) return 'Answer [1].'
+        if (summary instanceof Error) throw summary
+        return summary
+      },
+    }
+    return { prompts, signals, retriever, service: new ChatService({ retriever, generator }) }
+  }
+
+  it('condenses a nearly full chat before answering it', async () => {
+    const { prompts, retriever, service } = answering('Sixteen turns, condensed.')
+    const asked = request({ message: 'And Sepia?', history: long(16) })
+
+    const response = await service.chat(asked)
+
+    expect(response.compacted).toEqual({ summary: 'Sixteen turns, condensed.', history: long(16).slice(-2) })
+    expect(prompts).toHaveLength(2)
+    expect(prompts[1]).toContain(
+      '<summary>Sixteen turns, condensed.</summary>\n<user>turn 14</user>\n<assistant>turn 15</assistant>\n<latest_user_message>',
+    )
+    // The search still reads the questions that were condensed.
+    expect(retriever.searchCall?.request).toBe(asked)
+  })
+
+  it('leaves a chat with room to spare as it is', async () => {
+    const { prompts, service } = answering('unused')
+
+    const response = await service.chat(request({ message: 'And Sepia?', history: long(14) }))
+
+    expect(response.compacted).toBeUndefined()
+    expect(prompts).toHaveLength(1)
+  })
+
+  it('stops condensing a chat whose search fails', async () => {
+    const { signals, retriever, service } = answering('unused')
+    retriever.failure = new ProviderError('search failed')
+
+    await expect(service.chat(request({ message: 'And Sepia?', history: long(16) }))).rejects.toBe(retriever.failure)
+
+    expect(signals).toHaveLength(1)
+    expect(signals[0]?.aborted).toBe(true)
+  })
+
+  it('answers from the whole context when condensing fails', async () => {
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const { prompts, service } = answering(new ProviderTimeoutError('provider secret'))
+
+    const response = await service.chat(request({ message: 'And Sepia?', history: long(16) }))
+
+    expect(response.answer).toBe('Answer [1].')
+    expect(response.compacted).toBeUndefined()
+    expect(prompts[1]).toContain('<user>turn 0</user>')
+    expect(logged).toHaveBeenCalledOnce()
+    logged.mockRestore()
+  })
 })
 
 it('rejects book filters', () => {

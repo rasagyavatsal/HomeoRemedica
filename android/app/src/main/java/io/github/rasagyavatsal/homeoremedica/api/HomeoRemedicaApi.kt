@@ -71,13 +71,6 @@ class HomeoRemedicaApi(
         }
     }
 
-    /** Condense a chat's earlier turns into a summary, keeping the latest exchange word for word. */
-    suspend fun compactChat(history: List<ChatTurn>, summary: String?): CompactResponse {
-        val body = ApiJson.encodeToString(CompactRequest(history, summary)).toRequestBody(JSON)
-        val request = Request.Builder().url("$baseUrl/api/chat/compact").post(body).build()
-        return client.newCall(request).await { response -> readResponse<CompactResponse>(response) }
-    }
-
     /** The signed-in user's chats, newest first. */
     suspend fun listChats(token: String): List<RemoteChatSummary> =
         account(token, "api/chats") { readResponse<ChatList>(it).chats }

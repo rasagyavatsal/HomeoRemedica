@@ -19,6 +19,8 @@ class StubService implements ChatHandler {
   readonly compactions: CompactRequest[] = []
   failure: unknown = null
   answer = 'Historical reference only. Kent describes irritability [1].'
+  /** What `chat` condensed the request's context into, if it did. */
+  compacted: CompactResponse | undefined
 
   async chat(request: ChatRequest, { onSources, onText }: ChatOptions = {}): Promise<ChatResponse> {
     this.requests.push(request)
@@ -39,6 +41,7 @@ class StubService implements ChatHandler {
           text: 'A passage.',
         },
       ],
+      ...(this.compacted && { compacted: this.compacted }),
     }
     onSources?.(response.sources)
     for (const word of this.answer.split(/(?<= )/)) onText?.(word)
@@ -267,11 +270,33 @@ it('counts a compacted chat’s summary against the history limit', async () => 
 
 describe('compaction', () => {
   const history = [
-    { role: 'user', content: 'Tell me about Nux vomica.' },
-    { role: 'assistant', content: 'Nux vomica suits irritable patients [1].' },
-    { role: 'user', content: 'What about Sepia?' },
-    { role: 'assistant', content: 'Sepia is indifferent to loved ones [2].' },
+    { role: 'user' as const, content: 'Tell me about Nux vomica.' },
+    { role: 'assistant' as const, content: 'Nux vomica suits irritable patients [1].' },
+    { role: 'user' as const, content: 'What about Sepia?' },
+    { role: 'assistant' as const, content: 'Sepia is indifferent to loved ones [2].' },
   ]
+
+  it('answers a condensed chat with its new summary and the history after it', async () => {
+    const { service, post } = setup()
+    service.compacted = { summary: 'The user asked about Nux vomica.', history: history.slice(2) }
+
+    const body = await read(await post({ message: 'New question?', history, summary: 'Earlier summary.' }))
+
+    expect(body.summary).toBe('The user asked about Nux vomica.')
+    expect(body.history).toEqual([
+      ...history.slice(2),
+      { role: 'user', content: 'New question?' },
+      { role: 'assistant', content: service.answer },
+    ])
+    expect(body).not.toHaveProperty('compacted')
+  })
+
+  it('answers any other chat with the summary it came with', async () => {
+    const { post } = setup()
+
+    expect((await read(await post({ message: 'New question?', history, summary: 'Earlier summary.' }))).summary).toBe('Earlier summary.')
+    expect(await read(await post({ message: 'New question?', history }))).not.toHaveProperty('summary')
+  })
   const compact = (app: ReturnType<typeof setup>['app'], body: unknown, headers: Record<string, string> = {}) =>
     app.request('/api/chat/compact', {
       method: 'POST',

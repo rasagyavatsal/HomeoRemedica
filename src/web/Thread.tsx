@@ -24,11 +24,9 @@ interface ThreadProps {
   /** Rates an answer or one of its sources; answers cannot be rated without it. */
   onRate?: RateHandler | undefined
   onNote?: NoteHandler | undefined
-  /** Whether the chat's earlier turns are being condensed before the last question is answered. */
-  compacting?: boolean
 }
 
-export function Thread({ messages, openSources, onSources, onRetry, ratings, onRate, onNote, compacting = false }: ThreadProps) {
+export function Thread({ messages, openSources, onSources, onRetry, ratings, onRate, onNote }: ThreadProps) {
   return (
     <ol className="thread" aria-label="Conversation">
       {messages.map((message, index) =>
@@ -43,7 +41,6 @@ export function Thread({ messages, openSources, onSources, onRetry, ratings, onR
               activeSource={openSources?.messageId === message.id ? openSources.source : undefined}
               onSources={onSources}
               onRetry={index === messages.length - 1 ? onRetry : undefined}
-              compacting={compacting && index === messages.length - 1}
               ratings={ratings?.get(message.id)}
               onRate={onRate}
               onNote={onNote}
@@ -61,14 +58,12 @@ interface ReplyProps {
   activeSource: number | undefined
   onSources: (messageId: number, source: number) => void
   onRetry: (() => void) | undefined
-  /** Whether the chat is being condensed before this answer starts. */
-  compacting: boolean
   ratings: AnswerRatings | undefined
   onRate: RateHandler | undefined
   onNote: NoteHandler | undefined
 }
 
-const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, compacting, ratings, onRate, onNote }: ReplyProps) {
+const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, ratings, onRate, onNote }: ReplyProps) {
   const { id, content, sources, status } = message
   const cite = useCallback((number: number) => onSources(id, number), [id, onSources])
 
@@ -92,7 +87,7 @@ const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, c
       {waiting ? (
         <p className="reply-progress" role="status">
           <span className="pulse" aria-hidden="true" />
-          {compacting ? 'Summarizing earlier messages…' : sources ? 'Reading the passages…' : 'Searching the books…'}
+          {sources ? 'Reading the passages…' : 'Searching the books…'}
         </p>
       ) : (
         <Answer content={content} sourceCount={sources?.length ?? 0} onCite={cite} />

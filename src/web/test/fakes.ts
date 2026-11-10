@@ -22,8 +22,9 @@ export function chatResponse(
     { role: 'user', content: question },
     { role: 'assistant', content: answer },
   ],
+  summary?: string,
 ): WebChatResponse {
-  return { answer, sources, corpusVersion: 'v1', model: 'test-model', history }
+  return { answer, sources, corpusVersion: 'v1', model: 'test-model', history, ...(summary !== undefined && { summary }) }
 }
 
 /** A server-sent event stream; each string is sent as its own chunk. */
@@ -42,13 +43,13 @@ export function sse(event: string, data: unknown): string {
 }
 
 /** A streamed answer, as `/api/chat` sends it; `history` defaults to just this exchange. */
-export function answerStream(answer: string, sources: Citation[], question?: string, history?: ChatTurn[]): Response {
+export function answerStream(answer: string, sources: Citation[], question?: string, history?: ChatTurn[], summary?: string): Response {
   const pieces = answer.match(/.{1,12}/gs) ?? []
   return new Response(
     eventStream([
       sse('sources', sources),
       ...pieces.map((text) => sse('text', { text })),
-      sse('done', chatResponse(answer, sources, question, history)),
+      sse('done', chatResponse(answer, sources, question, history, summary)),
     ]),
     { headers: { 'Content-Type': 'text/event-stream' } },
   )

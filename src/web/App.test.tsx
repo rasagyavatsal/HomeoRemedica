@@ -9,13 +9,12 @@ import { answerStream, citation, json, pending } from './test/fakes.ts'
 type Route = (init: RequestInit | undefined) => Response | Promise<Response>
 
 /** Answer requests by path; `/api/chat` takes one handler per question, in order. */
-function serve({ chat = [] as Route[], compact }: { chat?: Route[]; compact?: Route } = {}) {
+function serve({ chat = [] as Route[] }: { chat?: Route[] } = {}) {
   const asked: unknown[] = []
   vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
     const path = String(input)
     if (path === '/api/books') return json({ books: [{ bookId: 'boericke_mm', title: 'Boericke, Materia Medica', author: null }] })
     if (path === '/api/config') return json({ auth: null })
-    if (path === '/api/chat/compact' && compact) return compact(init)
     if (path === '/api/chat') {
       asked.push(JSON.parse(init?.body as string))
       const next = chat.shift()
@@ -123,47 +122,17 @@ describe('asking', () => {
 })
 
 describe('compacting', () => {
-  // Two exchanges that fill most of the context.
-  const long = (role: 'user' | 'assistant', text: string) => ({ role, content: text.padEnd(3_300, '.') })
-  const first = [long('user', 'First?'), long('assistant', 'First answer.')]
-  const second = [long('user', 'Second?'), long('assistant', 'Second answer.')]
-  const summary = 'The user first asked about Nux vomica.'
-
-  it('summarizes a nearly full chat before the next question', async () => {
-    const compacted: unknown[] = []
-    let release = () => {}
+  it('sends the summary the server condensed a chat into with the next question', async () => {
+    const kept = [
+      { role: 'user' as const, content: 'Second?' },
+      { role: 'assistant' as const, content: 'Second answer.' },
+    ]
+    const summary = 'The user first asked about Nux vomica.'
     const asked = serve({
       chat: [
-        () => answerStream('Second answer.', [citation(1)], 'Second?', [...first, ...second]),
+        () => answerStream('Second answer.', [citation(1)], 'Second?', kept, summary),
         () => answerStream('Third answer.', [citation(1)], 'Third?'),
       ],
-      compact: (init) => {
-        compacted.push(JSON.parse(init?.body as string))
-        return new Promise((resolve) => {
-          release = () => resolve(json({ summary, history: second }))
-        })
-      },
-    })
-    render(<App />)
-
-    await ask('Second?')
-    await screen.findByText('Second answer.')
-    await ask('Third?')
-
-    expect(await screen.findByRole('status')).toHaveTextContent('Summarizing earlier messages…')
-    expect(compacted).toEqual([{ history: [...first, ...second] }])
-    release()
-    await screen.findByText('Third answer.')
-    expect(asked[1]).toEqual({ message: 'Third?', history: second, summary })
-  })
-
-  it('asks anyway when summarizing fails', async () => {
-    const asked = serve({
-      chat: [
-        () => answerStream('Second answer.', [citation(1)], 'Second?', [...first, ...second]),
-        () => answerStream('Third answer.', [citation(1)], 'Third?'),
-      ],
-      compact: () => json({ detail: 'The request took too long. Please try again.' }, 504),
     })
     render(<App />)
 
@@ -172,25 +141,7 @@ describe('compacting', () => {
     await ask('Third?')
 
     await screen.findByText('Third answer.')
-    expect(asked[1]).toEqual({ message: 'Third?', history: [...first, ...second] })
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
-  })
-
-  it('stops while summarizing', async () => {
-    const asked = serve({
-      chat: [() => answerStream('Second answer.', [citation(1)], 'Second?', [...first, ...second])],
-      compact: (init) => pending(init?.signal),
-    })
-    render(<App />)
-
-    await ask('Second?')
-    await screen.findByText('Second answer.')
-    await ask('Third?')
-    await screen.findByText('Summarizing earlier messages…')
-    await userEvent.click(screen.getByRole('button', { name: 'Stop answering' }))
-
-    expect(screen.getByText('Stopped.')).toBeInTheDocument()
-    expect(asked).toHaveLength(1)
+    expect(asked[1]).toEqual({ message: 'Third?', history: kept, summary })
   })
 })
 
