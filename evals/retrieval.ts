@@ -15,16 +15,16 @@
  * query and returns the remedies with the most passages shows how much a score owes to the cures
  * being well-documented remedies.
  *
- * Production searches every book and weighs Kent's and Boericke's Repertories' ranking with the
- * books' support; the books only arm leaves the repertories out. Where production ranks the cured
+ * Production searches every book and weighs Kent's and Boericke's Repertories' ranking, and
+ * Clarke's remedies for the diseases a case names, with the books' support; the books only arm
+ * leaves them out. Where production ranks the cured
  * remedy below first, the run says at which step it was lost: it was in neither the dense nor any
  * book's BM25 candidates, one remedy held so much of the results that they were not regrouped, the
  * books and repertories together favoured other remedies, or it was shown but below another. A deeper search, with many more candidates, says how far off a lost remedy was, and the
  * repertory says whether the extracted symptoms point to it at all.
  *
- * The clarke arms weigh Clarke's Clinical sections' remedies for the diseases a case names (see
- * `clinical.ts`) with the books' support as a ranking of their own, beside production's repertory
- * ranking rather than merged into it, or, for clarke alone, in place of it.
+ * The clarke arms weigh Clarke's ranking at other weights, leave it out, or weigh it without the
+ * repertories. A case's diseases are asked once and kept in .cache/retrieval-diseases.json.
  *
  * Usage: npm run eval:retrieval [-- --fresh] [-- --out results.json]
  */
@@ -35,13 +35,8 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 
-import {
-  type ChatRequest,
-  ChatRequestSchema,
-  MAX_RETRIEVAL_QUERY_CHARS,
-  type RetrievedSource,
-  type Retriever,
-} from '../src/server/contracts.ts'
+import { ChatRequestSchema, type RetrievedSource, type Retriever } from '../src/server/contracts.ts'
+import { CLINICAL_WEIGHT, Clinical, ClinicalTerms, loadClinicalTerms } from '../src/server/clinical.ts'
 import { VoyageQueryEmbedder } from '../src/server/embeddings.ts'
 import {
   BOOKS,
@@ -68,7 +63,7 @@ import { loadRepertory, loadSettings, symptomExtractor } from '../src/server/run
 import { SOURCE_LIMIT } from '../src/server/service.ts'
 import { CASES_PATH, hasPrivateClone, loadCases, remedyIds } from './cases.ts'
 import { askClaude } from './claude.ts'
-import { ClarkeClinical } from './clinical.ts'
+import { CachedDiseaseExtractor, DISEASES_CACHE } from './clinical.ts'
 import { asker, Proposer } from './proposals.ts'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
@@ -101,7 +96,9 @@ interface Arm {
    * Boericke's, both repertories' together, Kent's or both from the symptoms a stronger model
    * extracts, or the remedies the answer model proposes.
    */
-  ranking?: 'repertory' | 'boericke' | 'both' | 'opus' | 'opus both' | 'proposals'
+  ranking?: 'repertory' | 'boericke' | 'both' | 'opus' | 'opus both' | 'proposals' | 'none'
+  /** The weight of Clarke's ranking for the diseases the case names, beside a prior, if any. */
+  clinical?: number
 }
 
 /** The model whose proposed remedies the proposal arms use: production's answer model. */
@@ -130,8 +127,12 @@ const SWEEP: Arm[] = PRIOR_KS.flatMap((k) => PRIOR_WEIGHTS.map((weight) => ({ ..
 
 /** The first is production's and is reported in detail; the prior sweep follows the others. */
 const ARMS: Arm[] = [
-  { ...SEARCH, name: 'production', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'both' },
+  { ...SEARCH, name: 'production', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'both', clinical: CLINICAL_WEIGHT },
   { ...SEARCH, name: 'books only' },
+  { ...SEARCH, name: 'no clarke', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'both' },
+  { ...SEARCH, name: 'clarke 0.5', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'both', clinical: 0.5 },
+  { ...SEARCH, name: 'clarke 1', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'both', clinical: 1 },
+  { ...SEARCH, name: 'clarke alone', prior: { weight: PRIOR_WEIGHT, k: PRIOR_K }, ranking: 'none', clinical: PRIOR_WEIGHT },
   { ...SEARCH, name: 'fusion only', regroup: false },
   { ...SEARCH, name: 'repertory 20', candidates: 20 },
   { ...SEARCH, name: 'repertory 10', candidates: 10 },
@@ -155,11 +156,6 @@ const ARMS: Arm[] = [
   { ...SEARCH, name: 'glm order 10', candidates: 10, remedyOrder: true, ranking: 'proposals' },
   ...SWEEP,
 ]
-
-/** The weights at which Clarke's clinical ranking is weighed beside production's repertory ranking. */
-const CLINICAL_WEIGHTS = [0.25, 0.5, 1]
-const CLARKE_ALONE = 'clarke alone'
-const clinicalName = (weight: number) => `clarke ${weight}`
 
 /** The sweep's arm with production's prior weight and constant, which wins its ties. */
 const DEFAULT_PRIOR = priorName({ weight: PRIOR_WEIGHT, k: PRIOR_K })
@@ -521,44 +517,6 @@ class SymptomRetriever implements Retriever {
 }
 
 /**
- * Production's search with Clarke's ranking for the diseases the case names weighed with the books'
- * support at `weight`, beside Kent's and Boericke's ranking at production's weight, or, without a
- * repertory, alone.
- */
-class ClinicalRetriever implements Retriever {
-  readonly corpusVersion = 'clinical'
-  readonly #corpus: QdrantCorpus
-  readonly #embedder: QueryEmbedder
-  readonly #repertory: Repertoriser | null
-  readonly #clinical: ClarkeClinical
-  readonly #weight: number
-
-  constructor(corpus: QdrantCorpus, embedder: QueryEmbedder, repertory: Repertoriser | null, clinical: ClarkeClinical, weight: number) {
-    this.#corpus = corpus
-    this.#embedder = embedder
-    this.#repertory = repertory
-    this.#clinical = clinical
-    this.#weight = weight
-  }
-
-  async retrieve(request: ChatRequest, { limit }: { limit: number }): Promise<readonly RetrievedSource[]> {
-    // A first question with no history, searched as production searches it.
-    const query = request.message.slice(-MAX_RETRIEVAL_QUERY_CHARS)
-    const [embedding, repertorisation, clinical] = await Promise.all([
-      this.#embedder.embedQuery(query),
-      this.#repertory?.repertorise(query),
-      this.#clinical.match(request.message),
-    ])
-    const ranked = repertorisation?.remedies.map((remedy) => remedy.remedyId) ?? []
-    return this.#corpus.search(query, embedding, {
-      limit,
-      prior: ranked.length ? ranked : undefined,
-      priors: clinical.ranking.length ? [{ ranking: clinical.ranking, weight: this.#weight }] : [],
-    })
-  }
-}
-
-/**
  * The baseline: whatever the query, one passage each on the remedies with the most passages in the
  * corpus, which are the most fully proved and the most prescribed.
  */
@@ -914,10 +872,10 @@ function report(diagnoses: readonly Diagnosis[]): void {
 }
 
 /** Which cases name a disease, the terms of Clarke's it matches, and where Clarke ranks the cure. */
-async function clinicalReport(cases: readonly { id: string; query: string; expected: readonly string[] }[], clinical: ClarkeClinical) {
+async function clinicalReport(cases: readonly { id: string; query: string; expected: readonly string[] }[], clinical: Clinical) {
   const rows = await Promise.all(
     cases.map(async ({ id, query, expected }) => {
-      const match = await clinical.match(ChatRequestSchema.parse({ message: query, history: [] }).message)
+      const match = await clinical.rank(ChatRequestSchema.parse({ message: query, history: [] }).message)
       const place = match.ranking.findIndex((remedy) => expected.includes(remedy))
       return { id, match, place: place < 0 ? null : place + 1 }
     }),
@@ -930,7 +888,7 @@ async function clinicalReport(cases: readonly { id: string; query: string; expec
       `the cured remedy listed in ${listed.length}, at median place ${median(listed.map(({ place }) => place!))} of median ${median(matched.map(({ match }) => match.ranking.length))}`,
   )
   for (const { id, match, place } of named) {
-    const terms = match.terms.map(({ text, remedies }) => `${text} (${remedies})`).join('; ') || 'no term'
+    const terms = match.terms.map(({ text, remedies }) => `${text} (${remedies.length})`).join('; ') || 'no term'
     console.log(`  ${String(place ?? '-').padStart(4)}  ${id}: ${match.diseases.join('; ')} -> ${terms}`)
   }
 }
@@ -949,7 +907,7 @@ async function main(): Promise<void> {
   const strongExtractor = new CachedExtractor(new ClaudeExtractor(STRONG_EXTRACTOR), STRONG_EXTRACTOR, stored)
   const repertory = new CachedRepertory(await loadRepertory(settings, voyage, { extractor }))
   const kentAndBoericke = [REPERTORY_COLLECTION, BOERICKE_COLLECTION]
-  const rankings: Record<NonNullable<Arm['ranking']>, Repertoriser> = {
+  const rankings: Record<Exclude<NonNullable<Arm['ranking']>, 'none'>, Repertoriser> = {
     repertory,
     boericke: new CachedRepertory(await loadRepertory(settings, voyage, { extractor, collections: [BOERICKE_COLLECTION] })),
     both: new CachedRepertory(await loadRepertory(settings, voyage, { extractor, collections: kentAndBoericke })),
@@ -965,8 +923,13 @@ async function main(): Promise<void> {
     { fresh: values.fresh },
   )
   const qdrantFetch = memoizedFetch(retryingFetch)
+  const diseases = new CachedDiseaseExtractor(settings.model, asker(settings.model))
+  const clinical = new Clinical({
+    extractor: diseases,
+    terms: new ClinicalTerms(await loadClinicalTerms({ url: settings.qdrantUrl, apiKey: settings.qdrantApiKey, fetch: retryingFetch })),
+  })
   const arms: { name: string; retriever: Retriever }[] = ARMS.map((arm) => {
-    const ranking = rankings[arm.ranking ?? 'repertory']
+    const ranking = arm.ranking === 'none' ? undefined : rankings[arm.ranking ?? 'repertory']
     return {
       name: arm.name,
       retriever: new ProductionRetriever(
@@ -981,19 +944,14 @@ async function main(): Promise<void> {
           ...(arm.prior ? { priorWeight: arm.prior.weight, priorK: arm.prior.k } : {}),
         }),
         embedder,
-        arm.prior ? { repertory: ranking, prior: true } : arm.candidates ? { repertory: ranking, candidates: arm.candidates } : {},
+        arm.prior
+          ? { repertory: ranking, prior: true, ...(arm.clinical ? { clinical, clinicalWeight: arm.clinical } : {}) }
+          : arm.candidates
+            ? { repertory: ranking, candidates: arm.candidates }
+            : {},
       ),
     }
   })
-  const clinical = new ClarkeClinical(settings.model, asker(settings.model))
-  const clinicalCorpus = new QdrantCorpus({ url: settings.qdrantUrl!, apiKey: settings.qdrantApiKey, fetch: qdrantFetch })
-  arms.push(
-    ...CLINICAL_WEIGHTS.map((weight) => ({
-      name: clinicalName(weight),
-      retriever: new ClinicalRetriever(clinicalCorpus, embedder, rankings.both, clinical, weight),
-    })),
-    { name: CLARKE_ALONE, retriever: new ClinicalRetriever(clinicalCorpus, embedder, null, clinical, PRIOR_WEIGHT) },
-  )
   const symptomSearches = (books: readonly string[] | undefined) =>
     new SymptomSearches(
       new QdrantCorpus({ url: settings.qdrantUrl!, apiKey: settings.qdrantApiKey, fetch: qdrantFetch, ...(books ? { bookIds: books } : {}) }),
@@ -1032,16 +990,18 @@ async function main(): Promise<void> {
         })
       }
       // Production searches the bare message, as a first question with no history, weighing both
-      // repertories' ranking with the books' support.
-      const [embedding, repertorisation] = await Promise.all([
+      // repertories' ranking and Clarke's with the books' support.
+      const [embedding, repertorisation, clinicalMatch] = await Promise.all([
         embedder.embedQuery(request.message),
         rankings.both.repertorise(request.message),
+        clinical.rank(request.message),
       ])
       const ranked = repertorisation.remedies.map((remedy) => remedy.remedyId)
       const prior = ranked.length ? ranked : undefined
+      const priors = clinicalMatch.ranking.length ? [{ ranking: clinicalMatch.ranking, weight: CLINICAL_WEIGHT }] : undefined
       const [stages, deep] = await Promise.all([
-        corpus.stages(request.message, embedding, { limit: SOURCE_LIMIT, prior }),
-        corpus.stages(request.message, embedding, { limit: SOURCE_LIMIT * DEEP_FACTOR, prior }),
+        corpus.stages(request.message, embedding, { limit: SOURCE_LIMIT, prior, priors }),
+        corpus.stages(request.message, embedding, { limit: SOURCE_LIMIT * DEEP_FACTOR, prior, priors }),
       ])
       const staged = stages.best.map(({ subject }) => (subject.startsWith('remedy:') ? subject.slice('remedy:'.length) : null))
       if (JSON.stringify(staged) !== JSON.stringify(productionRemedies)) {
@@ -1066,13 +1026,13 @@ async function main(): Promise<void> {
   console.log(`glm: the remedies ${PROPOSER} proposes from the case alone, in place of the repertory's`)
   console.log(`boericke, both: Boericke's Repertory, or each symptom's rubrics from Kent's and Boericke's together, in place of Kent's`)
   console.log(`opus: the repertory given the symptoms ${STRONG_EXTRACTOR} extracts, with production's instructions, in place of ${settings.model}'s`)
-  console.log(`production: every book searched, with Kent's and Boericke's ranking at weight ${PRIOR_WEIGHT} against the books' support, fused with constant ${PRIOR_K}`)
-  console.log('books only: every book searched, without the repertories')
   console.log(
-    `clarke w: production, with Clarke's remedies for the diseases a case names (by ${settings.model}) weighed at w beside the repertories'; ` +
-      `${CLARKE_ALONE}: the same at ${PRIOR_WEIGHT}, without the repertories`,
+    `production: every book searched, with Kent's and Boericke's ranking at weight ${PRIOR_WEIGHT} and Clarke's for the diseases a case names ` +
+      `at ${CLINICAL_WEIGHT} against the books' support, fused with constant ${PRIOR_K}`,
   )
-  if (clinical.reused) console.log(`${settings.model}'s diseases of ${clinical.reused} cases reused from .cache/retrieval-diseases.json`)
+  console.log('books only: every book searched, without the repertories')
+  console.log(`no clarke, clarke w: production without Clarke's ranking, or with it at weight w; clarke alone: Clarke's at ${PRIOR_WEIGHT}, without the repertories`)
+  if (diseases.reused) console.log(`${settings.model}'s diseases of ${diseases.reused} cases reused from ${DISEASES_CACHE}`)
   console.log(`prior w/k: Kent's ranking at weight w against the books' support, fused with constant k`)
   const chosen = [...Map.groupBy(choices, (choice) => choice).entries()].map(([name, times]) => `${name} ${times.length}`)
   console.log(`${TUNED}: each case scored with the prior that does best on the other cases (chose ${chosen.join(', ')})`)
@@ -1094,7 +1054,7 @@ async function main(): Promise<void> {
   }
 
   const booksOnly = results.filter((result) => result.arm === 'books only')
-  console.log(`  ${`${CLARKE_ALONE} vs books only`.padEnd(15)} ${comparison(booksOnly, results.filter((result) => result.arm === CLARKE_ALONE))}`)
+  console.log(`  ${'clarke alone vs books only'.padEnd(15)} ${comparison(booksOnly, results.filter((result) => result.arm === 'clarke alone'))}`)
   await clinicalReport(cases, clinical)
 
   const misses = production!.filter((result) => result.rank !== 1)
