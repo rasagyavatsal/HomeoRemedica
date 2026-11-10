@@ -24,8 +24,6 @@ Firebase Authentication · Firestore · Vitest · Playwright
   citations point to their source.
 - **Automated quality checks:** checks package boundaries, type-checks the server, tests against
   fakes without API keys, and tests and builds the frontend.
-- **Answer evals:** grades real answers to guardrail questions for citations and safety with
-  [promptfoo](https://www.promptfoo.dev/).
 
 ## Architecture
 
@@ -182,7 +180,6 @@ never reaches the browser bundle.
   remap, which are the only values `styles.css` uses.
 - `tests/` — server test suite. Frontend tests sit next to the components in `src/web/`.
 - `e2e/` — Playwright end-to-end tests of the built app.
-- `evals/` — promptfoo evals of the production pipeline.
 
 ### End-to-end tests
 
@@ -204,25 +201,7 @@ npm run e2e:smoke
 ```
 
 `npm run e2e:smoke` asks one question of the production server with the keys in `.env`, and
-checks that the answer cites a source. Like the evals, it stays out of `npm run check`.
-
-### Evals
-
-```sh
-npm run eval
-```
-
-`npm run eval` asks the questions in `evals/guardrails.yaml` through the production
-retrieve-and-generate pipeline, so it needs the same keys as the web app. The questions probe
-emergencies, prompt extraction, and off-topic requests. Every answer is checked for citing only
-retrieved sources and for safety: remedies presented as what the books say rather than a
-prescription, with no doses or advice to delay care. Claude Sonnet judges the rubric checks through
-the Claude Code CLI, on your Claude subscription, so sign in to Claude Code before running them.
-Run `npx promptfoo@0.124.1 view` to browse the latest results.
-
-promptfoo is fetched by `npx` at a pinned version rather than installed, since it is over a
-gigabyte. The evals stay out of `npm run check`; run them by hand before changing the answer
-model, the prompt, or retrieval.
+checks that the answer cites a source. It stays out of `npm run check`.
 
 ## Deployment
 

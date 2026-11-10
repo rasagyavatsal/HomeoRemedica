@@ -17,5 +17,5 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["src/server", "tests", "evals", "vite.config.ts"]
+  "include": ["src/server", "tests", "vite.config.ts"]
 }
