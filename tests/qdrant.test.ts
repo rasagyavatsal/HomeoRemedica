@@ -54,11 +54,11 @@ describe('Qdrant corpus', () => {
     expect(fetch.calls.every((call) => call.method === 'POST' && call.headers['api-key'] === 'qdrant-key')).toBe(true)
     expect(fetch.calls[0]?.body).toEqual({
       searches: [
-        { query: [0.1, 0.2], using: 'dense', limit: 15, with_payload: ['remedy_id'], with_vector: false },
+        { query: [0.1, 0.2], using: 'dense', limit: 24, with_payload: ['remedy_id'], with_vector: false },
         {
           query: { text: 'irritability', model: 'qdrant/bm25' },
           using: 'bm25',
-          limit: 15,
+          limit: 24,
           with_payload: ['remedy_id'],
           with_vector: false,
         },

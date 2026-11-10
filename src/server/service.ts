@@ -18,7 +18,7 @@ import { ChatFailure, type FailureKind, ProviderError, TokenExhaustionError, isT
 import { COMPACTION_INSTRUCTION, NO_SOURCES_ANSWER, SYSTEM_INSTRUCTION, compactionPrompt, generationPrompt } from './generation.ts'
 
 /** How many retrieved passages each answer is generated from. */
-export const SOURCE_LIMIT = 8
+export const SOURCE_LIMIT = 5
 
 /** Own the complete retrieve-and-generate sequence behind one narrow chat method. */
 export class ChatService {

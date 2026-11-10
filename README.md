@@ -18,7 +18,7 @@ Firebase Authentication · Firestore · Vitest · Playwright
 ## Engineering highlights
 
 - **Hybrid retrieval:** fuses BM25 and voyage-4 vector rankings from every book's collection
-  through reciprocal-rank fusion, with up to eight retrieved chunks per answer. A list of symptoms
+  through reciprocal-rank fusion, with up to five retrieved chunks per answer. A list of symptoms
   gets the remedies that most books support.
 - **Structured corpus:** preserves book, remedy, and section metadata on every chunk, so
   citations point to their source.
@@ -40,7 +40,7 @@ flowchart TD
     V --> R
     E --> R
     R --> D[Regrouping by remedy when no remedy dominates]
-    D --> P[Up to eight chunks with source metadata]
+    D --> P[Up to five chunks with source metadata]
     Q --> G[Answer generation via Z.AI]
     P --> G
     G --> O[Answer with numbered source references]
@@ -158,7 +158,7 @@ The API reads environment variables and optional `.env` and `.env.local` files.
 | `HOST` | `127.0.0.1` | Address `npm start` listens on. |
 | `PORT` | `8000` | Port `npm start` listens on. |
 
-Each question retrieves up to eight chunks from the book collections in Qdrant and sends the grounded prompt to Z.AI.
+Each question retrieves up to five chunks from the book collections in Qdrant and sends the grounded prompt to Z.AI.
 OpenRouter supplies query embeddings.
 
 ## Development

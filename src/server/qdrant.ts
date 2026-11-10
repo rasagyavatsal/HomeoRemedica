@@ -19,8 +19,9 @@ export const CORPUS_VERSION = 'homeoremedica'
 export const DENSE_VECTOR = 'dense'
 export const SPARSE_VECTOR = 'bm25'
 export const SPARSE_MODEL = 'qdrant/bm25'
-// Each ranking contributes this many candidates per requested source before fusion.
-export const PREFETCH_MULTIPLIER = 5
+// Each ranking contributes this many candidates per requested source before fusion: 40 for the
+// five sources an answer is generated from.
+export const PREFETCH_MULTIPLIER = 8
 // The standard reciprocal-rank fusion constant: a ranking adds 1 / (RRF_K + rank) to each point.
 export const RRF_K = 60
 // Results are regrouped by remedy unless one remedy, or one book without remedies, holds this share.

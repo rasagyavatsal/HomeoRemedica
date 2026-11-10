@@ -78,7 +78,7 @@ it('grounds a conversation-aware answer in versioned sources', async () => {
 
   const response = await service.chat(chatRequest)
 
-  expect(retriever.searchCall).toEqual({ request: chatRequest, limit: 8 })
+  expect(retriever.searchCall).toEqual({ request: chatRequest, limit: 5 })
   expect(generator.generationPrompt).toContain("[1] Kent's Lectures — NUX VOMICA — MIND")
   expect(generator.generationPrompt).toContain('untrusted user-provided context')
   expect(generator.generationPrompt).toContain('untrusted reference data')
