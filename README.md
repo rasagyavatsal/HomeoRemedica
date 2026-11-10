@@ -182,7 +182,7 @@ never reaches the browser bundle.
   remap, which are the only values `styles.css` uses.
 - `tests/` — server test suite. Frontend tests sit next to the components in `src/web/`.
 - `e2e/` — Playwright end-to-end tests of the built app.
-- `evals/` — promptfoo evals of the production pipeline, and a retrieval-only eval.
+- `evals/` — promptfoo evals of the production pipeline.
 
 ### End-to-end tests
 
@@ -230,17 +230,6 @@ them. Run `npx promptfoo@0.124.1 view` to browse the latest results side by side
 promptfoo is fetched by `npx` at a pinned version rather than installed, since it is over a
 gigabyte. The evals stay out of `npm run check`; run them by hand before changing the answer
 model, the prompt, or retrieval.
-
-```sh
-npm run eval:retrieval
-```
-
-`npm run eval:retrieval` scores retrieval alone, without generating answers, in under a minute. It
-asks the same cases, so it needs the private clone. For production's retrieval it reports how
-often a source on the cured remedy ranks first or within the top 3, 5 and 8, the mean reciprocal
-rank, and the average share of each case's differential that the eight sources cover. It then
-lists the cases it does not rank first and the step at which each lost the cured remedy. Add
-`-- --out results.json` to keep every case's sources.
 
 ## Deployment
 

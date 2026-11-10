@@ -2,7 +2,7 @@
  * The cured cases every eval asks, kept in the HomeoRemedica-private clone at
  * `private/eval/cases.yaml`, and the remedy each corpus chunk is about, read from its `chunks/`.
  *
- * promptfoo loads `tests` from here as its corpus cases; `retrieval.ts` scores the same cases.
+ * promptfoo loads `tests` from here as its corpus cases.
  */
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
