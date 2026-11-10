@@ -8,11 +8,12 @@
  * cases are published ones Claude may have read, so it is also asked whether it recognises each,
  * and the scores are given apart for the cases it says it does not.
  *
- * A Claude model runs through the Claude Code CLI on its signed-in subscription; any other model is
+ * A Claude model runs through the Claude Code CLI on its signed-in subscription, a `vendor/model`
+ * through OpenRouter, so a model that did not write the cases can read them, and any other is
  * asked through Z.AI like production's answer model, so `--model glm-5.3-flash` shows whether that
  * model could propose a case's remedies itself. Replies are kept as `proposals.ts` keeps them.
  *
- * Usage: npm run eval:unaided [-- --model glm-5.3-flash] [-- --against retrieval-results.json]
+ * Usage: npm run eval:unaided [-- --model glm-5.3-flash | openai/gpt-6.1-sol] [-- --against retrieval-results.json]
  */
 
 import { readFileSync } from 'node:fs'
