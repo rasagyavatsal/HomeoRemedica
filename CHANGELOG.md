@@ -7,6 +7,29 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [10.0.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v9.6.0...web-v10.0.0) (2026-11-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **evals:** remove the promptfoo evals
+
+### Features
+
+* **server:** embed several queries in one request ([80987ea](https://github.com/rasagyavatsal/HomeoRemedica/commit/80987ea14ac3e74ddff3a5bc6fff3ba6ba30e6cd))
+* **server:** keep a narrowed search's remedies in the order given ([fa38923](https://github.com/rasagyavatsal/HomeoRemedica/commit/fa3892391f30473d6016f7faaa71fb165da10ca5))
+* **server:** list every matching remedy for a described case ([23cd843](https://github.com/rasagyavatsal/HomeoRemedica/commit/23cd843bac3776ec7dbb83e6eaed6f45d564af85))
+* **server:** narrow a described case's search to the remedies Kent's Repertory lists ([a1bacc7](https://github.com/rasagyavatsal/HomeoRemedica/commit/a1bacc779019a99729773287d3424bc2fe711d25))
+* **server:** repertorise against Boericke's Repertory alongside Kent's ([49eea28](https://github.com/rasagyavatsal/HomeoRemedica/commit/49eea28dac3b2f4af25d872a8c053d20cb5c6a18))
+* **server:** search only the given remedies' passages ([a04d7b2](https://github.com/rasagyavatsal/HomeoRemedica/commit/a04d7b266f3377883aa36bc5ada4a76c9086532f))
+* **server:** weigh Clarke's remedies for the diseases a case names ([b98c32f](https://github.com/rasagyavatsal/HomeoRemedica/commit/b98c32f61817d8182399b10f9e43189746c0e94e))
+* **server:** weigh Kent's and Boericke's Repertories with the books' support ([a4bfc56](https://github.com/rasagyavatsal/HomeoRemedica/commit/a4bfc563a8be7a66d0507bd9eebd96e6c8d719e7))
+
+
+### Tests
+
+* **evals:** remove the promptfoo evals ([db28f67](https://github.com/rasagyavatsal/HomeoRemedica/commit/db28f675e71920d2cb91254d5a4b933ebd481467))
+
 ## [9.6.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v9.5.0...web-v9.6.0) (2026-11-06)
 
 
