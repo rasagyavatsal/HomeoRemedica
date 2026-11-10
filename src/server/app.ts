@@ -9,6 +9,7 @@ import { bodyLimit } from 'hono/body-limit'
 import { createMiddleware } from 'hono/factory'
 import { streamSSE } from 'hono/streaming'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
+import type { z } from 'zod'
 
 import { BOOKS, CorpusError } from './qdrant.ts'
 import type { Accounts } from './accounts.ts'
@@ -164,16 +165,10 @@ export function createApp(
         c.header('Retry-After', String(retryAfter))
         return c.json({ detail: 'Too many messages saved in a short time. Please try again later.' }, 429)
       }
-      let body: unknown
-      try {
-        body = await c.req.json()
-      } catch {
-        return c.json({ detail: 'request body must be valid JSON' }, 422)
-      }
-      const parsed = SavedChatSchema.safeParse(body)
-      if (!parsed.success) return c.json({ detail: parsed.error.issues[0]?.message ?? 'invalid chat' }, 422)
+      const saved = await readBody(c, SavedChatSchema)
+      if (saved instanceof Response) return saved
       // A browser clock set in the future would keep a chat at the top of every list.
-      const chat = { ...parsed.data, updatedAt: Math.min(parsed.data.updatedAt, Date.now()) }
+      const chat = { ...saved, updatedAt: Math.min(saved.updatedAt, Date.now()) }
       const id = c.req.param('id')
       const written = await c.var.accounts.chats.put(c.var.userId, id, chat)
       // A save resends the whole chat, so count only the messages the store had to write.
@@ -208,15 +203,9 @@ export function createApp(
         c.header('Retry-After', String(retryAfter))
         return c.json({ detail: 'Too many ratings in a short time. Please try again later.' }, 429)
       }
-      let body: unknown
-      try {
-        body = await c.req.json()
-      } catch {
-        return c.json({ detail: 'request body must be valid JSON' }, 422)
-      }
-      const parsed = FeedbackSchema.safeParse(body)
-      if (!parsed.success) return c.json({ detail: parsed.error.issues[0]?.message ?? 'invalid feedback' }, 422)
-      await c.var.accounts.feedback.put(c.var.userId, id, parsed.data)
+      const feedback = await readBody(c, FeedbackSchema)
+      if (feedback instanceof Response) return feedback
+      await c.var.accounts.feedback.put(c.var.userId, id, feedback)
       return c.body(null, 204)
     },
   )
@@ -247,18 +236,8 @@ export function createApp(
   app.post('/api/chat/compact', questionLimits)
 
   app.post('/api/chat', async (c) => {
-    let body: unknown
-    try {
-      body = await c.req.json()
-    } catch {
-      return c.json({ detail: 'request body must be valid JSON' }, 422)
-    }
-    const parsed = ChatRequestSchema.safeParse(body)
-    if (!parsed.success) {
-      // Return the useful validation message without echoing a user's history or input.
-      return c.json({ detail: parsed.error.issues[0]?.message ?? 'invalid request' }, 422)
-    }
-    const request = parsed.data
+    const request = await readBody(c, ChatRequestSchema)
+    if (request instanceof Response) return request
 
     let service: ChatHandler
     try {
@@ -305,14 +284,8 @@ export function createApp(
   })
 
   app.post('/api/chat/compact', async (c) => {
-    let body: unknown
-    try {
-      body = await c.req.json()
-    } catch {
-      return c.json({ detail: 'request body must be valid JSON' }, 422)
-    }
-    const parsed = CompactRequestSchema.safeParse(body)
-    if (!parsed.success) return c.json({ detail: parsed.error.issues[0]?.message ?? 'invalid request' }, 422)
+    const request = await readBody(c, CompactRequestSchema)
+    if (request instanceof Response) return request
 
     let service: ChatHandler
     try {
@@ -321,7 +294,7 @@ export function createApp(
       return setupFailure(c, error, 'Failed to initialize production chat')
     }
     try {
-      return c.json(await service.compact(parsed.data, { signal: c.req.raw.signal }))
+      return c.json(await service.compact(request, { signal: c.req.raw.signal }))
     } catch (error) {
       const { detail, status } = chatFailure(error)
       return c.json({ detail }, status)
@@ -358,6 +331,18 @@ const webCache = createMiddleware(async (c, next) => {
 // entry. Without a proxy in front, every client shares one limit.
 function clientAddress(c: Context): string {
   return c.req.header('X-Forwarded-For')?.split(',').at(-1)?.trim() || 'direct'
+}
+
+// Answer with the useful validation message without echoing a user's history or input.
+async function readBody<S extends z.ZodType>(c: Context, schema: S): Promise<z.output<S> | Response> {
+  let body: unknown
+  try {
+    body = await c.req.json()
+  } catch {
+    return c.json({ detail: 'request body must be valid JSON' }, 422)
+  }
+  const parsed = schema.safeParse(body)
+  return parsed.success ? parsed.data : c.json({ detail: parsed.error.issues[0]?.message ?? 'invalid request' }, 422)
 }
 
 function chatFailure(error: unknown): { detail: string; status: ContentfulStatusCode } {
