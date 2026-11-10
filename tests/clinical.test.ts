@@ -118,15 +118,15 @@ describe('production retriever with Clarke', () => {
     terms: new ClinicalTerms([{ text: 'sciatica', remedies: ['gnaph', 'coloc'] }]),
   })
 
-  it("weighs Clarke's ranking beside the repertory's", async () => {
+  it("fuses Clarke's ranking beside the repertory's", async () => {
     const { corpus, calls } = searching()
 
-    await new ProductionRetriever(corpus, embedder, { repertory, clinical, clinicalWeight: 0.25 }).retrieve(
+    await new ProductionRetriever(corpus, embedder, { repertory, clinical }).retrieve(
       request('Left sciatica, better walking.'),
       { limit: 8 },
     )
 
-    expect(calls).toEqual([{ limit: 8, prior: ['puls'], priors: [{ ranking: ['coloc', 'gnaph'], weight: 0.25 }] }])
+    expect(calls).toEqual([{ limit: 8, priors: [['puls'], ['coloc', 'gnaph']] }])
   })
 
   it('searches without Clarke when the case names no disease he lists, or matching fails', async () => {
@@ -146,8 +146,8 @@ describe('production retriever with Clarke', () => {
     }
 
     expect(calls).toEqual([
-      { limit: 8, prior: ['puls'], priors: undefined },
-      { limit: 8, prior: ['puls'], priors: undefined },
+      { limit: 8, priors: [['puls']] },
+      { limit: 8, priors: [['puls']] },
     ])
     expect(logged).toHaveBeenCalledOnce()
     logged.mockRestore()

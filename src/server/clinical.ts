@@ -6,9 +6,8 @@
  * remedies whose sections name it, and loads them into the `clarke_clinical` Qdrant collection.
  * The chat model names a case's diseases, and a disease matches every term whose words are all
  * among its own, ignoring spelling, plurals and word order, so `bronchial asthma` takes both
- * `asthma` and `asthma, bronchial`. The retrieval eval measured this ranking weighed with the
- * books' support beside the repertories' at CLINICAL_WEIGHT; merged into the repertories'
- * symptoms, it made their ranking worse.
+ * `asthma` and `asthma, bronchial`. The ranking is fused with the books' support beside the
+ * repertories'; merged into the repertories' symptoms, it made their ranking worse.
  */
 
 import type { AnswerGenerator } from './contracts.ts'
@@ -16,8 +15,6 @@ import { ProviderError } from './errors.ts'
 import { type Fetch, isRecord, readJson, send } from './http.ts'
 
 export const CLINICAL_COLLECTION = 'clarke_clinical'
-/** How much Clarke's ranking weighs against the books' support; heavier made retrieval worse. */
-export const CLINICAL_WEIGHT = 0.25
 const LABEL = 'Qdrant clinical terms'
 const SCROLL_PAGE = 1000
 

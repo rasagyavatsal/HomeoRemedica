@@ -6,7 +6,7 @@ import {
   type RetrievedSource,
   type Retriever,
 } from './contracts.ts'
-import { CLINICAL_WEIGHT, type ClinicalRanker } from './clinical.ts'
+import type { ClinicalRanker } from './clinical.ts'
 import { ChatFailure, ProviderError, isTimeout } from './errors.ts'
 import type { Repertoriser } from './repertory.ts'
 
@@ -21,11 +21,7 @@ export interface SearchableRelease {
   search(
     query: string,
     embedding: readonly number[],
-    options: {
-      limit: number
-      prior?: readonly string[] | undefined
-      priors?: readonly { ranking: readonly string[]; weight: number }[] | undefined
-    },
+    options: { limit: number; priors?: readonly (readonly string[])[] | undefined },
   ): Promise<readonly RetrievedSource[]>
 }
 
@@ -35,32 +31,22 @@ export class ProductionRetriever implements Retriever {
   readonly #embedder: QueryEmbedder
   readonly #repertory: Repertoriser | undefined
   readonly #clinical: ClinicalRanker | undefined
-  readonly #clinicalWeight: number
 
   /**
    * The whole corpus is searched. With a repertory, its ranking of remedies for the symptoms of a
-   * question that describes a patient is weighed with the books' support for each remedy. With
-   * `clinical`, Clarke's remedies for the diseases the case names are weighed beside it, at
-   * `clinicalWeight`.
+   * question that describes a patient is fused with the books' support for each remedy. With
+   * `clinical`, Clarke's remedies for the diseases the case names are fused beside it. The
+   * rankings and the books' support all count the same.
    */
   constructor(
     corpus: SearchableRelease,
     embedder: QueryEmbedder,
-    {
-      repertory,
-      clinical,
-      clinicalWeight = CLINICAL_WEIGHT,
-    }: {
-      repertory?: Repertoriser | undefined
-      clinical?: ClinicalRanker | undefined
-      clinicalWeight?: number
-    } = {},
+    { repertory, clinical }: { repertory?: Repertoriser | undefined; clinical?: ClinicalRanker | undefined } = {},
   ) {
     this.#corpus = corpus
     this.#embedder = embedder
     this.#repertory = repertory
     this.#clinical = clinical
-    this.#clinicalWeight = clinicalWeight
     this.corpusVersion = corpus.corpusVersion
   }
 
@@ -71,13 +57,13 @@ export class ProductionRetriever implements Retriever {
     const query = [...questions.map((turn) => turn.content), request.message]
       .join('\n')
       .slice(-MAX_RETRIEVAL_QUERY_CHARS)
-    const [embedding, ranking, clinical] = await Promise.all([
+    const [embedding, ...rankings] = await Promise.all([
       this.#embed(query),
       this.#repertoryRanking(query),
       this.#clinicalRanking(query),
     ])
-    const priors = clinical ? [{ ranking: clinical, weight: this.#clinicalWeight }] : undefined
-    return this.#corpus.search(query, embedding, { limit, prior: ranking, priors })
+    const priors = rankings.filter((ranking) => ranking !== undefined)
+    return this.#corpus.search(query, embedding, { limit, priors })
   }
 
   async #embed(query: string): Promise<readonly number[]> {

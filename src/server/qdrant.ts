@@ -27,25 +27,16 @@ export const RRF_K = 60
 export const DOMINANT_SHARE = 0.5
 // Regrouped results start with the best passage of each of this many remedies.
 export const DIFFERENTIAL_REMEDIES = 5
-// A prior ranking, such as the repertory's, is fused with the books' support by reciprocal rank with
-// this constant, at this weight against the support's.
+// Prior rankings, such as the repertory's, are fused with the books' support by reciprocal rank with
+// this constant. Every ranking counts as much as the support does.
 export const PRIOR_K = 10
-export const PRIOR_WEIGHT = 0.5
 export const QDRANT_TIMEOUT_MS = 30_000
 const LABEL = 'Qdrant'
 
-/** A ranking of remedy ids, best first, weighed with the books' support at `weight`. */
-export interface WeighedRanking {
-  ranking: readonly string[]
-  weight: number
-}
-
 export interface SearchOptions {
   limit: number
-  /** A ranking weighed with the books' support at the corpus's prior weight. */
-  prior?: readonly string[] | undefined
-  /** Further rankings weighed with the books' support beside `prior`, each at its own weight. */
-  priors?: readonly WeighedRanking[] | undefined
+  /** Rankings of remedy ids, best first, each fused with the books' support as its equal. */
+  priors?: readonly (readonly string[])[] | undefined
 }
 
 // Book IDs are the books' Qdrant collection names.
@@ -83,7 +74,7 @@ export interface SearchStages {
   /** Both rankings fused, best first. */
   fused: readonly Candidate[]
   /**
-   * Subjects by the books' support, fused with the prior ranking when one was given, best first,
+   * Subjects by the books' support, fused with the prior rankings when any were given, best first,
    * when the fused results were regrouped; otherwise null.
    */
   support: readonly string[] | null
@@ -98,7 +89,6 @@ export class QdrantCorpus {
   readonly #headers: Record<string, string>
   readonly #fetch: Fetch
   readonly #timeoutMs: number
-  readonly #priorWeight: number
   readonly #priorK: number
 
   constructor({
@@ -107,7 +97,6 @@ export class QdrantCorpus {
     bookIds = BOOKS.map((book) => book.bookId),
     fetch: fetchImpl = fetch,
     timeoutMs = QDRANT_TIMEOUT_MS,
-    priorWeight = PRIOR_WEIGHT,
     priorK = PRIOR_K,
   }: {
     url: string
@@ -115,9 +104,7 @@ export class QdrantCorpus {
     bookIds?: readonly string[]
     fetch?: Fetch
     timeoutMs?: number
-    /** How much a prior ranking weighs against the books' support. */
-    priorWeight?: number
-    /** The reciprocal-rank constant with which a prior ranking is fused with the books' support. */
+    /** The reciprocal-rank constant with which prior rankings are fused with the books' support. */
     priorK?: number
   }) {
     this.#baseUrl = `${url.replace(/\/+$/, '')}/collections/`
@@ -125,7 +112,6 @@ export class QdrantCorpus {
     this.#headers = { 'Content-Type': 'application/json', ...(apiKey ? { 'api-key': apiKey } : {}) }
     this.#fetch = fetchImpl
     this.#timeoutMs = timeoutMs
-    this.#priorWeight = priorWeight
     this.#priorK = priorK
   }
 
@@ -149,9 +135,8 @@ export class QdrantCorpus {
   }
 
   /**
-   * The best `limit` passages. A `prior` ranking of remedy ids, best first, is weighed with the
-   * books' support when the results are regrouped, at the corpus's prior weight, and each of
-   * `priors` beside it at its own weight.
+   * The best `limit` passages. Each of the `priors`, rankings of remedy ids, best first, is fused
+   * with the books' support as its equal when the results are regrouped.
    */
   async search(
     query: string,
@@ -171,11 +156,7 @@ export class QdrantCorpus {
   async stages(
     query: string,
     embedding: readonly number[],
-    {
-      limit,
-      prior,
-      priors = [],
-    }: SearchOptions,
+    { limit, priors = [] }: SearchOptions,
   ): Promise<SearchStages> {
     const candidates = limit * PREFETCH_MULTIPLIER
     const rankings = await Promise.all(
@@ -197,8 +178,7 @@ export class QdrantCorpus {
     const ranked = topCandidates([...fused.values()], fused.size)
     const found = { dense, sparse, fused: ranked }
     if (dominated(ranked, limit)) return { ...found, support: null, best: ranked.slice(0, limit) }
-    const weighed = [...(prior ? [{ ranking: prior, weight: this.#priorWeight }] : []), ...priors]
-    const support = weighed.length ? withPriors(bySupport(ranked), weighed, this.#priorK) : bySupport(ranked)
+    const support = priors.length ? withPriors(bySupport(ranked), priors, this.#priorK) : bySupport(ranked)
     return { ...found, support, best: select(ranked, support, limit) }
   }
 
@@ -311,15 +291,15 @@ function bySupport(ranked: readonly Candidate[]): string[] {
   return [...support.keys()].sort((a, b) => support.get(b)! - support.get(a)!)
 }
 
-/** The supported subjects reordered by reciprocal-rank fusion with weighed rankings of remedy ids. */
-function withPriors(support: readonly string[], priors: readonly WeighedRanking[], k: number): string[] {
-  const places = priors.map(({ ranking }) => new Map(ranking.map((remedy, index) => [`remedy:${remedy}`, index + 1])))
+/** The supported subjects reordered by reciprocal-rank fusion with rankings of remedy ids, all equal. */
+function withPriors(support: readonly string[], priors: readonly (readonly string[])[], k: number): string[] {
+  const places = priors.map((ranking) => new Map(ranking.map((remedy, index) => [`remedy:${remedy}`, index + 1])))
   const scores = new Map(
     support.map((subject, index) => {
       let score = 1 / (k + index + 1)
-      for (const [at, { weight }] of priors.entries()) {
-        const place = places[at]!.get(subject)
-        if (place) score += weight / (k + place)
+      for (const ranking of places) {
+        const place = ranking.get(subject)
+        if (place) score += 1 / (k + place)
       }
       return [subject, score]
     }),
