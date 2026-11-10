@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { parseEnv } from 'node:util'
 
 import { type Accounts, firebaseAccounts } from './accounts.ts'
+import { Clinical, ClinicalTerms, type DiseaseExtractor, loadClinicalTerms, ModelDiseaseExtractor } from './clinical.ts'
 import { ConfigurationError } from './errors.ts'
 import { ZaiChatClient } from './generation.ts'
 import { ChatService } from './service.ts'
@@ -89,9 +90,13 @@ export async function buildService(settings: Settings): Promise<ChatService> {
   const corpus = loadCorpus(settings)
   await corpus.verify()
   // Every book is searched while Kent's and Boericke's Repertories rank the remedies for the case's
-  // symptoms; their ranking is weighed with the books' support rather than narrowing the search.
-  const repertory = await loadRepertory(settings, embedder, { collections: [REPERTORY_COLLECTION, BOERICKE_COLLECTION] })
-  return new ChatService({ retriever: new ProductionRetriever(corpus, embedder, { repertory, prior: true }), generator })
+  // symptoms, and Clarke's Clinical sections those for the diseases it names; both rankings are
+  // weighed with the books' support rather than narrowing the search.
+  const [repertory, clinical] = await Promise.all([
+    loadRepertory(settings, embedder, { collections: [REPERTORY_COLLECTION, BOERICKE_COLLECTION] }),
+    loadClinical(settings),
+  ])
+  return new ChatService({ retriever: new ProductionRetriever(corpus, embedder, { repertory, prior: true, clinical }), generator })
 }
 
 /**
@@ -119,13 +124,33 @@ export async function loadRepertory(
 }
 
 export function symptomExtractor(settings: Settings): SymptomExtractor {
-  const generator = new ZaiChatClient({
+  return new ModelSymptomExtractor(extractionClient(settings))
+}
+
+/** Clarke's clinical terms from Qdrant, matched to the diseases the answer model names. */
+export async function loadClinical(
+  settings: Settings,
+  { extractor = diseaseExtractor(settings) }: { extractor?: DiseaseExtractor } = {},
+): Promise<Clinical> {
+  const { qdrantUrl: url, qdrantApiKey: apiKey } = settings
+  if (!url) {
+    throw new ConfigurationError('a Qdrant URL is required; set QDRANT_URL in the environment or .env')
+  }
+  return new Clinical({ extractor, terms: new ClinicalTerms(await loadClinicalTerms({ url, apiKey })) })
+}
+
+export function diseaseExtractor(settings: Settings): DiseaseExtractor {
+  return new ModelDiseaseExtractor(extractionClient(settings))
+}
+
+/** The answer model as symptom and disease extraction ask it: reasoning first, and steadier. */
+function extractionClient(settings: Settings): ZaiChatClient {
+  return new ZaiChatClient({
     apiKey: settings.zaiApiKey,
     model: settings.model,
     maxOutputTokens: EXTRACTION_MAX_OUTPUT_TOKENS,
     temperature: 0.2,
   })
-  return new ModelSymptomExtractor(generator)
 }
 
 export function loadCorpus(settings: Settings): QdrantCorpus {
