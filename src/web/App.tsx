@@ -322,7 +322,6 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
                 ratings={feedback.ratings}
                 onRate={ratingClient ? feedback.rate : undefined}
                 onNote={ratingClient ? feedback.note : undefined}
-                compacting={chat.compacting}
               />
             ) : (
               <Welcome />

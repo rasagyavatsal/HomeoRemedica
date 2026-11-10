@@ -3,15 +3,6 @@
 import type { ChatTurn, Citation, SavedMessage } from '../server/contracts.ts'
 
 const MAX_TITLE_CHARS = 80
-// The server's limits on what the model reads from earlier in a chat.
-export const CONTEXT_CHARS = 16_000
-export const CONTEXT_TURNS = 20
-// The server keeps the latest exchange word for word when it compacts a chat.
-const KEPT_TURNS = 2
-// How full the context may get before a chat is compacted ahead of the next question, leaving
-// room for that exchange so the server does not drop the earliest turns instead.
-const COMPACT_FROM = 0.8
-
 export interface Message {
   id: number
   role: 'user' | 'assistant'
@@ -30,7 +21,7 @@ export interface Conversation {
   messages: Message[]
   /** The trimmed history the server returned with the last answer. */
   history: ChatTurn[]
-  /** What compacting the chat condensed its earlier turns into. */
+  /** What the server condensed the chat's earlier turns into, returned with an answer. */
   summary?: string
 }
 
@@ -81,16 +72,4 @@ export function linkCitations(answer: string, sourceCount: number): string {
 /** The 1-based source numbers an answer cites. */
 export function citedSources(answer: string): Set<number> {
   return new Set([...answer.matchAll(CITATION)].flatMap((match) => citationNumbers(match[1] ?? '')))
-}
-
-/** How full the model's context is, from 0 to 1, by whichever limit is nearer. */
-export function contextFraction({ history, summary }: Pick<Conversation, 'history' | 'summary'>): number {
-  const chars = history.reduce((total, turn) => total + turn.content.length, summary?.length ?? 0)
-  return Math.min(1, Math.max(chars / CONTEXT_CHARS, history.length / CONTEXT_TURNS))
-}
-
-/** Whether to condense a chat's earlier turns before its next question. */
-export function shouldCompact(conversation: Pick<Conversation, 'history' | 'summary'>): boolean {
-  // Only turns older than the latest exchange can be condensed.
-  return conversation.history.length > KEPT_TURNS && contextFraction(conversation) >= COMPACT_FROM
 }

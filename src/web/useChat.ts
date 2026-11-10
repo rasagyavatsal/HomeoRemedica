@@ -1,13 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { compactChat, errorMessage, streamChat } from './api.ts'
-import { type Conversation, type Message, newConversation, shouldCompact, titleFrom } from './conversation.ts'
+import { errorMessage, streamChat } from './api.ts'
+import { type Conversation, type Message, newConversation, titleFrom } from './conversation.ts'
 
 export interface ChatControls {
   conversation: Conversation
   busy: boolean
-  /** Whether the chat's earlier turns are being condensed before the latest question is answered. */
-  compacting: boolean
   ask(question: string): void
   /** Ask the failed question at the end of the chat again. */
   retry(): void
@@ -25,7 +23,6 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
   // The latest chat, for request callbacks that outlive the render that started them.
   const latest = useRef(conversation)
   const request = useRef<AbortController | null>(null)
-  const [compacting, setCompacting] = useState(false)
   const settled = useRef(onSettled)
   useEffect(() => {
     settled.current = onSettled
@@ -53,7 +50,6 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
     if (!controller) return
     request.current = null
     controller.abort()
-    setCompacting(false)
     const current = latest.current
     updateAnswer(current.id, (answer) => ({ ...answer, status: 'stopped' }), { updatedAt: Date.now() })
     settled.current?.(latest.current)
@@ -79,26 +75,9 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
       })
 
       void (async () => {
-        let context: Pick<Conversation, 'history' | 'summary'> = start
-        // A chat near the server's limits is condensed first, so its earliest turns are summarized
-        // rather than dropped.
-        if (shouldCompact(start)) {
-          setCompacting(true)
-          try {
-            context = await compactChat({ history: start.history, summary: start.summary }, controller.signal)
-            if (request.current !== controller) return
-            commit({ ...latest.current, ...context })
-          } catch {
-            // Stopped, or failed: a failure still asks, and the server drops the earliest turns instead.
-            if (request.current !== controller) return
-          } finally {
-            if (request.current === controller) setCompacting(false)
-          }
-        }
-
         try {
           const response = await streamChat(
-            { message: question, history: context.history, summary: context.summary },
+            { message: question, history: start.history, summary: start.summary },
             {
               onSources: (sources) => updateAnswer(id, (answer) => ({ ...answer, sources })),
               onText: (piece) => updateAnswer(id, (answer) => ({ ...answer, content: answer.content + piece })),
@@ -110,7 +89,7 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
           updateAnswer(
             id,
             (answer) => ({ id: answer.id, role: 'assistant', content: response.answer, sources: [...response.sources] }),
-            { history: response.history, updatedAt: Date.now() },
+            { history: response.history, summary: response.summary, updatedAt: Date.now() },
           )
           settled.current?.(latest.current)
         } catch (error) {
@@ -147,5 +126,5 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
   )
 
   const busy = conversation.messages.at(-1)?.status === 'streaming'
-  return { conversation, busy, compacting, ask, retry, stop: halt, open }
+  return { conversation, busy, ask, retry, stop: halt, open }
 }

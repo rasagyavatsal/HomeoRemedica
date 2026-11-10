@@ -63,26 +63,18 @@ test('sends the conversation so far with a follow-up', async ({ page }) => {
   await expect(replies(page).last()).toContainText('Following on from “craves open air”')
 })
 
-test('summarizes a nearly full chat before the next question', async ({ page }) => {
+test('sends the summary of a nearly full chat with the question after it', async ({ page }) => {
   // Two long exchanges fill most of the context; the padding is one word, so it streams quickly.
   const first = unique('craves open air').padEnd(3_000, '.')
   const second = unique('and at night?').padEnd(3_000, '.')
   await ask(page, first)
   await ask(page, second)
+  // The server condenses the chat while it answers this.
+  await ask(page, 'and in the morning?')
 
-  // Held until the line has been seen.
-  let release = () => {}
-  const held = new Promise<void>((resolve) => (release = resolve))
-  await page.route('**/api/chat/compact', async (route) => {
-    await held
-    await route.fallback()
-  })
   const sent = page.waitForRequest((request) => new URL(request.url()).pathname === '/api/chat')
-  await ask(page, 'and in the morning?', { wait: false })
+  await ask(page, 'and at noon?')
 
-  await expect(replies(page).last().getByRole('status')).toHaveText('Summarizing earlier messages…')
-  release()
-  await expect(replies(page).last()).toContainText(`Following on from “${second}”`)
   expect((await sent).postDataJSON()).toMatchObject({ summary: `${SUMMARY_PREFIX} ${first}` })
 })
 

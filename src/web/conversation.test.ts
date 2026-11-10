@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { type Message, citedSources, contextFraction, linkCitations, savedMessages, shouldCompact, titleFrom } from './conversation.ts'
+import { type Message, citedSources, linkCitations, savedMessages, titleFrom } from './conversation.ts'
 import { citation } from './test/fakes.ts'
 
 describe('linkCitations', () => {
@@ -42,20 +42,4 @@ it('saves answered and stopped turns but not failed ones', () => {
     { id: 4, role: 'user', content: 'Stopped?' },
     { id: 5, role: 'assistant', content: 'Part' },
   ])
-})
-
-describe('context', () => {
-  const turn = (content: string) => ({ role: 'user' as const, content })
-
-  it('measures the history and summary by the nearer limit', () => {
-    expect(contextFraction({ history: [turn('a'.repeat(4_000))], summary: 'a'.repeat(4_000) })).toBe(0.5)
-    expect(contextFraction({ history: Array.from({ length: 18 }, () => turn('x')) })).toBe(0.9)
-  })
-
-  it('compacts a nearly full chat that has turns before the latest exchange', () => {
-    expect(shouldCompact({ history: Array.from({ length: 16 }, () => turn('x')) })).toBe(true)
-    expect(shouldCompact({ history: Array.from({ length: 14 }, () => turn('x')) })).toBe(false)
-    // Only the latest exchange, which compaction keeps as it is.
-    expect(shouldCompact({ history: [turn('a'.repeat(4_000)), turn('a'.repeat(4_000))], summary: 'a'.repeat(4_000) })).toBe(false)
-  })
 })
