@@ -11,6 +11,7 @@ import {
   Repertory,
   type Rubric,
   decisive,
+  distinctMatches,
   leadingRemedies,
   parseSymptoms,
   rankRemedies,
@@ -70,6 +71,28 @@ describe('decisive', () => {
     expect(decisive({ symptoms: symptoms(1), remedies: remedies(1, 1, 1, 1) })).toBe(true)
     expect(decisive({ symptoms: symptoms(7), remedies: remedies(3, 2, 2, 2, 2, 2) })).toBe(true)
     expect(decisive({ symptoms: symptoms(6), remedies: remedies(3, 3, 3, 3, 3, 3) })).toBe(true)
+  })
+})
+
+describe('distinctMatches', () => {
+  it('counts a rubric under the first symptom that matched it and drops a symptom left with none', () => {
+    const sciatica = rubric('Extremities: pain, sciatica', ['coloc', 3])
+    const night = rubric('Extremities: pain, sciatica, night', ['ars', 2])
+    const matches = [
+      { symptom: 'Extremities: sciatica', rubrics: [sciatica] },
+      { symptom: 'Extremities: sciatic pain', rubrics: [sciatica] },
+      { symptom: 'Extremities: sciatica, worse at night', rubrics: [night, sciatica] },
+      { symptom: 'Extremities: sciatica', rubrics: [{ ...sciatica, bookId: 'boericke_repertory' }] },
+    ]
+
+    const distinct = distinctMatches(matches)
+
+    expect(distinct.map(({ symptom, rubrics }) => [symptom, rubrics.map((found) => found.bookId + ' ' + found.id)])).toEqual([
+      ['Extremities: sciatica', ['kent_repertory Extremities: pain, sciatica']],
+      ['Extremities: sciatica, worse at night', ['kent_repertory Extremities: pain, sciatica, night']],
+      ['Extremities: sciatica', ['boericke_repertory Extremities: pain, sciatica']],
+    ])
+    expect(rankRemedies(distinct)[0]).toEqual({ remedyId: 'coloc', symptoms: 2, grades: 6 })
   })
 })
 
@@ -135,7 +158,11 @@ describe('parseSymptoms', () => {
 
   it('reads NONE as no symptoms and keeps at most the limit', () => {
     expect(parseSymptoms('NONE')).toEqual([])
-    expect(parseSymptoms(Array(20).fill('Head: pain').join('\n'))).toHaveLength(MAX_SYMPTOMS)
+    expect(parseSymptoms(Array.from({ length: 20 }, (_, index) => `Head: pain ${index}`).join('\n'))).toHaveLength(MAX_SYMPTOMS)
+  })
+
+  it('keeps a symptom the reply repeats once', () => {
+    expect(parseSymptoms('Head: pain, morning\nSleep: restless\nhead: Pain, morning')).toEqual(['Head: pain, morning', 'Sleep: restless'])
   })
 
   it('asks the model with the case as data', async () => {

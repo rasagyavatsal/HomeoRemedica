@@ -132,9 +132,27 @@ export class Repertory implements Repertoriser {
     if (!symptoms.length) return { symptoms: [], remedies: [] }
     const embeddings = await this.#embedder.embedQueries(symptoms)
     const found = await this.#rubrics.search(embeddings, { limit: RUBRICS_PER_SYMPTOM })
-    const matches = symptoms.map((symptom, index) => ({ symptom, rubrics: found[index] ?? [] }))
+    const matches = distinctMatches(symptoms.map((symptom, index) => ({ symptom, rubrics: found[index] ?? [] })))
     return { symptoms: matches, remedies: rankRemedies(matches) }
   }
+}
+
+/**
+ * The matches with each rubric under the first symptom that matched it, and without the symptoms
+ * that are left with none. The model sometimes gives a symptom twice in different words; both
+ * wordings match the same rubrics, which would otherwise count twice.
+ */
+export function distinctMatches(matches: readonly SymptomMatch[]): SymptomMatch[] {
+  const seen = new Set<string>()
+  const distinct: SymptomMatch[] = []
+  for (const { symptom, rubrics } of matches) {
+    const fresh = rubrics.filter((rubric) => {
+      const key = `${rubric.bookId}\n${rubric.id}`
+      return !seen.has(key) && Boolean(seen.add(key))
+    })
+    if (fresh.length) distinct.push({ symptom, rubrics: fresh })
+  }
+  return distinct
 }
 
 /**
@@ -232,16 +250,19 @@ function rubricSource(rubric: Rubric, leaders: readonly string[]): RetrievedSour
   }
 }
 
-/** Symptoms from the chat model's reply: `Chapter: symptom` lines in a known chapter. */
+/** Symptoms from the chat model's reply: `Chapter: symptom` lines in a known chapter, each once. */
 export function parseSymptoms(reply: string): string[] {
   const chapters = new Map(CHAPTERS.map((chapter) => [chapter.toLowerCase(), chapter]))
-  const symptoms: string[] = []
+  const symptoms = new Map<string, string>()
   for (const line of reply.split('\n')) {
     const match = /^[\s*\-\d.)]*([A-Za-z ]+?)\s*:\s*(.+?)\s*$/.exec(line)
     const chapter = match && chapters.get(match[1]!.toLowerCase())
-    if (chapter) symptoms.push(`${chapter}: ${match[2]}`)
+    if (!chapter) continue
+    const symptom = `${chapter}: ${match[2]}`
+    const key = symptom.toLowerCase()
+    if (!symptoms.has(key)) symptoms.set(key, symptom)
   }
-  return symptoms.slice(0, MAX_SYMPTOMS)
+  return [...symptoms.values()].slice(0, MAX_SYMPTOMS)
 }
 
 /** Asks the chat model for the symptoms of the case a question describes. */
