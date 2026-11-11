@@ -23,7 +23,7 @@ export const MAX_SYMPTOMS = 15
 export const INDECISIVE_TIES = 5
 /** The extraction model reasons first, and its reasoning counts against this. */
 export const EXTRACTION_MAX_OUTPUT_TOKENS = 16_000
-/** How many of a ranking's remedies an answer names. */
+/** How many of a ranking's remedies an answer names, at most. */
 export const LEADING_REMEDIES = 3
 /** How many rubrics an answer can cite for the leading remedies; with the passages, as many as a saved answer keeps. */
 export const MAX_RUBRIC_SOURCES = 15
@@ -196,8 +196,19 @@ export function remedyName(remedyId: string): string {
 }
 
 /**
- * The ranking's first `limit` remedies, each with the case's symptoms it covers, and the rubrics
- * that list them, as sources an answer can cite. A covered symptom points to the rubric that
+ * The ranking's first `limit` remedies, without those that score the same as a remedy past the
+ * limit: only their names order them, so naming some of them and not the others says nothing.
+ */
+export function standingOut(remedies: readonly RemedyCandidate[], limit: number): RemedyCandidate[] {
+  const next = remedies[limit]
+  const leaders = remedies.slice(0, limit)
+  if (!next) return leaders
+  return leaders.filter((remedy) => remedy.symptoms !== next.symptoms || remedy.grades !== next.grades)
+}
+
+/**
+ * The ranking's leading remedies, at most `limit` of those that stand out, each with the case's
+ * symptoms it covers, and the rubrics that list them, as sources an answer can cite. A covered symptom points to the rubric that
  * grades the remedy highest for it; `firstSource` is the place, from 1, of the first rubric among
  * the answer's sources.
  */
@@ -205,7 +216,7 @@ export function leadingRemedies(
   { symptoms, remedies }: Repertorisation,
   { firstSource, limit = LEADING_REMEDIES, maxRubrics = MAX_RUBRIC_SOURCES }: { firstSource: number; limit?: number; maxRubrics?: number },
 ): { remedies: RankedRemedy[]; rubrics: RetrievedSource[] } {
-  const leaders = remedies.slice(0, limit).map((remedy) => remedy.remedyId)
+  const leaders = standingOut(remedies, limit).map((remedy) => remedy.remedyId)
   const matched = leaders.map((): { text: string; source?: number }[] => [])
   const cited: Rubric[] = []
   for (const { symptom, rubrics } of symptoms) {

@@ -15,6 +15,7 @@ import {
   leadingRemedies,
   parseSymptoms,
   rankRemedies,
+  standingOut,
 } from '../src/server/repertory.ts'
 import { ProductionRetriever, type SearchableRelease } from '../src/server/retrieval.ts'
 import { fakeFetch, json } from './fakes.ts'
@@ -96,6 +97,24 @@ describe('distinctMatches', () => {
   })
 })
 
+describe('standingOut', () => {
+  const scored = (...scores: [symptoms: number, grades: number][]) =>
+    scores.map(([symptoms, grades], index) => ({ remedyId: `remedy-${index}`, symptoms, grades }))
+  const ids = (...scores: [number, number][]) => standingOut(scored(...scores), 3).map((remedy) => remedy.remedyId)
+
+  it('gives the first remedies when the next one scores lower, or there is none', () => {
+    expect(ids([4, 9], [3, 6], [3, 5], [3, 4])).toEqual(['remedy-0', 'remedy-1', 'remedy-2'])
+    expect(ids([4, 9], [3, 6])).toEqual(['remedy-0', 'remedy-1'])
+    expect(ids([2, 4], [2, 4], [2, 4])).toEqual(['remedy-0', 'remedy-1', 'remedy-2'])
+  })
+
+  it('leaves out the remedies that score the same as one past the limit', () => {
+    expect(ids([4, 9], [3, 6], [3, 5], [3, 5])).toEqual(['remedy-0', 'remedy-1'])
+    expect(ids([4, 9], [3, 5], [3, 5], [3, 5], [3, 5])).toEqual(['remedy-0'])
+    expect(ids([3, 5], [3, 5], [3, 5], [3, 5])).toEqual([])
+  })
+})
+
 describe('leadingRemedies', () => {
   const matches = [
     {
@@ -127,6 +146,15 @@ describe('leadingRemedies', () => {
     expect(remedies.map((remedy) => remedy.remedyName)).toEqual(['Pulsatilla', 'Natrum muriaticum', 'Gelsemium'])
     expect(remedies[1]?.matched).toEqual([{ text: 'Mind: weeps easily' }])
     expect(rubrics).toHaveLength(1)
+  })
+
+  it('names no remedy that ties with one it leaves out', () => {
+    const tied = [{ symptom: 'Mind: anxious', rubrics: [rubric('Mind: anxiety', ['aconitum', 3], ['apis', 1], ['arsenicum', 1], ['mezereum', 1], ['thuja', 1])] }]
+
+    const { remedies, rubrics } = leadingRemedies({ symptoms: tied, remedies: rankRemedies(tied) }, { firstSource: 1 })
+
+    expect(remedies.map((remedy) => remedy.remedyName)).toEqual(['Aconitum'])
+    expect(rubrics[0]?.text).toBe('Remedies and their grades: Aconitum (3), Apis (1), Arsenicum (1), Mezereum (1), Thuja (1)')
   })
 
   it("lists the leading remedies first in a long rubric's source, then the rest by grade", () => {
