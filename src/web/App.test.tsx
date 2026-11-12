@@ -92,6 +92,26 @@ describe('reviewing symptoms', () => {
     expect(asked).toEqual([{ message: 'What is Sulphur?', history: [], symptoms: [] }])
   })
 
+  it('asks a failed case again by the symptoms the user confirmed', async () => {
+    const asked = serve({
+      symptoms,
+      read: vi.fn(() => json({ symptoms })),
+      chat: [() => json({ detail: 'Too many questions in a short time.' }, 429), () => answerStream('Pulsatilla [1].', [citation(1)])],
+    })
+    render(<App />)
+
+    await ask('A weepy, thirstless woman.')
+    await userEvent.click(await screen.findByRole('button', { name: 'Remove symptom 2' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    await userEvent.click(await screen.findByRole('button', { name: 'Try again' }))
+
+    await screen.findByText(/Pulsatilla/)
+    const confirmed = { message: 'A weepy, thirstless woman.', history: [], symptoms: ['Mind: weeping'] }
+    expect(asked).toEqual([confirmed, confirmed])
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { name: 'A weepy, thirstless woman.' })).toHaveLength(1)
+  })
+
   it('says what it is reading before the books are searched', async () => {
     let sort!: (response: Response) => void
     let found!: (response: Response) => void

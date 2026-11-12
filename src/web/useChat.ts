@@ -143,19 +143,30 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
       if (request.current || messages.at(-1)?.status !== 'review' || question?.role !== 'user') return
       const controller = new AbortController()
       request.current = controller
-      updateAnswer(id, ({ symptoms: _reviewed, ...answer }) => ({ ...answer, status: 'streaming' }))
+      // Kept with the answer until it is complete, so a failed one is asked again by the same symptoms.
+      updateAnswer(id, (answer) => ({ ...answer, status: 'streaming', symptoms }))
       void answer(id, { message: question.content, history, summary, symptoms }, controller)
     },
     [answer, updateAnswer],
   )
 
   const retry = useCallback(() => {
-    const { messages } = latest.current
+    const { id, messages, history, summary } = latest.current
     const question = messages.at(-2)
-    if (request.current || messages.at(-1)?.status !== 'error' || question?.role !== 'user') return
+    const failed = messages.at(-1)
+    if (request.current || failed?.status !== 'error' || question?.role !== 'user') return
+    const { symptoms } = failed
+    if (symptoms) {
+      // The user already confirmed the case's symptoms; they are not read or reviewed again.
+      const controller = new AbortController()
+      request.current = controller
+      updateAnswer(id, (answer) => ({ id: answer.id, role: 'assistant', content: '', status: 'streaming', symptoms }))
+      void answer(id, { message: question.content, history, summary, symptoms }, controller)
+      return
+    }
     commit({ ...latest.current, messages: messages.slice(0, -2) })
     ask(question.content)
-  }, [ask, commit])
+  }, [answer, ask, commit, updateAnswer])
 
   const open = useCallback(
     (next: Conversation) => {

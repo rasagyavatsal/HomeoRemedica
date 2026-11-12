@@ -12,7 +12,7 @@ export interface Message {
   status?: 'streaming' | 'review' | 'stopped' | 'error'
   /** What a streaming answer waits on before the books are searched: the question being sorted, or its case read for symptoms. */
   reading?: 'question' | 'case'
-  /** The symptoms read from the case, while they are under review. */
+  /** The symptoms read from the case: under review, then as the user confirmed them until the answer is complete. */
   symptoms?: string[]
   error?: string
 }
