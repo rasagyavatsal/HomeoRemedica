@@ -91,7 +91,8 @@ fun Sidebar(
     Column(
         modifier
             .background(colors.surface)
-            .drawBehind { drawLine(colors.border, Offset(size.width, 0f), Offset(size.width, size.height), 1.dp.toPx()) }
+            // The drawer's shadow sets it off on phones.
+            .drawBehind { if (!compact) drawLine(colors.border, Offset(size.width, 0f), Offset(size.width, size.height), 1.dp.toPx()) }
             .statusBarsPadding()
             .navigationBarsPadding()
             .semantics { contentDescription = "Chats" },
@@ -112,7 +113,8 @@ fun Sidebar(
             Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Button("New chat", ButtonStyle.Outline, onNew, Modifier.fillMaxWidth(), icon = Icons.Plus, start = true)
+            if (compact) Button("New chat", ButtonStyle.Primary, onNew, Modifier.fillMaxWidth(), icon = Icons.Plus, minHeight = 48.dp)
+            else Button("New chat", ButtonStyle.Outline, onNew, Modifier.fillMaxWidth(), icon = Icons.Plus, start = true)
             if (chats != null && chats.size >= SEARCH_FROM) SearchField(query) { query = it }
         }
 
@@ -125,7 +127,7 @@ fun Sidebar(
         if (empty != null) {
             BasicText(
                 empty,
-                style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 13.sp),
+                style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = if (compact) 14.sp else 13.sp),
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 20.dp, vertical = 12.dp)
@@ -136,13 +138,13 @@ fun Sidebar(
                 groupByAge(filtered).forEachIndexed { index, group ->
                     item(key = group.label) {
                         BasicText(
-                            group.label.uppercase(),
+                            if (compact) group.label else group.label.uppercase(),
                             style = TextStyle(
                                 color = colors.textSubtle,
                                 fontFamily = Fonts.sans,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                letterSpacing = 0.06.em,
+                                fontSize = if (compact) 13.sp else 12.sp,
+                                fontWeight = if (compact) FontWeight.Medium else FontWeight.SemiBold,
+                                letterSpacing = if (compact) 0.em else 0.06.em,
                             ),
                             modifier = Modifier
                                 .padding(start = 12.dp, end = 12.dp, top = if (index > 0) 24.dp else 8.dp, bottom = 4.dp)
@@ -172,7 +174,7 @@ fun Sidebar(
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .drawBehind { drawLine(colors.border, Offset.Zero, Offset(size.width, 0f), 1.dp.toPx()) }
+                    .drawBehind { if (!compact) drawLine(colors.border, Offset.Zero, Offset(size.width, 0f), 1.dp.toPx()) }
                     .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp),
             ) {
                 footer()
@@ -186,14 +188,15 @@ private fun SearchField(query: String, onChange: (String) -> Unit) {
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val focused by interactions.collectIsFocusedAsState()
-    val shape = RoundedCornerShape(10.dp)
+    val compact = LocalCompact.current
+    val shape = if (compact) Pill else RoundedCornerShape(10.dp)
     Row(
         Modifier
             .fillMaxWidth()
-            .height(if (LocalCompact.current) 44.dp else 36.dp)
-            .background(colors.surfaceRaised, shape)
-            .border(1.dp, if (focused) colors.accent else colors.border, shape)
-            .padding(horizontal = 12.dp),
+            .height(if (compact) 48.dp else 36.dp)
+            .background(if (compact) colors.surfaceSelected else colors.surfaceRaised, shape)
+            .border(1.dp, if (compact) Color.Transparent else if (focused) colors.accent else colors.border, shape)
+            .padding(horizontal = if (compact) 16.dp else 12.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -279,7 +282,7 @@ private fun ChatRow(chat: ChatSummary, active: Boolean, onOpen: () -> Unit, onDe
         overflow = TextOverflow.Ellipsis,
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
+            .clip(Pill)
             .background(
                 when {
                     active -> colors.surfaceSelected
@@ -304,7 +307,7 @@ private fun ChatRow(chat: ChatSummary, active: Boolean, onOpen: () -> Unit, onDe
             }
             .heightIn(min = 48.dp)
             .wrapContentHeight(Alignment.CenterVertically)
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 16.dp),
     )
     if (actions) {
         BottomSheet("Chat actions", { actions = false }, title = chat.title) {
