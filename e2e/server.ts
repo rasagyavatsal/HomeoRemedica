@@ -9,7 +9,14 @@ import { serve } from '@hono/node-server'
 
 import { firebaseAccounts } from '../src/server/accounts.ts'
 import { type ChatHandler, createApp } from '../src/server/app.ts'
-import type { ChatOptions, ChatRequest, ChatResponse, CompactRequest, CompactResponse } from '../src/server/contracts.ts'
+import type {
+  ChatOptions,
+  ChatRequest,
+  ChatResponse,
+  CompactRequest,
+  CompactResponse,
+  QuestionKind,
+} from '../src/server/contracts.ts'
 import { shouldCompact } from '../src/server/conversation.ts'
 import { ProviderTimeoutError } from '../src/server/errors.ts'
 import { RateLimiter } from '../src/server/rate-limit.ts'
@@ -55,6 +62,10 @@ class ScriptedChat implements ChatHandler {
     return { answer, corpusVersion: 'e2e', model: 'scripted', sources: SOURCES, ...(compacted && { compacted }) }
   }
 
+  async kind({ message }: ChatRequest): Promise<QuestionKind> {
+    return message.includes(CASE) ? 'case' : 'question'
+  }
+
   async symptoms({ message }: ChatRequest): Promise<string[]> {
     return message.includes(CASE) ? [...CASE_SYMPTOMS] : []
   }
@@ -75,7 +86,7 @@ const accounts = firebaseAccounts({
 })
 const app = createApp(
   { getService: async () => service, getAccounts: () => accounts },
-  { rateLimiter: new RateLimiter([{ limit: CHAT_LIMIT, windowMs: 60_000 }]), totalRateLimiter: null, symptomRateLimiter: null },
+  { rateLimiter: new RateLimiter([{ limit: CHAT_LIMIT, windowMs: 60_000 }]), totalRateLimiter: null, kindRateLimiter: null, symptomRateLimiter: null },
 )
 
 const server = serve({ fetch: app.fetch, hostname: '127.0.0.1', port: E2E_PORT }, (info) => {

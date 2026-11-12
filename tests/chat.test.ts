@@ -6,6 +6,7 @@ import {
   type ChatRequest,
   ChatRequestSchema,
   type GenerateOptions,
+  type QuestionKind,
   type Retrieval,
   type Retriever,
 } from '../src/server/contracts.ts'
@@ -18,6 +19,10 @@ const request = (input: Record<string, unknown>): ChatRequest => ChatRequestSche
 class StubRetriever implements Retriever {
   searchCall: { request: ChatRequest; limit: number } | null = null
   failure: unknown = null
+
+  async kind(): Promise<QuestionKind> {
+    return 'case'
+  }
 
   async symptoms(): Promise<string[]> {
     return ['Mind: irritable']

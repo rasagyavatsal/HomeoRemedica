@@ -27,6 +27,8 @@ import {
   type CompactRequest,
   CompactRequestSchema,
   type CompactResponse,
+  type KindResponse,
+  type QuestionKind,
   type SymptomsResponse,
   answerRatings,
   FeedbackSchema,
@@ -47,6 +49,7 @@ import {
 export interface ChatHandler {
   chat(request: ChatRequest, options?: ChatOptions): Promise<ChatResponse>
   compact(request: CompactRequest, options?: { signal?: AbortSignal }): Promise<CompactResponse>
+  kind(request: ChatRequest): Promise<QuestionKind>
   symptoms(request: ChatRequest): Promise<string[]>
 }
 
@@ -110,6 +113,8 @@ export function createApp(
     webDist = WEB_DIST,
     rateLimiter = new RateLimiter(),
     totalRateLimiter = new RateLimiter(TOTAL_CHAT_RATE_LIMITS),
+    kindRateLimiter = new RateLimiter(),
+    totalKindRateLimiter = new RateLimiter(TOTAL_CHAT_RATE_LIMITS),
     symptomRateLimiter = new RateLimiter(),
     totalSymptomRateLimiter = new RateLimiter(TOTAL_CHAT_RATE_LIMITS),
     saveRateLimiter = new RateLimiter(CHAT_SAVE_RATE_LIMITS),
@@ -118,6 +123,9 @@ export function createApp(
     webDist?: string | null
     rateLimiter?: RateLimiter | null
     totalRateLimiter?: RateLimiter | null
+    /** Counts the questions each client has had sorted into cases and others, apart from its questions. */
+    kindRateLimiter?: RateLimiter | null
+    totalKindRateLimiter?: RateLimiter | null
     /** Counts the cases each client has read for symptoms, apart from its questions. */
     symptomRateLimiter?: RateLimiter | null
     totalSymptomRateLimiter?: RateLimiter | null
@@ -250,27 +258,33 @@ export function createApp(
   const questionLimits = limited(rateLimiter, totalRateLimiter)
   app.post('/api/chat', questionLimits)
   app.post('/api/chat/compact', questionLimits)
-  // Reading a case for its symptoms costs a model call too, but it comes before the same question
-  // is asked, so it is counted apart and does not halve the questions a client may ask.
+  // Sorting a question and reading a case for its symptoms cost a model call each too, but they
+  // come before the same question is asked, so each is counted apart and does not take from the
+  // questions a client may ask.
+  app.post('/api/kind', limited(kindRateLimiter, totalKindRateLimiter))
   app.post('/api/symptoms', limited(symptomRateLimiter, totalSymptomRateLimiter))
 
-  app.post('/api/symptoms', async (c) => {
-    const request = await readBody(c, ChatRequestSchema)
-    if (request instanceof Response) return request
+  /** Answers with what `read` makes of the question, before the question itself is asked. */
+  const beforeAsking = (read: (service: ChatHandler, request: ChatRequest) => Promise<KindResponse | SymptomsResponse>) =>
+    async (c: Context) => {
+      const request = await readBody(c, ChatRequestSchema)
+      if (request instanceof Response) return request
 
-    let service: ChatHandler
-    try {
-      service = await dependencies.getService()
-    } catch (error) {
-      return setupFailure(c, error, 'Failed to initialize production chat')
+      let service: ChatHandler
+      try {
+        service = await dependencies.getService()
+      } catch (error) {
+        return setupFailure(c, error, 'Failed to initialize production chat')
+      }
+      try {
+        return c.json(await read(service, request))
+      } catch (error) {
+        const { detail, status } = chatFailure(error)
+        return c.json({ detail }, status)
+      }
     }
-    try {
-      return c.json({ symptoms: await service.symptoms(request) } satisfies SymptomsResponse)
-    } catch (error) {
-      const { detail, status } = chatFailure(error)
-      return c.json({ detail }, status)
-    }
-  })
+  app.post('/api/kind', beforeAsking(async (service, request) => ({ kind: await service.kind(request) })))
+  app.post('/api/symptoms', beforeAsking(async (service, request) => ({ symptoms: await service.symptoms(request) })))
 
   app.post('/api/chat', async (c) => {
     const request = await readBody(c, ChatRequestSchema)

@@ -8,7 +8,15 @@ import { type AppDependencies, type ChatHandler, createApp, productionDependenci
 import { BOOKS, CorpusError } from '../src/server/qdrant.ts'
 import { RateLimiter } from '../src/server/rate-limit.ts'
 import type { Settings } from '../src/server/runtime.ts'
-import type { BookSummary, ChatOptions, ChatRequest, ChatResponse, CompactRequest, CompactResponse } from '../src/server/contracts.ts'
+import type {
+  BookSummary,
+  ChatOptions,
+  ChatRequest,
+  ChatResponse,
+  CompactRequest,
+  CompactResponse,
+  QuestionKind,
+} from '../src/server/contracts.ts'
 import { ConfigurationError, ProviderError, ProviderTimeoutError, TokenExhaustionError } from '../src/server/errors.ts'
 
 const BOOK: BookSummary = { bookId: 'kent_lectures', title: "Kent's Lectures", author: 'Kent' }
@@ -48,6 +56,11 @@ class StubService implements ChatHandler {
     return response
   }
 
+  async kind(): Promise<QuestionKind> {
+    if (this.failure !== null) throw this.failure
+    return 'case'
+  }
+
   async symptoms(): Promise<string[]> {
     if (this.failure !== null) throw this.failure
     return ['Mind: weeping']
@@ -75,7 +88,15 @@ function setup(
       getService: async () => service,
       ...overrides,
     },
-    { webDist: null, rateLimiter, totalRateLimiter, symptomRateLimiter: null, totalSymptomRateLimiter: null },
+    {
+      webDist: null,
+      rateLimiter,
+      totalRateLimiter,
+      kindRateLimiter: null,
+      totalKindRateLimiter: null,
+      symptomRateLimiter: null,
+      totalSymptomRateLimiter: null,
+    },
   )
   const post = (body: unknown, headers: Record<string, string> = {}) =>
     app.request('/api/chat', {
@@ -104,6 +125,23 @@ const read = (response: Response): Promise<any> => response.json()
 function quiet() {
   vi.spyOn(console, 'error').mockImplementation(() => {})
 }
+
+it('says whether a question describes a case before it is answered', async () => {
+  const { app, service } = setup()
+  const kind = (body: unknown) =>
+    app.request('/api/kind', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+
+  const response = await kind({ message: 'A weepy, thirstless woman.' })
+
+  expect(response.status).toBe(200)
+  expect(await read(response)).toEqual({ kind: 'case' })
+  expect((await kind({ message: ' ' })).status).toBe(422)
+  expect(service.requests).toEqual([])
+
+  quiet()
+  service.failure = new ProviderError('down')
+  expect((await kind({ message: 'A weepy woman.' })).status).toBe(502)
+})
 
 it('reads the symptoms of a case before it is answered', async () => {
   const { app, service } = setup()

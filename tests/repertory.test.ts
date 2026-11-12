@@ -5,6 +5,7 @@ import { ProviderError } from '../src/server/errors.ts'
 import {
   CombinedRubrics,
   MAX_SYMPTOMS,
+  ModelCaseClassifier,
   ModelSymptomExtractor,
   QdrantRubrics,
   type Repertoriser,
@@ -13,6 +14,7 @@ import {
   decisive,
   distinctMatches,
   leadingRemedies,
+  parseKind,
   parseSymptoms,
   rankRemedies,
   standingOut,
@@ -207,12 +209,36 @@ describe('parseSymptoms', () => {
     expect(calls[0]![0]).toBe('<case>\nA child weeps.\n</case>')
     expect(calls[0]![1]).toContain('reply only NONE')
   })
+
+  it('takes a question for a case unless the model plainly says otherwise', async () => {
+    expect(parseKind('QUESTION')).toBe('question')
+    expect(parseKind(' question.\n')).toBe('question')
+    expect(parseKind('CASE')).toBe('case')
+    expect(parseKind('')).toBe('case')
+    expect(parseKind('It may be a question or a case.')).toBe('case')
+
+    const calls: [string, string][] = []
+    const classifier = new ModelCaseClassifier({
+      model: 'm',
+      async generate(prompt, { systemInstruction }) {
+        calls.push([prompt, systemInstruction])
+        return 'QUESTION'
+      },
+    })
+
+    expect(await classifier.classify('What is Sulphur?')).toBe('question')
+    expect(calls[0]![0]).toBe('<case>\nWhat is Sulphur?\n</case>')
+    expect(calls[0]![1]).toContain('When unsure, reply CASE')
+  })
 })
 
 describe('Repertory', () => {
+  const classifier = { classify: async () => 'case' as const }
+
   it('matches each symptom to its rubrics and ranks the remedies', async () => {
     const searched: unknown[] = []
     const repertory = new Repertory({
+      classifier,
       extractor: { extractSymptoms: async () => ['Mind: weeping', 'Stomach: thirstless'] },
       embedder: { embedQueries: async (texts) => texts.map((_, index) => [index]) },
       rubrics: {
@@ -236,6 +262,7 @@ describe('Repertory', () => {
   it('searches nothing for a question that describes no patient', async () => {
     const embedQueries = vi.fn()
     const repertory = new Repertory({
+      classifier,
       extractor: { extractSymptoms: async () => [] },
       embedder: { embedQueries },
       rubrics: { search: vi.fn() },
@@ -249,6 +276,7 @@ describe('Repertory', () => {
     const extractSymptoms = vi.fn(async () => ['Mind: weeping'])
     const embedded: (readonly string[])[] = []
     const repertory = new Repertory({
+      classifier,
       extractor: { extractSymptoms },
       embedder: {
         async embedQueries(texts) {
@@ -337,6 +365,7 @@ describe('production retriever with a repertory', () => {
     return { corpus, calls }
   }
   const repertoryOf = (...remedyIds: string[]): Repertoriser => ({
+    kind: async () => 'case',
     symptoms: async () => [],
     repertorise: async () => ({
       symptoms: [],
@@ -360,7 +389,8 @@ describe('production retriever with a repertory', () => {
     const corpus: SearchableRelease = { search: async () => [passage] }
     const symptoms = [{ symptom: 'Mind: weeps easily', rubrics: [rubric('Mind: weeping', ['pulsatilla', 3])] }]
     const repertory: Repertoriser = {
-      symptoms: async () => [],
+      kind: async () => 'case',
+    symptoms: async () => [],
       repertorise: async () => ({ symptoms, remedies: rankRemedies(symptoms) }),
     }
 
@@ -392,10 +422,11 @@ describe('production retriever with a repertory', () => {
     expect(calls).toEqual([{ limit: 8, priors: [] }])
   })
 
-  it('reads symptoms from, and ranks by, the questions the search uses', async () => {
+  it('sorts, reads symptoms from, and ranks by, the questions the search uses', async () => {
     const { corpus } = searching()
     const seen: unknown[] = []
     const repertory: Repertoriser = {
+      kind: async (text) => (seen.push(text), 'case'),
       symptoms: async (text) => (seen.push(text), ['Mind: weeping']),
       repertorise: async (text, symptoms) => (seen.push([text, symptoms]), { symptoms: [], remedies: [] }),
     }
@@ -406,11 +437,13 @@ describe('production retriever with a repertory', () => {
       symptoms: ['Stomach: thirstless'],
     })
 
+    expect(await retriever.kind(asked)).toBe('case')
     expect(await retriever.symptoms(asked)).toEqual(['Mind: weeping'])
     await retriever.retrieve(asked, { limit: 8 })
 
     const query = 'A weepy woman.\nShe is thirstless.'
-    expect(seen).toEqual([query, [query, ['Stomach: thirstless']]])
+    expect(seen).toEqual([query, query, [query, ['Stomach: thirstless']]])
+    expect(await new ProductionRetriever(corpus, embedder).kind(asked)).toBe('question')
     expect(await new ProductionRetriever(corpus, embedder).symptoms(asked)).toEqual([])
   })
 
@@ -418,7 +451,8 @@ describe('production retriever with a repertory', () => {
     const { corpus, calls } = searching()
     const logged = vi.spyOn(console, 'error').mockImplementation(() => {})
     const repertory: Repertoriser = {
-      symptoms: async () => [],
+      kind: async () => 'case',
+    symptoms: async () => [],
       repertorise: async () => {
         throw new ProviderError('Z.AI chat request failed with status 500')
       },

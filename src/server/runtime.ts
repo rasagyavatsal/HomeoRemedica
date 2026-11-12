@@ -13,8 +13,11 @@ import { VoyageQueryEmbedder } from './embeddings.ts'
 import { CorpusError, QdrantCorpus } from './qdrant.ts'
 import {
   BOERICKE_COLLECTION,
+  CLASSIFICATION_MAX_OUTPUT_TOKENS,
+  type CaseClassifier,
   CombinedRubrics,
   EXTRACTION_MAX_OUTPUT_TOKENS,
+  ModelCaseClassifier,
   ModelSymptomExtractor,
   QdrantRubrics,
   REPERTORY_COLLECTION,
@@ -108,8 +111,9 @@ export async function loadRepertory(
   embedder: VoyageQueryEmbedder,
   {
     collections = [REPERTORY_COLLECTION],
+    classifier = caseClassifier(settings),
     extractor = symptomExtractor(settings),
-  }: { collections?: readonly string[]; extractor?: SymptomExtractor } = {},
+  }: { collections?: readonly string[]; classifier?: CaseClassifier; extractor?: SymptomExtractor } = {},
 ): Promise<Repertory> {
   const { qdrantUrl: url, qdrantApiKey: apiKey } = settings
   if (!url) {
@@ -120,7 +124,20 @@ export async function loadRepertory(
     if (!(await search.exists())) throw new CorpusError(`the Qdrant collection ${collections[index]} does not exist`)
   }
   const rubrics = searches.length === 1 ? searches[0]! : new CombinedRubrics(searches)
-  return new Repertory({ extractor, embedder, rubrics })
+  return new Repertory({ classifier, extractor, embedder, rubrics })
+}
+
+/** The answer model as it decides whether a question is a case: with little reasoning, so the decision is quick. */
+export function caseClassifier(settings: Settings): CaseClassifier {
+  return new ModelCaseClassifier(
+    new ZaiChatClient({
+      apiKey: settings.zaiApiKey,
+      model: settings.model,
+      maxOutputTokens: CLASSIFICATION_MAX_OUTPUT_TOKENS,
+      temperature: 0,
+      reasoningEffort: 'low',
+    }),
+  )
 }
 
 export function symptomExtractor(settings: Settings): SymptomExtractor {

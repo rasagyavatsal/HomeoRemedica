@@ -159,6 +159,14 @@ export interface BookCatalog {
   books: readonly BookSummary[]
 }
 
+/** Whether a question describes a patient, whose symptoms are read, or asks about anything else. */
+export type QuestionKind = 'case' | 'question'
+
+/** `POST /api/kind`: decided before a question is answered, so only a case is read for symptoms. */
+export interface KindResponse {
+  kind: QuestionKind
+}
+
 /** `POST /api/symptoms`: the symptoms of the case a question describes; none when it describes no patient. */
 export interface SymptomsResponse {
   symptoms: string[]
@@ -326,6 +334,8 @@ export function answerRatings({ rating, sources, reasons, comment }: SavedRating
 export interface Retriever {
   /** `limit` bounds the books' passages; the rubrics come on top of it. */
   retrieve(request: ChatRequest, options: { limit: number }): Promise<Retrieval>
+  /** Whether a question describes a patient; a `question` has no symptoms to read. */
+  kind(request: ChatRequest): Promise<QuestionKind>
   /** The symptoms a question's case would be searched by, for the user to check first. */
   symptoms(request: ChatRequest): Promise<string[]>
 }

@@ -3,6 +3,7 @@
 import {
   type ChatRequest,
   MAX_RETRIEVAL_QUERY_CHARS,
+  type QuestionKind,
   type Retrieval,
   type RetrievedSource,
   type Retriever,
@@ -70,6 +71,10 @@ export class ProductionRetriever implements Retriever {
       repertory: remedies,
       clinical: match ? leadingClinicalRemedies(match) : [],
     }
+  }
+
+  async kind(request: ChatRequest): Promise<QuestionKind> {
+    return this.#repertory ? this.#repertory.kind(searchQuery(request)) : 'question'
   }
 
   async symptoms(request: ChatRequest): Promise<string[]> {
