@@ -1,6 +1,6 @@
 /** Browser client for the HomeoRemedica API. */
 
-import type { ChatTurn, Citation, WebChatResponse } from '../server/contracts.ts'
+import type { ChatTurn, Citation, SymptomsResponse, WebChatResponse } from '../server/contracts.ts'
 
 const FALLBACK_DETAIL = 'Something went wrong. Please try again.'
 const INTERRUPTED_DETAIL = 'The answer stopped before it finished. Please try again.'
@@ -48,6 +48,19 @@ export interface ChatQuestion {
   message: string
   history: readonly ChatTurn[]
   summary?: string | undefined
+  /** The case's symptoms as the user confirmed them. */
+  symptoms?: readonly string[] | undefined
+}
+
+/** The symptoms of the case a question describes; none when it describes no patient. */
+export async function readSymptoms(question: ChatQuestion, signal?: AbortSignal): Promise<string[]> {
+  const { symptoms } = await getJson<SymptomsResponse>('/api/symptoms', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(question),
+    signal: signal ?? null,
+  })
+  return symptoms
 }
 
 export interface StreamHandlers {

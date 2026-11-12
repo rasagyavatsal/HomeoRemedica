@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { errorMessage, streamChat } from './api.ts'
+import { type ChatQuestion, errorMessage, readSymptoms, streamChat } from './api.ts'
 import { type Conversation, type Message, newConversation, titleFrom } from './conversation.ts'
 
 export interface ChatControls {
@@ -9,6 +9,8 @@ export interface ChatControls {
   ask(question: string): void
   /** Ask the failed question at the end of the chat again. */
   retry(): void
+  /** Answer the question under review by these symptoms. */
+  confirm(symptoms: string[]): void
   stop(): void
   /** Show another chat, stopping any answer in progress. */
   open(conversation: Conversation): void
@@ -47,13 +49,44 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
   /** Mark the streaming answer stopped and abort its request. */
   const halt = useCallback(() => {
     const controller = request.current
-    if (!controller) return
-    request.current = null
-    controller.abort()
     const current = latest.current
+    // A question whose symptoms are under review has no request to abort.
+    if (!controller && current.messages.at(-1)?.status !== 'review') return
+    request.current = null
+    controller?.abort()
     updateAnswer(current.id, (answer) => ({ ...answer, status: 'stopped' }), { updatedAt: Date.now() })
     settled.current?.(latest.current)
   }, [updateAnswer])
+
+  /** Stream the answer to `question` into the last message of chat `id`. */
+  const answer = useCallback(
+    async (id: string, question: ChatQuestion, controller: AbortController) => {
+      try {
+        const response = await streamChat(
+          question,
+          {
+            onSources: (sources) => updateAnswer(id, (answer) => ({ ...answer, sources })),
+            onText: (piece) => updateAnswer(id, (answer) => ({ ...answer, content: answer.content + piece })),
+          },
+          controller.signal,
+        )
+        if (request.current !== controller) return
+        request.current = null
+        updateAnswer(
+          id,
+          (answer) => ({ id: answer.id, role: 'assistant', content: response.answer, sources: [...response.sources] }),
+          { history: response.history, summary: response.summary, updatedAt: Date.now() },
+        )
+        settled.current?.(latest.current)
+      } catch (error) {
+        // A stopped request was already marked by `halt`.
+        if (request.current !== controller) return
+        request.current = null
+        updateAnswer(id, (answer) => ({ ...answer, status: 'error', error: errorMessage(error) }))
+      }
+    },
+    [updateAnswer],
+  )
 
   const ask = useCallback(
     (text: string) => {
@@ -75,32 +108,37 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
       })
 
       void (async () => {
+        const asked = { message: question, history: start.history, summary: start.summary }
+        let symptoms: string[] | undefined
         try {
-          const response = await streamChat(
-            { message: question, history: start.history, summary: start.summary },
-            {
-              onSources: (sources) => updateAnswer(id, (answer) => ({ ...answer, sources })),
-              onText: (piece) => updateAnswer(id, (answer) => ({ ...answer, content: answer.content + piece })),
-            },
-            controller.signal,
-          )
-          if (request.current !== controller) return
-          request.current = null
-          updateAnswer(
-            id,
-            (answer) => ({ id: answer.id, role: 'assistant', content: response.answer, sources: [...response.sources] }),
-            { history: response.history, summary: response.summary, updatedAt: Date.now() },
-          )
-          settled.current?.(latest.current)
-        } catch (error) {
-          // A stopped request was already marked by `halt`.
-          if (request.current !== controller) return
-          request.current = null
-          updateAnswer(id, (answer) => ({ ...answer, status: 'error', error: errorMessage(error) }))
+          symptoms = await readSymptoms(asked, controller.signal)
+        } catch {
+          // Without the symptoms to check, the question is answered by the ones the server reads.
         }
+        if (request.current !== controller) return
+        if (symptoms?.length) {
+          const found = symptoms
+          request.current = null
+          updateAnswer(id, (answer) => ({ ...answer, status: 'review', symptoms: found }))
+          return
+        }
+        await answer(id, { ...asked, symptoms }, controller)
       })()
     },
-    [commit, updateAnswer],
+    [answer, commit, updateAnswer],
+  )
+
+  const confirm = useCallback(
+    (symptoms: string[]) => {
+      const { id, messages, history, summary } = latest.current
+      const question = messages.at(-2)
+      if (request.current || messages.at(-1)?.status !== 'review' || question?.role !== 'user') return
+      const controller = new AbortController()
+      request.current = controller
+      updateAnswer(id, ({ symptoms: _reviewed, ...answer }) => ({ ...answer, status: 'streaming' }))
+      void answer(id, { message: question.content, history, summary, symptoms }, controller)
+    },
+    [answer, updateAnswer],
   )
 
   const retry = useCallback(() => {
@@ -125,6 +163,7 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
     [],
   )
 
-  const busy = conversation.messages.at(-1)?.status === 'streaming'
-  return { conversation, busy, ask, retry, stop: halt, open }
+  const status = conversation.messages.at(-1)?.status
+  const busy = status === 'streaming' || status === 'review'
+  return { conversation, busy, ask, retry, confirm, stop: halt, open }
 }

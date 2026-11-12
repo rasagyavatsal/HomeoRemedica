@@ -8,8 +8,10 @@ export interface Message {
   role: 'user' | 'assistant'
   content: string
   sources?: Citation[]
-  /** Unset once an answer is complete. */
-  status?: 'streaming' | 'stopped' | 'error'
+  /** Unset once an answer is complete; `review` while the user checks the case's symptoms. */
+  status?: 'streaming' | 'review' | 'stopped' | 'error'
+  /** The symptoms read from the case, while they are under review. */
+  symptoms?: string[]
   error?: string
 }
 
