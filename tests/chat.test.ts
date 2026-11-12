@@ -389,7 +389,7 @@ it('rejects book filters', () => {
   expect(() => request({ message: 'question', bookIds: ['kent_lectures'] })).toThrow(/unexpected request field/)
 })
 
-it('answers and searches the books by the symptoms a user confirmed', async () => {
+it('answers by the symptoms a user confirmed and searches the books by what they confirmed', async () => {
   const retriever = new StubRetriever()
   const generator = new StubGenerator()
   const asked = { message: 'A weepy, thirsty woman.', symptoms: ['Mind: weeping', 'Stomach: thirstless'] }
@@ -404,10 +404,18 @@ it('answers and searches the books by the symptoms a user confirmed', async () =
   const searched: string[] = []
   const corpus: SearchableRelease = { search: async (query) => (searched.push(query), []) }
   const embedder = { embedQuery: async (text: string) => (searched.push(text), [1.0]) }
-  await new ProductionRetriever(corpus, embedder).retrieve(request(asked), { limit: 8 })
+  const retrieve = (question: Parameters<typeof request>[0]) => new ProductionRetriever(corpus, embedder).retrieve(request(question), { limit: 8 })
 
-  const query = 'A weepy, thirsty woman.\nMind: weeping\nStomach: thirstless'
-  expect(searched).toEqual([query, query])
+  // The confirmed lists stand in for the question they were read from.
+  await retrieve({ ...asked, diseases: ['asthma'] })
+  const confirmed = 'Mind: weeping\nStomach: thirstless\nasthma'
+  expect(searched).toEqual([confirmed, confirmed])
+
+  // With nothing confirmed, the books are searched by the question.
+  searched.length = 0
+  await retrieve({ message: 'She is unwell.', symptoms: [], diseases: [] })
+  await retrieve({ message: 'What is Sulphur?' })
+  expect(searched).toEqual(['She is unwell.', 'She is unwell.', 'What is Sulphur?', 'What is Sulphur?'])
 })
 
 it('production retriever searches on recent questions only', async () => {

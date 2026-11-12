@@ -55,11 +55,10 @@ export class ProductionRetriever implements Retriever {
     // Earlier questions resolve follow-ups such as "what about its mental symptoms?". Answers are
     // left out: they are long enough to drown the question in both rankings.
     const query = searchQuery(request)
-    // The symptoms a user confirmed are searched for with the question, so the books answer for
-    // the ones they added or reworded as well.
-    const searched = request.symptoms?.length
-      ? [query, ...request.symptoms].join('\n').slice(-MAX_RETRIEVAL_QUERY_CHARS)
-      : query
+    // The books are searched by the symptoms and diseases a user confirmed, in place of the
+    // question they were read from, so they answer for the case as the user corrected it.
+    const confirmed = [...(request.symptoms ?? []), ...(request.diseases ?? [])]
+    const searched = confirmed.length ? confirmed.join('\n').slice(0, MAX_RETRIEVAL_QUERY_CHARS) : query
     const [embedding, repertorisation, match] = await Promise.all([
       this.#embedder.embedQuery(searched),
       this.#repertorisation(query, request.symptoms),
