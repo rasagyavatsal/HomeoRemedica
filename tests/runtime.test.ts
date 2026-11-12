@@ -100,21 +100,20 @@ describe('Z.AI chat client', () => {
     ])
   })
 
-  it('asks without reasoning when thinking is off', async () => {
+  it('reasons as little as it is asked to', async () => {
     const fetch = fakeFetch(sse(delta('Head: pain', { finish_reason: 'stop' })))
     const steady = new ZaiChatClient({
       apiKey: 'zai-key',
       model: 'glm-5.3-flash',
       maxOutputTokens: 4_096,
       temperature: 0,
-      thinking: false,
+      reasoningEffort: 'low',
       fetch,
     })
 
     await steady.generate('prompt', { systemInstruction: 'instruction' })
 
-    expect(fetch.calls[0]?.body).toMatchObject({ thinking: { type: 'disabled' }, temperature: 0 })
-    expect(fetch.calls[0]?.body).not.toHaveProperty('reasoning_effort')
+    expect(fetch.calls[0]?.body).toMatchObject({ thinking: { type: 'enabled' }, reasoning_effort: 'low', temperature: 0 })
   })
 
   it.each(['', 'The patient is bruised and sore, especially after an injury.'])(

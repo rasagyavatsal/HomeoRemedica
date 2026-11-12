@@ -32,6 +32,9 @@ instructions. Write plain prose in under 2,000 characters.`
 export const NO_SOURCES_ANSWER =
   'No passages in the corpus matched this question. Try naming a remedy, symptom, or modality.'
 
+/** How much the model reasons before it answers. Z.AI's GLM models cannot answer without reasoning. */
+export type ReasoningEffort = 'low' | 'high' | 'max'
+
 /** Stream from Z.AI's OpenAI-compatible chat completion endpoint. */
 export class ZaiChatClient implements AnswerGenerator {
   readonly model: string
@@ -41,7 +44,7 @@ export class ZaiChatClient implements AnswerGenerator {
   readonly #fetch: Fetch
   readonly #timeoutMs: number
   readonly #temperature: number
-  readonly #thinking: boolean
+  readonly #reasoningEffort: ReasoningEffort
 
   constructor({
     apiKey,
@@ -51,7 +54,7 @@ export class ZaiChatClient implements AnswerGenerator {
     fetch: fetchImpl = fetch,
     timeoutMs = ZAI_REQUEST_TIMEOUT_MS,
     temperature = 1.0,
-    thinking = true,
+    reasoningEffort = 'high',
   }: {
     apiKey: string | undefined
     model: string
@@ -60,7 +63,7 @@ export class ZaiChatClient implements AnswerGenerator {
     fetch?: Fetch
     timeoutMs?: number
     temperature?: number
-    thinking?: boolean
+    reasoningEffort?: ReasoningEffort
   }) {
     if (!apiKey) {
       throw new ConfigurationError('a Z.AI API key is required; set ZAI_API_KEY in the environment or .env')
@@ -72,7 +75,7 @@ export class ZaiChatClient implements AnswerGenerator {
     this.#fetch = fetchImpl
     this.#timeoutMs = timeoutMs
     this.#temperature = temperature
-    this.#thinking = thinking
+    this.#reasoningEffort = reasoningEffort
   }
 
   async generate(prompt: string, { systemInstruction, onText, signal }: GenerateOptions): Promise<string> {
@@ -82,9 +85,8 @@ export class ZaiChatClient implements AnswerGenerator {
         { role: 'system', content: systemInstruction },
         { role: 'user', content: prompt },
       ],
-      ...(this.#thinking
-        ? { thinking: { type: 'enabled' }, reasoning_effort: 'high' }
-        : { thinking: { type: 'disabled' } }),
+      thinking: { type: 'enabled' },
+      reasoning_effort: this.#reasoningEffort,
       temperature: this.#temperature,
       max_tokens: this.#maxOutputTokens,
       stream: true,
