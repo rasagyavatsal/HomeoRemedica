@@ -83,7 +83,7 @@ fun Welcome(bottomPadding: Dp, onExample: (String) -> Unit = {}) {
     if (LocalCompact.current) {
         Box(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp, bottom = bottomPadding), contentAlignment = Alignment.BottomStart) {
             // Decoration only: soft light drifting behind the tagline.
-            Glows(Modifier.fillMaxWidth().height(256.dp))
+            Glows(Modifier.fillMaxWidth(0.8f).height(256.dp))
             Column(Modifier.padding(bottom = 12.dp)) {
                 FlowRow(
                     Modifier.padding(bottom = 20.dp).semantics(mergeDescendants = true) {
