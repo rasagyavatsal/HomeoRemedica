@@ -19,7 +19,7 @@ export const CLINICAL_COLLECTION = 'clarke_clinical'
 const LABEL = 'Qdrant clinical terms'
 const SCROLL_PAGE = 1000
 
-export const DISEASE_INSTRUCTION = 'Convert this paragraph into diseases, if any.'
+export const DISEASE_INSTRUCTION = 'Convert this paragraph into diseases, if any, one per line, nothing else.'
 
 /** Words that join a term's words rather than say what it is about. */
 const LINKS = new Set(['of', 'in', 'on', 'at', 'the', 'a', 'an', 'and', 'from', 'to', 'with', 'by', 'for'])

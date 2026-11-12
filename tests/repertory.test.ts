@@ -216,7 +216,7 @@ describe('parseSymptoms', () => {
 
     expect(await extractor.extractSymptoms('A child weeps.', stop)).toEqual(['Mind: weeping'])
     expect(calls[0]![0]).toBe('<case>\nA child weeps.\n</case>')
-    expect(calls[0]![1]).toBe('Convert this paragraph into individual symptoms.')
+    expect(calls[0]![1]).toBe('Convert this paragraph into individual symptoms, one per line, nothing else.')
   })
 
   it('takes a question for a case unless the model plainly says otherwise', async () => {
