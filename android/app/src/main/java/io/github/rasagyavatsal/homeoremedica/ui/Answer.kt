@@ -4,7 +4,6 @@ import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.Intent
 import android.content.Context
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.foundation.background
@@ -16,14 +15,9 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.ui.layout.layout
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -45,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
@@ -102,27 +97,48 @@ fun Answer(
         note()
         // Listed once the answer is done, so the list does not shift while it streams.
         if (!streaming) {
-            if (sources.isNotEmpty()) {
-                References(sources, remember(content, sources.size) { citedNumbers(content, sources.size) }, activeSource, onSource)
-            }
-            // Phones gather the answer's actions in a sheet behind one button.
             val compact = LocalCompact.current
+            val references = @Composable {
+                if (sources.isNotEmpty()) {
+                    References(sources, remember(content, sources.size) { citedNumbers(content, sources.size) }, activeSource, onSource)
+                }
+            }
             val buttons: @Composable RowScope.() -> Unit = {
                 if (compact) {
-                    MoreButton(question, content)
+                    CopyButton(content)
+                    ShareButton(content)
+                    ReportButton(question, content)
                 } else {
                     ReportButton(question, content)
                     CopyButton(content)
                 }
             }
-            if (actions != null) {
-                Box(Modifier.padding(top = 12.dp)) { actions(buttons) }
+            val row = @Composable {
+                if (actions != null) {
+                    Box(Modifier.padding(top = if (compact) 4.dp else 12.dp)) { actions(buttons) }
+                } else if (compact) {
+                    // The first icon lines up with the answer's text.
+                    Row(Modifier.fillMaxWidth().padding(top = 4.dp).offset(x = -ActionInset), content = buttons)
+                } else {
+                    Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.End, content = buttons)
+                }
+            }
+            // Phones put the answer's actions straight under it, where a thumb expects them.
+            if (compact) {
+                row()
+                references()
             } else {
-                Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.End, content = buttons)
+                references()
+                row()
             }
         }
     }
 }
+
+/** A phone's action button, and how far its icon sits in from its edge. */
+private val ActionSize = 44.dp
+private val ActionIcon = 20.dp
+private val ActionInset = (ActionSize - ActionIcon) / 2
 
 // The web app's `--layout-reference-min` and the grid's gap.
 private val ReferenceMin = 192.dp
@@ -139,30 +155,23 @@ val LocalGutter = compositionLocalOf { 16.dp }
 private fun References(sources: List<Citation>, cited: Set<Int>, active: Int?, onOpen: (Int) -> Unit) {
     val colors = Theme.colors
     val listed = referencedNumbers(sources.size, cited)
+    if (LocalCompact.current) {
+        // One filled card of full-width rows, so each book's title can be read.
+        val shape = RoundedCornerShape(16.dp)
+        Column(Modifier.padding(top = 12.dp).rise(sources, 320).fillMaxWidth().clip(shape).background(colors.surfaceHover)) {
+            listed.forEachIndexed { index, number ->
+                if (index > 0) Box(Modifier.padding(start = 42.dp).fillMaxWidth().height(1.dp).background(colors.border))
+                Reference(number, sources[number - 1], number == active, Modifier.fillMaxWidth(), plain = true) { onOpen(number) }
+            }
+        }
+        return
+    }
     Column(Modifier.padding(top = 24.dp).rise(sources, 320)) {
         BasicText(
             "REFERENCES",
             style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.06.em),
             modifier = Modifier.padding(bottom = 8.dp),
         )
-        if (LocalCompact.current) {
-            val gutter = LocalGutter.current
-            Row(
-                Modifier
-                    .bleed(gutter)
-                    .horizontalScroll(rememberScrollState())
-                    .height(IntrinsicSize.Min)
-                    .padding(horizontal = gutter),
-                horizontalArrangement = Arrangement.spacedBy(ReferenceGap),
-            ) {
-                for (number in listed) {
-                    Reference(number, sources[number - 1], number == active, Modifier.widthIn(max = 240.dp).fillMaxHeight(), oneLine = true) {
-                        onOpen(number)
-                    }
-                }
-            }
-            return@Column
-        }
         // An auto-filling grid, as `repeat(auto-fill, minmax(12rem, 1fr))` lays it out.
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             val columns = maxOf(1, ((maxWidth + ReferenceGap) / (ReferenceMin + ReferenceGap)).toInt())
@@ -180,33 +189,33 @@ private fun References(sources: List<Citation>, cited: Set<Int>, active: Int?, o
     }
 }
 
-/** Widens content by [by] on each side, past the padding around it, so a sideways row runs to the screen's edges. */
-private fun Modifier.bleed(by: Dp) = layout { measurable, constraints ->
-    val extra = (by * 2).roundToPx()
-    val placeable = measurable.measure(constraints.copy(minWidth = constraints.minWidth + extra, maxWidth = constraints.maxWidth + extra))
-    layout(placeable.width - extra, placeable.height) { placeable.place(-extra / 2, 0) }
-}
-
 @Composable
-private fun Reference(number: Int, source: Citation, active: Boolean, modifier: Modifier, oneLine: Boolean = false, onClick: () -> Unit) {
+private fun Reference(
+    number: Int,
+    source: Citation,
+    active: Boolean,
+    modifier: Modifier,
+    /** A row of a phone's card, which has no outline of its own. */
+    plain: Boolean = false,
+    onClick: () -> Unit,
+) {
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val pressed by interactions.pressed()
-    val shape = RoundedCornerShape(10.dp)
+    val shape = RoundedCornerShape(if (plain) 0.dp else 10.dp)
     val highlighted = active || pressed
-    val lines = if (oneLine) 1 else Int.MAX_VALUE
     Row(
         modifier
             .clip(shape)
-            .background(if (highlighted) colors.accentSoft else colors.surface)
-            .border(1.dp, if (highlighted) colors.accentBorder else colors.border, shape)
+            .background(if (highlighted) colors.accentSoft else if (plain) Color.Transparent else colors.surface)
+            .border(1.dp, if (plain) Color.Transparent else if (highlighted) colors.accentBorder else colors.border, shape)
             .pressable(label = if (active) "Close source" else "Open source", interactionSource = interactions, onClick = onClick)
             .semantics(mergeDescendants = true) {
                 contentDescription = "Source $number: ${source.label}, ${source.bookTitle}"
                 selected = active
             }
-            .padding(12.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+            .padding(horizontal = if (plain) 14.dp else 12.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(if (plain) 10.dp else 8.dp),
     ) {
         Box(
             Modifier
@@ -232,15 +241,11 @@ private fun Reference(number: Int, source: Citation, active: Boolean, modifier: 
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             BasicText(
                 source.label,
-                style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 13.sp, fontWeight = FontWeight.SemiBold),
-                maxLines = lines,
-                overflow = TextOverflow.Ellipsis,
+                style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = if (plain) 14.sp else 13.sp, fontWeight = FontWeight.SemiBold),
             )
             BasicText(
                 source.bookTitle,
-                style = TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = 12.sp, lineHeight = 1.4.em),
-                maxLines = lines,
-                overflow = TextOverflow.Ellipsis,
+                style = TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = if (plain) 13.sp else 12.sp, lineHeight = 1.4.em),
             )
         }
     }
@@ -274,60 +279,42 @@ private fun share(context: Context, answer: String) {
     context.startActivity(Intent.createChooser(send, "Share answer"))
 }
 
+/** One of an answer's actions: an icon that darkens when pressed, large enough for a finger on phones. */
 @Composable
-private fun ReportButton(question: String, answer: String) {
+private fun ActionButton(icon: ImageVector, label: String, description: String = label, onClick: () -> Unit) {
     val colors = Theme.colors
-    val context = LocalContext.current
+    val compact = LocalCompact.current
     val interactions = remember { MutableInteractionSource() }
     val pressed by interactions.pressed()
     Box(
         Modifier
-            .size(30.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .size(if (compact) ActionSize else 30.dp)
+            .clip(if (compact) Pill else RoundedCornerShape(8.dp))
             .background(if (pressed) colors.surfaceHover else Color.Transparent)
-            .pressable(label = "Report answer", interactionSource = interactions) { report(context, question, answer) },
+            .pressable(label = label, interactionSource = interactions, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(Icons.Flag, if (pressed) colors.text else colors.textMuted, 15.dp, contentDescription = "Report answer")
+        Icon(icon, if (pressed) colors.text else colors.textMuted, if (compact) ActionIcon else 15.dp, contentDescription = description)
     }
 }
 
-/** On phones, one button for the answer's actions, which it lists in a sheet: copy, share and report. */
 @Composable
-private fun MoreButton(question: String, answer: String) {
+private fun ReportButton(question: String, answer: String) {
     val context = LocalContext.current
-    val clipboard = LocalClipboard.current
-    val haptics = LocalHapticFeedback.current
-    val scope = rememberCoroutineScope()
-    var open by rememberSaveable { mutableStateOf(false) }
-    IconButton(Icons.More, "More actions", { open = true }, size = 48.dp, iconSize = 20.dp)
-    if (open) {
-        BottomSheet("Answer actions", { open = false }) {
-            SheetItem(Icons.Copy, "Copy answer") {
-                scope.launch { clipboard.setClipEntry(ClipEntry(ClipData.newPlainText("HomeoRemedica answer", answer))) }
-                haptics.performHapticFeedback(HapticFeedbackType.Confirm)
-                dismiss()
-            }
-            SheetItem(Icons.Share, "Share answer") {
-                dismiss()
-                share(context, answer)
-            }
-            SheetItem(Icons.Flag, "Report answer") {
-                dismiss()
-                report(context, question, answer)
-            }
-            Spacer(Modifier.height(8.dp))
-        }
-    }
+    ActionButton(Icons.Flag, "Report answer") { report(context, question, answer) }
+}
+
+@Composable
+private fun ShareButton(answer: String) {
+    val context = LocalContext.current
+    ActionButton(Icons.Share, "Share answer") { share(context, answer) }
 }
 
 @Composable
 private fun CopyButton(text: String) {
-    val colors = Theme.colors
     val clipboard = LocalClipboard.current
+    val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
-    val interactions = remember { MutableInteractionSource() }
-    val pressed by interactions.pressed()
     var copied by remember { mutableStateOf(false) }
     LaunchedEffect(copied) {
         if (copied) {
@@ -335,24 +322,11 @@ private fun CopyButton(text: String) {
             copied = false
         }
     }
-    Box(
-        Modifier
-            .size(30.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(if (pressed) colors.surfaceHover else Color.Transparent)
-            .pressable(label = "Copy answer", interactionSource = interactions) {
-                scope.launch {
-                    clipboard.setClipEntry(ClipEntry(ClipData.newPlainText("HomeoRemedica answer", text)))
-                    copied = true
-                }
-            },
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            if (copied) Icons.Check else Icons.Copy,
-            if (pressed) colors.text else colors.textMuted,
-            15.dp,
-            contentDescription = if (copied) "Copied" else "Copy answer",
-        )
+    ActionButton(if (copied) Icons.Check else Icons.Copy, "Copy answer", if (copied) "Copied" else "Copy answer") {
+        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+        scope.launch {
+            clipboard.setClipEntry(ClipEntry(ClipData.newPlainText("HomeoRemedica answer", text)))
+            copied = true
+        }
     }
 }
