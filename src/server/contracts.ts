@@ -146,6 +146,11 @@ export interface ChatResponse {
 }
 
 /** Optional progress callbacks for a chat request. */
+/** A model call the caller can stop, as when the browser gives up on its request. */
+export interface Cancellable {
+  signal?: AbortSignal | undefined
+}
+
 export interface ChatOptions {
   /** Receives the citations once retrieval finishes, before any answer text. */
   onSources?: ((sources: readonly Citation[]) => void) | undefined
@@ -335,9 +340,9 @@ export interface Retriever {
   /** `limit` bounds the books' passages; the rubrics come on top of it. */
   retrieve(request: ChatRequest, options: { limit: number }): Promise<Retrieval>
   /** Whether a question describes a patient; a `question` has no symptoms to read. */
-  kind(request: ChatRequest): Promise<QuestionKind>
+  kind(request: ChatRequest, options?: Cancellable): Promise<QuestionKind>
   /** The symptoms a question's case would be searched by, for the user to check first. */
-  symptoms(request: ChatRequest): Promise<string[]>
+  symptoms(request: ChatRequest, options?: Cancellable): Promise<string[]>
 }
 
 export interface GenerateOptions {

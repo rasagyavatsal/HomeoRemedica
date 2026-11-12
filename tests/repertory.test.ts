@@ -196,16 +196,18 @@ describe('parseSymptoms', () => {
   })
 
   it('asks the model with the case as data', async () => {
+    const stop = new AbortController()
     const calls: [string, string][] = []
     const extractor = new ModelSymptomExtractor({
       model: 'm',
-      async generate(prompt, { systemInstruction }) {
+      async generate(prompt, { systemInstruction, signal }) {
         calls.push([prompt, systemInstruction])
+        expect(signal).toBe(stop.signal)
         return 'Mind: weeping'
       },
     })
 
-    expect(await extractor.extractSymptoms('A child weeps.')).toEqual(['Mind: weeping'])
+    expect(await extractor.extractSymptoms('A child weeps.', stop)).toEqual(['Mind: weeping'])
     expect(calls[0]![0]).toBe('<case>\nA child weeps.\n</case>')
     expect(calls[0]![1]).toContain('reply only NONE')
   })
@@ -217,16 +219,18 @@ describe('parseSymptoms', () => {
     expect(parseKind('')).toBe('case')
     expect(parseKind('It may be a question or a case.')).toBe('case')
 
+    const stop = new AbortController()
     const calls: [string, string][] = []
     const classifier = new ModelCaseClassifier({
       model: 'm',
-      async generate(prompt, { systemInstruction }) {
+      async generate(prompt, { systemInstruction, signal }) {
         calls.push([prompt, systemInstruction])
+        expect(signal).toBe(stop.signal)
         return 'QUESTION'
       },
     })
 
-    expect(await classifier.classify('What is Sulphur?')).toBe('question')
+    expect(await classifier.classify('What is Sulphur?', stop)).toBe('question')
     expect(calls[0]![0]).toBe('<case>\nWhat is Sulphur?\n</case>')
     expect(calls[0]![1]).toContain('When unsure, reply CASE')
   })

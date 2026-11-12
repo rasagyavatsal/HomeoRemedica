@@ -12,6 +12,7 @@
 import {
   type AnswerGenerator,
   type BookSummary,
+  type Cancellable,
   MAX_SYMPTOMS,
   type QuestionKind,
   type RankedRemedy,
@@ -110,19 +111,19 @@ export interface Repertorisation {
 
 export interface Repertoriser {
   /** Whether the text describes a patient, decided before its symptoms are read. */
-  kind(text: string): Promise<QuestionKind>
+  kind(text: string, options?: Cancellable): Promise<QuestionKind>
   /** The symptoms of the case the text describes; none when it describes no patient. */
-  symptoms(text: string): Promise<string[]>
+  symptoms(text: string, options?: Cancellable): Promise<string[]>
   /** Ranks remedies for `symptoms`, or for the text's own when none are given. */
   repertorise(text: string, symptoms?: readonly string[]): Promise<Repertorisation>
 }
 
 export interface SymptomExtractor {
-  extractSymptoms(text: string): Promise<string[]>
+  extractSymptoms(text: string, options?: Cancellable): Promise<string[]>
 }
 
 export interface CaseClassifier {
-  classify(text: string): Promise<QuestionKind>
+  classify(text: string, options?: Cancellable): Promise<QuestionKind>
 }
 
 export interface QueriesEmbedder {
@@ -157,12 +158,12 @@ export class Repertory implements Repertoriser {
     this.#rubrics = rubrics
   }
 
-  kind(text: string): Promise<QuestionKind> {
-    return this.#classifier.classify(text)
+  kind(text: string, options?: Cancellable): Promise<QuestionKind> {
+    return this.#classifier.classify(text, options)
   }
 
-  symptoms(text: string): Promise<string[]> {
-    return this.#extractor.extractSymptoms(text)
+  symptoms(text: string, options?: Cancellable): Promise<string[]> {
+    return this.#extractor.extractSymptoms(text, options)
   }
 
   async repertorise(text: string, given?: readonly string[]): Promise<Repertorisation> {
@@ -322,8 +323,8 @@ export class ModelSymptomExtractor implements SymptomExtractor {
     this.#generator = generator
   }
 
-  async extractSymptoms(text: string): Promise<string[]> {
-    const reply = await this.#generator.generate(`<case>\n${text}\n</case>`, { systemInstruction: EXTRACTION_INSTRUCTION })
+  async extractSymptoms(text: string, { signal }: Cancellable = {}): Promise<string[]> {
+    const reply = await this.#generator.generate(`<case>\n${text}\n</case>`, { systemInstruction: EXTRACTION_INSTRUCTION, signal })
     return parseSymptoms(reply)
   }
 }
@@ -341,8 +342,8 @@ export class ModelCaseClassifier implements CaseClassifier {
     this.#generator = generator
   }
 
-  async classify(text: string): Promise<QuestionKind> {
-    const reply = await this.#generator.generate(`<case>\n${text}\n</case>`, { systemInstruction: CLASSIFICATION_INSTRUCTION })
+  async classify(text: string, { signal }: Cancellable = {}): Promise<QuestionKind> {
+    const reply = await this.#generator.generate(`<case>\n${text}\n</case>`, { systemInstruction: CLASSIFICATION_INSTRUCTION, signal })
     return parseKind(reply)
   }
 }

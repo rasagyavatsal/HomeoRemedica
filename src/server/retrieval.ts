@@ -1,6 +1,7 @@
 /** Production query embedding and corpus search. */
 
 import {
+  type Cancellable,
   type ChatRequest,
   MAX_RETRIEVAL_QUERY_CHARS,
   type QuestionKind,
@@ -73,12 +74,12 @@ export class ProductionRetriever implements Retriever {
     }
   }
 
-  async kind(request: ChatRequest): Promise<QuestionKind> {
-    return this.#repertory ? this.#repertory.kind(searchQuery(request)) : 'question'
+  async kind(request: ChatRequest, options?: Cancellable): Promise<QuestionKind> {
+    return this.#repertory ? this.#repertory.kind(searchQuery(request), options) : 'question'
   }
 
-  async symptoms(request: ChatRequest): Promise<string[]> {
-    return this.#repertory ? this.#repertory.symptoms(searchQuery(request)) : []
+  async symptoms(request: ChatRequest, options?: Cancellable): Promise<string[]> {
+    return this.#repertory ? this.#repertory.symptoms(searchQuery(request), options) : []
   }
 
   /** Clarke's remedies for the diseases the query names, if they tell remedies apart. */

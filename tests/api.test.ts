@@ -10,6 +10,7 @@ import { RateLimiter } from '../src/server/rate-limit.ts'
 import type { Settings } from '../src/server/runtime.ts'
 import type {
   BookSummary,
+  Cancellable,
   ChatOptions,
   ChatRequest,
   ChatResponse,
@@ -56,12 +57,17 @@ class StubService implements ChatHandler {
     return response
   }
 
-  async kind(): Promise<QuestionKind> {
+  /** The signals the reading calls were given, to stop them by. */
+  readonly signals: (AbortSignal | undefined)[] = []
+
+  async kind(_request: ChatRequest, { signal }: Cancellable = {}): Promise<QuestionKind> {
+    this.signals.push(signal)
     if (this.failure !== null) throw this.failure
     return 'case'
   }
 
-  async symptoms(): Promise<string[]> {
+  async symptoms(_request: ChatRequest, { signal }: Cancellable = {}): Promise<string[]> {
+    this.signals.push(signal)
     if (this.failure !== null) throw this.failure
     return ['Mind: weeping']
   }
@@ -158,6 +164,24 @@ it('reads the symptoms of a case before it is answered', async () => {
   quiet()
   service.failure = new ProviderError('down')
   expect((await symptoms({ message: 'A weepy woman.' })).status).toBe(502)
+})
+
+it('stops reading a question when its request is given up', async () => {
+  const { app, service } = setup()
+  const stop = new AbortController()
+
+  for (const path of ['/api/kind', '/api/symptoms']) {
+    await app.request(path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'A weepy woman.' }),
+      signal: stop.signal,
+    })
+  }
+  stop.abort()
+
+  expect(service.signals).toHaveLength(2)
+  expect(service.signals.every((signal) => signal?.aborted)).toBe(true)
 })
 
 it('takes the symptoms a user confirmed with a question', async () => {

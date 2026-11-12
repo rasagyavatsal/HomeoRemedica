@@ -17,6 +17,7 @@ import { type Settings, buildService, loadAccounts, loadSettings } from './runti
 import {
   type BookCatalog,
   type ChatList,
+  type Cancellable,
   type ChatOptions,
   type ChatRequest,
   ChatRequestSchema,
@@ -49,8 +50,8 @@ import {
 export interface ChatHandler {
   chat(request: ChatRequest, options?: ChatOptions): Promise<ChatResponse>
   compact(request: CompactRequest, options?: { signal?: AbortSignal }): Promise<CompactResponse>
-  kind(request: ChatRequest): Promise<QuestionKind>
-  symptoms(request: ChatRequest): Promise<string[]>
+  kind(request: ChatRequest, options?: Cancellable): Promise<QuestionKind>
+  symptoms(request: ChatRequest, options?: Cancellable): Promise<string[]>
 }
 
 export interface AppDependencies {
@@ -264,8 +265,13 @@ export function createApp(
   app.post('/api/kind', limited(kindRateLimiter, totalKindRateLimiter))
   app.post('/api/symptoms', limited(symptomRateLimiter, totalSymptomRateLimiter))
 
-  /** Answers with what `read` makes of the question, before the question itself is asked. */
-  const beforeAsking = (read: (service: ChatHandler, request: ChatRequest) => Promise<KindResponse | SymptomsResponse>) =>
+  /**
+   * Answers with what `read` makes of the question, before the question itself is asked. The
+   * request's signal stops the model call when the browser gives up on it.
+   */
+  const beforeAsking = (
+    read: (service: ChatHandler, request: ChatRequest, options: Cancellable) => Promise<KindResponse | SymptomsResponse>,
+  ) =>
     async (c: Context) => {
       const request = await readBody(c, ChatRequestSchema)
       if (request instanceof Response) return request
@@ -277,14 +283,14 @@ export function createApp(
         return setupFailure(c, error, 'Failed to initialize production chat')
       }
       try {
-        return c.json(await read(service, request))
+        return c.json(await read(service, request, { signal: c.req.raw.signal }))
       } catch (error) {
         const { detail, status } = chatFailure(error)
         return c.json({ detail }, status)
       }
     }
-  app.post('/api/kind', beforeAsking(async (service, request) => ({ kind: await service.kind(request) })))
-  app.post('/api/symptoms', beforeAsking(async (service, request) => ({ symptoms: await service.symptoms(request) })))
+  app.post('/api/kind', beforeAsking(async (service, request, options) => ({ kind: await service.kind(request, options) })))
+  app.post('/api/symptoms', beforeAsking(async (service, request, options) => ({ symptoms: await service.symptoms(request, options) })))
 
   app.post('/api/chat', async (c) => {
     const request = await readBody(c, ChatRequestSchema)

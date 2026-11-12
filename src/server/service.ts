@@ -1,5 +1,6 @@
 import {
   type AnswerGenerator,
+  type Cancellable,
   CORPUS_VERSION,
   type ChatOptions,
   type ChatRequest,
@@ -125,13 +126,13 @@ export class ChatService {
   }
 
   /** Whether a question describes a patient, decided before its symptoms are read. */
-  kind(request: ChatRequest): Promise<QuestionKind> {
-    return this.#retriever.kind(request)
+  kind(request: ChatRequest, options?: Cancellable): Promise<QuestionKind> {
+    return this.#retriever.kind(request, options)
   }
 
   /** The symptoms of the case a question describes, for the user to check before it is answered. */
-  symptoms(request: ChatRequest): Promise<string[]> {
-    return this.#retriever.symptoms(request)
+  symptoms(request: ChatRequest, options?: Cancellable): Promise<string[]> {
+    return this.#retriever.symptoms(request, options)
   }
 
   /** Condense all but the latest exchange, and any earlier summary, into a new summary. */
