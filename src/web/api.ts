@@ -1,6 +1,6 @@
 /** Browser client for the HomeoRemedica API. */
 
-import type { ChatTurn, Citation, SymptomsResponse, WebChatResponse } from '../server/contracts.ts'
+import type { ChatTurn, Citation, KindResponse, QuestionKind, SymptomsResponse, WebChatResponse } from '../server/contracts.ts'
 
 const FALLBACK_DETAIL = 'Something went wrong. Please try again.'
 const INTERRUPTED_DETAIL = 'The answer stopped before it finished. Please try again.'
@@ -52,15 +52,23 @@ export interface ChatQuestion {
   symptoms?: readonly string[] | undefined
 }
 
-/** The symptoms of the case a question describes; none when it describes no patient. */
-export async function readSymptoms(question: ChatQuestion, signal?: AbortSignal): Promise<string[]> {
-  const { symptoms } = await getJson<SymptomsResponse>('/api/symptoms', {
+function beforeAsking<T>(path: string, question: ChatQuestion, signal?: AbortSignal): Promise<T> {
+  return getJson<T>(path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(question),
     signal: signal ?? null,
   })
-  return symptoms
+}
+
+/** Whether a question describes a patient, whose symptoms are then read, or asks about anything else. */
+export async function readKind(question: ChatQuestion, signal?: AbortSignal): Promise<QuestionKind> {
+  return (await beforeAsking<KindResponse>('/api/kind', question, signal)).kind
+}
+
+/** The symptoms of the case a question describes; none when it describes no patient. */
+export async function readSymptoms(question: ChatQuestion, signal?: AbortSignal): Promise<string[]> {
+  return (await beforeAsking<SymptomsResponse>('/api/symptoms', question, signal)).symptoms
 }
 
 export interface StreamHandlers {

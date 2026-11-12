@@ -56,6 +56,9 @@ export function Thread({ messages, openSources, onSources, onRetry, onConfirm, r
   )
 }
 
+/** What a waiting answer says before the books are searched. */
+const READING = { question: 'Reading your question…', case: 'Reading the case for symptoms…' } as const
+
 interface ReplyProps {
   message: Message
   /** This answer's source open in the sources panel, if any. */
@@ -69,7 +72,7 @@ interface ReplyProps {
 }
 
 const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, onConfirm, ratings, onRate, onNote }: ReplyProps) {
-  const { id, content, sources, status } = message
+  const { id, content, sources, status, reading } = message
   const cite = useCallback((number: number) => onSources(id, number), [id, onSources])
 
   if (status === 'error') {
@@ -94,7 +97,7 @@ const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, o
       {waiting ? (
         <p className="reply-progress" role="status">
           <span className="pulse" aria-hidden="true" />
-          {sources ? 'Reading the passages…' : 'Searching the books…'}
+          {sources ? 'Reading the passages…' : reading ? READING[reading] : 'Searching the books…'}
         </p>
       ) : (
         <Answer content={content} sourceCount={sources?.length ?? 0} onCite={cite} />

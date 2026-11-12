@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { type ChatQuestion, errorMessage, readSymptoms, streamChat } from './api.ts'
+import { type ChatQuestion, errorMessage, readKind, readSymptoms, streamChat } from './api.ts'
 import { type Conversation, type Message, newConversation, titleFrom } from './conversation.ts'
 
 export interface ChatControls {
@@ -103,25 +103,33 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
         messages: [
           ...start.messages,
           { id: next, role: 'user', content: question },
-          { id: next + 1, role: 'assistant', content: '', status: 'streaming' },
+          { id: next + 1, role: 'assistant', content: '', status: 'streaming', reading: 'question' },
         ],
       })
 
       void (async () => {
         const asked = { message: question, history: start.history, summary: start.summary }
+        // Left unset, the question is answered by the symptoms the server reads.
         let symptoms: string[] | undefined
         try {
-          symptoms = await readSymptoms(asked, controller.signal)
+          if ((await readKind(asked, controller.signal)) === 'case') {
+            if (request.current !== controller) return
+            updateAnswer(id, (answer) => ({ ...answer, reading: 'case' }))
+            symptoms = await readSymptoms(asked, controller.signal)
+          } else {
+            symptoms = []
+          }
         } catch {
-          // Without the symptoms to check, the question is answered by the ones the server reads.
+          // Without the symptoms to check, the question is still answered.
         }
         if (request.current !== controller) return
         if (symptoms?.length) {
           const found = symptoms
           request.current = null
-          updateAnswer(id, (answer) => ({ ...answer, status: 'review', symptoms: found }))
+          updateAnswer(id, ({ reading: _read, ...answer }) => ({ ...answer, status: 'review', symptoms: found }))
           return
         }
+        updateAnswer(id, ({ reading: _read, ...answer }) => answer)
         await answer(id, { ...asked, symptoms }, controller)
       })()
     },

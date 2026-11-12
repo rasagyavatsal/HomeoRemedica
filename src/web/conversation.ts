@@ -10,6 +10,8 @@ export interface Message {
   sources?: Citation[]
   /** Unset once an answer is complete; `review` while the user checks the case's symptoms. */
   status?: 'streaming' | 'review' | 'stopped' | 'error'
+  /** What a streaming answer waits on before the books are searched: the question being sorted, or its case read for symptoms. */
+  reading?: 'question' | 'case'
   /** The symptoms read from the case, while they are under review. */
   symptoms?: string[]
   error?: string
