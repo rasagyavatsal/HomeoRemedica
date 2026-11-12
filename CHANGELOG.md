@@ -7,6 +7,13 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [10.3.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v10.2.0...web-v10.3.0) (2026-11-12)
+
+
+### Features
+
+* review a case's symptoms before it is answered ([#87](https://github.com/rasagyavatsal/HomeoRemedica/issues/87)) ([14e87e0](https://github.com/rasagyavatsal/HomeoRemedica/commit/14e87e05eaf527db29b8c5aae3cb2c3c8b436b92))
+
 ## [10.2.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/web-v10.1.0...web-v10.2.0) (2026-11-10)
 
 
