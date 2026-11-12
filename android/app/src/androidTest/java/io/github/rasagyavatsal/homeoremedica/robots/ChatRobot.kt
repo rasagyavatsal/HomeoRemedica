@@ -37,11 +37,10 @@ class ChatRobot(rule: ComposeTestRule) : Robot(rule) {
 
     fun removeSymptom(number: Int) = press(hasContentDescription("Remove symptom $number"))
 
-    /** Add a disease to the case under review; it takes the next number. */
-    fun addDisease(number: Int, text: String) {
-        press(button("Add disease"))
-        waitFor(hasContentDescription("Disease $number"))
-        rule.onNodeWithContentDescription("Disease $number").performTextInput(text)
+    /** Add a disease to the case under review, in the row that takes a new one. */
+    fun addDisease(text: String) {
+        waitFor(hasContentDescription("Add disease"))
+        rule.onNodeWithContentDescription("Add disease").performTextInput(text)
     }
 
     /** Have the case under review answered as the reader left it. */

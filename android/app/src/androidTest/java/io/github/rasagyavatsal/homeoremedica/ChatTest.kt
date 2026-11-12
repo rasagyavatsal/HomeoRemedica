@@ -74,7 +74,7 @@ class ChatTest {
             CASE_SYMPTOMS.forEachIndexed { index, symptom -> seesSymptom(index + 1, symptom) }
             removeSymptom(1)
             seesSymptom(1, CASE_SYMPTOMS[1])
-            addDisease(1, "Measles")
+            addDisease("Measles")
             confirmCase()
             waitForAnswer()
             seesAnswer(ANSWER)

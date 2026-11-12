@@ -14,7 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -84,8 +87,18 @@ private class TermRows(read: List<String>) {
         if (index >= 0) rows[index] = Term(key, text)
     }
 
-    /** The rows as the user left them, without the blank ones. */
-    fun texts() = rows.map { it.text.trim() }.filter { it.isNotEmpty() }
+    /** What a phone's reader is typing into the row that adds one. */
+    var draft by mutableStateOf("")
+
+    /** Makes a row of the [draft], if there is one. */
+    fun commit() {
+        val text = draft.trim()
+        if (text.isNotEmpty()) rows += Term(nextKey++, text)
+        draft = ""
+    }
+
+    /** The rows as the user left them, without the blank ones, then anything still being added. */
+    fun texts() = (rows.map { it.text } + draft).map { it.trim() }.filter { it.isNotEmpty() }
 
     companion object {
         /** Keeps the rows while the review is scrolled out of view or the screen turns. */
@@ -109,13 +122,40 @@ fun CaseReview(
     val diseaseRows = rememberSaveable(saver = TermRows.Saver) { TermRows(diseases.orEmpty()) }
     val keyboard = LocalSoftwareKeyboardController.current
     val haptics = LocalHapticFeedback.current
-    val proceed = @Composable {
-        Button("Continue", ButtonStyle.Primary, {
-            keyboard?.hide()
-            haptics.performHapticFeedback(HapticFeedbackType.ContextClick)
-            onConfirm(symptomRows.texts(), diseases?.let { diseaseRows.texts() })
-        })
+    val confirm = {
+        keyboard?.hide()
+        haptics.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onConfirm(symptomRows.texts(), diseases?.let { diseaseRows.texts() })
     }
+    if (LocalCompact.current) {
+        // A sheet over the chat, open from the start; closing it leaves a way back in the conversation.
+        var open by rememberSaveable { mutableStateOf(true) }
+        Box(modifier) { Button("Review case", ButtonStyle.Outline, { open = true }) }
+        if (open) {
+            BottomSheet("Case", { open = false }) {
+                Column(
+                    Modifier
+                        .weight(1f, fill = false)
+                        .verticalScroll(rememberScrollState())
+                        .semantics { contentDescription = "Case" }
+                        .padding(bottom = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                ) {
+                    SheetTerms("Symptoms", "symptom", symptomRows, MAX_SYMPTOMS, MAX_SYMPTOM_CHARS)
+                    if (diseases != null) SheetTerms("Diseases", "disease", diseaseRows, MAX_DISEASES, MAX_DISEASE_CHARS)
+                }
+                Button(
+                    "Continue",
+                    ButtonStyle.Primary,
+                    confirm,
+                    Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 16.dp),
+                    minHeight = 52.dp,
+                )
+            }
+        }
+        return
+    }
+    val proceed = @Composable { Button("Continue", ButtonStyle.Primary, confirm) }
     Column(modifier.semantics { contentDescription = "Case" }, verticalArrangement = Arrangement.spacedBy(24.dp)) {
         TermList("Symptoms", "symptom", symptomRows, MAX_SYMPTOMS, MAX_SYMPTOM_CHARS) { if (diseases == null) proceed() }
         if (diseases != null) TermList("Diseases", "disease", diseaseRows, MAX_DISEASES, MAX_DISEASE_CHARS) { proceed() }
@@ -216,5 +256,86 @@ private fun TermRow(
             },
         )
         IconButton(Icons.Close, removeLabel, onRemove, size = if (compact) 44.dp else 28.dp, iconSize = 16.dp, color = colors.textSubtle)
+    }
+}
+
+/** A phone's list of the case's symptoms or diseases: plain rows, then one that adds another as it is typed. */
+@Composable
+private fun SheetTerms(label: String, one: String, list: TermRows, max: Int, maxChars: Int) {
+    val colors = Theme.colors
+    val name = one.replaceFirstChar(Char::uppercase)
+    Column {
+        BasicText(
+            label,
+            style = TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = 13.sp, fontWeight = FontWeight.Medium),
+            modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 4.dp),
+        )
+        list.rows.forEachIndexed { index, row ->
+            key(row.key) {
+                SheetField(
+                    row.text,
+                    label = "$name ${index + 1}",
+                    onChange = { list.change(row.key, it.take(maxChars)) },
+                    trailing = { IconButton(Icons.Close, "Remove $one ${index + 1}", { list.remove(row.key) }, size = 48.dp, iconSize = 18.dp, color = colors.textSubtle, raised = true) },
+                )
+            }
+        }
+        if (list.rows.size < max) {
+            SheetField(
+                list.draft,
+                label = "Add $one",
+                placeholder = "Add $one",
+                onChange = { list.draft = it.take(maxChars) },
+                onDone = list::commit,
+                leading = { Icon(Icons.Plus, colors.textSubtle, 18.dp) },
+            )
+        }
+    }
+}
+
+/** One row of a phone's case review: a field across the sheet, with a rule under it. */
+@Composable
+private fun SheetField(
+    text: String,
+    label: String,
+    onChange: (String) -> Unit,
+    placeholder: String? = null,
+    /** What the keyboard's action does; without it, the action closes the keyboard. */
+    onDone: (() -> Unit)? = null,
+    leading: (@Composable () -> Unit)? = null,
+    trailing: (@Composable () -> Unit)? = null,
+) {
+    val colors = Theme.colors
+    val style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 16.sp)
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = 52.dp)
+            .drawBehind { drawLine(colors.border, Offset(24.dp.toPx(), size.height), Offset(size.width, size.height), 1.dp.toPx()) }
+            .padding(start = 24.dp, end = if (trailing != null) 12.dp else 24.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        leading?.invoke()
+        BasicTextField(
+            value = text,
+            onValueChange = onChange,
+            singleLine = true,
+            textStyle = style,
+            cursorBrush = SolidColor(colors.accent),
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Sentences,
+                imeAction = if (onDone != null) ImeAction.Next else ImeAction.Done,
+            ),
+            keyboardActions = KeyboardActions(onNext = { onDone?.invoke() }),
+            modifier = Modifier.weight(1f).semantics { contentDescription = label },
+            decorationBox = { field ->
+                Box(Modifier.heightIn(min = 52.dp), contentAlignment = Alignment.CenterStart) {
+                    if (text.isEmpty() && placeholder != null) BasicText(placeholder, style = style.copy(color = colors.textSubtle))
+                    field()
+                }
+            },
+        )
+        trailing?.invoke()
     }
 }
