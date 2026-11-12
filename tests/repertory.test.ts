@@ -191,6 +191,13 @@ describe('parseSymptoms', () => {
     expect(parseSymptoms(Array.from({ length: 20 }, (_, index) => `Head: pain ${index}`).join('\n'))).toHaveLength(MAX_SYMPTOMS)
   })
 
+  it('keeps a symptom within the length a question may send back', () => {
+    const [symptom] = parseSymptoms(`Head: ${'pain, '.repeat(60)}`)
+
+    expect(symptom).toHaveLength(200)
+    expect(ChatRequestSchema.parse({ message: 'A case.', symptoms: [symptom] }).symptoms).toEqual([symptom])
+  })
+
   it('keeps a symptom the reply repeats once', () => {
     expect(parseSymptoms('Head: pain, morning\nSleep: restless\nhead: Pain, morning')).toEqual(['Head: pain, morning', 'Sleep: restless'])
   })

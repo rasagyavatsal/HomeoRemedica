@@ -13,6 +13,7 @@ import {
   type AnswerGenerator,
   type BookSummary,
   type Cancellable,
+  MAX_SYMPTOM_CHARS,
   MAX_SYMPTOMS,
   type QuestionKind,
   type RankedRemedy,
@@ -300,7 +301,10 @@ function rubricSource(rubric: Rubric, leaders: readonly string[]): RetrievedSour
   }
 }
 
-/** Symptoms from the chat model's reply: `Chapter: symptom` lines in a known chapter, each once. */
+/**
+ * Symptoms from the chat model's reply: `Chapter: symptom` lines in a known chapter, each once and
+ * no longer than a question may send back, so the user can confirm what they are shown.
+ */
 export function parseSymptoms(reply: string): string[] {
   const chapters = new Map(CHAPTERS.map((chapter) => [chapter.toLowerCase(), chapter]))
   const symptoms = new Map<string, string>()
@@ -308,7 +312,7 @@ export function parseSymptoms(reply: string): string[] {
     const match = /^[\s*\-\d.)]*([A-Za-z ]+?)\s*:\s*(.+?)\s*$/.exec(line)
     const chapter = match && chapters.get(match[1]!.toLowerCase())
     if (!chapter) continue
-    const symptom = `${chapter}: ${match[2]}`
+    const symptom = `${chapter}: ${match[2]}`.slice(0, MAX_SYMPTOM_CHARS).trimEnd()
     const key = symptom.toLowerCase()
     if (!symptoms.has(key)) symptoms.set(key, symptom)
   }
