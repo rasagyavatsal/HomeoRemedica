@@ -113,7 +113,7 @@ fun Sidebar(
             Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            if (compact) Button("New chat", ButtonStyle.Primary, onNew, Modifier.fillMaxWidth(), icon = Icons.Plus, minHeight = 48.dp)
+            if (compact) Button("New chat", ButtonStyle.Primary, onNew, Modifier.fillMaxWidth(), icon = Icons.Plus, minHeight = 52.dp)
             else Button("New chat", ButtonStyle.Outline, onNew, Modifier.fillMaxWidth(), icon = Icons.Plus, start = true)
             if (chats != null && chats.size >= SEARCH_FROM) SearchField(query) { query = it }
         }
@@ -277,7 +277,7 @@ private fun ChatRow(chat: ChatSummary, active: Boolean, onOpen: () -> Unit, onDe
     var actions by rememberSaveable { mutableStateOf(false) }
     BasicText(
         chat.title,
-        style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 15.sp, lineHeight = 20.sp),
+        style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 16.sp, lineHeight = 22.sp),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         modifier = Modifier
@@ -305,9 +305,9 @@ private fun ChatRow(chat: ChatSummary, active: Boolean, onOpen: () -> Unit, onDe
                 selected = active
                 customActions = listOf(CustomAccessibilityAction("Delete") { onDelete(); true })
             }
-            .heightIn(min = 48.dp)
+            .heightIn(min = 52.dp)
             .wrapContentHeight(Alignment.CenterVertically)
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 18.dp),
     )
     if (actions) {
         BottomSheet("Chat actions", { actions = false }, title = chat.title) {

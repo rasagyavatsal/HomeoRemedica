@@ -90,11 +90,11 @@ fun Welcome(bottomPadding: Dp, onExample: (String) -> Unit = {}) {
                         heading()
                         contentDescription = TAGLINE
                     },
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    TaglineWords.forEachIndexed { index, word -> TaglineWord(word, index, 28.sp) }
+                    TaglineWords.forEachIndexed { index, word -> TaglineWord(word, index, 34.sp) }
                 }
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Examples.forEachIndexed { index, example ->
                         Example(example, Modifier.rise(example, REVEAL_MILLIS, TAGLINE_MILLIS + index * WORD_STAGGER_MILLIS)) { onExample(example) }
                     }
@@ -129,12 +129,12 @@ private fun Example(text: String, modifier: Modifier, onClick: () -> Unit) {
     val pressed by interactions.pressed()
     BasicText(
         text,
-        style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 14.sp, lineHeight = 20.sp),
+        style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 16.sp, lineHeight = 22.sp),
         modifier = modifier
             .clip(Pill)
             .background(if (pressed) colors.borderStrong else colors.surfaceSelected)
             .pressable(label = "Ask", interactionSource = interactions, onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+            .padding(horizontal = 20.dp, vertical = 14.dp),
     )
 }
 

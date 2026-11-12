@@ -401,7 +401,7 @@ private fun Topbar(title: String, onMenu: (() -> Unit)?, onNewChat: (() -> Unit)
             style = TextStyle(
                 color = colors.textMuted,
                 fontFamily = Fonts.sans,
-                fontSize = if (compact) 14.sp else 13.sp,
+                fontSize = if (compact) 15.sp else 13.sp,
                 textAlign = if (compact) TextAlign.Center else TextAlign.Start,
             ),
             maxLines = 1,
@@ -481,12 +481,12 @@ private fun UserMessage(content: String, wide: Boolean, modifier: Modifier) {
         SelectionContainer {
             BasicText(
                 content,
-                style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 15.sp, lineHeight = 1.4.em),
+                style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = if (compact) 16.sp else 15.sp, lineHeight = 1.4.em),
                 modifier = Modifier
                     .widthIn(max = maxBubble)
                     .background(if (compact) colors.accentSoftHover else colors.surfaceRaised, shape)
                     .border(1.dp, if (compact) Color.Transparent else colors.border, shape)
-                    .padding(horizontal = 16.dp, vertical = if (compact) 10.dp else 12.dp)
+                    .padding(horizontal = if (compact) 18.dp else 16.dp, vertical = 12.dp)
                     .semantics { contentDescription = "You: $content" },
             )
         }
@@ -624,6 +624,8 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
     val radius = if (compact) 28.dp else 16.dp
     val shape = RoundedCornerShape(radius)
     val canSend = !state.busy && state.draft.isNotBlank()
+    // Larger type on phones, where the box is the main thing on the screen.
+    val text = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = if (compact) 16.sp else 15.sp, lineHeight = if (compact) 22.sp else 21.sp)
     Row(
         Modifier
             .fillMaxWidth()
@@ -641,7 +643,7 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
             .then(if (compact) Modifier else Modifier.shadowMedium(shape, colors.shadow))
             .background(if (compact) colors.surfaceSelected else colors.surfaceRaised, shape)
             .border(1.dp, if (compact) Color.Transparent else if (focused) colors.accent else colors.borderStrong, shape)
-            .padding(start = if (compact) 20.dp else 16.dp, top = 6.dp, end = 6.dp, bottom = 6.dp),
+            .padding(start = if (compact) 22.dp else 16.dp, top = 8.dp, end = 8.dp, bottom = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Bottom,
     ) {
@@ -650,7 +652,7 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
             onValueChange = onDraftChange,
             modifier = Modifier
                 .weight(1f)
-                .heightIn(min = 36.dp, max = 192.dp)
+                .heightIn(min = if (compact) 48.dp else 36.dp, max = 192.dp)
                 .onPreviewKeyEvent { event ->
                     // Enter sends; Shift+Enter adds a line.
                     val enter = event.key == Key.Enter || event.key == Key.NumPadEnter
@@ -662,7 +664,7 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
                     }
                 }
                 .semantics { contentDescription = "Message" },
-            textStyle = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 15.sp, lineHeight = 21.sp),
+            textStyle = text,
             cursorBrush = SolidColor(colors.accent),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions(onSend = { onSubmit() }),
@@ -671,8 +673,9 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
                 Box(Modifier.padding(vertical = 8.dp), contentAlignment = Alignment.CenterStart) {
                     if (state.draft.isEmpty()) {
                         BasicText(
-                            "Ask about a remedy, symptom or principle…",
-                            style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 15.sp, lineHeight = 21.sp),
+                            // Short enough for one line of a phone's box.
+                            if (compact) "Ask about a remedy or symptom…" else "Ask about a remedy, symptom or principle…",
+                            style = text.copy(color = colors.textSubtle),
                         )
                     }
                     field()
@@ -703,7 +706,7 @@ private fun SendButton(icon: ImageVector, label: String, enabled: Boolean, onCli
     Box(
         Modifier
             .scale(if (pressed && enabled) 0.96f else 1f)
-            .size(if (compact) 44.dp else 36.dp)
+            .size(if (compact) 48.dp else 36.dp)
             .background(
                 when {
                     // Darker than the filled message box it sits in on phones.
@@ -717,7 +720,7 @@ private fun SendButton(icon: ImageVector, label: String, enabled: Boolean, onCli
             .semantics { contentDescription = label },
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, if (enabled) colors.textOnAccent else colors.textSubtle, if (compact) 20.dp else 18.dp)
+        Icon(icon, if (enabled) colors.textOnAccent else colors.textSubtle, if (compact) 22.dp else 18.dp)
     }
 }
 

@@ -136,8 +136,8 @@ fun Answer(
 }
 
 /** A phone's action button, and how far its icon sits in from its edge. */
-private val ActionSize = 44.dp
-private val ActionIcon = 20.dp
+private val ActionSize = 48.dp
+private val ActionIcon = 22.dp
 private val ActionInset = (ActionSize - ActionIcon) / 2
 
 // The web app's `--layout-reference-min` and the grid's gap.
@@ -160,7 +160,7 @@ private fun References(sources: List<Citation>, cited: Set<Int>, active: Int?, o
         val shape = RoundedCornerShape(16.dp)
         Column(Modifier.padding(top = 12.dp).rise(sources, 320).fillMaxWidth().clip(shape).background(colors.surfaceHover)) {
             listed.forEachIndexed { index, number ->
-                if (index > 0) Box(Modifier.padding(start = 42.dp).fillMaxWidth().height(1.dp).background(colors.border))
+                if (index > 0) Box(Modifier.padding(start = 46.dp).fillMaxWidth().height(1.dp).background(colors.border))
                 Reference(number, sources[number - 1], number == active, Modifier.fillMaxWidth(), plain = true) { onOpen(number) }
             }
         }
@@ -214,8 +214,8 @@ private fun Reference(
                 contentDescription = "Source $number: ${source.label}, ${source.bookTitle}"
                 selected = active
             }
-            .padding(horizontal = if (plain) 14.dp else 12.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(if (plain) 10.dp else 8.dp),
+            .padding(horizontal = if (plain) 16.dp else 12.dp, vertical = if (plain) 16.dp else 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(if (plain) 12.dp else 8.dp),
     ) {
         Box(
             Modifier
@@ -241,11 +241,11 @@ private fun Reference(
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             BasicText(
                 source.label,
-                style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = if (plain) 14.sp else 13.sp, fontWeight = FontWeight.SemiBold),
+                style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = if (plain) 15.sp else 13.sp, fontWeight = FontWeight.SemiBold),
             )
             BasicText(
                 source.bookTitle,
-                style = TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = if (plain) 13.sp else 12.sp, lineHeight = 1.4.em),
+                style = TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = if (plain) 14.sp else 12.sp, lineHeight = 1.4.em),
             )
         }
     }

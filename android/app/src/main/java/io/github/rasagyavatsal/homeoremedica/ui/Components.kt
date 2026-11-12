@@ -196,7 +196,7 @@ fun Button(
             text,
             style = TextStyle(
                 color = content,
-                fontSize = if (small) 12.sp else if (compact) 14.sp else 13.sp,
+                fontSize = if (small) 12.sp else if (compact) 15.sp else 13.sp,
                 lineHeight = 18.sp,
                 fontWeight = FontWeight.Medium,
                 fontFamily = Fonts.sans,
