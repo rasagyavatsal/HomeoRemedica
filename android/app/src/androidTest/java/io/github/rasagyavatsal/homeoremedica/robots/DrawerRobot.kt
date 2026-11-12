@@ -20,7 +20,7 @@ class DrawerRobot(rule: ComposeTestRule) : Robot(rule) {
         waitFor(button("New chat"))
     }
 
-    /** Close the drawer from its scrim; the sidebar on wide screens stays. */
+    /** Close the drawer with its close button, or its scrim where one shows; the sidebar on wide screens stays. */
     fun close() {
         if (exists(hasClickLabel("Close chats"))) {
             press(hasClickLabel("Close chats"))

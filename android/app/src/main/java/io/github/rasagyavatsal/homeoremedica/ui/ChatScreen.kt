@@ -218,7 +218,9 @@ fun ChatScreen(
     BoxWithConstraints(Modifier.fillMaxSize().background(colors.canvas)) {
         val drawer = compact
         val wide = maxWidth >= 640.dp
-        val drawerWidth = minOf(320.dp, maxWidth - 56.dp)
+        // The chat list covers a phone's screen; on wider windows it stops short and the scrim beside it closes it.
+        val fullDrawer = maxWidth < 600.dp
+        val drawerWidth = if (fullDrawer) maxWidth else 420.dp
         val drawerPx = with(density) { drawerWidth.toPx() }
         // How far the drawer has slid in, from 0 to 1; a drag moves it, and letting go settles it.
         val drawerDrag = rememberDraggableState { delta ->
@@ -252,6 +254,7 @@ fun ChatScreen(
                 },
                 onDelete = onDeleteChat,
                 modifier = modifier,
+                onClose = closeSidebar.takeIf { drawer },
                 footer = footer,
             )
         }
@@ -343,7 +346,8 @@ fun ChatScreen(
                         .fillMaxSize()
                         .graphicsLayer { alpha = drawerShown.value }
                         .background(colors.scrim)
-                        .pressable(label = "Close chats", onClick = closeSidebar),
+                        // Nothing of the scrim shows beside a drawer that covers the screen, which has its own button.
+                        .then(if (fullDrawer) Modifier else Modifier.pressable(label = "Close chats", onClick = closeSidebar)),
                 )
                 sidebar(
                     Modifier

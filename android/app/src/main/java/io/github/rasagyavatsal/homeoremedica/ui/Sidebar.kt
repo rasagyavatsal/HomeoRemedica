@@ -79,6 +79,8 @@ fun Sidebar(
     onOpen: (String) -> Unit,
     onDelete: (String) -> Unit,
     modifier: Modifier = Modifier,
+    /** Closes the list where it is a drawer over the chat. */
+    onClose: (() -> Unit)? = null,
     footer: (@Composable () -> Unit)? = null,
 ) {
     val colors = Theme.colors
@@ -98,7 +100,7 @@ fun Sidebar(
             .semantics { contentDescription = "Chats" },
     ) {
         Row(
-            Modifier.fillMaxWidth().heightIn(min = 44.dp).padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+            Modifier.fillMaxWidth().heightIn(min = 44.dp).padding(start = 16.dp, end = if (onClose != null) 4.dp else 8.dp, top = 8.dp, bottom = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -106,6 +108,7 @@ fun Sidebar(
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
                 // Phones choose the theme in the account sheet.
                 if (!compact) ThemeToggle()
+                if (onClose != null) IconButton(Icons.Close, "Close chats", onClose, size = 48.dp, iconSize = 22.dp, color = colors.text)
             }
         }
 
