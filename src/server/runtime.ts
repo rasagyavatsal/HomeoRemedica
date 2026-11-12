@@ -143,14 +143,14 @@ export function diseaseExtractor(settings: Settings): DiseaseExtractor {
   return new ModelDiseaseExtractor(extractionClient(settings))
 }
 
-/** The answer model as symptom and disease extraction ask it: reasoning as little as it can, and as steady as it goes. */
+/** The answer model as symptom and disease extraction ask it: reasoning as much as it can, and as steady as it goes. */
 function extractionClient(settings: Settings): ZaiChatClient {
   return new ZaiChatClient({
     apiKey: settings.zaiApiKey,
     model: settings.model,
     maxOutputTokens: EXTRACTION_MAX_OUTPUT_TOKENS,
     temperature: 0,
-    reasoningEffort: 'low',
+    reasoningEffort: 'max',
   })
 }
 

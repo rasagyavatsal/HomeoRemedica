@@ -21,7 +21,7 @@ export const RUBRICS_PER_SYMPTOM = 3
 export { MAX_SYMPTOMS }
 /** A ranking that this many remedies lead together, at a low score, does not tell them apart. */
 export const INDECISIVE_TIES = 5
-/** The extraction model reasons first, if briefly, and its reasoning counts against this. */
+/** The extraction model reasons first, and its reasoning counts against this. */
 export const EXTRACTION_MAX_OUTPUT_TOKENS = 16_000
 /** How many of a ranking's remedies an answer names, at most. */
 export const LEADING_REMEDIES = 3
