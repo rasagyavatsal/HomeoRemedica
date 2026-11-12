@@ -123,6 +123,11 @@ export class ChatService {
     }
   }
 
+  /** The symptoms of the case a question describes, for the user to check before it is answered. */
+  symptoms(request: ChatRequest): Promise<string[]> {
+    return this.#retriever.symptoms(request)
+  }
+
   /** Condense all but the latest exchange, and any earlier summary, into a new summary. */
   async compact({ history, summary }: CompactRequest, { signal }: { signal?: AbortSignal } = {}): Promise<CompactResponse> {
     const older = { history: history.slice(0, -KEPT_TURNS), summary }

@@ -9,7 +9,7 @@
  * repository builds with `scripts/rubrics.py` and `scripts/embed.py`.
  */
 
-import type { AnswerGenerator, BookSummary, RankedRemedy, RetrievedSource } from './contracts.ts'
+import { type AnswerGenerator, type BookSummary, MAX_SYMPTOMS, type RankedRemedy, type RetrievedSource } from './contracts.ts'
 import { ProviderError } from './errors.ts'
 import { type Fetch, isRecord, readJson, send } from './http.ts'
 
@@ -18,7 +18,7 @@ export const REPERTORY_COLLECTION = 'kent_repertory'
 export const BOERICKE_COLLECTION = 'boericke_repertory'
 /** More rubrics per symptom adds loosely related ones, which made the ranking worse. */
 export const RUBRICS_PER_SYMPTOM = 3
-export const MAX_SYMPTOMS = 15
+export { MAX_SYMPTOMS }
 /** A ranking that this many remedies lead together, at a low score, does not tell them apart. */
 export const INDECISIVE_TIES = 5
 /** Far more than the few lines an extraction returns. */
@@ -92,7 +92,10 @@ export interface Repertorisation {
 }
 
 export interface Repertoriser {
-  repertorise(text: string): Promise<Repertorisation>
+  /** The symptoms of the case the text describes; none when it describes no patient. */
+  symptoms(text: string): Promise<string[]>
+  /** Ranks remedies for `symptoms`, or for the text's own when none are given. */
+  repertorise(text: string, symptoms?: readonly string[]): Promise<Repertorisation>
 }
 
 export interface SymptomExtractor {
@@ -127,8 +130,12 @@ export class Repertory implements Repertoriser {
     this.#rubrics = rubrics
   }
 
-  async repertorise(text: string): Promise<Repertorisation> {
-    const symptoms = await this.#extractor.extractSymptoms(text)
+  symptoms(text: string): Promise<string[]> {
+    return this.#extractor.extractSymptoms(text)
+  }
+
+  async repertorise(text: string, given?: readonly string[]): Promise<Repertorisation> {
+    const symptoms = given ?? (await this.symptoms(text))
     if (!symptoms.length) return { symptoms: [], remedies: [] }
     const embeddings = await this.#embedder.embedQueries(symptoms)
     const found = await this.#rubrics.search(embeddings, { limit: RUBRICS_PER_SYMPTOM })

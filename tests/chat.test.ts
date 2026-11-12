@@ -19,6 +19,10 @@ class StubRetriever implements Retriever {
   searchCall: { request: ChatRequest; limit: number } | null = null
   failure: unknown = null
 
+  async symptoms(): Promise<string[]> {
+    return ['Mind: irritable']
+  }
+
   async retrieve(request: ChatRequest, { limit }: { limit: number }): Promise<Retrieval> {
     this.searchCall = { request, limit }
     if (this.failure) throw this.failure

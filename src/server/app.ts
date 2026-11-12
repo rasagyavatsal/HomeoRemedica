@@ -27,6 +27,7 @@ import {
   type CompactRequest,
   CompactRequestSchema,
   type CompactResponse,
+  type SymptomsResponse,
   answerRatings,
   FeedbackSchema,
   SavedChatSchema,
@@ -46,6 +47,7 @@ import {
 export interface ChatHandler {
   chat(request: ChatRequest, options?: ChatOptions): Promise<ChatResponse>
   compact(request: CompactRequest, options?: { signal?: AbortSignal }): Promise<CompactResponse>
+  symptoms(request: ChatRequest): Promise<string[]>
 }
 
 export interface AppDependencies {
@@ -108,12 +110,17 @@ export function createApp(
     webDist = WEB_DIST,
     rateLimiter = new RateLimiter(),
     totalRateLimiter = new RateLimiter(TOTAL_CHAT_RATE_LIMITS),
+    symptomRateLimiter = new RateLimiter(),
+    totalSymptomRateLimiter = new RateLimiter(TOTAL_CHAT_RATE_LIMITS),
     saveRateLimiter = new RateLimiter(CHAT_SAVE_RATE_LIMITS),
     feedbackRateLimiter = new RateLimiter(FEEDBACK_RATE_LIMITS),
   }: {
     webDist?: string | null
     rateLimiter?: RateLimiter | null
     totalRateLimiter?: RateLimiter | null
+    /** Counts the cases each client has read for symptoms, apart from its questions. */
+    symptomRateLimiter?: RateLimiter | null
+    totalSymptomRateLimiter?: RateLimiter | null
     /** Counts the messages each user saves. */
     saveRateLimiter?: RateLimiter | null
     /** Counts the ratings each user sends. */
@@ -226,21 +233,44 @@ export function createApp(
 
   // Check the client first, so a client over its own limit does not use up everyone's. A compaction
   // asked for by itself costs a model call too, so it counts as a question.
-  const questionLimits = createMiddleware(async (c, next) => {
-    const limits = [
-      [rateLimiter, clientKey(clientAddress(c)), 'Too many questions in a short time. Please wait a minute and try again.'],
-      [totalRateLimiter, 'all', 'HomeoRemedica has answered all the questions it can for now. Please try again later.'],
-    ] as const
-    for (const [limiter, key, detail] of limits) {
-      const retryAfter = limiter?.take(key)
-      if (retryAfter === undefined) continue
-      c.header('Retry-After', String(retryAfter))
-      return c.json({ detail }, 429)
-    }
-    await next()
-  })
+  const limited = (client: RateLimiter | null, total: RateLimiter | null) =>
+    createMiddleware(async (c, next) => {
+      const limits = [
+        [client, clientKey(clientAddress(c)), 'Too many questions in a short time. Please wait a minute and try again.'],
+        [total, 'all', 'HomeoRemedica has answered all the questions it can for now. Please try again later.'],
+      ] as const
+      for (const [limiter, key, detail] of limits) {
+        const retryAfter = limiter?.take(key)
+        if (retryAfter === undefined) continue
+        c.header('Retry-After', String(retryAfter))
+        return c.json({ detail }, 429)
+      }
+      await next()
+    })
+  const questionLimits = limited(rateLimiter, totalRateLimiter)
   app.post('/api/chat', questionLimits)
   app.post('/api/chat/compact', questionLimits)
+  // Reading a case for its symptoms costs a model call too, but it comes before the same question
+  // is asked, so it is counted apart and does not halve the questions a client may ask.
+  app.post('/api/symptoms', limited(symptomRateLimiter, totalSymptomRateLimiter))
+
+  app.post('/api/symptoms', async (c) => {
+    const request = await readBody(c, ChatRequestSchema)
+    if (request instanceof Response) return request
+
+    let service: ChatHandler
+    try {
+      service = await dependencies.getService()
+    } catch (error) {
+      return setupFailure(c, error, 'Failed to initialize production chat')
+    }
+    try {
+      return c.json({ symptoms: await service.symptoms(request) } satisfies SymptomsResponse)
+    } catch (error) {
+      const { detail, status } = chatFailure(error)
+      return c.json({ detail }, status)
+    }
+  })
 
   app.post('/api/chat', async (c) => {
     const request = await readBody(c, ChatRequestSchema)

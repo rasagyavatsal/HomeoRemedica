@@ -244,6 +244,29 @@ describe('Repertory', () => {
     expect(await repertory.repertorise('What is Sulphur?')).toEqual({ symptoms: [], remedies: [] })
     expect(embedQueries).not.toHaveBeenCalled()
   })
+
+  it('ranks by the symptoms it is given without reading the case', async () => {
+    const extractSymptoms = vi.fn(async () => ['Mind: weeping'])
+    const embedded: (readonly string[])[] = []
+    const repertory = new Repertory({
+      extractor: { extractSymptoms },
+      embedder: {
+        async embedQueries(texts) {
+          embedded.push(texts)
+          return texts.map(() => [0])
+        },
+      },
+      rubrics: { search: async () => [[rubric('Stomach: thirstless', ['puls', 2])]] },
+    })
+
+    const result = await repertory.repertorise('case', ['Stomach: thirstless'])
+
+    expect(extractSymptoms).not.toHaveBeenCalled()
+    expect(embedded).toEqual([['Stomach: thirstless']])
+    expect(result.remedies.map((remedy) => remedy.remedyId)).toEqual(['puls'])
+    expect(await repertory.repertorise('case', [])).toEqual({ symptoms: [], remedies: [] })
+    expect(await repertory.symptoms('case')).toEqual(['Mind: weeping'])
+  })
 })
 
 describe('CombinedRubrics', () => {
@@ -314,6 +337,7 @@ describe('production retriever with a repertory', () => {
     return { corpus, calls }
   }
   const repertoryOf = (...remedyIds: string[]): Repertoriser => ({
+    symptoms: async () => [],
     repertorise: async () => ({
       symptoms: [],
       remedies: remedyIds.map((remedyId) => ({ remedyId, symptoms: 1, grades: 1 })),
@@ -335,7 +359,10 @@ describe('production retriever with a repertory', () => {
     const passage = { chunkId: 'chk_1', bookId: 'kent_lectures', bookTitle: "Kent's Lectures", author: null, remedyName: 'PULSATILLA', sectionTitle: 'MIND', passageIndexes: [1], text: 'Weeps.', score: 0.03 }
     const corpus: SearchableRelease = { search: async () => [passage] }
     const symptoms = [{ symptom: 'Mind: weeps easily', rubrics: [rubric('Mind: weeping', ['pulsatilla', 3])] }]
-    const repertory: Repertoriser = { repertorise: async () => ({ symptoms, remedies: rankRemedies(symptoms) }) }
+    const repertory: Repertoriser = {
+      symptoms: async () => [],
+      repertorise: async () => ({ symptoms, remedies: rankRemedies(symptoms) }),
+    }
 
     const retrieval = await new ProductionRetriever(corpus, embedder, { repertory }).retrieve(request('A weepy woman.'), { limit: 5 })
 
@@ -365,10 +392,33 @@ describe('production retriever with a repertory', () => {
     expect(calls).toEqual([{ limit: 8, priors: [] }])
   })
 
+  it('reads symptoms from, and ranks by, the questions the search uses', async () => {
+    const { corpus } = searching()
+    const seen: unknown[] = []
+    const repertory: Repertoriser = {
+      symptoms: async (text) => (seen.push(text), ['Mind: weeping']),
+      repertorise: async (text, symptoms) => (seen.push([text, symptoms]), { symptoms: [], remedies: [] }),
+    }
+    const retriever = new ProductionRetriever(corpus, embedder, { repertory })
+    const asked = ChatRequestSchema.parse({
+      message: 'She is thirstless.',
+      history: [{ role: 'user', content: 'A weepy woman.' }, { role: 'assistant', content: 'Pulsatilla.' }],
+      symptoms: ['Stomach: thirstless'],
+    })
+
+    expect(await retriever.symptoms(asked)).toEqual(['Mind: weeping'])
+    await retriever.retrieve(asked, { limit: 8 })
+
+    const query = 'A weepy woman.\nShe is thirstless.'
+    expect(seen).toEqual([query, [query, ['Stomach: thirstless']]])
+    expect(await new ProductionRetriever(corpus, embedder).symptoms(asked)).toEqual([])
+  })
+
   it('searches the whole corpus when repertorisation fails', async () => {
     const { corpus, calls } = searching()
     const logged = vi.spyOn(console, 'error').mockImplementation(() => {})
     const repertory: Repertoriser = {
+      symptoms: async () => [],
       repertorise: async () => {
         throw new ProviderError('Z.AI chat request failed with status 500')
       },

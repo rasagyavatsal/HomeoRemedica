@@ -48,6 +48,11 @@ class StubService implements ChatHandler {
     return response
   }
 
+  async symptoms(): Promise<string[]> {
+    if (this.failure !== null) throw this.failure
+    return ['Mind: weeping']
+  }
+
   async compact(request: CompactRequest): Promise<CompactResponse> {
     this.compactions.push(request)
     if (this.failure !== null) throw this.failure
@@ -70,7 +75,7 @@ function setup(
       getService: async () => service,
       ...overrides,
     },
-    { webDist: null, rateLimiter, totalRateLimiter },
+    { webDist: null, rateLimiter, totalRateLimiter, symptomRateLimiter: null, totalSymptomRateLimiter: null },
   )
   const post = (body: unknown, headers: Record<string, string> = {}) =>
     app.request('/api/chat', {
@@ -99,6 +104,34 @@ const read = (response: Response): Promise<any> => response.json()
 function quiet() {
   vi.spyOn(console, 'error').mockImplementation(() => {})
 }
+
+it('reads the symptoms of a case before it is answered', async () => {
+  const { app, service } = setup()
+  const symptoms = (body: unknown) =>
+    app.request('/api/symptoms', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+
+  const response = await symptoms({ message: 'A weepy, thirstless woman.' })
+
+  expect(response.status).toBe(200)
+  expect(await read(response)).toEqual({ symptoms: ['Mind: weeping'] })
+  expect((await symptoms({ message: ' ' })).status).toBe(422)
+  expect(service.requests).toEqual([])
+
+  quiet()
+  service.failure = new ProviderError('down')
+  expect((await symptoms({ message: 'A weepy woman.' })).status).toBe(502)
+})
+
+it('takes the symptoms a user confirmed with a question', async () => {
+  const { service, post } = setup()
+
+  expect((await post({ message: 'A weepy woman.', symptoms: [' Mind: weeping ', 'Stomach: thirstless'] })).status).toBe(200)
+  expect(service.requests[0]?.symptoms).toEqual(['Mind: weeping', 'Stomach: thirstless'])
+
+  expect((await post({ message: 'A weepy woman.', symptoms: [' '] })).status).toBe(422)
+  expect((await post({ message: 'A weepy woman.', symptoms: Array.from({ length: 16 }, () => 'Mind: weeping') })).status).toBe(422)
+  expect((await post({ message: 'A weepy woman.', symptoms: ['x'.repeat(201)] })).status).toBe(422)
+})
 
 it('health needs neither corpus nor provider configuration', async () => {
   const { app } = setup({ getService: unexpected('health must not initialize chat') })
