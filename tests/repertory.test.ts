@@ -173,21 +173,21 @@ describe('leadingRemedies', () => {
 })
 
 describe('parseSymptoms', () => {
-  it('keeps chapter lines, in the repertory chapters, with their spelling', () => {
+  it('keeps one symptom a line, without list markers or headings', () => {
     const reply = [
       'Here are the symptoms:',
-      '1. mind: fretful, worse at night',
-      '- Larynx and trachea: hoarse',
+      '1. Fretful, worse at night',
+      '- **Hoarse voice**',
       '* Elbow: pain',
       '',
-      'Stool: green, sour',
+      'Green, sour stool',
     ].join('\n')
 
-    expect(parseSymptoms(reply)).toEqual(['Mind: fretful, worse at night', 'Larynx and Trachea: hoarse', 'Stool: green, sour'])
+    expect(parseSymptoms(reply)).toEqual(['Fretful, worse at night', 'Hoarse voice', 'Elbow: pain', 'Green, sour stool'])
   })
 
-  it('reads NONE as no symptoms and keeps at most the limit', () => {
-    expect(parseSymptoms('NONE')).toEqual([])
+  it('reads None as no symptoms and keeps at most the limit', () => {
+    expect(parseSymptoms('None.')).toEqual([])
     expect(parseSymptoms(Array.from({ length: 20 }, (_, index) => `Head: pain ${index}`).join('\n'))).toHaveLength(MAX_SYMPTOMS)
   })
 
@@ -216,7 +216,7 @@ describe('parseSymptoms', () => {
 
     expect(await extractor.extractSymptoms('A child weeps.', stop)).toEqual(['Mind: weeping'])
     expect(calls[0]![0]).toBe('<case>\nA child weeps.\n</case>')
-    expect(calls[0]![1]).toContain('reply only NONE')
+    expect(calls[0]![1]).toBe('Convert this paragraph into individual symptoms.')
   })
 
   it('takes a question for a case unless the model plainly says otherwise', async () => {

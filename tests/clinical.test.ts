@@ -26,12 +26,17 @@ describe('termWords', () => {
 })
 
 describe('parseDiseases', () => {
-  it('keeps the Disease lines', () => {
-    expect(parseDiseases('Disease: bronchial asthma\n- disease: Eczema\nThe patient is anxious.')).toEqual([
+  it('keeps one disease a line, without labels or list markers', () => {
+    expect(parseDiseases('Diseases:\nDisease: bronchial asthma\n- Eczema\n2. **Sciatica**')).toEqual([
       'bronchial asthma',
       'Eczema',
+      'Sciatica',
     ])
+  })
+
+  it('reads a reply that names none as no diseases', () => {
     expect(parseDiseases('NONE')).toEqual([])
+    expect(parseDiseases('No diseases are named in this paragraph.')).toEqual([])
   })
 })
 
