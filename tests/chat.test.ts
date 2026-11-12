@@ -389,7 +389,7 @@ it('rejects book filters', () => {
   expect(() => request({ message: 'question', bookIds: ['kent_lectures'] })).toThrow(/unexpected request field/)
 })
 
-it('answers by the symptoms a user confirmed and searches the books by what they confirmed', async () => {
+it('answers by the symptoms and diseases a user confirmed and searches the books by them', async () => {
   const retriever = new StubRetriever()
   const generator = new StubGenerator()
   const asked = { message: 'A weepy, thirsty woman.', symptoms: ['Mind: weeping', 'Stomach: thirstless'] }
@@ -398,8 +398,12 @@ it('answers by the symptoms a user confirmed and searches the books by what they
 
   expect(generator.generationPrompt).toContain('<confirmed_symptoms>\nMind: weeping\nStomach: thirstless\n</confirmed_symptoms>')
   expect(generator.generationPrompt).toContain('go by this list')
+  expect(generator.generationPrompt).not.toContain('confirmed_diseases')
+  await new ChatService({ retriever, generator }).chat(request({ ...asked, diseases: ['asthma', 'eczema'] }))
+  expect(generator.generationPrompt).toContain('</confirmed_symptoms>\n\nThe user checked the diseases of the case')
+  expect(generator.generationPrompt).toContain('<confirmed_diseases>\nasthma\neczema\n</confirmed_diseases>')
   await new ChatService({ retriever, generator }).chat(request({ message: 'What is Sulphur?', symptoms: [] }))
-  expect(generator.generationPrompt).not.toContain('confirmed_symptoms')
+  expect(generator.generationPrompt).not.toContain('confirmed_')
 
   const searched: string[] = []
   const corpus: SearchableRelease = { search: async (query) => (searched.push(query), []) }
