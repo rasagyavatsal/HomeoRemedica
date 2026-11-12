@@ -7,6 +7,9 @@ export const MAX_RETRIEVAL_QUERY_CHARS = 8_000
 export const MAX_CITATION_TEXT_CHARS = 8_000
 export const MAX_GENERATION_PROMPT_CHARS = 64_000
 export const MAX_GENERATED_ANSWER_CHARS = 12_000
+/** How many symptoms a case is searched by, at most. */
+export const MAX_SYMPTOMS = 15
+export const MAX_SYMPTOM_CHARS = 200
 
 function text(field: string) {
   return z
@@ -28,6 +31,18 @@ export const ChatRequestSchema = z
       message: text('message'),
       history: historySchema().default([]),
       summary: text('summary').optional(),
+      /** The case's symptoms as the user confirmed them, searched in place of the model's own. */
+      symptoms: z
+        .array(
+          z
+            .string({ error: 'a symptom must be a string' })
+            .trim()
+            .min(1, { error: 'a symptom must not be blank' })
+            .max(MAX_SYMPTOM_CHARS, { error: `a symptom must not exceed ${MAX_SYMPTOM_CHARS} characters` }),
+          { error: 'symptoms must be a list' },
+        )
+        .max(MAX_SYMPTOMS, { error: `symptoms must not exceed ${MAX_SYMPTOMS}` })
+        .optional(),
     },
     { error: (issue) => (issue.code === 'unrecognized_keys' ? 'unexpected request field' : undefined) },
   )
@@ -131,6 +146,11 @@ export interface ChatResponse {
 }
 
 /** Optional progress callbacks for a chat request. */
+/** A model call the caller can stop, as when the browser gives up on its request. */
+export interface Cancellable {
+  signal?: AbortSignal | undefined
+}
+
 export interface ChatOptions {
   /** Receives the citations once retrieval finishes, before any answer text. */
   onSources?: ((sources: readonly Citation[]) => void) | undefined
@@ -142,6 +162,19 @@ export interface ChatOptions {
 /** `GET /api/books` */
 export interface BookCatalog {
   books: readonly BookSummary[]
+}
+
+/** Whether a question describes a patient, whose symptoms are read, or asks about anything else. */
+export type QuestionKind = 'case' | 'question'
+
+/** `POST /api/kind`: decided before a question is answered, so only a case is read for symptoms. */
+export interface KindResponse {
+  kind: QuestionKind
+}
+
+/** `POST /api/symptoms`: the symptoms of the case a question describes; none when it describes no patient. */
+export interface SymptomsResponse {
+  symptoms: string[]
 }
 
 /** `POST /api/chat`: the answer plus the trimmed history and the summary to send with the next question. */
@@ -306,6 +339,10 @@ export function answerRatings({ rating, sources, reasons, comment }: SavedRating
 export interface Retriever {
   /** `limit` bounds the books' passages; the rubrics come on top of it. */
   retrieve(request: ChatRequest, options: { limit: number }): Promise<Retrieval>
+  /** Whether a question describes a patient; a `question` has no symptoms to read. */
+  kind(request: ChatRequest, options?: Cancellable): Promise<QuestionKind>
+  /** The symptoms a question's case would be searched by, for the user to check first. */
+  symptoms(request: ChatRequest, options?: Cancellable): Promise<string[]>
 }
 
 export interface GenerateOptions {

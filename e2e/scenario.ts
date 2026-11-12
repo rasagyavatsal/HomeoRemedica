@@ -16,6 +16,9 @@ export const CHAT_LIMIT = 5
 export const SLOW = '[slow]'
 /** A question containing this fails the first time it is asked and is answered after that. */
 export const FAIL_ONCE = '[fail once]'
+/** A question containing this describes a case, whose symptoms are shown for review. */
+export const CASE = '[case]'
+export const CASE_SYMPTOMS = ['Mind: weeping', 'Stomach: thirstless']
 /** A compacted chat's summary begins with this, then lists the questions it condensed. */
 export const SUMMARY_PREFIX = 'Earlier, the user asked:'
 

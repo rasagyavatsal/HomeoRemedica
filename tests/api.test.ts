@@ -8,7 +8,16 @@ import { type AppDependencies, type ChatHandler, createApp, productionDependenci
 import { BOOKS, CorpusError } from '../src/server/qdrant.ts'
 import { RateLimiter } from '../src/server/rate-limit.ts'
 import type { Settings } from '../src/server/runtime.ts'
-import type { BookSummary, ChatOptions, ChatRequest, ChatResponse, CompactRequest, CompactResponse } from '../src/server/contracts.ts'
+import type {
+  BookSummary,
+  Cancellable,
+  ChatOptions,
+  ChatRequest,
+  ChatResponse,
+  CompactRequest,
+  CompactResponse,
+  QuestionKind,
+} from '../src/server/contracts.ts'
 import { ConfigurationError, ProviderError, ProviderTimeoutError, TokenExhaustionError } from '../src/server/errors.ts'
 
 const BOOK: BookSummary = { bookId: 'kent_lectures', title: "Kent's Lectures", author: 'Kent' }
@@ -48,6 +57,21 @@ class StubService implements ChatHandler {
     return response
   }
 
+  /** The signals the reading calls were given, to stop them by. */
+  readonly signals: (AbortSignal | undefined)[] = []
+
+  async kind(_request: ChatRequest, { signal }: Cancellable = {}): Promise<QuestionKind> {
+    this.signals.push(signal)
+    if (this.failure !== null) throw this.failure
+    return 'case'
+  }
+
+  async symptoms(_request: ChatRequest, { signal }: Cancellable = {}): Promise<string[]> {
+    this.signals.push(signal)
+    if (this.failure !== null) throw this.failure
+    return ['Mind: weeping']
+  }
+
   async compact(request: CompactRequest): Promise<CompactResponse> {
     this.compactions.push(request)
     if (this.failure !== null) throw this.failure
@@ -70,7 +94,15 @@ function setup(
       getService: async () => service,
       ...overrides,
     },
-    { webDist: null, rateLimiter, totalRateLimiter },
+    {
+      webDist: null,
+      rateLimiter,
+      totalRateLimiter,
+      kindRateLimiter: null,
+      totalKindRateLimiter: null,
+      symptomRateLimiter: null,
+      totalSymptomRateLimiter: null,
+    },
   )
   const post = (body: unknown, headers: Record<string, string> = {}) =>
     app.request('/api/chat', {
@@ -99,6 +131,69 @@ const read = (response: Response): Promise<any> => response.json()
 function quiet() {
   vi.spyOn(console, 'error').mockImplementation(() => {})
 }
+
+it('says whether a question describes a case before it is answered', async () => {
+  const { app, service } = setup()
+  const kind = (body: unknown) =>
+    app.request('/api/kind', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+
+  const response = await kind({ message: 'A weepy, thirstless woman.' })
+
+  expect(response.status).toBe(200)
+  expect(await read(response)).toEqual({ kind: 'case' })
+  expect((await kind({ message: ' ' })).status).toBe(422)
+  expect(service.requests).toEqual([])
+
+  quiet()
+  service.failure = new ProviderError('down')
+  expect((await kind({ message: 'A weepy woman.' })).status).toBe(502)
+})
+
+it('reads the symptoms of a case before it is answered', async () => {
+  const { app, service } = setup()
+  const symptoms = (body: unknown) =>
+    app.request('/api/symptoms', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+
+  const response = await symptoms({ message: 'A weepy, thirstless woman.' })
+
+  expect(response.status).toBe(200)
+  expect(await read(response)).toEqual({ symptoms: ['Mind: weeping'] })
+  expect((await symptoms({ message: ' ' })).status).toBe(422)
+  expect(service.requests).toEqual([])
+
+  quiet()
+  service.failure = new ProviderError('down')
+  expect((await symptoms({ message: 'A weepy woman.' })).status).toBe(502)
+})
+
+it('stops reading a question when its request is given up', async () => {
+  const { app, service } = setup()
+  const stop = new AbortController()
+
+  for (const path of ['/api/kind', '/api/symptoms']) {
+    await app.request(path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'A weepy woman.' }),
+      signal: stop.signal,
+    })
+  }
+  stop.abort()
+
+  expect(service.signals).toHaveLength(2)
+  expect(service.signals.every((signal) => signal?.aborted)).toBe(true)
+})
+
+it('takes the symptoms a user confirmed with a question', async () => {
+  const { service, post } = setup()
+
+  expect((await post({ message: 'A weepy woman.', symptoms: [' Mind: weeping ', 'Stomach: thirstless'] })).status).toBe(200)
+  expect(service.requests[0]?.symptoms).toEqual(['Mind: weeping', 'Stomach: thirstless'])
+
+  expect((await post({ message: 'A weepy woman.', symptoms: [' '] })).status).toBe(422)
+  expect((await post({ message: 'A weepy woman.', symptoms: Array.from({ length: 16 }, () => 'Mind: weeping') })).status).toBe(422)
+  expect((await post({ message: 'A weepy woman.', symptoms: ['x'.repeat(201)] })).status).toBe(422)
+})
 
 it('health needs neither corpus nor provider configuration', async () => {
   const { app } = setup({ getService: unexpected('health must not initialize chat') })

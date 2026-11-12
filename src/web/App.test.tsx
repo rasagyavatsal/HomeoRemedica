@@ -8,13 +8,26 @@ import { answerStream, citation, json, pending } from './test/fakes.ts'
 
 type Route = (init: RequestInit | undefined) => Response | Promise<Response>
 
-/** Answer requests by path; `/api/chat` takes one handler per question, in order. */
-function serve({ chat = [] as Route[] }: { chat?: Route[] } = {}) {
+/**
+ * Answer requests by path; `/api/chat` takes one handler per question, in order. With `symptoms`
+ * the server sorts a question as a case when there are any and reads them from it, unless `kind`
+ * or `read` answer in its place. Without `symptoms` the server cannot sort questions at all.
+ */
+function serve({
+  chat = [] as Route[],
+  symptoms,
+  kind,
+  read,
+}: { chat?: Route[]; symptoms?: string[]; kind?: Route; read?: Route } = {}) {
   const asked: unknown[] = []
   vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
     const path = String(input)
     if (path === '/api/books') return json({ books: [{ bookId: 'boericke_mm', title: 'Boericke, Materia Medica', author: null }] })
     if (path === '/api/config') return json({ auth: null })
+    if (path === '/api/kind' && kind) return kind(init)
+    if (path === '/api/kind' && symptoms) return json({ kind: symptoms.length ? 'case' : 'question' })
+    if (path === '/api/symptoms' && read) return read(init)
+    if (path === '/api/symptoms' && symptoms) return json({ symptoms })
     if (path === '/api/chat') {
       asked.push(JSON.parse(init?.body as string))
       const next = chat.shift()
@@ -35,6 +48,113 @@ beforeEach(() => {
   sessionStorage.clear()
   // Past the practitioner notice, which has its own tests.
   localStorage.setItem(NOTICE_KEY, 'seen')
+})
+
+describe('reviewing symptoms', () => {
+  const symptoms = ['Mind: weeping', 'Stomach: thirstless']
+
+  it('answers by the symptoms as the user corrected them', async () => {
+    const asked = serve({ symptoms, chat: [() => answerStream('Pulsatilla covers both [1].', [citation(1)])] })
+    render(<App />)
+
+    await ask('A weepy, thirstless woman.')
+
+    const first = await screen.findByRole('textbox', { name: 'Symptom 1' })
+    expect(first).toHaveValue('Mind: weeping')
+    expect(asked).toEqual([])
+    await userEvent.clear(first)
+    await userEvent.type(first, 'Mind: weeping, consolation ameliorates')
+    await userEvent.click(screen.getByRole('button', { name: 'Remove symptom 2' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Add symptom' }))
+    expect(screen.getByRole('textbox', { name: 'Symptom 2' })).toHaveFocus()
+    await userEvent.keyboard('Generalities: warm room aggravates')
+    await userEvent.click(screen.getByRole('button', { name: 'Add symptom' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Continue' }))
+
+    await screen.findByText(/Pulsatilla covers both/)
+    expect(asked).toEqual([
+      {
+        message: 'A weepy, thirstless woman.',
+        history: [],
+        symptoms: ['Mind: weeping, consolation ameliorates', 'Generalities: warm room aggravates'],
+      },
+    ])
+    expect(screen.queryByRole('textbox', { name: 'Symptom 1' })).not.toBeInTheDocument()
+  })
+
+  it('answers at once, without reading symptoms, when the question describes no patient', async () => {
+    const asked = serve({ symptoms: [], read: () => Promise.reject(new Error('not a case')), chat: [() => answerStream('Sulphur is a polychrest [1].', [citation(1)])] })
+    render(<App />)
+
+    await ask('What is Sulphur?')
+
+    await screen.findByText(/Sulphur is a polychrest/)
+    expect(asked).toEqual([{ message: 'What is Sulphur?', history: [], symptoms: [] }])
+  })
+
+  it('asks a failed case again by the symptoms the user confirmed', async () => {
+    const asked = serve({
+      symptoms,
+      read: vi.fn(() => json({ symptoms })),
+      chat: [() => json({ detail: 'Too many questions in a short time.' }, 429), () => answerStream('Pulsatilla [1].', [citation(1)])],
+    })
+    render(<App />)
+
+    await ask('A weepy, thirstless woman.')
+    await userEvent.click(await screen.findByRole('button', { name: 'Remove symptom 2' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    await userEvent.click(await screen.findByRole('button', { name: 'Try again' }))
+
+    await screen.findByText(/Pulsatilla/)
+    const confirmed = { message: 'A weepy, thirstless woman.', history: [], symptoms: ['Mind: weeping'] }
+    expect(asked).toEqual([confirmed, confirmed])
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { name: 'A weepy, thirstless woman.' })).toHaveLength(1)
+  })
+
+  it('says what it is reading before the books are searched', async () => {
+    let sort!: (response: Response) => void
+    let found!: (response: Response) => void
+    serve({
+      kind: () => new Promise((resolve) => (sort = resolve)),
+      read: () => new Promise((resolve) => (found = resolve)),
+      chat: [(init) => pending(init?.signal)],
+    })
+    render(<App />)
+
+    await ask('A weepy, thirstless woman.')
+    expect(screen.getByRole('status')).toHaveTextContent('Reading your question…')
+    sort(json({ kind: 'case' }))
+    expect(await screen.findByText('Reading the case for symptoms…')).toBeInTheDocument()
+    found(json({ symptoms }))
+    await userEvent.click(await screen.findByRole('button', { name: 'Continue' }))
+
+    expect(screen.getByRole('status')).toHaveTextContent('Searching the books…')
+  })
+
+  it('answers a case no symptoms were read from without a review', async () => {
+    const asked = serve({ kind: () => json({ kind: 'case' }), symptoms: [], chat: [() => answerStream('Nothing stands out [1].', [citation(1)])] })
+    render(<App />)
+
+    await ask('She is unwell.')
+
+    await screen.findByText(/Nothing stands out/)
+    expect(asked).toEqual([{ message: 'She is unwell.', history: [], symptoms: [] }])
+  })
+
+  it('can be stopped, leaving the next question free to be asked', async () => {
+    const asked = serve({ symptoms, chat: [] })
+    render(<App />)
+
+    await ask('A weepy, thirstless woman.')
+    await screen.findByRole('textbox', { name: 'Symptom 1' })
+    await userEvent.click(screen.getByRole('button', { name: 'Stop answering' }))
+
+    expect(screen.getByText('Stopped.')).toBeInTheDocument()
+    expect(screen.queryByRole('textbox', { name: 'Symptom 1' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Send question' })).toBeInTheDocument()
+    expect(asked).toEqual([])
+  })
 })
 
 describe('asking', () => {
@@ -113,7 +233,7 @@ describe('asking', () => {
     render(<App />)
 
     await ask('Slow?')
-    expect(screen.getByRole('status')).toHaveTextContent('Searching the books…')
+    expect(await screen.findByText('Searching the books…')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Stop answering' }))
 
     expect(screen.getByText('Stopped.')).toBeInTheDocument()

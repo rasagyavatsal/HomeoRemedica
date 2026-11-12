@@ -5,15 +5,19 @@ import { ProviderError } from '../src/server/errors.ts'
 import {
   CombinedRubrics,
   MAX_SYMPTOMS,
+  ModelCaseClassifier,
   ModelSymptomExtractor,
   QdrantRubrics,
   type Repertoriser,
   Repertory,
   type Rubric,
   decisive,
+  distinctMatches,
   leadingRemedies,
+  parseKind,
   parseSymptoms,
   rankRemedies,
+  standingOut,
 } from '../src/server/repertory.ts'
 import { ProductionRetriever, type SearchableRelease } from '../src/server/retrieval.ts'
 import { fakeFetch, json } from './fakes.ts'
@@ -73,6 +77,46 @@ describe('decisive', () => {
   })
 })
 
+describe('distinctMatches', () => {
+  it('counts a rubric under the first symptom that matched it and drops a symptom left with none', () => {
+    const sciatica = rubric('Extremities: pain, sciatica', ['coloc', 3])
+    const night = rubric('Extremities: pain, sciatica, night', ['ars', 2])
+    const matches = [
+      { symptom: 'Extremities: sciatica', rubrics: [sciatica] },
+      { symptom: 'Extremities: sciatic pain', rubrics: [sciatica] },
+      { symptom: 'Extremities: sciatica, worse at night', rubrics: [night, sciatica] },
+      { symptom: 'Extremities: sciatica', rubrics: [{ ...sciatica, bookId: 'boericke_repertory' }] },
+    ]
+
+    const distinct = distinctMatches(matches)
+
+    expect(distinct.map(({ symptom, rubrics }) => [symptom, rubrics.map((found) => found.bookId + ' ' + found.id)])).toEqual([
+      ['Extremities: sciatica', ['kent_repertory Extremities: pain, sciatica']],
+      ['Extremities: sciatica, worse at night', ['kent_repertory Extremities: pain, sciatica, night']],
+      ['Extremities: sciatica', ['boericke_repertory Extremities: pain, sciatica']],
+    ])
+    expect(rankRemedies(distinct)[0]).toEqual({ remedyId: 'coloc', symptoms: 2, grades: 6 })
+  })
+})
+
+describe('standingOut', () => {
+  const scored = (...scores: [symptoms: number, grades: number][]) =>
+    scores.map(([symptoms, grades], index) => ({ remedyId: `remedy-${index}`, symptoms, grades }))
+  const ids = (...scores: [number, number][]) => standingOut(scored(...scores), 3).map((remedy) => remedy.remedyId)
+
+  it('gives the first remedies when the next one scores lower, or there is none', () => {
+    expect(ids([4, 9], [3, 6], [3, 5], [3, 4])).toEqual(['remedy-0', 'remedy-1', 'remedy-2'])
+    expect(ids([4, 9], [3, 6])).toEqual(['remedy-0', 'remedy-1'])
+    expect(ids([2, 4], [2, 4], [2, 4])).toEqual(['remedy-0', 'remedy-1', 'remedy-2'])
+  })
+
+  it('leaves out the remedies that score the same as one past the limit', () => {
+    expect(ids([4, 9], [3, 6], [3, 5], [3, 5])).toEqual(['remedy-0', 'remedy-1'])
+    expect(ids([4, 9], [3, 5], [3, 5], [3, 5], [3, 5])).toEqual(['remedy-0'])
+    expect(ids([3, 5], [3, 5], [3, 5], [3, 5])).toEqual([])
+  })
+})
+
 describe('leadingRemedies', () => {
   const matches = [
     {
@@ -106,6 +150,15 @@ describe('leadingRemedies', () => {
     expect(rubrics).toHaveLength(1)
   })
 
+  it('names no remedy that ties with one it leaves out', () => {
+    const tied = [{ symptom: 'Mind: anxious', rubrics: [rubric('Mind: anxiety', ['aconitum', 3], ['apis', 1], ['arsenicum', 1], ['mezereum', 1], ['thuja', 1])] }]
+
+    const { remedies, rubrics } = leadingRemedies({ symptoms: tied, remedies: rankRemedies(tied) }, { firstSource: 1 })
+
+    expect(remedies.map((remedy) => remedy.remedyName)).toEqual(['Aconitum'])
+    expect(rubrics[0]?.text).toBe('Remedies and their grades: Aconitum (3), Apis (1), Arsenicum (1), Mezereum (1), Thuja (1)')
+  })
+
   it("lists the leading remedies first in a long rubric's source, then the rest by grade", () => {
     const many = Array.from({ length: 45 }, (_, index): [string, number] => [`remedy-${index}`, index === 44 ? 3 : 1])
     const long = [{ symptom: 'Mind: anxious', rubrics: [rubric('Mind: anxiety', ...many, ['sulphur', 1])] }]
@@ -135,29 +188,68 @@ describe('parseSymptoms', () => {
 
   it('reads NONE as no symptoms and keeps at most the limit', () => {
     expect(parseSymptoms('NONE')).toEqual([])
-    expect(parseSymptoms(Array(20).fill('Head: pain').join('\n'))).toHaveLength(MAX_SYMPTOMS)
+    expect(parseSymptoms(Array.from({ length: 20 }, (_, index) => `Head: pain ${index}`).join('\n'))).toHaveLength(MAX_SYMPTOMS)
+  })
+
+  it('keeps a symptom within the length a question may send back', () => {
+    const [symptom] = parseSymptoms(`Head: ${'pain, '.repeat(60)}`)
+
+    expect(symptom).toHaveLength(200)
+    expect(ChatRequestSchema.parse({ message: 'A case.', symptoms: [symptom] }).symptoms).toEqual([symptom])
+  })
+
+  it('keeps a symptom the reply repeats once', () => {
+    expect(parseSymptoms('Head: pain, morning\nSleep: restless\nhead: Pain, morning')).toEqual(['Head: pain, morning', 'Sleep: restless'])
   })
 
   it('asks the model with the case as data', async () => {
+    const stop = new AbortController()
     const calls: [string, string][] = []
     const extractor = new ModelSymptomExtractor({
       model: 'm',
-      async generate(prompt, { systemInstruction }) {
+      async generate(prompt, { systemInstruction, signal }) {
         calls.push([prompt, systemInstruction])
+        expect(signal).toBe(stop.signal)
         return 'Mind: weeping'
       },
     })
 
-    expect(await extractor.extractSymptoms('A child weeps.')).toEqual(['Mind: weeping'])
+    expect(await extractor.extractSymptoms('A child weeps.', stop)).toEqual(['Mind: weeping'])
     expect(calls[0]![0]).toBe('<case>\nA child weeps.\n</case>')
     expect(calls[0]![1]).toContain('reply only NONE')
+  })
+
+  it('takes a question for a case unless the model plainly says otherwise', async () => {
+    expect(parseKind('QUESTION')).toBe('question')
+    expect(parseKind(' question.\n')).toBe('question')
+    expect(parseKind('CASE')).toBe('case')
+    expect(parseKind('')).toBe('case')
+    expect(parseKind('It may be a question or a case.')).toBe('case')
+
+    const stop = new AbortController()
+    const calls: [string, string][] = []
+    const classifier = new ModelCaseClassifier({
+      model: 'm',
+      async generate(prompt, { systemInstruction, signal }) {
+        calls.push([prompt, systemInstruction])
+        expect(signal).toBe(stop.signal)
+        return 'QUESTION'
+      },
+    })
+
+    expect(await classifier.classify('What is Sulphur?', stop)).toBe('question')
+    expect(calls[0]![0]).toBe('<case>\nWhat is Sulphur?\n</case>')
+    expect(calls[0]![1]).toContain('When unsure, reply CASE')
   })
 })
 
 describe('Repertory', () => {
+  const classifier = { classify: async () => 'case' as const }
+
   it('matches each symptom to its rubrics and ranks the remedies', async () => {
     const searched: unknown[] = []
     const repertory = new Repertory({
+      classifier,
       extractor: { extractSymptoms: async () => ['Mind: weeping', 'Stomach: thirstless'] },
       embedder: { embedQueries: async (texts) => texts.map((_, index) => [index]) },
       rubrics: {
@@ -181,6 +273,7 @@ describe('Repertory', () => {
   it('searches nothing for a question that describes no patient', async () => {
     const embedQueries = vi.fn()
     const repertory = new Repertory({
+      classifier,
       extractor: { extractSymptoms: async () => [] },
       embedder: { embedQueries },
       rubrics: { search: vi.fn() },
@@ -188,6 +281,30 @@ describe('Repertory', () => {
 
     expect(await repertory.repertorise('What is Sulphur?')).toEqual({ symptoms: [], remedies: [] })
     expect(embedQueries).not.toHaveBeenCalled()
+  })
+
+  it('ranks by the symptoms it is given without reading the case', async () => {
+    const extractSymptoms = vi.fn(async () => ['Mind: weeping'])
+    const embedded: (readonly string[])[] = []
+    const repertory = new Repertory({
+      classifier,
+      extractor: { extractSymptoms },
+      embedder: {
+        async embedQueries(texts) {
+          embedded.push(texts)
+          return texts.map(() => [0])
+        },
+      },
+      rubrics: { search: async () => [[rubric('Stomach: thirstless', ['puls', 2])]] },
+    })
+
+    const result = await repertory.repertorise('case', ['Stomach: thirstless'])
+
+    expect(extractSymptoms).not.toHaveBeenCalled()
+    expect(embedded).toEqual([['Stomach: thirstless']])
+    expect(result.remedies.map((remedy) => remedy.remedyId)).toEqual(['puls'])
+    expect(await repertory.repertorise('case', [])).toEqual({ symptoms: [], remedies: [] })
+    expect(await repertory.symptoms('case')).toEqual(['Mind: weeping'])
   })
 })
 
@@ -259,6 +376,8 @@ describe('production retriever with a repertory', () => {
     return { corpus, calls }
   }
   const repertoryOf = (...remedyIds: string[]): Repertoriser => ({
+    kind: async () => 'case',
+    symptoms: async () => [],
     repertorise: async () => ({
       symptoms: [],
       remedies: remedyIds.map((remedyId) => ({ remedyId, symptoms: 1, grades: 1 })),
@@ -280,7 +399,11 @@ describe('production retriever with a repertory', () => {
     const passage = { chunkId: 'chk_1', bookId: 'kent_lectures', bookTitle: "Kent's Lectures", author: null, remedyName: 'PULSATILLA', sectionTitle: 'MIND', passageIndexes: [1], text: 'Weeps.', score: 0.03 }
     const corpus: SearchableRelease = { search: async () => [passage] }
     const symptoms = [{ symptom: 'Mind: weeps easily', rubrics: [rubric('Mind: weeping', ['pulsatilla', 3])] }]
-    const repertory: Repertoriser = { repertorise: async () => ({ symptoms, remedies: rankRemedies(symptoms) }) }
+    const repertory: Repertoriser = {
+      kind: async () => 'case',
+    symptoms: async () => [],
+      repertorise: async () => ({ symptoms, remedies: rankRemedies(symptoms) }),
+    }
 
     const retrieval = await new ProductionRetriever(corpus, embedder, { repertory }).retrieve(request('A weepy woman.'), { limit: 5 })
 
@@ -310,10 +433,37 @@ describe('production retriever with a repertory', () => {
     expect(calls).toEqual([{ limit: 8, priors: [] }])
   })
 
+  it('sorts, reads symptoms from, and ranks by, the questions the search uses', async () => {
+    const { corpus } = searching()
+    const seen: unknown[] = []
+    const repertory: Repertoriser = {
+      kind: async (text) => (seen.push(text), 'case'),
+      symptoms: async (text) => (seen.push(text), ['Mind: weeping']),
+      repertorise: async (text, symptoms) => (seen.push([text, symptoms]), { symptoms: [], remedies: [] }),
+    }
+    const retriever = new ProductionRetriever(corpus, embedder, { repertory })
+    const asked = ChatRequestSchema.parse({
+      message: 'She is thirstless.',
+      history: [{ role: 'user', content: 'A weepy woman.' }, { role: 'assistant', content: 'Pulsatilla.' }],
+      symptoms: ['Stomach: thirstless'],
+    })
+
+    expect(await retriever.kind(asked)).toBe('case')
+    expect(await retriever.symptoms(asked)).toEqual(['Mind: weeping'])
+    await retriever.retrieve(asked, { limit: 8 })
+
+    const query = 'A weepy woman.\nShe is thirstless.'
+    expect(seen).toEqual([query, query, [query, ['Stomach: thirstless']]])
+    expect(await new ProductionRetriever(corpus, embedder).kind(asked)).toBe('question')
+    expect(await new ProductionRetriever(corpus, embedder).symptoms(asked)).toEqual([])
+  })
+
   it('searches the whole corpus when repertorisation fails', async () => {
     const { corpus, calls } = searching()
     const logged = vi.spyOn(console, 'error').mockImplementation(() => {})
     const repertory: Repertoriser = {
+      kind: async () => 'case',
+    symptoms: async () => [],
       repertorise: async () => {
         throw new ProviderError('Z.AI chat request failed with status 500')
       },

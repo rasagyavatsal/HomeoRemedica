@@ -134,6 +134,8 @@ describe('production retriever with Clarke', () => {
   const embedder = { embedQuery: async () => [1.0] }
   const request = (message: string) => ChatRequestSchema.parse({ message })
   const repertory: Repertoriser = {
+    kind: async () => 'case',
+    symptoms: async () => [],
     repertorise: async () => ({ symptoms: [], remedies: [{ remedyId: 'puls', symptoms: 1, grades: 1 }] }),
   }
   const searching = () => {
