@@ -385,6 +385,27 @@ it('rejects book filters', () => {
   expect(() => request({ message: 'question', bookIds: ['kent_lectures'] })).toThrow(/unexpected request field/)
 })
 
+it('answers and searches the books by the symptoms a user confirmed', async () => {
+  const retriever = new StubRetriever()
+  const generator = new StubGenerator()
+  const asked = { message: 'A weepy, thirsty woman.', symptoms: ['Mind: weeping', 'Stomach: thirstless'] }
+
+  await new ChatService({ retriever, generator }).chat(request(asked))
+
+  expect(generator.generationPrompt).toContain('<confirmed_symptoms>\nMind: weeping\nStomach: thirstless\n</confirmed_symptoms>')
+  expect(generator.generationPrompt).toContain('go by this list')
+  await new ChatService({ retriever, generator }).chat(request({ message: 'What is Sulphur?', symptoms: [] }))
+  expect(generator.generationPrompt).not.toContain('confirmed_symptoms')
+
+  const searched: string[] = []
+  const corpus: SearchableRelease = { search: async (query) => (searched.push(query), []) }
+  const embedder = { embedQuery: async (text: string) => (searched.push(text), [1.0]) }
+  await new ProductionRetriever(corpus, embedder).retrieve(request(asked), { limit: 8 })
+
+  const query = 'A weepy, thirsty woman.\nMind: weeping\nStomach: thirstless'
+  expect(searched).toEqual([query, query])
+})
+
 it('production retriever searches on recent questions only', async () => {
   let embedded: string | null = null
   const corpus: SearchableRelease = { search: async () => [] }
