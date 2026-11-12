@@ -135,6 +135,11 @@ export class ChatService {
     return this.#retriever.symptoms(request, options)
   }
 
+  /** The diseases the case a question describes names, for the user to check before it is answered. */
+  diseases(request: ChatRequest, options?: Cancellable): Promise<string[]> {
+    return this.#retriever.diseases(request, options)
+  }
+
   /** Condense all but the latest exchange, and any earlier summary, into a new summary. */
   async compact({ history, summary }: CompactRequest, { signal }: { signal?: AbortSignal } = {}): Promise<CompactResponse> {
     const older = { history: history.slice(0, -KEPT_TURNS), summary }

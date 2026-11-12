@@ -63,7 +63,7 @@ export class ProductionRetriever implements Retriever {
     const [embedding, repertorisation, match] = await Promise.all([
       this.#embedder.embedQuery(searched),
       this.#repertorisation(query, request.symptoms),
-      this.#clinicalMatch(query),
+      this.#clinicalMatch(query, request.diseases),
     ])
     const priors = [repertorisation?.remedies.map((remedy) => remedy.remedyId), match?.ranking].filter(
       (ranking) => ranking !== undefined,
@@ -87,11 +87,18 @@ export class ProductionRetriever implements Retriever {
     return this.#repertory ? this.#repertory.symptoms(searchQuery(request), options) : []
   }
 
-  /** Clarke's remedies for the diseases the query names, if they tell remedies apart. */
-  async #clinicalMatch(query: string): Promise<ClinicalMatch | undefined> {
+  async diseases(request: ChatRequest, options?: Cancellable): Promise<string[]> {
+    return this.#clinical ? this.#clinical.diseases(searchQuery(request), options) : []
+  }
+
+  /**
+   * Clarke's remedies for the diseases the query names, if they tell remedies apart; for
+   * `diseases` when the user confirmed them.
+   */
+  async #clinicalMatch(query: string, diseases: readonly string[] | undefined): Promise<ClinicalMatch | undefined> {
     if (!this.#clinical) return undefined
     try {
-      const match = await this.#clinical.rank(query)
+      const match = await this.#clinical.rank(query, diseases)
       return decisiveMatch(match) ? match : undefined
     } catch (error) {
       // Like the repertory, Clarke's terms only reorder the search.

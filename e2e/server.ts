@@ -70,6 +70,10 @@ class ScriptedChat implements ChatHandler {
     return message.includes(CASE) ? [...CASE_SYMPTOMS] : []
   }
 
+  async diseases(): Promise<string[]> {
+    return []
+  }
+
   async compact({ history }: CompactRequest, { signal }: { signal?: AbortSignal } = {}): Promise<CompactResponse> {
     await sleep(50, undefined, { signal })
     const questions = history.slice(0, -2).filter((turn) => turn.role === 'user')
@@ -86,7 +90,7 @@ const accounts = firebaseAccounts({
 })
 const app = createApp(
   { getService: async () => service, getAccounts: () => accounts },
-  { rateLimiter: new RateLimiter([{ limit: CHAT_LIMIT, windowMs: 60_000 }]), totalRateLimiter: null, kindRateLimiter: null, symptomRateLimiter: null },
+  { rateLimiter: new RateLimiter([{ limit: CHAT_LIMIT, windowMs: 60_000 }]), totalRateLimiter: null, kindRateLimiter: null, symptomRateLimiter: null, diseaseRateLimiter: null },
 )
 
 const server = serve({ fetch: app.fetch, hostname: '127.0.0.1', port: E2E_PORT }, (info) => {

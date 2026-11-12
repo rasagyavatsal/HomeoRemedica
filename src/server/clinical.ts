@@ -10,7 +10,7 @@
  * repertories'; merged into the repertories' symptoms, it made their ranking worse.
  */
 
-import type { AnswerGenerator, RankedRemedy } from './contracts.ts'
+import { type AnswerGenerator, type Cancellable, MAX_DISEASE_CHARS, MAX_DISEASES, type RankedRemedy } from './contracts.ts'
 import { ProviderError } from './errors.ts'
 import { type Fetch, isRecord, readJson, send } from './http.ts'
 import { INDECISIVE_TIES, LEADING_REMEDIES, remedyName, replyLines } from './repertory.ts'
@@ -39,11 +39,20 @@ export function termWords(text: string): Set<string> {
   return new Set((plain.match(/[a-z]+/g) ?? []).filter((word) => !LINKS.has(word)).map(singular))
 }
 
-/** The diseases in the chat model's reply: one a line, with any `Disease:` label dropped; a line saying there are none is no disease. */
+/**
+ * The diseases in the chat model's reply: one a line, with any `Disease:` label dropped, each once
+ * and no longer than a question may send back, so the user can confirm what they are shown. A line
+ * saying there are none is no disease.
+ */
 export function parseDiseases(reply: string): string[] {
-  return replyLines(reply)
-    .map((line) => line.replace(/^(disease|diagnosis)\s*:\s*/i, ''))
-    .filter((line) => line && !/^no\b/i.test(line))
+  const diseases = new Map<string, string>()
+  for (const line of replyLines(reply)) {
+    const disease = line.replace(/^(disease|diagnosis)\s*:\s*/i, '').slice(0, MAX_DISEASE_CHARS).trimEnd()
+    if (!disease || /^no\b/i.test(disease)) continue
+    const key = disease.toLowerCase()
+    if (!diseases.has(key)) diseases.set(key, disease)
+  }
+  return [...diseases.values()].slice(0, MAX_DISEASES)
 }
 
 export interface ClinicalTerm {
@@ -134,7 +143,7 @@ export function leadingClinicalRemedies({ terms, ranking }: ClinicalMatch, limit
 }
 
 export interface DiseaseExtractor {
-  extractDiseases(text: string): Promise<string[]>
+  extractDiseases(text: string, options?: Cancellable): Promise<string[]>
 }
 
 /** Asks the chat model for the diseases a question's case names. */
@@ -145,14 +154,17 @@ export class ModelDiseaseExtractor implements DiseaseExtractor {
     this.#generator = generator
   }
 
-  async extractDiseases(text: string): Promise<string[]> {
-    const reply = await this.#generator.generate(`<case>\n${text}\n</case>`, { systemInstruction: DISEASE_INSTRUCTION })
+  async extractDiseases(text: string, { signal }: Cancellable = {}): Promise<string[]> {
+    const reply = await this.#generator.generate(`<case>\n${text}\n</case>`, { systemInstruction: DISEASE_INSTRUCTION, signal })
     return parseDiseases(reply)
   }
 }
 
 export interface ClinicalRanker {
-  rank(text: string): Promise<ClinicalMatch>
+  /** The diseases the case the text describes names; none when it names none. */
+  diseases(text: string, options?: Cancellable): Promise<string[]>
+  /** Ranks remedies for `diseases`, or for the text's own when none are given. */
+  rank(text: string, diseases?: readonly string[]): Promise<ClinicalMatch>
 }
 
 /** Clarke's remedies for the diseases a question names. */
@@ -165,8 +177,12 @@ export class Clinical implements ClinicalRanker {
     this.#terms = terms
   }
 
-  async rank(text: string): Promise<ClinicalMatch> {
-    return this.#terms.match(await this.#extractor.extractDiseases(text))
+  diseases(text: string, options?: Cancellable): Promise<string[]> {
+    return this.#extractor.extractDiseases(text, options)
+  }
+
+  async rank(text: string, given?: readonly string[]): Promise<ClinicalMatch> {
+    return this.#terms.match(given ?? (await this.diseases(text)))
   }
 }
 

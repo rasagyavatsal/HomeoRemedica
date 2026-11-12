@@ -72,6 +72,12 @@ class StubService implements ChatHandler {
     return ['Mind: weeping']
   }
 
+  async diseases(_request: ChatRequest, { signal }: Cancellable = {}): Promise<string[]> {
+    this.signals.push(signal)
+    if (this.failure !== null) throw this.failure
+    return ['sciatica']
+  }
+
   async compact(request: CompactRequest): Promise<CompactResponse> {
     this.compactions.push(request)
     if (this.failure !== null) throw this.failure
@@ -102,6 +108,8 @@ function setup(
       totalKindRateLimiter: null,
       symptomRateLimiter: null,
       totalSymptomRateLimiter: null,
+      diseaseRateLimiter: null,
+      totalDiseaseRateLimiter: null,
     },
   )
   const post = (body: unknown, headers: Record<string, string> = {}) =>
@@ -166,11 +174,28 @@ it('reads the symptoms of a case before it is answered', async () => {
   expect((await symptoms({ message: 'A weepy woman.' })).status).toBe(502)
 })
 
+it('reads the diseases of a case before it is answered', async () => {
+  const { app, service } = setup()
+  const diseases = (body: unknown) =>
+    app.request('/api/diseases', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+
+  const response = await diseases({ message: 'Left sciatica, better walking.' })
+
+  expect(response.status).toBe(200)
+  expect(await read(response)).toEqual({ diseases: ['sciatica'] })
+  expect((await diseases({ message: ' ' })).status).toBe(422)
+  expect(service.requests).toEqual([])
+
+  quiet()
+  service.failure = new ProviderError('down')
+  expect((await diseases({ message: 'Left sciatica.' })).status).toBe(502)
+})
+
 it('stops reading a question when its request is given up', async () => {
   const { app, service } = setup()
   const stop = new AbortController()
 
-  for (const path of ['/api/kind', '/api/symptoms']) {
+  for (const path of ['/api/kind', '/api/symptoms', '/api/diseases']) {
     await app.request(path, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -180,8 +205,19 @@ it('stops reading a question when its request is given up', async () => {
   }
   stop.abort()
 
-  expect(service.signals).toHaveLength(2)
+  expect(service.signals).toHaveLength(3)
   expect(service.signals.every((signal) => signal?.aborted)).toBe(true)
+})
+
+it('takes the diseases a user confirmed with a question', async () => {
+  const { service, post } = setup()
+
+  expect((await post({ message: 'Left sciatica.', diseases: [' sciatica ', 'lumbago'] })).status).toBe(200)
+  expect(service.requests[0]?.diseases).toEqual(['sciatica', 'lumbago'])
+
+  expect((await post({ message: 'Left sciatica.', diseases: [' '] })).status).toBe(422)
+  expect((await post({ message: 'Left sciatica.', diseases: Array.from({ length: 16 }, () => 'sciatica') })).status).toBe(422)
+  expect((await post({ message: 'Left sciatica.', diseases: ['x'.repeat(201)] })).status).toBe(422)
 })
 
 it('takes the symptoms a user confirmed with a question', async () => {

@@ -28,6 +28,10 @@ class StubRetriever implements Retriever {
     return ['Mind: irritable']
   }
 
+  async diseases(): Promise<string[]> {
+    return ['sciatica']
+  }
+
   async retrieve(request: ChatRequest, { limit }: { limit: number }): Promise<Retrieval> {
     this.searchCall = { request, limit }
     if (this.failure) throw this.failure

@@ -1,6 +1,6 @@
 /** Browser client for the HomeoRemedica API. */
 
-import type { ChatTurn, Citation, KindResponse, QuestionKind, SymptomsResponse, WebChatResponse } from '../server/contracts.ts'
+import type { ChatTurn, Citation, DiseasesResponse, KindResponse, QuestionKind, SymptomsResponse, WebChatResponse } from '../server/contracts.ts'
 
 const FALLBACK_DETAIL = 'Something went wrong. Please try again.'
 const INTERRUPTED_DETAIL = 'The answer stopped before it finished. Please try again.'
@@ -50,6 +50,8 @@ export interface ChatQuestion {
   summary?: string | undefined
   /** The case's symptoms as the user confirmed them. */
   symptoms?: readonly string[] | undefined
+  /** The case's diseases as the user confirmed them. */
+  diseases?: readonly string[] | undefined
 }
 
 function beforeAsking<T>(path: string, question: ChatQuestion, signal?: AbortSignal): Promise<T> {
@@ -69,6 +71,11 @@ export async function readKind(question: ChatQuestion, signal?: AbortSignal): Pr
 /** The symptoms of the case a question describes; none when it describes no patient. */
 export async function readSymptoms(question: ChatQuestion, signal?: AbortSignal): Promise<string[]> {
   return (await beforeAsking<SymptomsResponse>('/api/symptoms', question, signal)).symptoms
+}
+
+/** The diseases the case a question describes names; none when it names none. */
+export async function readDiseases(question: ChatQuestion, signal?: AbortSignal): Promise<string[]> {
+  return (await beforeAsking<DiseasesResponse>('/api/diseases', question, signal)).diseases
 }
 
 export interface StreamHandlers {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { type ChatQuestion, errorMessage, readKind, readSymptoms, streamChat } from './api.ts'
+import { type ChatQuestion, errorMessage, readDiseases, readKind, readSymptoms, streamChat } from './api.ts'
 import { type Conversation, type Message, newConversation, titleFrom } from './conversation.ts'
 
 export interface ChatControls {
@@ -9,8 +9,8 @@ export interface ChatControls {
   ask(question: string): void
   /** Ask the failed question at the end of the chat again. */
   retry(): void
-  /** Answer the question under review by these symptoms. */
-  confirm(symptoms: string[]): void
+  /** Answer the question under review by these symptoms and, if they were reviewed, these diseases. */
+  confirm(symptoms: string[], diseases?: string[]): void
   stop(): void
   /** Show another chat, stopping any answer in progress. */
   open(conversation: Conversation): void
@@ -50,7 +50,7 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
   const halt = useCallback(() => {
     const controller = request.current
     const current = latest.current
-    // A question whose symptoms are under review has no request to abort.
+    // A question whose case is under review has no request to abort.
     if (!controller && current.messages.at(-1)?.status !== 'review') return
     request.current = null
     controller?.abort()
@@ -109,13 +109,18 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
 
       void (async () => {
         const asked = { message: question, history: start.history, summary: start.summary }
-        // Left unset, the question is answered by the symptoms the server reads.
+        // Left unset, the question is answered by the symptoms and diseases the server reads.
         let symptoms: string[] | undefined
+        let diseases: string[] | undefined
         try {
           if ((await readKind(asked, controller.signal)) === 'case') {
             if (request.current !== controller) return
             updateAnswer(id, (answer) => ({ ...answer, reading: 'case' }))
-            symptoms = await readSymptoms(asked, controller.signal)
+            // Without the diseases the symptoms are still reviewed, and the server reads the diseases itself.
+            ;[symptoms, diseases] = await Promise.all([
+              readSymptoms(asked, controller.signal),
+              readDiseases(asked, controller.signal).catch(() => undefined),
+            ])
           } else {
             symptoms = []
           }
@@ -123,29 +128,29 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
           // Without the symptoms to check, the question is still answered.
         }
         if (request.current !== controller) return
-        if (symptoms?.length) {
-          const found = symptoms
+        if (symptoms?.length || diseases?.length) {
+          const found = { symptoms: symptoms ?? [], ...(diseases && { diseases }) }
           request.current = null
-          updateAnswer(id, ({ reading: _read, ...answer }) => ({ ...answer, status: 'review', symptoms: found }))
+          updateAnswer(id, ({ reading: _read, ...answer }) => ({ ...answer, status: 'review', ...found }))
           return
         }
         updateAnswer(id, ({ reading: _read, ...answer }) => answer)
-        await answer(id, { ...asked, symptoms }, controller)
+        await answer(id, { ...asked, symptoms, diseases }, controller)
       })()
     },
     [answer, commit, updateAnswer],
   )
 
   const confirm = useCallback(
-    (symptoms: string[]) => {
+    (symptoms: string[], diseases?: string[]) => {
       const { id, messages, history, summary } = latest.current
       const question = messages.at(-2)
       if (request.current || messages.at(-1)?.status !== 'review' || question?.role !== 'user') return
       const controller = new AbortController()
       request.current = controller
-      // Kept with the answer until it is complete, so a failed one is asked again by the same symptoms.
-      updateAnswer(id, (answer) => ({ ...answer, status: 'streaming', symptoms }))
-      void answer(id, { message: question.content, history, summary, symptoms }, controller)
+      // Kept with the answer until it is complete, so a failed one is asked again by the same ones.
+      updateAnswer(id, ({ diseases: _unconfirmed, ...answer }) => ({ ...answer, status: 'streaming', symptoms, ...(diseases && { diseases }) }))
+      void answer(id, { message: question.content, history, summary, symptoms, diseases }, controller)
     },
     [answer, updateAnswer],
   )
@@ -155,13 +160,13 @@ export function useChat(onSettled?: (conversation: Conversation) => void): ChatC
     const question = messages.at(-2)
     const failed = messages.at(-1)
     if (request.current || failed?.status !== 'error' || question?.role !== 'user') return
-    const { symptoms } = failed
+    const { symptoms, diseases } = failed
     if (symptoms) {
-      // The user already confirmed the case's symptoms; they are not read or reviewed again.
+      // The user already confirmed the case's symptoms and diseases; they are not read or reviewed again.
       const controller = new AbortController()
       request.current = controller
-      updateAnswer(id, (answer) => ({ id: answer.id, role: 'assistant', content: '', status: 'streaming', symptoms }))
-      void answer(id, { message: question.content, history, summary, symptoms }, controller)
+      updateAnswer(id, (answer) => ({ id: answer.id, role: 'assistant', content: '', status: 'streaming', symptoms, ...(diseases && { diseases }) }))
+      void answer(id, { message: question.content, history, summary, symptoms, diseases }, controller)
       return
     }
     commit({ ...latest.current, messages: messages.slice(0, -2) })
