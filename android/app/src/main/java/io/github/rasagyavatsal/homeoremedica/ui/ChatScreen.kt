@@ -276,7 +276,7 @@ fun ChatScreen(
                 CompositionLocalProvider(LocalEntrances provides remember(state.id) { Entrances() }) {
                     Box(Modifier.weight(1f).fillMaxWidth()) {
                         if (state.messages.isEmpty()) {
-                            Welcome(composerSpace)
+                            Welcome(composerSpace, onExample = { submit(it) })
                         } else {
                             key(state.id) { Conversation(state, wide, composerSpace, open, showSource, onRetry, onConfirm, onRate, onNote) }
                         }

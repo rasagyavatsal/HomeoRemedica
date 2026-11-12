@@ -11,7 +11,10 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -39,6 +43,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -65,9 +70,39 @@ private val EaseInOut = CubicBezierEasing(0.42f, 0f, 0.58f, 1f)
 /** When the tagline's last word has started in, so the composer can follow it. */
 val TAGLINE_MILLIS = TaglineWords.size * WORD_STAGGER_MILLIS
 
-/** The empty chat: what the app is for. */
+/** Questions a phone's empty chat offers to ask, for a first tap. */
+private val Examples = listOf(
+    "Remedies for irritability in the morning",
+    "Compare Bryonia and Rhus tox in rheumatism",
+    "What does Kent say about Pulsatilla?",
+)
+
+/** The empty chat: what the app is for. On phones it sits by the message box, with [Examples] to ask. */
 @Composable
-fun Welcome(bottomPadding: Dp) {
+fun Welcome(bottomPadding: Dp, onExample: (String) -> Unit = {}) {
+    if (LocalCompact.current) {
+        Box(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp, bottom = bottomPadding), contentAlignment = Alignment.BottomStart) {
+            // Decoration only: soft light drifting behind the tagline.
+            Glows(Modifier.fillMaxWidth().height(256.dp))
+            Column(Modifier.padding(bottom = 12.dp)) {
+                FlowRow(
+                    Modifier.padding(bottom = 20.dp).semantics(mergeDescendants = true) {
+                        heading()
+                        contentDescription = TAGLINE
+                    },
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    TaglineWords.forEachIndexed { index, word -> TaglineWord(word, index, 28.sp) }
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Examples.forEachIndexed { index, example ->
+                        Example(example, Modifier.rise(example, REVEAL_MILLIS, TAGLINE_MILLIS + index * WORD_STAGGER_MILLIS)) { onExample(example) }
+                    }
+                }
+            }
+        }
+        return
+    }
     Box(
         Modifier.fillMaxSize().padding(start = 16.dp, end = 16.dp, bottom = bottomPadding),
         contentAlignment = Alignment.Center,
@@ -86,9 +121,26 @@ fun Welcome(bottomPadding: Dp) {
     }
 }
 
+/** A question to ask with one tap: a filled pill. */
+@Composable
+private fun Example(text: String, modifier: Modifier, onClick: () -> Unit) {
+    val colors = Theme.colors
+    val interactions = remember { MutableInteractionSource() }
+    val pressed by interactions.pressed()
+    BasicText(
+        text,
+        style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 14.sp, lineHeight = 20.sp),
+        modifier = modifier
+            .clip(Pill)
+            .background(if (pressed) colors.borderStrong else colors.surfaceSelected)
+            .pressable(label = "Ask", interactionSource = interactions, onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+    )
+}
+
 /** One word of the tagline, rising in after the ones before it. */
 @Composable
-private fun TaglineWord(word: String, index: Int) {
+private fun TaglineWord(word: String, index: Int, size: TextUnit = 32.sp) {
     val progress = remember { Animatable(0f) }
     LaunchedEffect(Unit) {
         delay(index * WORD_STAGGER_MILLIS.toLong())
@@ -99,7 +151,7 @@ private fun TaglineWord(word: String, index: Int) {
         style = TextStyle(
             color = Theme.colors.text,
             fontFamily = Fonts.sans,
-            fontSize = 32.sp,
+            fontSize = size,
             lineHeight = 1.25.em,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center,
