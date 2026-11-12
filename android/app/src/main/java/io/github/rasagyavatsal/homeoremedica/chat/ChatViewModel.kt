@@ -7,10 +7,12 @@ import io.github.rasagyavatsal.homeoremedica.api.AnswerRatings
 import io.github.rasagyavatsal.homeoremedica.api.ApiException
 import io.github.rasagyavatsal.homeoremedica.api.FeedbackReason
 import io.github.rasagyavatsal.homeoremedica.api.Rating
+import io.github.rasagyavatsal.homeoremedica.api.ChatRequest
 import io.github.rasagyavatsal.homeoremedica.api.ChatResponse
 import io.github.rasagyavatsal.homeoremedica.api.ChatTurn
 import io.github.rasagyavatsal.homeoremedica.api.GENERIC_ERROR
 import io.github.rasagyavatsal.homeoremedica.api.HomeoRemedicaApi
+import io.github.rasagyavatsal.homeoremedica.api.QuestionKind
 import io.github.rasagyavatsal.homeoremedica.api.Role
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineStart
@@ -18,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -59,8 +62,8 @@ data class ChatState(
     /** Whether answers can be rated, which needs a verified account. */
     val canRate: Boolean = false,
 ) {
-    /** Whether the last answer is still streaming. */
-    val busy: Boolean get() = messages.lastOrNull()?.status == MessageStatus.Streaming
+    /** Whether the last answer is still streaming, or waits for the user to check its case. */
+    val busy: Boolean get() = messages.lastOrNull()?.status.let { it == MessageStatus.Streaming || it == MessageStatus.Review }
 }
 
 // Ports the web app's chat hook (src/web/useChat.ts) and its saved chats (src/web/App.tsx).
@@ -238,55 +241,125 @@ class ChatViewModel(
                 draft = "",
                 messages = it.messages + listOf(
                     Message(next, Role.User, question),
-                    Message(next + 1, Role.Assistant, "", status = MessageStatus.Streaming),
+                    Message(next + 1, Role.Assistant, "", status = MessageStatus.Streaming, reading = Reading.Question),
                 ),
             )
         }
         lastChat.set(start.id)
 
-        // Started once it is the current request, so a stopped request's late pieces are ignored.
+        val asked = ChatRequest(question, start.history, start.summary)
+        launchRequest { current ->
+            // Left null, the question is answered by the symptoms and diseases the server reads.
+            var symptoms: List<String>? = null
+            var diseases: List<String>? = null
+            try {
+                if (api.readKind(asked) == QuestionKind.Case) {
+                    if (!current()) return@launchRequest
+                    updateAnswer { it.copy(reading = Reading.Case) }
+                    coroutineScope {
+                        // Without the diseases the symptoms are still reviewed, and the server reads the diseases itself.
+                        val named = async {
+                            try {
+                                api.readDiseases(asked)
+                            } catch (_: ApiException) {
+                                null
+                            }
+                        }
+                        symptoms = api.readSymptoms(asked)
+                        diseases = named.await()
+                    }
+                } else {
+                    symptoms = emptyList()
+                }
+            } catch (_: ApiException) {
+                // Without the symptoms to check, the question is still answered.
+                symptoms = null
+                diseases = null
+            }
+            if (!current()) return@launchRequest
+            if (!symptoms.isNullOrEmpty() || !diseases.isNullOrEmpty()) {
+                request = null
+                updateAnswer { it.copy(status = MessageStatus.Review, reading = null, symptoms = symptoms.orEmpty(), diseases = diseases) }
+                return@launchRequest
+            }
+            updateAnswer { it.copy(reading = null) }
+            answer(asked.copy(symptoms = symptoms, diseases = diseases), current)
+        }
+    }
+
+    /** Answer the question under review by these [symptoms] and, if they were reviewed, these [diseases]. */
+    fun confirm(symptoms: List<String>, diseases: List<String>? = null) {
+        val state = _state.value
+        val question = state.messages.getOrNull(state.messages.size - 2)
+        if (request != null || state.messages.lastOrNull()?.status != MessageStatus.Review || question?.role != Role.User) return
+        // Kept with the answer until it is complete, so a failed one is asked again by the same ones.
+        updateAnswer { it.copy(status = MessageStatus.Streaming, symptoms = symptoms, diseases = diseases) }
+        launchRequest { current -> answer(ChatRequest(question.content, state.history, state.summary, symptoms, diseases), current) }
+    }
+
+    /** Ask the failed question at the end of the chat again. */
+    fun retry() {
+        val state = _state.value
+        val messages = state.messages
+        val question = messages.getOrNull(messages.size - 2)
+        val failed = messages.lastOrNull()
+        if (request != null || failed?.status != MessageStatus.Error || question?.role != Role.User) return
+        val symptoms = failed.symptoms
+        if (symptoms != null) {
+            // The user already confirmed the case's symptoms and diseases; they are not read or reviewed again.
+            val diseases = failed.diseases
+            updateAnswer { Message(it.id, Role.Assistant, "", status = MessageStatus.Streaming, symptoms = symptoms, diseases = diseases) }
+            launchRequest { current -> answer(ChatRequest(question.content, state.history, state.summary, symptoms, diseases), current) }
+            return
+        }
+        _state.update { it.copy(messages = messages.dropLast(2)) }
+        submit(question.content)
+    }
+
+    /** Run [block] as the current request; its `current` says whether it still is, so a stopped one's late pieces are ignored. */
+    private fun launchRequest(block: suspend (current: () -> Boolean) -> Unit) {
+        // Started once it is the current request.
         val job = viewModelScope.launch(start = CoroutineStart.LAZY) {
             val self = coroutineContext.job
-            fun current() = request === self
-            try {
-                val response = api.sendMessage(
-                    question,
-                    start.history,
-                    start.summary,
-                    onSources = { sources -> if (current()) updateAnswer { it.copy(sources = sources) } },
-                    onText = { piece -> if (current()) updateAnswer { it.copy(content = it.content + piece) } },
-                )
-                if (!current()) return@launch
-                request = null
-                updateAnswer(response, settled = true) {
-                    Message(it.id, Role.Assistant, response.answer, response.sources)
-                }
-                save()
-            } catch (failure: ApiException) {
-                if (!current()) return@launch
-                request = null
-                updateAnswer { it.copy(status = MessageStatus.Error, error = failure.message ?: GENERIC_ERROR) }
-            }
+            block { request === self }
         }
         request = job
         job.start()
     }
 
-    /** Ask the failed question at the end of the chat again. */
-    fun retry() {
-        val messages = _state.value.messages
-        val question = messages.getOrNull(messages.size - 2)
-        if (messages.lastOrNull()?.status != MessageStatus.Error || question?.role != Role.User) return
-        _state.update { it.copy(messages = messages.dropLast(2)) }
-        submit(question.content)
+    /** Stream the answer to [question] into the last message. */
+    private suspend fun answer(question: ChatRequest, current: () -> Boolean) {
+        try {
+            val response = api.sendMessage(
+                question.message,
+                question.history,
+                question.summary,
+                question.symptoms,
+                question.diseases,
+                onSources = { sources -> if (current()) updateAnswer { it.copy(sources = sources) } },
+                onText = { piece -> if (current()) updateAnswer { it.copy(content = it.content + piece) } },
+            )
+            if (!current()) return
+            request = null
+            updateAnswer(response, settled = true) {
+                Message(it.id, Role.Assistant, response.answer, response.sources)
+            }
+            save()
+        } catch (failure: ApiException) {
+            if (!current()) return
+            request = null
+            updateAnswer { it.copy(status = MessageStatus.Error, error = failure.message ?: GENERIC_ERROR) }
+        }
     }
 
     /** Mark the streaming answer stopped, cancel its request and save what arrived. */
     fun stop() {
-        val job = request ?: return
+        val job = request
+        // A question whose case is under review has no request to cancel.
+        if (job == null && _state.value.messages.lastOrNull()?.status != MessageStatus.Review) return
         request = null
-        job.cancel()
-        updateAnswer(settled = true) { it.copy(status = MessageStatus.Stopped) }
+        job?.cancel()
+        updateAnswer(settled = true) { Message(it.id, Role.Assistant, it.content, it.sources, MessageStatus.Stopped) }
         save()
     }
 

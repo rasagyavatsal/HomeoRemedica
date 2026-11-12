@@ -32,6 +32,21 @@ class ChatRobot(rule: ComposeTestRule) : Robot(rule) {
 
     fun retry() = press(button("Try again"))
 
+    /** The case's symptom numbered [number] from 1, as it was read or as the reader left it. */
+    fun seesSymptom(number: Int, text: String) = waitFor(hasContentDescription("Symptom $number") and hasText(text))
+
+    fun removeSymptom(number: Int) = press(hasContentDescription("Remove symptom $number"))
+
+    /** Add a disease to the case under review; it takes the next number. */
+    fun addDisease(number: Int, text: String) {
+        press(button("Add disease"))
+        waitFor(hasContentDescription("Disease $number"))
+        rule.onNodeWithContentDescription("Disease $number").performTextInput(text)
+    }
+
+    /** Have the case under review answered as the reader left it. */
+    fun confirmCase() = press(button("Continue"))
+
     fun seesQuestion(question: String) = waitFor(hasContentDescription("You: $question"))
 
     fun seesAnswer(text: String) = waitFor(hasText(text, substring = true))
