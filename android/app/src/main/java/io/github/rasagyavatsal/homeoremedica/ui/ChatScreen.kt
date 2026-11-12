@@ -93,6 +93,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
@@ -386,7 +387,8 @@ private fun Topbar(title: String, onMenu: (() -> Unit)?, onNewChat: (() -> Unit)
         Modifier
             .fillMaxWidth()
             .background(colors.canvas)
-            .drawBehind { drawLine(colors.border, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
+            // Phones leave the rule out: the bar is part of the page.
+            .drawBehind { if (!compact) drawLine(colors.border, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
             .statusBarsPadding()
             .heightIn(min = if (compact) 56.dp else 44.dp)
             .padding(horizontal = if (compact) 4.dp else 16.dp, vertical = 4.dp),
@@ -396,16 +398,19 @@ private fun Topbar(title: String, onMenu: (() -> Unit)?, onNewChat: (() -> Unit)
         if (onMenu != null) IconButton(Icons.Menu, "Open chats", onMenu, size = 48.dp, iconSize = 22.dp, color = colors.text)
         BasicText(
             title,
-            style = if (compact) {
-                TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 16.sp, fontWeight = FontWeight.Medium)
-            } else {
-                TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = 13.sp)
-            },
+            style = TextStyle(
+                color = colors.textMuted,
+                fontFamily = Fonts.sans,
+                fontSize = if (compact) 14.sp else 13.sp,
+                textAlign = if (compact) TextAlign.Center else TextAlign.Start,
+            ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f).padding(start = if (onMenu != null) 4.dp else 0.dp).semantics { heading() },
+            modifier = Modifier.weight(1f).padding(horizontal = if (onMenu != null) 4.dp else 0.dp).semantics { heading() },
         )
         if (onNewChat != null) IconButton(Icons.NewChat, "New chat", onNewChat, size = 48.dp, iconSize = 22.dp, color = colors.text)
+        // Keeps the title centred while there is no new chat to start.
+        else if (compact && onMenu != null) Box(Modifier.size(48.dp))
     }
 }
 
@@ -468,7 +473,9 @@ private fun Conversation(
 @Composable
 private fun UserMessage(content: String, wide: Boolean, modifier: Modifier) {
     val colors = Theme.colors
-    val shape = RoundedCornerShape(16.dp)
+    val compact = LocalCompact.current
+    // A filled bubble with a tail on phones; the web app's outlined card on wide screens.
+    val shape = if (compact) RoundedCornerShape(20.dp, 20.dp, 6.dp, 20.dp) else RoundedCornerShape(16.dp)
     BoxWithConstraints(modifier, contentAlignment = Alignment.CenterEnd) {
         val maxBubble = maxWidth * 0.85f
         SelectionContainer {
@@ -477,9 +484,9 @@ private fun UserMessage(content: String, wide: Boolean, modifier: Modifier) {
                 style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 15.sp, lineHeight = 1.4.em),
                 modifier = Modifier
                     .widthIn(max = maxBubble)
-                    .background(colors.surfaceRaised, shape)
-                    .border(1.dp, colors.border, shape)
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .background(if (compact) colors.accentSoftHover else colors.surfaceRaised, shape)
+                    .border(1.dp, if (compact) Color.Transparent else colors.border, shape)
+                    .padding(horizontal = 16.dp, vertical = if (compact) 10.dp else 12.dp)
                     .semantics { contentDescription = "You: $content" },
             )
         }
@@ -612,14 +619,16 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val focused by interactions.collectIsFocusedAsState()
-    val radius = 16.dp
+    val compact = LocalCompact.current
+    // A filled pill on phones; the web app's raised, outlined box on wide screens.
+    val radius = if (compact) 28.dp else 16.dp
     val shape = RoundedCornerShape(radius)
     val canSend = !state.busy && state.draft.isNotBlank()
     Row(
         Modifier
             .fillMaxWidth()
             .drawBehind {
-                if (focused) {
+                if (focused && !compact) {
                     val ring = 3.dp.toPx()
                     drawRoundRect(
                         colors.accentSoft,
@@ -629,10 +638,10 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
                     )
                 }
             }
-            .shadowMedium(shape, colors.shadow)
-            .background(colors.surfaceRaised, shape)
-            .border(1.dp, if (focused) colors.accent else colors.borderStrong, shape)
-            .padding(start = 16.dp, top = 8.dp, end = 8.dp, bottom = 8.dp),
+            .then(if (compact) Modifier else Modifier.shadowMedium(shape, colors.shadow))
+            .background(if (compact) colors.surfaceSelected else colors.surfaceRaised, shape)
+            .border(1.dp, if (compact) Color.Transparent else if (focused) colors.accent else colors.borderStrong, shape)
+            .padding(start = if (compact) 20.dp else 16.dp, top = 6.dp, end = 6.dp, bottom = 6.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Bottom,
     ) {
@@ -697,11 +706,12 @@ private fun SendButton(icon: ImageVector, label: String, enabled: Boolean, onCli
             .size(if (compact) 44.dp else 36.dp)
             .background(
                 when {
-                    !enabled -> colors.surfaceSelected
+                    // Darker than the filled message box it sits in on phones.
+                    !enabled -> if (compact) colors.borderStrong else colors.surfaceSelected
                     pressed -> colors.accentHover
                     else -> colors.accent
                 },
-                RoundedCornerShape(10.dp),
+                if (compact) Pill else RoundedCornerShape(10.dp),
             )
             .pressable(enabled, label = label, interactionSource = interactions, onClick = onClick)
             .semantics { contentDescription = label },
