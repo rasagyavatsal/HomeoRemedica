@@ -35,38 +35,40 @@ export function Symptoms({ symptoms, onConfirm }: SymptomsProps) {
       <p id={labelId} className="references-label">
         Symptoms
       </p>
-      <ul className="symptoms-list">
-        {rows.map((row, index) => (
-          <li key={row.key} className="symptom">
-            <input
-              className="symptom-field"
-              value={row.text}
-              maxLength={MAX_SYMPTOM_CHARS}
-              aria-label={`Symptom ${index + 1}`}
-              // An added row takes the focus; the ones read from the case do not.
-              autoFocus={row.key >= symptoms.length}
-              onChange={(event) =>
-                setRows((current) => current.map((other) => (other.key === row.key ? { ...other, text: event.target.value } : other)))
-              }
-            />
-            <button
-              type="button"
-              className="icon-button"
-              aria-label={`Remove symptom ${index + 1}`}
-              onClick={() => setRows((current) => current.filter((other) => other.key !== row.key))}
-            >
-              <CloseIcon />
-            </button>
-          </li>
-        ))}
-      </ul>
-      <div className="symptoms-actions">
-        <button type="button" className="button button-quiet" onClick={add} disabled={rows.length >= MAX_SYMPTOMS}>
-          <PlusIcon /> Add symptom
-        </button>
-        <button type="submit" className="button button-primary">
-          Continue
-        </button>
+      <div className="symptoms-card">
+        <ul className="symptoms-list">
+          {rows.map((row, index) => (
+            <li key={row.key} className="symptom">
+              <input
+                className="symptom-field"
+                value={row.text}
+                maxLength={MAX_SYMPTOM_CHARS}
+                aria-label={`Symptom ${index + 1}`}
+                // An added row takes the focus; the ones read from the case do not.
+                autoFocus={row.key >= symptoms.length}
+                onChange={(event) =>
+                  setRows((current) => current.map((other) => (other.key === row.key ? { ...other, text: event.target.value } : other)))
+                }
+              />
+              <button
+                type="button"
+                className="icon-button symptom-remove"
+                aria-label={`Remove symptom ${index + 1}`}
+                onClick={() => setRows((current) => current.filter((other) => other.key !== row.key))}
+              >
+                <CloseIcon />
+              </button>
+            </li>
+          ))}
+        </ul>
+        <div className="symptoms-actions">
+          <button type="button" className="button button-quiet" onClick={add} disabled={rows.length >= MAX_SYMPTOMS}>
+            <PlusIcon /> Add symptom
+          </button>
+          <button type="submit" className="button button-primary">
+            Continue
+          </button>
+        </div>
       </div>
     </form>
   )

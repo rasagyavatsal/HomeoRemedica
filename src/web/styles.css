@@ -961,9 +961,19 @@ a.menu-item {
   color: var(--color-text);
 }
 
+.symptoms {
+  animation: rise-in var(--duration-slow) var(--ease-standard);
+}
+
+/* One card holds the list and its actions, so the symptoms read as a list rather than a form. */
+.symptoms-card {
+  overflow: hidden;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
 .symptoms-list {
-  display: grid;
-  gap: var(--space-2xs);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -972,31 +982,68 @@ a.menu-item {
 .symptom {
   display: flex;
   align-items: center;
-  gap: var(--space-2xs);
+  padding-right: var(--space-2xs);
+  border-bottom: var(--border-width) solid var(--color-border);
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.symptom:hover {
+  background: var(--color-surface-hover);
+}
+
+/* The row being edited is marked along its leading edge. */
+.symptom:focus-within {
+  background: var(--color-surface-hover);
+  box-shadow: inset var(--focus-ring-width) 0 0 var(--color-accent);
 }
 
 .symptom-field {
   flex: 1;
   min-width: 0;
-  height: var(--control-md);
-  padding: 0 var(--space-sm);
-  border: var(--border-width) solid var(--color-border-strong);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  font-size: var(--text-sm);
-  transition: border-color var(--duration-fast) var(--ease-standard);
+  height: var(--control-lg);
+  padding: 0 var(--space-xs) 0 var(--space-md);
+  border: none;
+  background: none;
+  font-size: var(--text-md);
+  text-overflow: ellipsis;
 }
 
 .symptom-field:focus {
-  border-color: var(--color-accent);
   outline: none;
+}
+
+.symptom-remove {
+  flex: none;
+  width: var(--control-sm);
+  height: var(--control-sm);
+  margin-right: var(--space-2xs);
+  color: var(--color-text-subtle);
+}
+
+.symptom-remove .icon {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+/* With a pointer the remove buttons stay out of the way until their row is in use. */
+@media (hover: hover) {
+  .symptom-remove {
+    opacity: 0;
+  }
+
+  .symptom:hover .symptom-remove,
+  .symptom:focus-within .symptom-remove {
+    opacity: 1;
+  }
 }
 
 .symptoms-actions {
   display: flex;
   justify-content: space-between;
   gap: var(--space-sm);
-  margin-top: var(--space-sm);
+  padding: var(--space-xs);
 }
 
 .references {
