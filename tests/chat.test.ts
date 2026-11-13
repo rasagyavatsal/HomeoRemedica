@@ -28,6 +28,10 @@ class StubRetriever implements Retriever {
     return ['Mind: irritable']
   }
 
+  async diseases(): Promise<string[]> {
+    return ['sciatica']
+  }
+
   async retrieve(request: ChatRequest, { limit }: { limit: number }): Promise<Retrieval> {
     this.searchCall = { request, limit }
     if (this.failure) throw this.failure
@@ -385,7 +389,7 @@ it('rejects book filters', () => {
   expect(() => request({ message: 'question', bookIds: ['kent_lectures'] })).toThrow(/unexpected request field/)
 })
 
-it('answers and searches the books by the symptoms a user confirmed', async () => {
+it('answers by the symptoms and diseases a user confirmed and searches the books by them', async () => {
   const retriever = new StubRetriever()
   const generator = new StubGenerator()
   const asked = { message: 'A weepy, thirsty woman.', symptoms: ['Mind: weeping', 'Stomach: thirstless'] }
@@ -394,16 +398,32 @@ it('answers and searches the books by the symptoms a user confirmed', async () =
 
   expect(generator.generationPrompt).toContain('<confirmed_symptoms>\nMind: weeping\nStomach: thirstless\n</confirmed_symptoms>')
   expect(generator.generationPrompt).toContain('go by this list')
+  expect(generator.generationPrompt).not.toContain('confirmed_diseases')
+  await new ChatService({ retriever, generator }).chat(request({ ...asked, diseases: ['asthma', 'eczema'] }))
+  expect(generator.generationPrompt).toContain('</confirmed_symptoms>\n\nThe user checked the diseases of the case')
+  expect(generator.generationPrompt).toContain('<confirmed_diseases>\nasthma\neczema\n</confirmed_diseases>')
+  await new ChatService({ retriever, generator }).chat(request({ ...asked, diseases: [] }))
+  expect(generator.generationPrompt).not.toContain('confirmed_diseases')
+  expect(generator.generationPrompt).toContain('confirmed none. Do not answer for any disease')
   await new ChatService({ retriever, generator }).chat(request({ message: 'What is Sulphur?', symptoms: [] }))
-  expect(generator.generationPrompt).not.toContain('confirmed_symptoms')
+  expect(generator.generationPrompt).not.toContain('confirmed_')
+  expect(generator.generationPrompt).not.toContain('confirmed none')
 
   const searched: string[] = []
   const corpus: SearchableRelease = { search: async (query) => (searched.push(query), []) }
   const embedder = { embedQuery: async (text: string) => (searched.push(text), [1.0]) }
-  await new ProductionRetriever(corpus, embedder).retrieve(request(asked), { limit: 8 })
+  const retrieve = (question: Parameters<typeof request>[0]) => new ProductionRetriever(corpus, embedder).retrieve(request(question), { limit: 8 })
 
-  const query = 'A weepy, thirsty woman.\nMind: weeping\nStomach: thirstless'
-  expect(searched).toEqual([query, query])
+  // The confirmed lists stand in for the question they were read from.
+  await retrieve({ ...asked, diseases: ['asthma'] })
+  const confirmed = 'Mind: weeping\nStomach: thirstless\nasthma'
+  expect(searched).toEqual([confirmed, confirmed])
+
+  // With nothing confirmed, the books are searched by the question.
+  searched.length = 0
+  await retrieve({ message: 'She is unwell.', symptoms: [], diseases: [] })
+  await retrieve({ message: 'What is Sulphur?' })
+  expect(searched).toEqual(['She is unwell.', 'She is unwell.', 'What is Sulphur?', 'What is Sulphur?'])
 })
 
 it('production retriever searches on recent questions only', async () => {

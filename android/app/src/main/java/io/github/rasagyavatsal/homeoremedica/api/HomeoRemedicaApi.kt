@@ -49,15 +49,35 @@ class HomeoRemedicaApi(
 ) {
     private val baseUrl = baseUrl.trimEnd('/')
 
-    /** Ask a question, reporting sources and answer text as the server streams them. */
+    /** Whether [question] describes a patient, whose symptoms are then read, or asks about anything else. */
+    suspend fun readKind(question: ChatRequest): QuestionKind = beforeAsking<KindResponse>("kind", question).kind
+
+    /** The symptoms of the case [question] describes; none when it describes no patient. */
+    suspend fun readSymptoms(question: ChatRequest): List<String> = beforeAsking<SymptomsResponse>("symptoms", question).symptoms
+
+    /** The diseases the case [question] describes names; none when it names none. */
+    suspend fun readDiseases(question: ChatRequest): List<String> = beforeAsking<DiseasesResponse>("diseases", question).diseases
+
+    /** What the server makes of [question] before it is asked. */
+    private suspend inline fun <reified T> beforeAsking(path: String, question: ChatRequest): T {
+        val request = Request.Builder().url("$baseUrl/api/$path").post(ApiJson.encodeToString(question).toRequestBody(JSON)).build()
+        return client.newCall(request).await { readResponse<T>(it) }
+    }
+
+    /**
+     * Ask a question, reporting sources and answer text as the server streams them. A case is answered by
+     * the [symptoms] and [diseases] the user confirmed, or by the server's own when they are null.
+     */
     suspend fun sendMessage(
         message: String,
         history: List<ChatTurn>,
         summary: String? = null,
+        symptoms: List<String>? = null,
+        diseases: List<String>? = null,
         onSources: (List<Citation>) -> Unit = {},
         onText: (String) -> Unit = {},
     ): ChatResponse {
-        val body = ApiJson.encodeToString(ChatRequest(message, history, summary)).toRequestBody(JSON)
+        val body = ApiJson.encodeToString(ChatRequest(message, history, summary, symptoms, diseases)).toRequestBody(JSON)
         val request = Request.Builder()
             .url("$baseUrl/api/chat")
             .header("Accept", "text/event-stream")

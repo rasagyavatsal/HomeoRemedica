@@ -17,6 +17,10 @@ The app is a client of the web app's API, so it holds no provider keys:
   safe `detail`. Once a chat nears the server's limits, `done` also carries a `summary` of its earlier
   turns, sent with later questions.
 
+- `POST /api/kind`, `/api/symptoms` and `/api/diseases` take the same body before a question is asked and
+  say whether it describes a case and which symptoms and diseases it names. The ones the user confirms go
+  to `/api/chat` as `symptoms` and `diseases`; without them the server reads its own.
+
 Signed in, the saved-chat endpoints take a Firebase ID token as `Authorization: Bearer <token>`:
 `GET /api/chats`, `GET`, `PUT` and `DELETE /api/chats/:id`, `GET /api/chats/:id/feedback`,
 `PUT /api/feedback/:id` for one answer's ratings, and `DELETE /api/account`. Saving and rating need a
@@ -32,6 +36,8 @@ It keeps the web app's behaviour and look:
 - **Welcome:** the tagline's words rise in over drifting glows, and the composer follows them.
 - **Answers:** CommonMark without raw HTML. While an answer is on its way, a label says whether the books
   are being searched or read. It can be stopped, and a failed one asked again.
+- **Cases:** a question that describes a patient first lists the symptoms and diseases read from it, to
+  correct, add to or remove before it is answered by them.
 - **References:** cards under each answer list the passages it cites. A card or a `[1]` chip opens only
   that passage, beside the chat on wide screens and over it on phones.
 - **Composer:** Enter sends and Shift+Enter adds a line. Questions stop at 4,000 characters, with a

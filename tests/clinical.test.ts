@@ -26,12 +26,17 @@ describe('termWords', () => {
 })
 
 describe('parseDiseases', () => {
-  it('keeps the Disease lines', () => {
-    expect(parseDiseases('Disease: bronchial asthma\n- disease: Eczema\nThe patient is anxious.')).toEqual([
+  it('keeps one disease a line, without labels or list markers', () => {
+    expect(parseDiseases('Diseases:\nDisease: bronchial asthma\n- Eczema\n2. **Sciatica**')).toEqual([
       'bronchial asthma',
       'Eczema',
+      'Sciatica',
     ])
+  })
+
+  it('reads a reply that names none as no diseases', () => {
     expect(parseDiseases('NONE')).toEqual([])
+    expect(parseDiseases('No diseases are named in this paragraph.')).toEqual([])
   })
 })
 
@@ -168,6 +173,24 @@ describe('production retriever with Clarke', () => {
     ])
   })
 
+  it('ranks by the diseases a user confirmed without reading the case, and reads them for review', async () => {
+    const { corpus, calls } = searching()
+    const read: string[] = []
+    const reading = new Clinical({
+      extractor: { extractDiseases: async (text) => (read.push(text), ['asthma']) },
+      terms: new ClinicalTerms([{ text: 'sciatica', remedies: ['gnaph', 'coloc'] }]),
+    })
+    const retriever = new ProductionRetriever(corpus, embedder, { clinical: reading })
+
+    await retriever.retrieve({ ...request('A painful leg.'), diseases: ['sciatica'] }, { limit: 8 })
+
+    expect(read).toEqual([])
+    expect(calls).toEqual([{ limit: 8, priors: [['coloc', 'gnaph']] }])
+    expect(await retriever.diseases(request('Asthma at night.'))).toEqual(['asthma'])
+    expect(read).toEqual(['Asthma at night.'])
+    expect(await new ProductionRetriever(corpus, embedder).diseases(request('Asthma at night.'))).toEqual([])
+  })
+
   it('searches without Clarke when he lists many remedies for the one disease the case names', async () => {
     const { corpus, calls } = searching()
     const common = new Clinical({
@@ -187,6 +210,7 @@ describe('production retriever with Clarke', () => {
     const logged = vi.spyOn(console, 'error').mockImplementation(() => {})
     const none = new Clinical({ extractor: { extractDiseases: async () => [] }, terms: new ClinicalTerms([]) })
     const failing: ClinicalRanker = {
+      diseases: async () => [],
       rank: async () => {
         throw new ProviderError('Z.AI chat request failed with status 500')
       },

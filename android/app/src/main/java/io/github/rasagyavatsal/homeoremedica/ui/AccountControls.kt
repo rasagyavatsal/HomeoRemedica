@@ -165,16 +165,24 @@ private fun AccountMenu(
             Modifier
                 .fillMaxWidth()
                 .onSizeChanged { width = it.width }
-                .clip(RoundedCornerShape(10.dp))
-                .background(if (pressed || open) colors.surfaceHover else Color.Transparent)
+                // A filled pill on phones, beside the new chat button.
+                .clip(if (compact) Pill else RoundedCornerShape(10.dp))
+                .background(
+                    when {
+                        compact -> if (pressed || open) colors.borderStrong else colors.surfaceSelected
+                        pressed || open -> colors.surfaceHover
+                        else -> Color.Transparent
+                    },
+                )
                 .pressable(label = "Account", interactionSource = interactions) { open = !open }
                 .semantics(mergeDescendants = true) { stateDescription = if (open) "Expanded" else "Collapsed" }
-                .heightIn(min = if (compact) 48.dp else 0.dp)
-                .padding(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(if (compact) 12.dp else 8.dp),
+                .heightIn(min = if (compact) 52.dp else 0.dp)
+                .padding(start = if (compact) 8.dp else 4.dp, end = if (compact) 16.dp else 4.dp, top = 4.dp, bottom = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(if (compact) 10.dp else 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Avatar(avatar, avatarColor, if (compact) 32.dp else 28.dp)
+            // On a phone's filled pill, an avatar of the pill's own colour lightens to stand out.
+            Avatar(avatar, if (compact && avatarColor == colors.surfaceSelected) colors.surface else avatarColor, if (compact) 36.dp else 28.dp)
             BasicText(
                 label,
                 style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = if (compact) 15.sp else 13.sp),

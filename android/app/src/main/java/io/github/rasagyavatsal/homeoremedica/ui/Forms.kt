@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
@@ -62,14 +63,17 @@ fun TextField(
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val focused by interactions.collectIsFocusedAsState()
-    val shape = RoundedCornerShape(10.dp)
+    val compact = LocalCompact.current
+    // Phones fill the field and name it inside, where the web app outlines it under its label.
+    val shape = RoundedCornerShape(if (compact) 16.dp else 10.dp)
+    val style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = if (compact) 16.sp else 15.sp)
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        BasicText(label, style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 13.sp, fontWeight = FontWeight.Medium))
+        if (!compact) BasicText(label, style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 13.sp, fontWeight = FontWeight.Medium))
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
             singleLine = true,
-            textStyle = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 15.sp),
+            textStyle = style,
             cursorBrush = SolidColor(colors.accent),
             visualTransformation = if (password) PasswordVisualTransformation() else VisualTransformation.None,
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction, autoCorrectEnabled = false),
@@ -85,12 +89,19 @@ fun TextField(
                 Box(
                     Modifier
                         .fillMaxWidth()
-                        .height(if (LocalCompact.current) 48.dp else 44.dp)
-                        .background(colors.surface, shape)
-                        .border(1.dp, if (focused) colors.accent else colors.borderStrong, shape)
-                        .padding(horizontal = 12.dp),
+                        .height(if (compact) 52.dp else 44.dp)
+                        .background(if (compact) colors.surfaceSelected else colors.surface, shape)
+                        .border(
+                            if (compact) 1.5.dp else 1.dp,
+                            if (focused) colors.accent else if (compact) Color.Transparent else colors.borderStrong,
+                            shape,
+                        )
+                        .padding(horizontal = if (compact) 16.dp else 12.dp),
                     contentAlignment = Alignment.CenterStart,
-                ) { field() }
+                ) {
+                    if (compact && value.isEmpty()) BasicText(label, style = style.copy(color = colors.textSubtle))
+                    field()
+                }
             },
         )
     }
@@ -127,7 +138,7 @@ fun TextButton(text: String, onClick: () -> Unit) {
         style = TextStyle(
             color = colors.accentText,
             fontFamily = Fonts.sans,
-            fontSize = 13.sp,
+            fontSize = if (LocalCompact.current) 14.sp else 13.sp,
             fontWeight = FontWeight.Medium,
             textDecoration = if (pressed) TextDecoration.Underline else null,
         ),

@@ -182,6 +182,8 @@ fun TaskPage(title: String, onClose: () -> Unit, content: @Composable () -> Unit
                     .verticalScroll(rememberScrollState())
                     .navigationBarsPadding()
                     .padding(horizontal = 24.dp, vertical = 16.dp),
+                // At the bottom of the page, within a thumb's reach, and just above the keyboard once it opens.
+                verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Column(Modifier.widthIn(max = 440.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(20.dp)) { content() }

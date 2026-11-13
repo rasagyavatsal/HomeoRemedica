@@ -101,6 +101,7 @@ fun AuthDialog(auth: AuthClient, onClose: () -> Unit) {
                 Modifier.fillMaxWidth(),
                 enabled = !working,
                 mark = Icons.Google,
+                minHeight = if (LocalCompact.current) 52.dp else 36.dp,
             )
             Divider("or with email")
         }
@@ -135,7 +136,7 @@ fun AuthDialog(auth: AuthClient, onClose: () -> Unit) {
                 ::submit,
                 Modifier.fillMaxWidth(),
                 enabled = !working,
-                minHeight = 44.dp,
+                minHeight = if (LocalCompact.current) 52.dp else 44.dp,
             )
         }
 
@@ -148,7 +149,24 @@ fun AuthDialog(auth: AuthClient, onClose: () -> Unit) {
 /** The web app's `.dialog-links`: the other ways through the dialog. */
 @Composable
 private fun AuthLinks(mode: Mode, switchTo: (Mode) -> Unit) {
-    val muted = TextStyle(color = Theme.colors.textMuted, fontFamily = Fonts.sans, fontSize = 13.sp)
+    val muted = TextStyle(color = Theme.colors.textMuted, fontFamily = Fonts.sans, fontSize = if (LocalCompact.current) 14.sp else 13.sp)
+    if (LocalCompact.current) {
+        // One under another on phones, where a row would squeeze them.
+        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            when (mode) {
+                Mode.SignIn -> {
+                    TextButton("Create an account") { switchTo(Mode.SignUp) }
+                    TextButton("Forgot password?") { switchTo(Mode.Reset) }
+                }
+                Mode.SignUp -> Row(verticalAlignment = Alignment.CenterVertically) {
+                    BasicText("Already have an account? ", style = muted)
+                    TextButton("Sign in") { switchTo(Mode.SignIn) }
+                }
+                Mode.Reset -> TextButton("Back to sign in") { switchTo(Mode.SignIn) }
+            }
+        }
+        return
+    }
     FlowRow(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,

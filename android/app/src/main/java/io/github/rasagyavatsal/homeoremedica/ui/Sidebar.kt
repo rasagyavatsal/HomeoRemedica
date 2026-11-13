@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.CustomAccessibilityAction
@@ -58,16 +57,26 @@ import androidx.compose.ui.unit.sp
 import io.github.rasagyavatsal.homeoremedica.chat.ChatSummary
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Fonts
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Theme
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
 
 // Ports the web app's chat list (src/web/Sidebar.tsx).
 
 /** The web app's `--layout-sidebar-width`. */
 val SidebarWidth = 272.dp
 
-/** The list offers a search once it has this many chats. */
+/** Wide screens' list offers a search once it has this many chats; phones' offers it from the first. */
 private const val SEARCH_FROM = 6
+
+/** A phone's margin either side of the search, the chats and the bottom bar, so they line up. */
+private val Gutter = 16.dp
+
+/** How far a phone's chat titles, labels and search sit inside their pills. */
+private val RowInset = 18.dp
 
 /** Saved chats, the web app's sidebar: a new chat, a search, the chats by age, and [footer]. */
 @Composable
@@ -79,6 +88,8 @@ fun Sidebar(
     onOpen: (String) -> Unit,
     onDelete: (String) -> Unit,
     modifier: Modifier = Modifier,
+    /** Closes the list where it is a drawer over the chat. */
+    onClose: (() -> Unit)? = null,
     footer: (@Composable () -> Unit)? = null,
 ) {
     val colors = Theme.colors
@@ -91,13 +102,14 @@ fun Sidebar(
     Column(
         modifier
             .background(colors.surface)
-            .drawBehind { drawLine(colors.border, Offset(size.width, 0f), Offset(size.width, size.height), 1.dp.toPx()) }
+            // The drawer's shadow sets it off on phones.
+            .drawBehind { if (!compact) drawLine(colors.border, Offset(size.width, 0f), Offset(size.width, size.height), 1.dp.toPx()) }
             .statusBarsPadding()
             .navigationBarsPadding()
             .semantics { contentDescription = "Chats" },
     ) {
         Row(
-            Modifier.fillMaxWidth().heightIn(min = 44.dp).padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+            Modifier.fillMaxWidth().heightIn(min = 44.dp).padding(start = 16.dp, end = if (onClose != null) 4.dp else 8.dp, top = 8.dp, bottom = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -105,15 +117,17 @@ fun Sidebar(
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
                 // Phones choose the theme in the account sheet.
                 if (!compact) ThemeToggle()
+                if (onClose != null) IconButton(Icons.Close, "Close chats", onClose, size = 48.dp, iconSize = 22.dp, color = colors.text)
             }
         }
 
+        // Phones keep the search at the top and the new chat button by the thumb, at the bottom.
         Column(
-            Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 12.dp),
+            Modifier.padding(horizontal = if (compact) Gutter else 12.dp).padding(top = 8.dp, bottom = if (compact) 4.dp else 12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Button("New chat", ButtonStyle.Outline, onNew, Modifier.fillMaxWidth(), icon = Icons.Plus, start = true)
-            if (chats != null && chats.size >= SEARCH_FROM) SearchField(query) { query = it }
+            if (!compact) Button("New chat", ButtonStyle.Outline, onNew, Modifier.fillMaxWidth(), icon = Icons.Plus, start = true)
+            if (compact && !chats.isNullOrEmpty() || chats != null && chats.size >= SEARCH_FROM) SearchField(query) { query = it }
         }
 
         val empty = when {
@@ -125,27 +139,32 @@ fun Sidebar(
         if (empty != null) {
             BasicText(
                 empty,
-                style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 13.sp),
+                style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = if (compact) 14.sp else 13.sp),
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 20.dp, vertical = 12.dp)
+                    .padding(horizontal = if (compact) Gutter + RowInset else 20.dp, vertical = if (compact) 16.dp else 12.dp)
                     .semantics { liveRegion = LiveRegionMode.Polite },
             )
         } else {
-            LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 16.dp)) {
+            LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(start = if (compact) Gutter else 8.dp, end = if (compact) Gutter else 8.dp, bottom = 16.dp)) {
                 groupByAge(filtered).forEachIndexed { index, group ->
                     item(key = group.label) {
                         BasicText(
-                            group.label.uppercase(),
+                            if (compact) group.label else group.label.uppercase(),
                             style = TextStyle(
                                 color = colors.textSubtle,
                                 fontFamily = Fonts.sans,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                letterSpacing = 0.06.em,
+                                fontSize = if (compact) 13.sp else 12.sp,
+                                fontWeight = if (compact) FontWeight.Medium else FontWeight.SemiBold,
+                                letterSpacing = if (compact) 0.em else 0.06.em,
                             ),
                             modifier = Modifier
-                                .padding(start = 12.dp, end = 12.dp, top = if (index > 0) 24.dp else 8.dp, bottom = 4.dp)
+                                .padding(
+                                    start = if (compact) RowInset else 12.dp,
+                                    end = 12.dp,
+                                    top = if (index > 0) 24.dp else if (compact) 16.dp else 8.dp,
+                                    bottom = if (compact) 6.dp else 4.dp,
+                                )
                                 .semantics { heading() },
                         )
                     }
@@ -168,11 +187,27 @@ fun Sidebar(
             }
         }
 
-        if (footer != null) {
+        if (compact) {
+            Row(
+                Modifier.fillMaxWidth().padding(start = Gutter, end = Gutter, top = 8.dp, bottom = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (footer != null) Box(Modifier.weight(1f)) { footer() }
+                Button(
+                    "New chat",
+                    ButtonStyle.Primary,
+                    onNew,
+                    if (footer == null) Modifier.fillMaxWidth() else Modifier,
+                    icon = Icons.NewChat,
+                    minHeight = 52.dp,
+                )
+            }
+        } else if (footer != null) {
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .drawBehind { drawLine(colors.border, Offset.Zero, Offset(size.width, 0f), 1.dp.toPx()) }
+                    .drawBehind { if (!compact) drawLine(colors.border, Offset.Zero, Offset(size.width, 0f), 1.dp.toPx()) }
                     .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp),
             ) {
                 footer()
@@ -186,31 +221,32 @@ private fun SearchField(query: String, onChange: (String) -> Unit) {
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val focused by interactions.collectIsFocusedAsState()
-    val shape = RoundedCornerShape(10.dp)
+    val compact = LocalCompact.current
+    val shape = if (compact) Pill else RoundedCornerShape(10.dp)
     Row(
         Modifier
             .fillMaxWidth()
-            .height(if (LocalCompact.current) 44.dp else 36.dp)
-            .background(colors.surfaceRaised, shape)
-            .border(1.dp, if (focused) colors.accent else colors.border, shape)
-            .padding(horizontal = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+            .height(if (compact) 48.dp else 36.dp)
+            .background(if (compact) colors.surfaceSelected else colors.surfaceRaised, shape)
+            .border(1.dp, if (compact) Color.Transparent else if (focused) colors.accent else colors.border, shape)
+            .padding(horizontal = if (compact) RowInset else 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(if (compact) 10.dp else 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Search, colors.textSubtle, 16.dp)
+        Icon(Icons.Search, colors.textSubtle, if (compact) 20.dp else 16.dp)
         BasicTextField(
             value = query,
             onValueChange = onChange,
             singleLine = true,
             modifier = Modifier.weight(1f).semantics { contentDescription = "Search chats" },
-            textStyle = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 13.sp),
+            textStyle = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = if (compact) 16.sp else 13.sp),
             cursorBrush = SolidColor(colors.accent),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             interactionSource = interactions,
             decorationBox = { field ->
                 Box(contentAlignment = Alignment.CenterStart) {
                     if (query.isEmpty()) {
-                        BasicText("Search chats", style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 13.sp))
+                        BasicText("Search chats", style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = if (compact) 16.sp else 13.sp))
                     }
                     field()
                 }
@@ -272,14 +308,10 @@ private fun ChatRow(chat: ChatSummary, active: Boolean, onOpen: () -> Unit, onDe
     val interactions = remember { MutableInteractionSource() }
     val pressed by interactions.pressed()
     var actions by rememberSaveable { mutableStateOf(false) }
-    BasicText(
-        chat.title,
-        style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 15.sp, lineHeight = 20.sp),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        modifier = Modifier
+    Row(
+        Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
+            .clip(Pill)
             .background(
                 when {
                     active -> colors.surfaceSelected
@@ -302,10 +334,20 @@ private fun ChatRow(chat: ChatSummary, active: Boolean, onOpen: () -> Unit, onDe
                 selected = active
                 customActions = listOf(CustomAccessibilityAction("Delete") { onDelete(); true })
             }
-            .heightIn(min = 48.dp)
-            .wrapContentHeight(Alignment.CenterVertically)
-            .padding(horizontal = 12.dp),
-    )
+            .heightIn(min = 52.dp)
+            .padding(horizontal = RowInset),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        BasicText(
+            chat.title,
+            style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 16.sp, lineHeight = 22.sp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+        )
+        BasicText(chatTime(chat.updatedAt), style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 13.sp))
+    }
     if (actions) {
         BottomSheet("Chat actions", { actions = false }, title = chat.title) {
             SheetItem(Icons.Trash, "Delete chat", danger = true) {
@@ -340,6 +382,23 @@ private fun ConfirmDelete(onDelete: () -> Unit, onCancel: () -> Unit) {
         Button("Delete", ButtonStyle.Danger, onDelete, small = true, minHeight = 24.dp)
         Button("Cancel", ButtonStyle.Quiet, onCancel, small = true, minHeight = 24.dp)
     }
+}
+
+/** When a chat was last used, as short as its age allows: the time today, the weekday this week, else the date. */
+fun chatTime(
+    updatedAt: Long,
+    today: LocalDate = LocalDate.now(),
+    zone: ZoneId = ZoneId.systemDefault(),
+    locale: Locale = Locale.getDefault(),
+): String {
+    val at = Instant.ofEpochMilli(updatedAt).atZone(zone)
+    val pattern = when {
+        at.toLocalDate() == today -> DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+        at.toLocalDate() > today.minusDays(7) -> DateTimeFormatter.ofPattern("EEE")
+        at.year == today.year -> DateTimeFormatter.ofPattern("d MMM")
+        else -> DateTimeFormatter.ofPattern("d MMM yyyy")
+    }
+    return pattern.withLocale(locale).format(at)
 }
 
 /** A run of chats of about the same age, under its label. */

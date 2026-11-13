@@ -5,7 +5,7 @@ import type { AnswerRatings, Citation } from '../server/contracts.ts'
 import { type Message, citedSources } from './conversation.ts'
 import { AlertIcon, RetryIcon } from './icons.tsx'
 import { AnswerFeedback } from './AnswerFeedback.tsx'
-import { Symptoms } from './Symptoms.tsx'
+import { CaseReview } from './CaseReview.tsx'
 import type { NoteHandler, RateHandler } from './useFeedback.ts'
 
 /** The reference open in the sources panel. */
@@ -20,8 +20,8 @@ interface ThreadProps {
   openSources: OpenReference | undefined
   onSources: (messageId: number, source: number) => void
   onRetry: () => void
-  /** Answers the question whose symptoms are under review by the ones given. */
-  onConfirm: (symptoms: string[]) => void
+  /** Answers the question whose case is under review by the symptoms and diseases given. */
+  onConfirm: (symptoms: string[], diseases?: string[]) => void
   /** Ratings by message id. */
   ratings?: ReadonlyMap<number, AnswerRatings>
   /** Rates an answer or one of its sources; answers cannot be rated without it. */
@@ -57,7 +57,7 @@ export function Thread({ messages, openSources, onSources, onRetry, onConfirm, r
 }
 
 /** What a waiting answer says before the books are searched. */
-const READING = { question: 'Reading your question…', case: 'Reading the case for symptoms…' } as const
+const READING = { question: 'Reading your question…', case: 'Reading the case for symptoms and diseases…' } as const
 
 interface ReplyProps {
   message: Message
@@ -65,7 +65,7 @@ interface ReplyProps {
   activeSource: number | undefined
   onSources: (messageId: number, source: number) => void
   onRetry: (() => void) | undefined
-  onConfirm: ((symptoms: string[]) => void) | undefined
+  onConfirm: ((symptoms: string[], diseases?: string[]) => void) | undefined
   ratings: AnswerRatings | undefined
   onRate: RateHandler | undefined
   onNote: NoteHandler | undefined
@@ -89,7 +89,7 @@ const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, o
     )
   }
 
-  if (status === 'review' && onConfirm) return <Symptoms symptoms={message.symptoms ?? []} onConfirm={onConfirm} />
+  if (status === 'review' && onConfirm) return <CaseReview symptoms={message.symptoms ?? []} diseases={message.diseases} onConfirm={onConfirm} />
 
   const waiting = status === 'streaming' && !content
   return (

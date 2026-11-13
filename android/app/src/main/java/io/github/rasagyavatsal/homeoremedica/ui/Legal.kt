@@ -229,13 +229,13 @@ fun LegalPage(page: LegalPageName, onOpen: (LegalPageName) -> Unit, onClose: () 
     LaunchedEffect(page) { scroll.scrollTo(0) }
     BackHandler(onBack = onClose)
 
+    val compact = LocalCompact.current
     Column(Modifier.fillMaxSize().background(colors.canvas)) {
-        if (LocalCompact.current) {
+        if (compact) {
             // A back arrow, as phones leave a page; the theme is chosen in the account sheet.
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .drawBehind { drawLine(colors.border, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
                     .statusBarsPadding()
                     .heightIn(min = 56.dp)
                     .padding(horizontal = 4.dp),
@@ -243,7 +243,12 @@ fun LegalPage(page: LegalPageName, onOpen: (LegalPageName) -> Unit, onClose: () 
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(Icons.ArrowLeft, "Back to HomeoRemedica", onClose, size = 48.dp, iconSize = 22.dp, color = colors.text)
-                Brand()
+                // The bar names the page, so the page does not repeat it.
+                BasicText(
+                    page.title,
+                    style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 18.sp, fontWeight = FontWeight.Medium),
+                    modifier = Modifier.semantics { heading() },
+                )
             }
         } else {
             Row(
@@ -266,20 +271,22 @@ fun LegalPage(page: LegalPageName, onOpen: (LegalPageName) -> Unit, onClose: () 
                     .widthIn(max = 736.dp)
                     .fillMaxWidth()
                     .navigationBarsPadding()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = if (compact) 20.dp else 16.dp),
             ) {
-                val body = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 17.sp, lineHeight = 1.65.em)
+                val body = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = if (compact) 16.sp else 17.sp, lineHeight = if (compact) 1.55.em else 1.65.em)
                 SelectionContainer {
-                    Column(Modifier.padding(vertical = 32.dp)) {
-                        BasicText(
-                            page.title,
-                            style = body.copy(fontSize = 32.sp, lineHeight = 1.25.em),
-                            modifier = Modifier.semantics { heading() },
-                        )
+                    Column(Modifier.padding(top = if (compact) 4.dp else 32.dp, bottom = 32.dp)) {
+                        if (!compact) {
+                            BasicText(
+                                page.title,
+                                style = body.copy(fontSize = 32.sp, lineHeight = 1.25.em),
+                                modifier = Modifier.semantics { heading() },
+                            )
+                        }
                         BasicText(
                             "Effective $EFFECTIVE",
                             style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 13.sp),
-                            modifier = Modifier.padding(top = 8.dp),
+                            modifier = Modifier.padding(top = if (compact) 0.dp else 8.dp),
                         )
                         for (section in if (page == LegalPageName.Privacy) Privacy else Terms) {
                             when (section) {

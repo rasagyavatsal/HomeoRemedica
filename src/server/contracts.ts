@@ -10,6 +10,9 @@ export const MAX_GENERATED_ANSWER_CHARS = 12_000
 /** How many symptoms a case is searched by, at most. */
 export const MAX_SYMPTOMS = 15
 export const MAX_SYMPTOM_CHARS = 200
+/** How many diseases a case's remedies are ranked by, at most. */
+export const MAX_DISEASES = 15
+export const MAX_DISEASE_CHARS = 200
 
 function text(field: string) {
   return z
@@ -18,6 +21,21 @@ function text(field: string) {
     .max(MAX_TURN_CHARS, { error: `${field} must not exceed ${MAX_TURN_CHARS} characters` })
     .refine((value) => value.trim() !== '', { error: `${field} must not be blank` })
     .transform((value) => value.trim())
+}
+
+/** What the user confirmed of a case: a list of `one`s, each trimmed and within `maxChars`. */
+function confirmed(one: string, many: string, { max, maxChars }: { max: number; maxChars: number }) {
+  return z
+    .array(
+      z
+        .string({ error: `a ${one} must be a string` })
+        .trim()
+        .min(1, { error: `a ${one} must not be blank` })
+        .max(maxChars, { error: `a ${one} must not exceed ${maxChars} characters` }),
+      { error: `${many} must be a list` },
+    )
+    .max(max, { error: `${many} must not exceed ${max}` })
+    .optional()
 }
 
 export const ChatTurnSchema = z.strictObject({
@@ -32,17 +50,9 @@ export const ChatRequestSchema = z
       history: historySchema().default([]),
       summary: text('summary').optional(),
       /** The case's symptoms as the user confirmed them, searched in place of the model's own. */
-      symptoms: z
-        .array(
-          z
-            .string({ error: 'a symptom must be a string' })
-            .trim()
-            .min(1, { error: 'a symptom must not be blank' })
-            .max(MAX_SYMPTOM_CHARS, { error: `a symptom must not exceed ${MAX_SYMPTOM_CHARS} characters` }),
-          { error: 'symptoms must be a list' },
-        )
-        .max(MAX_SYMPTOMS, { error: `symptoms must not exceed ${MAX_SYMPTOMS}` })
-        .optional(),
+      symptoms: confirmed('symptom', 'symptoms', { max: MAX_SYMPTOMS, maxChars: MAX_SYMPTOM_CHARS }),
+      /** The case's diseases as the user confirmed them, ranked by in place of the model's own. */
+      diseases: confirmed('disease', 'diseases', { max: MAX_DISEASES, maxChars: MAX_DISEASE_CHARS }),
     },
     { error: (issue) => (issue.code === 'unrecognized_keys' ? 'unexpected request field' : undefined) },
   )
@@ -175,6 +185,11 @@ export interface KindResponse {
 /** `POST /api/symptoms`: the symptoms of the case a question describes; none when it describes no patient. */
 export interface SymptomsResponse {
   symptoms: string[]
+}
+
+/** `POST /api/diseases`: the diseases the case a question describes names; none when it names none. */
+export interface DiseasesResponse {
+  diseases: string[]
 }
 
 /** `POST /api/chat`: the answer plus the trimmed history and the summary to send with the next question. */
@@ -343,6 +358,8 @@ export interface Retriever {
   kind(request: ChatRequest, options?: Cancellable): Promise<QuestionKind>
   /** The symptoms a question's case would be searched by, for the user to check first. */
   symptoms(request: ChatRequest, options?: Cancellable): Promise<string[]>
+  /** The diseases a question's case would be ranked by, for the user to check first. */
+  diseases(request: ChatRequest, options?: Cancellable): Promise<string[]>
 }
 
 export interface GenerateOptions {

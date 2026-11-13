@@ -8,6 +8,10 @@ const val SLOW = "[slow]"
 /** A question containing this fails the first time it is asked and is answered after that. */
 const val FAIL_ONCE = "[fail once]"
 
+/** A question containing this describes a case, whose symptoms are shown for review. */
+const val CASE = "[case]"
+val CASE_SYMPTOMS = listOf("Mind: weeping", "Stomach: thirstless")
+
 /** Questions each client may ask a minute. */
 const val CHAT_LIMIT = 5
 

@@ -8,12 +8,14 @@ export interface Message {
   role: 'user' | 'assistant'
   content: string
   sources?: Citation[]
-  /** Unset once an answer is complete; `review` while the user checks the case's symptoms. */
+  /** Unset once an answer is complete; `review` while the user checks the case's symptoms and diseases. */
   status?: 'streaming' | 'review' | 'stopped' | 'error'
-  /** What a streaming answer waits on before the books are searched: the question being sorted, or its case read for symptoms. */
+  /** What a streaming answer waits on before the books are searched: the question being sorted, or its case read for symptoms and diseases. */
   reading?: 'question' | 'case'
   /** The symptoms read from the case: under review, then as the user confirmed them until the answer is complete. */
   symptoms?: string[]
+  /** The diseases read from the case, kept as the symptoms are; unset when they could not be read. */
+  diseases?: string[]
   error?: string
 }
 

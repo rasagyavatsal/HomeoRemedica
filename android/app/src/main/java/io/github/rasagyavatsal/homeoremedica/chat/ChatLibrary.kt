@@ -22,7 +22,11 @@ const val MAX_LOCAL_CHATS = 50
 
 private const val MAX_TITLE_CHARS = 80
 
-enum class MessageStatus { Streaming, Stopped, Error }
+/** [Review] while the user checks the symptoms and diseases read from the case. */
+enum class MessageStatus { Streaming, Review, Stopped, Error }
+
+/** What a streaming answer waits on before the books are searched: the question being sorted, or its case read. */
+enum class Reading { Question, Case }
 
 @Serializable
 data class Message(
@@ -34,6 +38,11 @@ data class Message(
     /** Null once an answer is complete. */
     val status: MessageStatus? = null,
     val error: String? = null,
+    val reading: Reading? = null,
+    /** The symptoms read from the case: under review, then as the user confirmed them until the answer is complete. */
+    val symptoms: List<String>? = null,
+    /** The diseases read from the case, kept as the symptoms are; null when they could not be read. */
+    val diseases: List<String>? = null,
 )
 
 /** The messages worth keeping: failed questions and their errors are left out. */

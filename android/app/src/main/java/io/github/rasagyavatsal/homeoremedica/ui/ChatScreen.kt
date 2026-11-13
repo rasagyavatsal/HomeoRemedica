@@ -93,6 +93,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
@@ -112,6 +113,7 @@ import io.github.rasagyavatsal.homeoremedica.chat.ChatViewModel
 import io.github.rasagyavatsal.homeoremedica.chat.MAX_QUESTION_CHARS
 import io.github.rasagyavatsal.homeoremedica.chat.Message
 import io.github.rasagyavatsal.homeoremedica.chat.MessageStatus
+import io.github.rasagyavatsal.homeoremedica.chat.Reading
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Ease
 import io.github.rasagyavatsal.homeoremedica.ui.theme.EaseExit
 import io.github.rasagyavatsal.homeoremedica.ui.theme.Fonts
@@ -139,6 +141,7 @@ fun ChatScreen(viewModel: ChatViewModel, footer: (@Composable () -> Unit)? = nul
         onSubmit = viewModel::submit,
         onStop = viewModel::stop,
         onRetry = viewModel::retry,
+        onConfirm = viewModel::confirm,
         onNewChat = viewModel::newChat,
         onOpenChat = viewModel::openChat,
         onDeleteChat = viewModel::deleteChat,
@@ -162,6 +165,8 @@ fun ChatScreen(
     onDeleteChat: (String) -> Unit,
     onDismissNotice: () -> Unit,
     onUndoDelete: () -> Unit = {},
+    /** Answers the question whose case is under review by the symptoms and diseases given. */
+    onConfirm: (symptoms: List<String>, diseases: List<String>?) -> Unit = { _, _ -> },
     /** Rates an answer, or one of its sources by number. */
     onRate: (messageId: Long, source: Int?, rating: Rating?) -> Unit = { _, _, _ -> },
     onNote: (messageId: Long, reasons: List<FeedbackReason>?, comment: String?, onSaved: (Boolean) -> Unit) -> Unit = { _, _, _, _ -> },
@@ -213,7 +218,9 @@ fun ChatScreen(
     BoxWithConstraints(Modifier.fillMaxSize().background(colors.canvas)) {
         val drawer = compact
         val wide = maxWidth >= 640.dp
-        val drawerWidth = minOf(320.dp, maxWidth - 56.dp)
+        // The chat list covers a phone's screen; on wider windows it stops short and the scrim beside it closes it.
+        val fullDrawer = maxWidth < 600.dp
+        val drawerWidth = if (fullDrawer) maxWidth else 420.dp
         val drawerPx = with(density) { drawerWidth.toPx() }
         // How far the drawer has slid in, from 0 to 1; a drag moves it, and letting go settles it.
         val drawerDrag = rememberDraggableState { delta ->
@@ -247,6 +254,7 @@ fun ChatScreen(
                 },
                 onDelete = onDeleteChat,
                 modifier = modifier,
+                onClose = closeSidebar.takeIf { drawer },
                 footer = footer,
             )
         }
@@ -271,9 +279,9 @@ fun ChatScreen(
                 CompositionLocalProvider(LocalEntrances provides remember(state.id) { Entrances() }) {
                     Box(Modifier.weight(1f).fillMaxWidth()) {
                         if (state.messages.isEmpty()) {
-                            Welcome(composerSpace)
+                            Welcome(composerSpace, onExample = { submit(it) })
                         } else {
-                            key(state.id) { Conversation(state, wide, composerSpace, open, showSource, onRetry, onRate, onNote) }
+                            key(state.id) { Conversation(state, wide, composerSpace, open, showSource, onRetry, onConfirm, onRate, onNote) }
                         }
                         ComposerArea(
                             state = state,
@@ -338,7 +346,8 @@ fun ChatScreen(
                         .fillMaxSize()
                         .graphicsLayer { alpha = drawerShown.value }
                         .background(colors.scrim)
-                        .pressable(label = "Close chats", onClick = closeSidebar),
+                        // Nothing of the scrim shows beside a drawer that covers the screen, which has its own button.
+                        .then(if (fullDrawer) Modifier else Modifier.pressable(label = "Close chats", onClick = closeSidebar)),
                 )
                 sidebar(
                     Modifier
@@ -382,7 +391,8 @@ private fun Topbar(title: String, onMenu: (() -> Unit)?, onNewChat: (() -> Unit)
         Modifier
             .fillMaxWidth()
             .background(colors.canvas)
-            .drawBehind { drawLine(colors.border, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
+            // Phones leave the rule out: the bar is part of the page.
+            .drawBehind { if (!compact) drawLine(colors.border, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
             .statusBarsPadding()
             .heightIn(min = if (compact) 56.dp else 44.dp)
             .padding(horizontal = if (compact) 4.dp else 16.dp, vertical = 4.dp),
@@ -392,16 +402,19 @@ private fun Topbar(title: String, onMenu: (() -> Unit)?, onNewChat: (() -> Unit)
         if (onMenu != null) IconButton(Icons.Menu, "Open chats", onMenu, size = 48.dp, iconSize = 22.dp, color = colors.text)
         BasicText(
             title,
-            style = if (compact) {
-                TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 16.sp, fontWeight = FontWeight.Medium)
-            } else {
-                TextStyle(color = colors.textMuted, fontFamily = Fonts.sans, fontSize = 13.sp)
-            },
+            style = TextStyle(
+                color = colors.textMuted,
+                fontFamily = Fonts.sans,
+                fontSize = if (compact) 15.sp else 13.sp,
+                textAlign = if (compact) TextAlign.Center else TextAlign.Start,
+            ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f).padding(start = if (onMenu != null) 4.dp else 0.dp).semantics { heading() },
+            modifier = Modifier.weight(1f).padding(horizontal = if (onMenu != null) 4.dp else 0.dp).semantics { heading() },
         )
         if (onNewChat != null) IconButton(Icons.NewChat, "New chat", onNewChat, size = 48.dp, iconSize = 22.dp, color = colors.text)
+        // Keeps the title centred while there is no new chat to start.
+        else if (compact && onMenu != null) Box(Modifier.size(48.dp))
     }
 }
 
@@ -413,6 +426,7 @@ private fun Conversation(
     openSource: OpenSource?,
     onSource: (messageId: Long, number: Int) -> Unit,
     onRetry: () -> Unit,
+    onConfirm: (symptoms: List<String>, diseases: List<String>?) -> Unit,
     onRate: (messageId: Long, source: Int?, rating: Rating?) -> Unit,
     onNote: (messageId: Long, reasons: List<FeedbackReason>?, comment: String?, onSaved: (Boolean) -> Unit) -> Unit,
 ) {
@@ -447,6 +461,7 @@ private fun Conversation(
                         activeSource = openSource?.takeIf { it.messageId == message.id }?.number,
                         onSource = { number -> onSource(message.id, number) },
                         onRetry = onRetry.takeIf { index == state.messages.lastIndex },
+                        onConfirm = onConfirm.takeIf { index == state.messages.lastIndex },
                         modifier = itemModifier.rise(message.id),
                         ratings = state.ratings[message.id],
                         onRate = if (state.canRate) ({ rating -> onRate(message.id, null, rating) }) else null,
@@ -462,18 +477,20 @@ private fun Conversation(
 @Composable
 private fun UserMessage(content: String, wide: Boolean, modifier: Modifier) {
     val colors = Theme.colors
-    val shape = RoundedCornerShape(16.dp)
+    val compact = LocalCompact.current
+    // A filled bubble with a tail on phones; the web app's outlined card on wide screens.
+    val shape = if (compact) RoundedCornerShape(20.dp, 20.dp, 6.dp, 20.dp) else RoundedCornerShape(16.dp)
     BoxWithConstraints(modifier, contentAlignment = Alignment.CenterEnd) {
         val maxBubble = maxWidth * 0.85f
         SelectionContainer {
             BasicText(
                 content,
-                style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 15.sp, lineHeight = 1.4.em),
+                style = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = if (compact) 16.sp else 15.sp, lineHeight = 1.4.em),
                 modifier = Modifier
                     .widthIn(max = maxBubble)
-                    .background(colors.surfaceRaised, shape)
-                    .border(1.dp, colors.border, shape)
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .background(if (compact) colors.accentSoftHover else colors.surfaceRaised, shape)
+                    .border(1.dp, if (compact) Color.Transparent else colors.border, shape)
+                    .padding(horizontal = if (compact) 18.dp else 16.dp, vertical = 12.dp)
                     .semantics { contentDescription = "You: $content" },
             )
         }
@@ -487,6 +504,7 @@ private fun Reply(
     activeSource: Int?,
     onSource: (Int) -> Unit,
     onRetry: (() -> Unit)?,
+    onConfirm: ((symptoms: List<String>, diseases: List<String>?) -> Unit)?,
     modifier: Modifier,
     ratings: AnswerRatings?,
     /** Rates the answer; it cannot be rated without this. */
@@ -498,8 +516,15 @@ private fun Reply(
     val streaming = message.status == MessageStatus.Streaming
     when {
         message.status == MessageStatus.Error -> ReplyError(message.error.orEmpty(), onRetry, modifier)
+        message.status == MessageStatus.Review && onConfirm != null ->
+            CaseReview(message.symptoms.orEmpty(), message.diseases, onConfirm, modifier)
         streaming && message.content.isEmpty() -> Progress(
-            if (message.sources != null) "Reading the passages…" else "Searching the books…",
+            when {
+                message.sources != null -> "Reading the passages…"
+                message.reading == Reading.Question -> "Reading your question…"
+                message.reading == Reading.Case -> "Reading the case for symptoms and diseases…"
+                else -> "Searching the books…"
+            },
             modifier,
         )
         else -> Column(modifier) {
@@ -598,14 +623,18 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
     val colors = Theme.colors
     val interactions = remember { MutableInteractionSource() }
     val focused by interactions.collectIsFocusedAsState()
-    val radius = 16.dp
+    val compact = LocalCompact.current
+    // A filled pill on phones; the web app's raised, outlined box on wide screens.
+    val radius = if (compact) 28.dp else 16.dp
     val shape = RoundedCornerShape(radius)
     val canSend = !state.busy && state.draft.isNotBlank()
+    // Larger type on phones, where the box is the main thing on the screen.
+    val text = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = if (compact) 16.sp else 15.sp, lineHeight = if (compact) 22.sp else 21.sp)
     Row(
         Modifier
             .fillMaxWidth()
             .drawBehind {
-                if (focused) {
+                if (focused && !compact) {
                     val ring = 3.dp.toPx()
                     drawRoundRect(
                         colors.accentSoft,
@@ -615,10 +644,10 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
                     )
                 }
             }
-            .shadowMedium(shape, colors.shadow)
-            .background(colors.surfaceRaised, shape)
-            .border(1.dp, if (focused) colors.accent else colors.borderStrong, shape)
-            .padding(start = 16.dp, top = 8.dp, end = 8.dp, bottom = 8.dp),
+            .then(if (compact) Modifier else Modifier.shadowMedium(shape, colors.shadow))
+            .background(if (compact) colors.surfaceSelected else colors.surfaceRaised, shape)
+            .border(1.dp, if (compact) Color.Transparent else if (focused) colors.accent else colors.borderStrong, shape)
+            .padding(start = if (compact) 22.dp else 16.dp, top = 8.dp, end = 8.dp, bottom = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Bottom,
     ) {
@@ -627,7 +656,7 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
             onValueChange = onDraftChange,
             modifier = Modifier
                 .weight(1f)
-                .heightIn(min = 36.dp, max = 192.dp)
+                .heightIn(min = if (compact) 48.dp else 36.dp, max = 192.dp)
                 .onPreviewKeyEvent { event ->
                     // Enter sends; Shift+Enter adds a line.
                     val enter = event.key == Key.Enter || event.key == Key.NumPadEnter
@@ -639,7 +668,7 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
                     }
                 }
                 .semantics { contentDescription = "Message" },
-            textStyle = TextStyle(color = colors.text, fontFamily = Fonts.sans, fontSize = 15.sp, lineHeight = 21.sp),
+            textStyle = text,
             cursorBrush = SolidColor(colors.accent),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions(onSend = { onSubmit() }),
@@ -648,8 +677,9 @@ private fun Composer(state: ChatState, wide: Boolean, onDraftChange: (String) ->
                 Box(Modifier.padding(vertical = 8.dp), contentAlignment = Alignment.CenterStart) {
                     if (state.draft.isEmpty()) {
                         BasicText(
-                            "Ask about a remedy, symptom or principle…",
-                            style = TextStyle(color = colors.textSubtle, fontFamily = Fonts.sans, fontSize = 15.sp, lineHeight = 21.sp),
+                            // Short enough for one line of a phone's box.
+                            if (compact) "Ask about a remedy or symptom…" else "Ask about a remedy, symptom or principle…",
+                            style = text.copy(color = colors.textSubtle),
                         )
                     }
                     field()
@@ -680,20 +710,21 @@ private fun SendButton(icon: ImageVector, label: String, enabled: Boolean, onCli
     Box(
         Modifier
             .scale(if (pressed && enabled) 0.96f else 1f)
-            .size(if (compact) 44.dp else 36.dp)
+            .size(if (compact) 48.dp else 36.dp)
             .background(
                 when {
-                    !enabled -> colors.surfaceSelected
+                    // Darker than the filled message box it sits in on phones.
+                    !enabled -> if (compact) colors.borderStrong else colors.surfaceSelected
                     pressed -> colors.accentHover
                     else -> colors.accent
                 },
-                RoundedCornerShape(10.dp),
+                if (compact) Pill else RoundedCornerShape(10.dp),
             )
             .pressable(enabled, label = label, interactionSource = interactions, onClick = onClick)
             .semantics { contentDescription = label },
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, if (enabled) colors.textOnAccent else colors.textSubtle, if (compact) 20.dp else 18.dp)
+        Icon(icon, if (enabled) colors.textOnAccent else colors.textSubtle, if (compact) 22.dp else 18.dp)
     }
 }
 

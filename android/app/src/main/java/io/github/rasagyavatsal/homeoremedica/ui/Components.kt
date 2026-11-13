@@ -159,10 +159,16 @@ fun Button(
     val interactions = remember { MutableInteractionSource() }
     val pressed by interactions.pressed()
     val active = pressed && enabled
-    val shape = RoundedCornerShape(10.dp)
+    val compact = LocalCompact.current
+    // Phones round buttons into pills and fill the outlined ones, where the web app draws a border.
+    val shape = if (compact) Pill else RoundedCornerShape(10.dp)
     val background = when (style) {
         ButtonStyle.Primary -> if (active) colors.accentHover else colors.accent
-        ButtonStyle.Outline -> if (active) colors.surfaceRaisedHover else colors.surfaceRaised
+        ButtonStyle.Outline -> when {
+            compact -> if (active) colors.borderStrong else colors.surfaceSelected
+            active -> colors.surfaceRaisedHover
+            else -> colors.surfaceRaised
+        }
         // Quiet buttons on a raised surface, such as a dialog, darken to its hover colour.
         ButtonStyle.Quiet -> if (!active) Color.Transparent else if (raised) colors.surfaceRaisedHover else colors.surfaceHover
         ButtonStyle.Danger -> if (active) colors.dangerHover else colors.danger
@@ -178,9 +184,9 @@ fun Button(
             .defaultMinSize(minHeight = minHeight)
             .clip(shape)
             .background(background)
-            .border(1.dp, if (style == ButtonStyle.Outline) colors.borderStrong else Color.Transparent, shape)
+            .border(1.dp, if (style == ButtonStyle.Outline && !compact) colors.borderStrong else Color.Transparent, shape)
             .pressable(enabled, label = text, interactionSource = interactions, onClick = onClick)
-            .padding(horizontal = if (small) 8.dp else 12.dp),
+            .padding(horizontal = if (small) 8.dp else if (compact) 16.dp else 12.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp, if (start) Alignment.Start else Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -190,7 +196,7 @@ fun Button(
             text,
             style = TextStyle(
                 color = content,
-                fontSize = if (small) 12.sp else 13.sp,
+                fontSize = if (small) 12.sp else if (compact) 15.sp else 13.sp,
                 lineHeight = 18.sp,
                 fontWeight = FontWeight.Medium,
                 fontFamily = Fonts.sans,

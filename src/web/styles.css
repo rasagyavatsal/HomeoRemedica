@@ -965,6 +965,10 @@ a.menu-item {
   animation: rise-in var(--duration-slow) var(--ease-standard);
 }
 
+.symptoms-section + .symptoms-section {
+  margin-top: var(--space-lg);
+}
+
 /* One card holds the list and its actions, so the symptoms read as a list rather than a form. */
 .symptoms-card {
   overflow: hidden;
