@@ -102,7 +102,11 @@ private class TermRows(read: List<String>) {
 
     companion object {
         /** Keeps the rows while the review is scrolled out of view or the screen turns. */
-        val Saver = listSaver<TermRows, String>(save = { terms -> terms.rows.map { it.text } }, restore = { TermRows(it) })
+        /** Saves the rows, then the [draft] last, so a term half typed survives rotation too. */
+        val Saver = listSaver<TermRows, String>(
+            save = { terms -> terms.rows.map { it.text } + terms.draft },
+            restore = { saved -> TermRows(saved.dropLast(1)).also { it.draft = saved.lastOrNull().orEmpty() } },
+        )
     }
 }
 
