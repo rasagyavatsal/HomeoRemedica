@@ -7,13 +7,7 @@
     ".": {
       "release-type": "node",
       "package-name": "HomeoRemedica",
-      "component": "web",
-      "exclude-paths": ["android"]
-    },
-    "android": {
-      "release-type": "simple",
-      "package-name": "HomeoRemedica-android",
-      "component": "android"
+      "component": "web"
     }
   }
 }
