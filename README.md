@@ -9,7 +9,7 @@ advice.
 **Live app:** <https://homeoremedica-619837289655.asia-south1.run.app>
 
 The project covers hybrid search and answer generation. Search runs against Qdrant collections, one per book,
-built by the [HomeoRemedica-private](https://github.com/rasagyavatsal/HomeoRemedica-private) repository; external APIs provide query embeddings and
+built by the [homeoremedica-private](https://github.com/rasagyavatsal/homeoremedica-private) repository; external APIs provide query embeddings and
 generated answers. A React frontend talks to the production pipeline through a Hono API server on Node.js.
 
 **Stack:** TypeScript · Node.js · Hono · Zod · React · Vite · Qdrant · OpenRouter · Z.AI ·
@@ -31,7 +31,7 @@ Firebase Authentication · Firestore · Vitest · Playwright
 
 ## Architecture
 
-The [HomeoRemedica-private](https://github.com/rasagyavatsal/HomeoRemedica-private) repository chunks the source texts and indexes them in Qdrant. The `production`
+The [homeoremedica-private](https://github.com/rasagyavatsal/homeoremedica-private) repository chunks the source texts and indexes them in Qdrant. The `production`
 pipeline searches those collections and generates the answer:
 
 ```mermaid
@@ -78,7 +78,7 @@ cp .env.example .env
 ```
 
 Set `QDRANT_URL`, `QDRANT_API_KEY`, `OPENROUTER_API_KEY`, and `ZAI_API_KEY` in `.env`. The
-collections are built and updated by `scripts/embed.py` in the [HomeoRemedica-private](https://github.com/rasagyavatsal/HomeoRemedica-private)
+collections are built and updated by `scripts/embed.py` in the [homeoremedica-private](https://github.com/rasagyavatsal/homeoremedica-private)
 repository.
 
 ## Web app
@@ -233,4 +233,4 @@ its own Google identity, so accounts need no secret. Local `.env` files are not 
 ## License
 
 Software and documentation: [MIT](LICENSE). The dataset is proprietary, lives in the
-[HomeoRemedica-private](https://github.com/rasagyavatsal/HomeoRemedica-private) repository, and is not distributed with this repository. Underlying historical works retain their applicable rights and source notices.
+[homeoremedica-private](https://github.com/rasagyavatsal/homeoremedica-private) repository, and is not distributed with this repository. Underlying historical works retain their applicable rights and source notices.
