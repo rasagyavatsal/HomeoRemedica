@@ -168,7 +168,9 @@ export function generationPrompt(
 
 /**
  * The symptoms and diseases the user confirmed for the case, which stand over the latest message's
- * own; nothing for a list with none confirmed.
+ * own. Diseases are only sent once reviewed, so none confirmed means the user removed them all and
+ * the message's own are not answered for; no symptoms is also what a question that is not a case
+ * sends, so it adds nothing.
  */
 function confirmedText(symptoms: readonly string[] | undefined, diseases: readonly string[] | undefined): string {
   const block = (many: string, one: string, confirmed: readonly string[] | undefined) =>
@@ -178,7 +180,12 @@ function confirmedText(symptoms: readonly string[] | undefined, diseases: readon
         `message gives a ${one} differently or gives one that is not listed, go by this list.\n` +
         `<confirmed_${many}>\n${confirmed.join('\n')}\n</confirmed_${many}>\n\n`
       : ''
-  return block('symptoms', 'symptom', symptoms) + block('diseases', 'disease', diseases)
+  const noDiseases =
+    diseases?.length === 0
+      ? 'The user checked the diseases of the case and confirmed none. Do not answer for any disease ' +
+        'the latest user message gives.\n\n'
+      : ''
+  return block('symptoms', 'symptom', symptoms) + (block('diseases', 'disease', diseases) || noDiseases)
 }
 
 /**

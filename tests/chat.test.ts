@@ -402,8 +402,12 @@ it('answers by the symptoms and diseases a user confirmed and searches the books
   await new ChatService({ retriever, generator }).chat(request({ ...asked, diseases: ['asthma', 'eczema'] }))
   expect(generator.generationPrompt).toContain('</confirmed_symptoms>\n\nThe user checked the diseases of the case')
   expect(generator.generationPrompt).toContain('<confirmed_diseases>\nasthma\neczema\n</confirmed_diseases>')
+  await new ChatService({ retriever, generator }).chat(request({ ...asked, diseases: [] }))
+  expect(generator.generationPrompt).not.toContain('confirmed_diseases')
+  expect(generator.generationPrompt).toContain('confirmed none. Do not answer for any disease')
   await new ChatService({ retriever, generator }).chat(request({ message: 'What is Sulphur?', symptoms: [] }))
   expect(generator.generationPrompt).not.toContain('confirmed_')
+  expect(generator.generationPrompt).not.toContain('confirmed none')
 
   const searched: string[] = []
   const corpus: SearchableRelease = { search: async (query) => (searched.push(query), []) }
