@@ -126,6 +126,10 @@ production books without requiring provider keys; `POST /api/chat` accepts `mess
 and the trimmed history to send with the next question. With `Accept: text/event-stream`, the
 chat endpoint streams server-sent events instead: `sources` once retrieval finishes, `text` pieces
 as the answer is generated, then `done` with the full response or `error` with a safe `detail`.
+Before a question is asked, `POST /api/kind`, `/api/symptoms` and `/api/diseases` take the same body
+and say whether it describes a case and which symptoms and diseases it names; `/api/chat` takes the
+ones the user confirms as `symptoms` and `diseases`. `POST /api/chat/compact` condenses a chat's
+history for older Android builds.
 Each client may send 10 questions a minute and 100 an hour, and the server answers at most 1,000
 questions a day from all clients together; further requests get `429` with `Retry-After`. The
 counts are kept in the server's memory, so they start again when it restarts. IPv6 clients are
@@ -134,8 +138,9 @@ limited by their /64, since one connection usually holds that whole block.
 `GET /api/config` gives the browser the public Firebase settings, or `auth: null` without accounts.
 The saved-chat endpoints need a Firebase ID token as `Authorization: Bearer <token>`:
 `GET /api/chats` lists the user's chats, `GET`, `PUT` and `DELETE /api/chats/:id` open, save and
-delete one, `DELETE /api/chats` deletes them all, and `DELETE /api/account` deletes the chats and
-then the sign-in. Firestore keeps each chat under `users/{uid}/chats/{chatId}`, one document per
+delete one, `DELETE /api/chats` deletes them all, `GET /api/chats/:id/feedback` lists a chat's
+ratings and `PUT /api/feedback/:id` saves one answer's, and `DELETE /api/account` deletes the chats
+and then the sign-in. Firestore keeps each chat under `users/{uid}/chats/{chatId}`, one document per
 message; its security rules deny all browser access, so only the server reads or writes it.
 Saving needs a verified email address; Google sign-ins always have one, and email sign-ups are sent
 a verification link, keeping their chats in the browser until it is followed. Accounts keep any
