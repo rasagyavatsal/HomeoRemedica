@@ -213,8 +213,8 @@ checks that the answer cites a source. It stays out of `npm run check`.
 
 ## Deployment
 
-The app runs on Cloud Run at <https://homeoremedica-619837289655.asia-south1.run.app>. Each `web-v*`
-release runs `npm run check` and deploys through the `Deploy web` GitHub Actions workflow, which
+The app runs on Cloud Run at <https://homeoremedica-619837289655.asia-south1.run.app>. Each `v*`
+release runs `npm run check` and deploys through the `Deploy` GitHub Actions workflow, which
 authenticates to Google Cloud with Workload Identity Federation; run it by hand to redeploy without a
 release. To deploy from your machine:
 
