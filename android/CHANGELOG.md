@@ -1,5 +1,31 @@
 # Changelog
 
+## [3.4.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/android-v3.3.0...android-v3.4.0) (2026-11-13)
+
+
+### Features
+
+* **android:** bring a phone's sign-in down to the thumb, with filled fields and stacked links ([4cb8f14](https://github.com/rasagyavatsal/HomeoRemedica/commit/4cb8f14bead3e67aa308aedba32707fdb5fb4cc9))
+* **android:** enlarge the phone's controls and shorten the message box's hint ([25d08ef](https://github.com/rasagyavatsal/HomeoRemedica/commit/25d08effc38ee889d885dd41005b0df2592a55c5))
+* **android:** fill the phone drawer's new chat button and drop its rules ([3588b71](https://github.com/rasagyavatsal/HomeoRemedica/commit/3588b71ec3b22c6725be3e1432e011695d3e515e))
+* **android:** give the phone's chat a quiet top bar, a filled question and a pill message box ([1deb24f](https://github.com/rasagyavatsal/HomeoRemedica/commit/1deb24f1ea797a364cb65eb6b5c4d486654cba6d))
+* **android:** let the user check a case's symptoms and diseases before it is answered ([2a30ca3](https://github.com/rasagyavatsal/HomeoRemedica/commit/2a30ca3a53bfb9f61b7f355410f3494861f8af96))
+* **android:** make the phone's buttons filled pills ([f5e3d0d](https://github.com/rasagyavatsal/HomeoRemedica/commit/f5e3d0db1a585026bdfda9703a372d576a47c39a))
+* **android:** name the terms and privacy pages in the phone's top bar ([bc10c2a](https://github.com/rasagyavatsal/HomeoRemedica/commit/bc10c2ac8ada4f27095d80fea394d97f43a8b2ae))
+* **android:** open the chat list across a phone's whole screen, with a button to close it ([dc5e49b](https://github.com/rasagyavatsal/HomeoRemedica/commit/dc5e49b206cfa1fcef119bd9419aef314d55e8ca))
+* **android:** open the phone's empty chat by the message box with questions to ask ([d175c2f](https://github.com/rasagyavatsal/HomeoRemedica/commit/d175c2ffc914f154ed250a38f74f5fd61108c9a2))
+* **android:** put a phone's search atop the chat list and its new chat button by the account ([417106b](https://github.com/rasagyavatsal/HomeoRemedica/commit/417106b0b8379ff82269d8ed8d6bea7bc9b73c22))
+* **android:** put an answer's actions under it and list its references in full on phones ([c1bb4d3](https://github.com/rasagyavatsal/HomeoRemedica/commit/c1bb4d3d661a2cacbdba4235d7060355f305670d))
+* **android:** review a case in a sheet on phones, with rows that add as they are typed ([19748a5](https://github.com/rasagyavatsal/HomeoRemedica/commit/19748a5a2459bbbf4d00dd6c0784172d1c6937f0))
+* review a case's diseases too, and give the Android app a phone layout ([f98a5ef](https://github.com/rasagyavatsal/HomeoRemedica/commit/f98a5ef8154ee7b7d25f364db19b5a5bc2959a0c))
+* **server:** compact long chats inside /api/chat ([#83](https://github.com/rasagyavatsal/HomeoRemedica/issues/83)) ([baf6d69](https://github.com/rasagyavatsal/HomeoRemedica/commit/baf6d69f1ac495498edac949817e5bbb726d4c5e))
+
+
+### Bug Fixes
+
+* **android:** keep a half-typed symptom or disease when the phone rotates ([3985a3b](https://github.com/rasagyavatsal/HomeoRemedica/commit/3985a3bc702f94c04c18243475b52e8c63a233fc))
+* **android:** keep the welcome glow inside its bounds on phones ([144ad1d](https://github.com/rasagyavatsal/HomeoRemedica/commit/144ad1db995899511af618f25c547fcd9d7bd110))
+
 ## [3.3.0](https://github.com/rasagyavatsal/HomeoRemedica/compare/android-v3.2.1...android-v3.3.0) (2026-11-06)
 
 
