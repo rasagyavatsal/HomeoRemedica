@@ -144,9 +144,9 @@ over that gets `429` with `Retry-After`.
 
 ## Android app
 
-A native Kotlin client for the same API lives in [`android/`](android/). Open that folder in Android
-Studio; [android/README.md](android/README.md) covers its setup and builds. The two apps are released
-separately, as `web-v*` and `android-v*`.
+A native Kotlin client for the same API lives in its own repository,
+[homeoremedica-android](https://github.com/rasagyavatsal/homeoremedica-android), whose README covers its
+setup and builds. Its end-to-end tests run against this repository's e2e server.
 
 ## Configuration
 
@@ -214,9 +214,9 @@ checks that the answer cites a source. It stays out of `npm run check`.
 ## Deployment
 
 The app runs on Cloud Run at <https://homeoremedica-619837289655.asia-south1.run.app>. Each `web-v*`
-release runs `npm run check` and deploys through the `Deploy` GitHub Actions workflow, which
-authenticates to Google Cloud with Workload Identity Federation; run `Deploy` by hand with `web` to
-redeploy without a release. To deploy from your machine:
+release runs `npm run check` and deploys through the `Deploy web` GitHub Actions workflow, which
+authenticates to Google Cloud with Workload Identity Federation; run it by hand to redeploy without a
+release. To deploy from your machine:
 
 ```sh
 npm run deploy
