@@ -14,7 +14,7 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     outputs:
-      web: ${{ steps.release.outputs.release_created }}
+      release_created: ${{ steps.release.outputs.release_created }}
     steps:
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         id: release
@@ -22,11 +22,11 @@ jobs:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
-  deploy-web:
+  deploy:
     needs: release-please
-    if: needs.release-please.outputs.web == 'true'
+    if: needs.release-please.outputs.release_created == 'true'
     permissions:
       contents: read
       id-token: write
-    uses: ./.github/workflows/deploy-web.yml
+    uses: ./.github/workflows/deploy.yml
 
