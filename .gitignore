@@ -20,9 +20,6 @@ output/
 artifacts/corpus/
 *.tsbuildinfo
 
-# Private HomeoRemedica work: data, models (HomeoRemedica-private repository)
-/private/
-
 # Local corpus cache and database artifacts
 .cache/
 server-data/

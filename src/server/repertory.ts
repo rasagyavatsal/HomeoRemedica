@@ -5,7 +5,7 @@
  * rubrics by voyage-4 embedding, and remedies are ranked the way a homoeopath works a repertory:
  * by how many of the case's symptoms they cover, then by their grades. A ranking that many remedies
  * lead together at a low score is left out of the search. The rubrics are the
- * `kent_repertory` and `boericke_repertory` Qdrant collections, which the HomeoRemedica-private
+ * `kent_repertory` and `boericke_repertory` Qdrant collections, which the homeoremedica-private
  * repository builds with `scripts/rubrics.py` and `scripts/embed.py`.
  */
 

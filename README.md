@@ -9,7 +9,7 @@ advice.
 **Live app:** <https://homeoremedica-619837289655.asia-south1.run.app>
 
 The project covers hybrid search and answer generation. Search runs against Qdrant collections, one per book,
-built by the [HomeoRemedica-private](https://github.com/rasagyavatsal/HomeoRemedica-private) repository; external APIs provide query embeddings and
+built by the [homeoremedica-private](https://github.com/rasagyavatsal/homeoremedica-private) repository; external APIs provide query embeddings and
 generated answers. A React frontend talks to the production pipeline through a Hono API server on Node.js.
 
 **Stack:** TypeScript · Node.js · Hono · Zod · React · Vite · Qdrant · OpenRouter · Z.AI ·
@@ -31,7 +31,7 @@ Firebase Authentication · Firestore · Vitest · Playwright
 
 ## Architecture
 
-The [HomeoRemedica-private](https://github.com/rasagyavatsal/HomeoRemedica-private) repository chunks the source texts and indexes them in Qdrant. The `production`
+The [homeoremedica-private](https://github.com/rasagyavatsal/homeoremedica-private) repository chunks the source texts and indexes them in Qdrant. The `production`
 pipeline searches those collections and generates the answer:
 
 ```mermaid
@@ -78,7 +78,7 @@ cp .env.example .env
 ```
 
 Set `QDRANT_URL`, `QDRANT_API_KEY`, `OPENROUTER_API_KEY`, and `ZAI_API_KEY` in `.env`. The
-collections are built and updated by `scripts/embed.py` in the [HomeoRemedica-private](https://github.com/rasagyavatsal/HomeoRemedica-private)
+collections are built and updated by `scripts/embed.py` in the [homeoremedica-private](https://github.com/rasagyavatsal/homeoremedica-private)
 repository.
 
 ## Web app
@@ -144,9 +144,9 @@ over that gets `429` with `Retry-After`.
 
 ## Android app
 
-A native Kotlin client for the same API lives in [`android/`](android/). Open that folder in Android
-Studio; [android/README.md](android/README.md) covers its setup and builds. The two apps are released
-separately, as `web-v*` and `android-v*`.
+A native Kotlin client for the same API lives in its own repository,
+[homeoremedica-android](https://github.com/rasagyavatsal/homeoremedica-android), whose README covers its
+setup and builds. Its end-to-end tests run against this repository's e2e server.
 
 ## Configuration
 
@@ -214,9 +214,9 @@ checks that the answer cites a source. It stays out of `npm run check`.
 ## Deployment
 
 The app runs on Cloud Run at <https://homeoremedica-619837289655.asia-south1.run.app>. Each `web-v*`
-release runs `npm run check` and deploys through the `Deploy` GitHub Actions workflow, which
-authenticates to Google Cloud with Workload Identity Federation; run `Deploy` by hand with `web` to
-redeploy without a release. To deploy from your machine:
+release runs `npm run check` and deploys through the `Deploy web` GitHub Actions workflow, which
+authenticates to Google Cloud with Workload Identity Federation; run it by hand to redeploy without a
+release. To deploy from your machine:
 
 ```sh
 npm run deploy
@@ -233,4 +233,4 @@ its own Google identity, so accounts need no secret. Local `.env` files are not 
 ## License
 
 Software and documentation: [MIT](LICENSE). The dataset is proprietary, lives in the
-[HomeoRemedica-private](https://github.com/rasagyavatsal/HomeoRemedica-private) repository, and is not distributed with this repository. Underlying historical works retain their applicable rights and source notices.
+[homeoremedica-private](https://github.com/rasagyavatsal/homeoremedica-private) repository, and is not distributed with this repository. Underlying historical works retain their applicable rights and source notices.

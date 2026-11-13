@@ -2,7 +2,7 @@
  * The remedies Clarke's Clinical sections list for the diseases a case names.
  *
  * Each remedy in Clarke's Dictionary has a Clinical section naming the diseases it has been used
- * for. The HomeoRemedica-private repository turns them into one term per disease, with the
+ * for. The homeoremedica-private repository turns them into one term per disease, with the
  * remedies whose sections name it, and loads them into the `clarke_clinical` Qdrant collection.
  * The chat model names a case's diseases, and a disease matches every term whose words are all
  * among its own, ignoring spelling, plurals and word order, so `bronchial asthma` takes both
