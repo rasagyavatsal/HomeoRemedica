@@ -317,6 +317,7 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
           <div className="reading">
             {conversation.messages.length ? (
               <Thread
+                key={conversation.id}
                 messages={conversation.messages}
                 openSources={openSources ?? undefined}
                 onSources={showSources}
