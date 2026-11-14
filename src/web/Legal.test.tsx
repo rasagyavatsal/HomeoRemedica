@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { LegalPage, legalPage } from './Legal.tsx'
@@ -11,7 +11,7 @@ describe('legal pages', () => {
     expect(legalPage('/privacy/extra')).toBeNull()
   })
 
-  it('show the privacy policy and link to the terms', () => {
+  it('show the privacy policy with a way back to the app', () => {
     render(<LegalPage page="privacy" />)
     expect(screen.getByRole('heading', { level: 1, name: 'Privacy Policy' })).toBeInTheDocument()
     expect(screen.getByText(/operated by Rasagya Vatsal, Mandi, Himachal Pradesh/)).toBeInTheDocument()
@@ -19,9 +19,8 @@ describe('legal pages', () => {
       'href',
       'mailto:rasagyavatsal16@gmail.com',
     )
-    const nav = within(screen.getByRole('navigation', { name: 'Legal' }))
-    expect(nav.getByRole('link', { name: 'Terms of Use' })).toHaveAttribute('href', '/terms')
-    expect(nav.getByRole('link', { name: 'Back to HomeoRemedica' })).toHaveAttribute('href', '/')
+    expect(screen.getByRole('link', { name: 'Back to HomeoRemedica' })).toHaveAttribute('href', '/')
+    expect(screen.queryByRole('navigation', { name: 'Legal' })).not.toBeInTheDocument()
     expect(document.title).toBe('Privacy Policy · HomeoRemedica')
   })
 
@@ -29,7 +28,6 @@ describe('legal pages', () => {
     render(<LegalPage page="terms" />)
     expect(screen.getByRole('heading', { level: 1, name: 'Terms of Use' })).toBeInTheDocument()
     expect(screen.getByText(/Courts in Mandi, Himachal Pradesh have exclusive jurisdiction/)).toBeInTheDocument()
-    const nav = within(screen.getByRole('navigation', { name: 'Legal' }))
-    expect(nav.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute('href', '/privacy')
+    expect(screen.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute('href', '/privacy')
   })
 })
