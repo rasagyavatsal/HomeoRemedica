@@ -7,6 +7,26 @@
 * **corpus:** rename the source dataset to `dataset/corpus.json` and consolidate each release into
   one `corpus.sqlite` database with book-filtered retrieval.
 
+## [10.5.0](https://github.com/rasagyavatsal/homeoremedica-app/compare/v10.4.0...v10.5.0) (2026-11-14)
+
+
+### Features
+
+* **web:** animate the drop logo and tidy the chat screens ([2128887](https://github.com/rasagyavatsal/homeoremedica-app/commit/2128887e2671625ed2faee664770ae1994bb1e5e))
+* **web:** change the hero text to 'AI for homeopathy' ([a0a5a24](https://github.com/rasagyavatsal/homeoremedica-app/commit/a0a5a24ca555458265581b3ab15f0a2e2658293a))
+* **web:** fold long questions to six lines ([f485b57](https://github.com/rasagyavatsal/homeoremedica-app/commit/f485b579abbb1b0d2c64e4407a28027b67815393))
+* **web:** give legal pages a back arrow by their title and drop the footer links ([d2c2bad](https://github.com/rasagyavatsal/homeoremedica-app/commit/d2c2badd19a547f044b05822769bb593685c3f1f))
+* **web:** show references as one row that opens their list ([00b3d69](https://github.com/rasagyavatsal/homeoremedica-app/commit/00b3d69ef1e58b33f6cce01de272b959c42e0780))
+* **web:** show the drop filling up above the new chat tagline ([269f76a](https://github.com/rasagyavatsal/homeoremedica-app/commit/269f76a06b8fbebb60db182cc9e8040b0110abef))
+* **web:** start a new chat from the logo in the sidebar ([fd22719](https://github.com/rasagyavatsal/homeoremedica-app/commit/fd2271982a10a9c0723ebe527f1252c069436e25))
+* **web:** tap the drop four times, as in succussion, while an answer loads ([2d51b72](https://github.com/rasagyavatsal/homeoremedica-app/commit/2d51b724876c7ddf9984c7d6de7b7e00cf8de7a7))
+
+
+### Bug Fixes
+
+* **web:** fold each chat's questions afresh when switching chats ([646cb02](https://github.com/rasagyavatsal/homeoremedica-app/commit/646cb0283abc8b7da9b94d963ff546e984904a58))
+* **web:** keep focus in step when the panel switches between references and a passage ([a85b97c](https://github.com/rasagyavatsal/homeoremedica-app/commit/a85b97c96bb5199895969f460cfb5d1ae5584bd4))
+
 ## [10.4.0](https://github.com/rasagyavatsal/homeoremedica-app/compare/v10.3.0...v10.4.0) (2026-11-13)
 
 
