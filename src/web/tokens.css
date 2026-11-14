@@ -131,6 +131,7 @@
   --composer-max-height: 12rem;
   --layout-glow-width: 36rem;
   --layout-glow-height: 16rem;
+  --layout-filling-drop: 6rem;
   --citation-size: 1.35em;
   --citation-raise: 0.15em;
   --code-size: 0.875em;
@@ -143,6 +144,7 @@
   --duration-base: 200ms;
   --duration-slow: 320ms;
   --duration-succuss: 3200ms;
+  --duration-fill: 5200ms;
   --duration-stagger: 50ms;
   --duration-reveal: 480ms;
   --duration-word-stagger: 60ms;
@@ -150,6 +152,7 @@
   --duration-glow-in: 1600ms;
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-exit: cubic-bezier(0.3, 0, 1, 1);
+  --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
 
   /* Layers */
   --layer-sticky: 10;

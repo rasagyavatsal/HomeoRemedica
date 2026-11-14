@@ -219,6 +219,14 @@ ul {
   color: var(--color-accent);
 }
 
+.brand-button {
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  cursor: pointer;
+}
+
 .brand-mark {
   width: var(--control-sm);
   height: var(--control-sm);
@@ -788,6 +796,106 @@ a.menu-item {
   position: relative;
   isolation: isolate;
   padding: var(--space-3xl) 0;
+}
+
+/* Seen whole when motion is reduced; otherwise it fills, is cut and empties on a loop. */
+.filling-drop {
+  display: block;
+  width: var(--layout-filling-drop);
+  height: var(--layout-filling-drop);
+  margin: 0 auto var(--space-xl);
+  color: var(--color-accent);
+}
+
+.filling-drop-liquid {
+  transform: translateY(1.4px);
+}
+
+.filling-drop-ring {
+  stroke-dasharray: 26.7;
+}
+
+.filling-drop-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .filling-drop-liquid {
+    animation: fill-drop var(--duration-fill) var(--ease-out-cubic) infinite;
+  }
+
+  .filling-drop-ring {
+    animation: cut-ring var(--duration-fill) var(--ease-out-cubic) infinite;
+  }
+
+  .filling-drop-dot {
+    animation: cut-dot var(--duration-fill) var(--ease-out-cubic) infinite;
+  }
+}
+
+/* Four steps up, a pause, then empty: 0.6s a step, 0.2s apart, over 5.2s. */
+@keyframes fill-drop {
+  0% {
+    transform: translateY(22.75px);
+  }
+  11.54%,
+  15.38% {
+    transform: translateY(17.41px);
+  }
+  26.92%,
+  30.77% {
+    transform: translateY(12.08px);
+  }
+  42.31%,
+  46.15% {
+    transform: translateY(6.74px);
+  }
+  57.69% {
+    transform: translateY(1.4px);
+  }
+  88.46% {
+    transform: translateY(1.4px);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: translateY(22.75px);
+  }
+}
+
+/* The ring is cut in once the drop is full, and closes again as it empties. */
+@keyframes cut-ring {
+  0%,
+  63.46% {
+    stroke-dashoffset: 26.7;
+  }
+  76.92% {
+    stroke-dashoffset: 0;
+  }
+  88.46% {
+    stroke-dashoffset: 0;
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    stroke-dashoffset: 26.7;
+  }
+}
+
+@keyframes cut-dot {
+  0%,
+  63.46% {
+    transform: scale(0);
+  }
+  76.92% {
+    transform: scale(1);
+  }
+  88.46% {
+    transform: scale(1);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: scale(0);
+  }
 }
 
 .tagline {
