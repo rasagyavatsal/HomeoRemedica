@@ -147,6 +147,8 @@ export default function App() {
 interface OpenSources {
   messageId: number
   source: number
+  /** The source shown before, when the panel switched between the list and a passage, to keep focus in step. */
+  from?: number
 }
 
 interface WorkspaceProps {
@@ -351,7 +353,8 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
               source={openSource}
               number={openSources.source}
               onClose={closeSources}
-              onBack={() => showSources(openSources.messageId, 0)}
+              onBack={() => setOpenSources({ messageId: openSources.messageId, source: 0, from: openSources.source })}
+              focusBack={openSources.from === 0}
               rating={feedback.ratings.get(openSources.messageId)?.sources[openSources.source] ?? null}
               onRate={
                 ratingClient && !openMessage.status
@@ -363,7 +366,8 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
             <ReferencesPanel
               sources={openMessage.sources}
               numbers={listedSources(openMessage.content, openMessage.sources.length)}
-              onOpen={(number) => showSources(openSources.messageId, number)}
+              onOpen={(number) => setOpenSources({ messageId: openSources.messageId, source: number, from: 0 })}
+              focused={openSources.from}
               onClose={closeSources}
             />
           )}

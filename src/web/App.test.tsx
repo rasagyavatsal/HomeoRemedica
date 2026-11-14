@@ -240,8 +240,11 @@ describe('asking', () => {
     expect(within(list).getAllByRole('button')).toHaveLength(1)
     await userEvent.click(within(list).getByRole('button', { name: /Pulsatilla/ }))
     expect(screen.getByRole('region', { name: 'Pulsatilla' })).toBeInTheDocument()
+    // Focus follows each switch, back to the reference it left.
+    expect(screen.getByRole('button', { name: 'All references' })).toHaveFocus()
     await userEvent.click(screen.getByRole('button', { name: 'All references' }))
     expect(screen.getByRole('region', { name: 'References' })).toBeInTheDocument()
+    expect(within(screen.getByRole('list', { name: 'References' })).getByRole('button', { name: /Pulsatilla/ })).toHaveFocus()
 
     // The row closes the list again.
     await userEvent.click(references)

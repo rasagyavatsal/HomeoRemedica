@@ -12,6 +12,8 @@ interface SourcesPanelProps {
   onClose: () => void
   /** Goes back to the list of the answer's references; there is no way back without this. */
   onBack?: (() => void) | undefined
+  /** Puts focus on the way back, when the passage was opened from the list. */
+  focusBack?: boolean
   rating?: Rating | null
   /** Rates the passage; it cannot be rated without this. */
   onRate?: ((rating: Rating | null) => void) | undefined
@@ -24,14 +26,14 @@ const passageComponents: Components = {
 }
 
 /** The passage behind one reference in an answer. */
-export function SourcesPanel({ source, number, onClose, onBack, rating = null, onRate }: SourcesPanelProps) {
+export function SourcesPanel({ source, number, onClose, onBack, focusBack = false, rating = null, onRate }: SourcesPanelProps) {
   const heading = source.remedyName ?? source.sectionTitle
   return (
     <section className="sources" aria-labelledby="sources-title">
       <header className="sources-header">
         <div className="source-meta">
           {onBack && (
-            <button type="button" className="icon-button" onClick={onBack} aria-label="All references">
+            <button type="button" className="icon-button" onClick={onBack} aria-label="All references" autoFocus={focusBack}>
               <ArrowLeftIcon />
             </button>
           )}
@@ -70,10 +72,12 @@ interface ReferencesPanelProps {
   numbers: readonly number[]
   onOpen: (number: number) => void
   onClose: () => void
+  /** The reference to put focus on, when coming back from its passage. */
+  focused?: number | undefined
 }
 
 /** The references an answer lists, each opening its passage. */
-export function ReferencesPanel({ sources, numbers, onOpen, onClose }: ReferencesPanelProps) {
+export function ReferencesPanel({ sources, numbers, onOpen, onClose, focused }: ReferencesPanelProps) {
   return (
     <section className="sources" aria-labelledby="sources-title">
       <header className="sources-header sources-header-centred">
@@ -90,7 +94,7 @@ export function ReferencesPanel({ sources, numbers, onOpen, onClose }: Reference
           if (!source) return null
           return (
             <li key={source.id}>
-              <button type="button" className="reference" onClick={() => onOpen(number)}>
+              <button type="button" className="reference" onClick={() => onOpen(number)} autoFocus={number === focused}>
                 <span className="reference-number">{number}</span>
                 <span className="reference-text">
                   <span className="reference-heading">{source.remedyName ?? source.sectionTitle}</span>
