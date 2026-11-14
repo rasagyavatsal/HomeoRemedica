@@ -962,23 +962,90 @@ a.menu-item {
   font-size: var(--text-sm);
 }
 
-.pulse {
-  width: var(--space-xs);
-  height: var(--space-xs);
-  border-radius: var(--radius-pill);
-  background: var(--color-accent);
-  animation: pulse var(--duration-pulse) var(--ease-standard) infinite;
+/* The drop struck four times, as a remedy is succussed, then settling. */
+.tap-drop {
+  width: 1.5em;
+  height: 1.5em;
+  flex: none;
+  color: var(--color-accent);
+  transform-origin: 50% 95%;
+  animation: succuss var(--duration-succuss) ease-in-out infinite;
 }
 
-@keyframes pulse {
-  50% {
-    opacity: 0.25;
-    transform: scale(0.7);
+@keyframes succuss {
+  0% {
+    transform: translateY(0%) rotate(0deg) scale(1.08, 0.9);
+  }
+  0.82% {
+    transform: translateY(-3.3%) rotate(-2.2deg) scale(1, 1);
+  }
+  3.44% {
+    transform: translateY(-9%) rotate(-6deg) scale(1, 1);
+  }
+  6.05% {
+    transform: translateY(-3.3%) rotate(-2.2deg) scale(1, 1);
+  }
+  6.87% {
+    transform: translateY(0%) rotate(0deg) scale(1.08, 0.9);
+  }
+  7.70% {
+    transform: translateY(-3.3%) rotate(-2.2deg) scale(1, 1);
+  }
+  10.31% {
+    transform: translateY(-9%) rotate(-6deg) scale(1, 1);
+  }
+  12.92% {
+    transform: translateY(-3.3%) rotate(-2.2deg) scale(1, 1);
+  }
+  13.75% {
+    transform: translateY(0%) rotate(0deg) scale(1.08, 0.9);
+  }
+  14.57% {
+    transform: translateY(-3.3%) rotate(-2.2deg) scale(1, 1);
+  }
+  17.19% {
+    transform: translateY(-9%) rotate(-6deg) scale(1, 1);
+  }
+  19.80% {
+    transform: translateY(-3.3%) rotate(-2.2deg) scale(1, 1);
+  }
+  20.62% {
+    transform: translateY(0%) rotate(0deg) scale(1.08, 0.9);
+  }
+  21.45% {
+    transform: translateY(-3.3%) rotate(-2.2deg) scale(1, 1);
+  }
+  24.06% {
+    transform: translateY(-9%) rotate(-6deg) scale(1, 1);
+  }
+  26.67% {
+    transform: translateY(-3.3%) rotate(-2.2deg) scale(1, 1);
+  }
+  27.50% {
+    transform: translateY(0%) rotate(0deg) scale(1.08, 0.9);
+  }
+  30.56% {
+    transform: translateY(0%) rotate(0deg) scale(1.041, 0.959);
+  }
+  36.72% {
+    transform: translateY(0%) rotate(0deg) scale(0.982, 1.018);
+  }
+  42.81% {
+    transform: translateY(0%) rotate(0deg) scale(1.008, 0.992);
+  }
+  48.97% {
+    transform: translateY(0%) rotate(0deg) scale(0.996, 1.004);
+  }
+  55.62% {
+    transform: translateY(0%) rotate(0deg) scale(1, 1);
+  }
+  100% {
+    transform: translateY(0%) rotate(0deg) scale(1, 1);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pulse {
+  .tap-drop {
     animation: none;
   }
 }

@@ -3,7 +3,7 @@ import { memo, useCallback, useId, useLayoutEffect, useRef, useState } from 'rea
 import { Answer } from './Answer.tsx'
 import type { AnswerRatings } from '../server/contracts.ts'
 import { type Message, listedSources } from './conversation.ts'
-import { AlertIcon, ChevronDownIcon, ChevronRightIcon, RetryIcon } from './icons.tsx'
+import { AlertIcon, ChevronDownIcon, ChevronRightIcon, DropMark, RetryIcon } from './icons.tsx'
 import { AnswerFeedback } from './AnswerFeedback.tsx'
 import { CaseReview } from './CaseReview.tsx'
 import type { NoteHandler, RateHandler } from './useFeedback.ts'
@@ -154,7 +154,7 @@ const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, o
     <>
       {waiting ? (
         <p className="reply-progress" role="status">
-          <span className="pulse" aria-hidden="true" />
+          <DropMark className="tap-drop" />
           {sources ? 'Reading the passages…' : reading ? READING[reading] : 'Searching the books…'}
         </p>
       ) : (
