@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { type Message, citedSources, linkCitations, savedMessages, titleFrom } from './conversation.ts'
+import { type Message, citedSources, linkCitations, listedSources, savedMessages, titleFrom } from './conversation.ts'
 import { citation } from './test/fakes.ts'
 
 describe('linkCitations', () => {
@@ -42,4 +42,9 @@ it('saves answered and stopped turns but not failed ones', () => {
     { id: 4, role: 'user', content: 'Stopped?' },
     { id: 5, role: 'assistant', content: 'Part' },
   ])
+})
+
+it('lists the sources an answer cites, or all of them if it cites none', () => {
+  expect(listedSources('One [3], two [1], none [9].', 4)).toEqual([1, 3])
+  expect(listedSources('No citations.', 3)).toEqual([1, 2, 3])
 })

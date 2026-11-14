@@ -1,14 +1,14 @@
-import { memo, useCallback, useId } from 'react'
+import { memo, useCallback, useId, useLayoutEffect, useRef, useState } from 'react'
 
 import { Answer } from './Answer.tsx'
-import type { AnswerRatings, Citation } from '../server/contracts.ts'
-import { type Message, citedSources } from './conversation.ts'
-import { AlertIcon, RetryIcon } from './icons.tsx'
+import type { AnswerRatings } from '../server/contracts.ts'
+import { type Message, listedSources } from './conversation.ts'
+import { AlertIcon, ChevronDownIcon, ChevronRightIcon, DropMark, RetryIcon } from './icons.tsx'
 import { AnswerFeedback } from './AnswerFeedback.tsx'
 import { CaseReview } from './CaseReview.tsx'
 import type { NoteHandler, RateHandler } from './useFeedback.ts'
 
-/** The reference open in the sources panel. */
+/** What the sources panel shows: one of an answer's references, or the list of them as source 0. */
 interface OpenReference {
   messageId: number
   source: number
@@ -35,7 +35,7 @@ export function Thread({ messages, openSources, onSources, onRetry, onConfirm, r
       {messages.map((message, index) =>
         message.role === 'user' ? (
           <li key={message.id} className="question">
-            <h2 className="question-text">{message.content}</h2>
+            <Question content={message.content} />
           </li>
         ) : (
           <li key={message.id} className="reply">
@@ -56,12 +56,70 @@ export function Thread({ messages, openSources, onSources, onRetry, onConfirm, r
   )
 }
 
+/** A question; one too long for the fold opens and closes on a click. */
+function Question({ content }: { content: string }) {
+  const text = useRef<HTMLHeadingElement>(null)
+  const [long, setLong] = useState(false)
+  const [open, setOpen] = useState(false)
+  const id = useId()
+
+  // Measured while folded: the question is long when the fold hides some of it.
+  useLayoutEffect(() => {
+    const node = text.current
+    if (!node || open) return
+    const measure = () => setLong(node.scrollHeight > node.clientHeight + 1)
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [content, open])
+
+  const toggle = () => setOpen((value) => !value)
+
+  return (
+    <div
+      className="question-bubble"
+      data-long={long || undefined}
+      data-open={open || undefined}
+      onClick={
+        long
+          ? (event) => {
+              // Selecting text in the question is not a request to fold it.
+              const selection = getSelection()
+              if (selection && !selection.isCollapsed && event.currentTarget.contains(selection.anchorNode)) return
+              toggle()
+            }
+          : undefined
+      }
+    >
+      <h2 id={id} ref={text} className="question-text">
+        {content}
+      </h2>
+      {long && (
+        <button
+          type="button"
+          className="question-toggle"
+          aria-expanded={open}
+          aria-controls={id}
+          aria-label={open ? 'Collapse question' : 'Expand question'}
+          onClick={(event) => {
+            event.stopPropagation()
+            toggle()
+          }}
+        >
+          <ChevronDownIcon />
+        </button>
+      )}
+    </div>
+  )
+}
+
 /** What a waiting answer says before the books are searched. */
 const READING = { question: 'Reading your question…', case: 'Reading the case for symptoms and diseases…' } as const
 
 interface ReplyProps {
   message: Message
-  /** This answer's source open in the sources panel, if any. */
+  /** This answer's source open in the sources panel, if any; 0 while the list of its references is. */
   activeSource: number | undefined
   onSources: (messageId: number, source: number) => void
   onRetry: (() => void) | undefined
@@ -96,7 +154,7 @@ const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, o
     <>
       {waiting ? (
         <p className="reply-progress" role="status">
-          <span className="pulse" aria-hidden="true" />
+          <DropMark className="tap-drop" />
           {sources ? 'Reading the passages…' : reading ? READING[reading] : 'Searching the books…'}
         </p>
       ) : (
@@ -105,7 +163,7 @@ const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, o
       {status === 'stopped' && <p className="reply-note">{content ? 'Stopped before the answer finished.' : 'Stopped.'}</p>}
       {/* Listed once the answer is done, so the list does not shift while it streams. */}
       {sources && sources.length > 0 && status !== 'streaming' && (
-        <References sources={sources} cited={citedSources(content)} active={activeSource} onOpen={cite} />
+        <References numbers={listedSources(content, sources.length)} open={activeSource === 0} onOpen={() => cite(0)} />
       )}
       {onRate && onNote && !status && content && (
         <div className="reply-actions">
@@ -121,41 +179,26 @@ const Reply = memo(function Reply({ message, activeSource, onSources, onRetry, o
 })
 
 interface ReferencesProps {
-  sources: readonly Citation[]
-  cited: ReadonlySet<number>
-  active: number | undefined
-  onOpen: (number: number) => void
+  /** The numbers of the sources the answer lists, from 1. */
+  numbers: readonly number[]
+  /** Whether the list of them is open in the sources panel. */
+  open: boolean
+  onOpen: () => void
 }
 
-/** The passages an answer cites, or every passage it retrieved if it cites none. */
-function References({ sources, cited, active, onOpen }: ReferencesProps) {
-  const numbered = sources.map((source, index) => ({ source, number: index + 1 }))
-  const listed = cited.size ? numbered.filter(({ number }) => cited.has(number)) : numbered
-  const labelId = useId()
+/** One row under an answer that opens the list of its references in the sources panel. */
+function References({ numbers, open, onOpen }: ReferencesProps) {
   return (
-    <div className="references">
-      <p id={labelId} className="references-label">
-        References
-      </p>
-      <ol className="references-list" aria-labelledby={labelId}>
-        {listed.map(({ source, number }) => (
-          <li key={source.id}>
-            <button
-              type="button"
-              className="reference"
-              data-active={number === active || undefined}
-              aria-pressed={number === active}
-              onClick={() => onOpen(number)}
-            >
-              <span className="reference-number">{number}</span>
-              <span className="reference-text">
-                <span className="reference-heading">{source.remedyName ?? source.sectionTitle}</span>
-                <span className="reference-book">{source.bookTitle}</span>
-              </span>
-            </button>
-          </li>
+    <button type="button" className="references" aria-pressed={open} onClick={onOpen}>
+      <span className="references-stack" aria-hidden="true">
+        {numbers.slice(0, 3).map((number) => (
+          <span key={number} className="reference-number">
+            {number}
+          </span>
         ))}
-      </ol>
-    </div>
+      </span>
+      {numbers.length === 1 ? '1 reference' : `${numbers.length} references`}
+      <ChevronRightIcon />
+    </button>
   )
 }

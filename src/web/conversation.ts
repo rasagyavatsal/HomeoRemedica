@@ -79,3 +79,9 @@ export function linkCitations(answer: string, sourceCount: number): string {
 export function citedSources(answer: string): Set<number> {
   return new Set([...answer.matchAll(CITATION)].flatMap((match) => citationNumbers(match[1] ?? '')))
 }
+
+/** The 1-based numbers of the sources an answer lists as references: those it cites, or every one if it cites none. */
+export function listedSources(answer: string, sourceCount: number): number[] {
+  const cited = citedSources(answer)
+  return Array.from({ length: sourceCount }, (_, i) => i + 1).filter((n) => !cited.size || cited.has(n))
+}

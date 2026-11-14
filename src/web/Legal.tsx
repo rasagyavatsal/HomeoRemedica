@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { ArrowLeftIcon, ArrowRightIcon, DropMark } from './icons.tsx'
+import { ArrowLeftIcon } from './icons.tsx'
 import { ThemeToggle } from './ThemeToggle.tsx'
 
 export type LegalPageName = 'privacy' | 'terms'
@@ -31,39 +31,25 @@ export function LegalLinks() {
 }
 
 export function LegalPage({ page }: { page: LegalPageName }) {
-  const other: LegalPageName = page === 'privacy' ? 'terms' : 'privacy'
-
   useEffect(() => {
     document.title = `${TITLES[page]} · HomeoRemedica`
   }, [page])
 
   return (
     <div className="legal">
+      {/* A back arrow and the page's name, as the Android app shows them; the page does not repeat the name. */}
       <header className="legal-header">
-        <a href="/" className="brand">
-          <DropMark />
-          <span className="brand-name">
-            <span className="brand-name-accent">Homeo</span>Remedica
-          </span>
+        <a href="/" className="icon-button" aria-label="Back to HomeoRemedica">
+          <ArrowLeftIcon />
         </a>
+        <h1 className="legal-title">{TITLES[page]}</h1>
         <ThemeToggle />
       </header>
       <main className="reading">
         <article className="prose legal-body">
-          <h1>{TITLES[page]}</h1>
           <p className="legal-effective">Effective {EFFECTIVE}</p>
           {page === 'privacy' ? <Privacy /> : <Terms />}
         </article>
-        <nav className="legal-footer" aria-label="Legal">
-          <a href="/" className="button button-outline">
-            <ArrowLeftIcon />
-            Back to HomeoRemedica
-          </a>
-          <a href={`/${other}`} className="button button-quiet">
-            {TITLES[other]}
-            <ArrowRightIcon />
-          </a>
-        </nav>
       </main>
     </div>
   )

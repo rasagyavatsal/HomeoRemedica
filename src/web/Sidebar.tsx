@@ -26,12 +26,13 @@ export function Sidebar({ chats, activeId, onNew, onOpen, onDelete, onClose, foo
   return (
     <nav className="sidebar" aria-label="Chats">
       <div className="sidebar-header">
-        <div className="brand">
+        {/* The logo starts a new chat, as in most chat apps. */}
+        <button type="button" className="brand brand-button" onClick={onNew}>
           <DropMark />
           <span className="brand-name">
             <span className="brand-name-accent">Homeo</span>Remedica
           </span>
-        </div>
+        </button>
         <div className="sidebar-tools">
           <ThemeToggle />
           <button type="button" className="icon-button sidebar-close" onClick={onClose} aria-label="Close chats">

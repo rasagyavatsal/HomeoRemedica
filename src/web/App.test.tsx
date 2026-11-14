@@ -219,8 +219,8 @@ describe('asking', () => {
     await ask('What is Pulsatilla like?')
 
     expect(screen.getByRole('heading', { name: 'What is Pulsatilla like?' })).toBeInTheDocument()
-    const references = await screen.findByRole('list', { name: 'References' })
-    expect(within(references).getAllByRole('button')).toHaveLength(1)
+    // Only the cited source is counted.
+    const references = await screen.findByRole('button', { name: '1 reference' })
     expect(screen.queryByRole('region', { name: 'Pulsatilla' })).not.toBeInTheDocument()
     // Citations become buttons once the Markdown renderer has loaded.
     await userEvent.click(await screen.findByRole('button', { name: 'Source 2' }))
@@ -233,8 +233,22 @@ describe('asking', () => {
     await userEvent.keyboard('{Escape}')
     expect(screen.queryByRole('region', { name: 'Pulsatilla' })).not.toBeInTheDocument()
 
-    await userEvent.click(within(references).getByRole('button', { name: /Pulsatilla/ }))
+    // The row lists the references, and one opens its passage, with a way back to the list.
+    await userEvent.click(references)
+    expect(references).toHaveAttribute('aria-pressed', 'true')
+    const list = within(screen.getByRole('region', { name: 'References' })).getByRole('list', { name: 'References' })
+    expect(within(list).getAllByRole('button')).toHaveLength(1)
+    await userEvent.click(within(list).getByRole('button', { name: /Pulsatilla/ }))
     expect(screen.getByRole('region', { name: 'Pulsatilla' })).toBeInTheDocument()
+    // Focus follows each switch, back to the reference it left.
+    expect(screen.getByRole('button', { name: 'All references' })).toHaveFocus()
+    await userEvent.click(screen.getByRole('button', { name: 'All references' }))
+    expect(screen.getByRole('region', { name: 'References' })).toBeInTheDocument()
+    expect(within(screen.getByRole('list', { name: 'References' })).getByRole('button', { name: /Pulsatilla/ })).toHaveFocus()
+
+    // The row closes the list again.
+    await userEvent.click(references)
+    expect(screen.queryByRole('region', { name: 'References' })).not.toBeInTheDocument()
   })
 
   it('sends the history the server returned with the last answer', async () => {
@@ -263,7 +277,7 @@ describe('asking', () => {
   it('shows the tagline in an empty chat', () => {
     render(<App />)
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Ask the classical homoeopathic literature.' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'AI for homeopathy' })).toBeInTheDocument()
   })
 
   it('shows a failure and asks again on request', async () => {
@@ -335,9 +349,13 @@ describe('saved chats', () => {
 
     const sidebar = screen.getByRole('navigation', { name: 'Chats' })
     await userEvent.click(within(sidebar).getByRole('button', { name: 'New chat' }))
-    expect(screen.getByRole('heading', { level: 1, name: 'Ask the classical homoeopathic literature.' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'AI for homeopathy' })).toBeInTheDocument()
     await userEvent.click(within(sidebar).getByRole('button', { name: 'Pulsatilla keynotes?' }))
     expect(await screen.findByRole('heading', { name: 'Pulsatilla keynotes?' })).toBeInTheDocument()
+
+    // The logo starts a new chat too.
+    await userEvent.click(within(sidebar).getByRole('button', { name: 'HomeoRemedica' }))
+    expect(screen.getByRole('heading', { level: 1, name: 'AI for homeopathy' })).toBeInTheDocument()
   })
 
   it('deletes a chat after confirmation', async () => {
@@ -350,7 +368,7 @@ describe('saved chats', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
 
     expect(await screen.findByText('Your chats will appear here.')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 1, name: 'Ask the classical homoeopathic literature.' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'AI for homeopathy' })).toBeInTheDocument()
     expect(localStorage.getItem('homeoremedica.library.v1')).toBe('[]')
   })
 
