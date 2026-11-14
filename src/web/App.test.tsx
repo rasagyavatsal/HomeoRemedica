@@ -274,7 +274,7 @@ describe('asking', () => {
   it('shows the tagline in an empty chat', () => {
     render(<App />)
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Ask the classical homoeopathic literature.' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'AI for homeopathy' })).toBeInTheDocument()
   })
 
   it('shows a failure and asks again on request', async () => {
@@ -346,7 +346,7 @@ describe('saved chats', () => {
 
     const sidebar = screen.getByRole('navigation', { name: 'Chats' })
     await userEvent.click(within(sidebar).getByRole('button', { name: 'New chat' }))
-    expect(screen.getByRole('heading', { level: 1, name: 'Ask the classical homoeopathic literature.' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'AI for homeopathy' })).toBeInTheDocument()
     await userEvent.click(within(sidebar).getByRole('button', { name: 'Pulsatilla keynotes?' }))
     expect(await screen.findByRole('heading', { name: 'Pulsatilla keynotes?' })).toBeInTheDocument()
   })
@@ -361,7 +361,7 @@ describe('saved chats', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
 
     expect(await screen.findByText('Your chats will appear here.')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 1, name: 'Ask the classical homoeopathic literature.' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'AI for homeopathy' })).toBeInTheDocument()
     expect(localStorage.getItem('homeoremedica.library.v1')).toBe('[]')
   })
 
