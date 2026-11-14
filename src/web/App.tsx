@@ -6,12 +6,12 @@ import { errorMessage, getJson } from './api.ts'
 import { type Account, type AuthClient, authErrorMessage, connectAuth } from './auth.ts'
 import { AuthDialog } from './AuthDialog.tsx'
 import { Composer, type ComposerHandle } from './Composer.tsx'
-import { type Conversation, newConversation } from './conversation.ts'
+import { type Conversation, listedSources, newConversation } from './conversation.ts'
 import { CloseIcon, MenuIcon } from './icons.tsx'
 import { AccountLibrary, type ChatLibrary, LocalLibrary, moveIntoAccount, openChat, summarize } from './library.ts'
 import { PractitionerNotice } from './PractitionerNotice.tsx'
 import { Sidebar } from './Sidebar.tsx'
-import { SourcesPanel } from './SourcesPanel.tsx'
+import { ReferencesPanel, SourcesPanel } from './SourcesPanel.tsx'
 import { Thread } from './Thread.tsx'
 import { useChat } from './useChat.ts'
 import { useFeedback } from './useFeedback.ts'
@@ -143,7 +143,7 @@ export default function App() {
   )
 }
 
-/** The reference open in the sources panel: an answer and one of its sources. */
+/** What the sources panel shows: an answer and one of its sources, or the list of its references as source 0. */
 interface OpenSources {
   messageId: number
   source: number
@@ -289,7 +289,7 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
   }, [openSources, sidebarShown])
 
   return (
-    <div className="app" data-sources={openSource ? 'open' : undefined} data-sidebar={sidebarShown ? 'open' : undefined}>
+    <div className="app" data-sources={openSources && openMessage?.sources ? 'open' : undefined} data-sidebar={sidebarShown ? 'open' : undefined}>
       <div className="sidebar-slot" inert={drawer && !sidebarOpen}>
         <Sidebar
           chats={chats}
@@ -342,21 +342,31 @@ function Workspace({ library, notify: setNotice, account }: WorkspaceProps) {
         </footer>
       </main>
 
-      {openSources && openSource && (
+      {openSources && openMessage?.sources && (openSource || openSources.source === 0) && (
         <>
           <div className="scrim scrim-sources" onClick={closeSources} aria-hidden="true" />
-          <SourcesPanel
-            key={openSource.id}
-            source={openSource}
-            number={openSources.source}
-            onClose={closeSources}
-            rating={feedback.ratings.get(openSources.messageId)?.sources[openSources.source] ?? null}
-            onRate={
-              ratingClient && !openMessage?.status
-                ? (rating) => feedback.rate(openSources.messageId, openSources.source, rating)
-                : undefined
-            }
-          />
+          {openSource ? (
+            <SourcesPanel
+              key={openSource.id}
+              source={openSource}
+              number={openSources.source}
+              onClose={closeSources}
+              onBack={() => showSources(openSources.messageId, 0)}
+              rating={feedback.ratings.get(openSources.messageId)?.sources[openSources.source] ?? null}
+              onRate={
+                ratingClient && !openMessage.status
+                  ? (rating) => feedback.rate(openSources.messageId, openSources.source, rating)
+                  : undefined
+              }
+            />
+          ) : (
+            <ReferencesPanel
+              sources={openMessage.sources}
+              numbers={listedSources(openMessage.content, openMessage.sources.length)}
+              onOpen={(number) => showSources(openSources.messageId, number)}
+              onClose={closeSources}
+            />
+          )}
         </>
       )}
     </div>

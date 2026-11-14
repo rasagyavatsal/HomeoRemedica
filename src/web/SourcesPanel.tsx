@@ -1,7 +1,7 @@
 import type { Components } from 'react-markdown'
 
 import type { Citation, Rating } from '../server/contracts.ts'
-import { CloseIcon } from './icons.tsx'
+import { ArrowLeftIcon, CloseIcon } from './icons.tsx'
 import { Markdown } from './Markdown.tsx'
 import { RatingButtons } from './Rating.tsx'
 
@@ -10,6 +10,8 @@ interface SourcesPanelProps {
   /** The source's number in its answer, from 1. */
   number: number
   onClose: () => void
+  /** Goes back to the list of the answer's references; there is no way back without this. */
+  onBack?: (() => void) | undefined
   rating?: Rating | null
   /** Rates the passage; it cannot be rated without this. */
   onRate?: ((rating: Rating | null) => void) | undefined
@@ -22,12 +24,17 @@ const passageComponents: Components = {
 }
 
 /** The passage behind one reference in an answer. */
-export function SourcesPanel({ source, number, onClose, rating = null, onRate }: SourcesPanelProps) {
+export function SourcesPanel({ source, number, onClose, onBack, rating = null, onRate }: SourcesPanelProps) {
   const heading = source.remedyName ?? source.sectionTitle
   return (
     <section className="sources" aria-labelledby="sources-title">
       <header className="sources-header">
         <div className="source-meta">
+          {onBack && (
+            <button type="button" className="icon-button" onClick={onBack} aria-label="All references">
+              <ArrowLeftIcon />
+            </button>
+          )}
           <span className="source-number">{number}</span>
           <div>
             <h2 id="sources-title" className="source-heading">
@@ -53,6 +60,47 @@ export function SourcesPanel({ source, number, onClose, rating = null, onRate }:
           <Markdown components={passageComponents}>{source.text}</Markdown>
         </div>
       </div>
+    </section>
+  )
+}
+
+interface ReferencesPanelProps {
+  sources: readonly Citation[]
+  /** The numbers of the sources the answer lists, from 1. */
+  numbers: readonly number[]
+  onOpen: (number: number) => void
+  onClose: () => void
+}
+
+/** The references an answer lists, each opening its passage. */
+export function ReferencesPanel({ sources, numbers, onOpen, onClose }: ReferencesPanelProps) {
+  return (
+    <section className="sources" aria-labelledby="sources-title">
+      <header className="sources-header sources-header-centred">
+        <h2 id="sources-title" className="source-heading">
+          References
+        </h2>
+        <button type="button" className="icon-button" onClick={onClose} aria-label="Close references">
+          <CloseIcon />
+        </button>
+      </header>
+      <ol className="sources-body reference-list" aria-labelledby="sources-title">
+        {numbers.map((number) => {
+          const source = sources[number - 1]
+          if (!source) return null
+          return (
+            <li key={source.id}>
+              <button type="button" className="reference" onClick={() => onOpen(number)}>
+                <span className="reference-number">{number}</span>
+                <span className="reference-text">
+                  <span className="reference-heading">{source.remedyName ?? source.sectionTitle}</span>
+                  <span className="reference-book">{source.bookTitle}</span>
+                </span>
+              </button>
+            </li>
+          )
+        })}
+      </ol>
     </section>
   )
 }

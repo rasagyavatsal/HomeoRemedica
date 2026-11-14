@@ -219,8 +219,8 @@ describe('asking', () => {
     await ask('What is Pulsatilla like?')
 
     expect(screen.getByRole('heading', { name: 'What is Pulsatilla like?' })).toBeInTheDocument()
-    const references = await screen.findByRole('list', { name: 'References' })
-    expect(within(references).getAllByRole('button')).toHaveLength(1)
+    // Only the cited source is counted.
+    const references = await screen.findByRole('button', { name: '1 reference' })
     expect(screen.queryByRole('region', { name: 'Pulsatilla' })).not.toBeInTheDocument()
     // Citations become buttons once the Markdown renderer has loaded.
     await userEvent.click(await screen.findByRole('button', { name: 'Source 2' }))
@@ -233,8 +233,19 @@ describe('asking', () => {
     await userEvent.keyboard('{Escape}')
     expect(screen.queryByRole('region', { name: 'Pulsatilla' })).not.toBeInTheDocument()
 
-    await userEvent.click(within(references).getByRole('button', { name: /Pulsatilla/ }))
+    // The row lists the references, and one opens its passage, with a way back to the list.
+    await userEvent.click(references)
+    expect(references).toHaveAttribute('aria-pressed', 'true')
+    const list = within(screen.getByRole('region', { name: 'References' })).getByRole('list', { name: 'References' })
+    expect(within(list).getAllByRole('button')).toHaveLength(1)
+    await userEvent.click(within(list).getByRole('button', { name: /Pulsatilla/ }))
     expect(screen.getByRole('region', { name: 'Pulsatilla' })).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'All references' }))
+    expect(screen.getByRole('region', { name: 'References' })).toBeInTheDocument()
+
+    // The row closes the list again.
+    await userEvent.click(references)
+    expect(screen.queryByRole('region', { name: 'References' })).not.toBeInTheDocument()
   })
 
   it('sends the history the server returned with the last answer', async () => {

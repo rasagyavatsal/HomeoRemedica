@@ -1101,24 +1101,49 @@ a.menu-item {
 }
 
 .references {
-  margin-top: var(--space-lg);
-  animation: fade-in var(--duration-slow) var(--ease-standard);
-}
-
-.references-label {
-  padding-bottom: var(--space-xs);
-  color: var(--color-text-subtle);
-  font-size: var(--text-xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-}
-
-.references-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--layout-reference-min), 1fr));
+  display: inline-flex;
+  align-items: center;
   gap: var(--space-xs);
-  padding: 0;
+  margin-top: var(--space-lg);
+  padding: var(--space-2xs) var(--space-xs) var(--space-2xs) var(--space-2xs);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  animation: fade-in var(--duration-slow) var(--ease-standard);
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+.references:hover,
+.references[aria-pressed='true'] {
+  border-color: var(--color-accent-border);
+  background: var(--color-accent-soft);
+  color: var(--color-text);
+}
+
+.references-stack {
+  display: flex;
+  gap: var(--space-3xs);
+}
+
+.references:hover .reference-number,
+.references[aria-pressed='true'] .reference-number {
+  background: var(--color-accent-soft-hover);
+}
+
+.references .icon {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+.reference-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
   list-style: none;
 }
 
@@ -1730,6 +1755,10 @@ a.menu-item {
   border-bottom: var(--border-width) solid var(--color-border);
 }
 
+.sources-header-centred {
+  align-items: center;
+}
+
 .sources-body {
   flex: 1;
   overflow-y: auto;
@@ -1874,11 +1903,6 @@ a.menu-item {
 @media (max-width: 40rem) {
   :root {
     --layout-gutter: var(--space-md);
-  }
-
-  /* Phone widths fit one minimum-width reference per row, so keep two columns. */
-  .references-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .reference-heading {
