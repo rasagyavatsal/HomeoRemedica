@@ -886,17 +886,67 @@ a.menu-item {
   margin-top: 0;
 }
 
-.question-text {
+.question-bubble {
+  position: relative;
   max-width: 85%;
   padding: var(--space-sm) var(--space-md);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface-raised);
+}
+
+.question-text {
   font-size: var(--text-md);
   font-weight: var(--weight-regular);
   line-height: var(--leading-snug);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+/* A long question folds to six lines, fading out, until it is opened. */
+.question-bubble:not([data-open]) .question-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  line-clamp: 6;
+  overflow: hidden;
+}
+
+.question-bubble[data-long] {
+  padding-bottom: var(--space-lg);
+  cursor: pointer;
+}
+
+.question-bubble[data-long]:not([data-open]) .question-text {
+  mask-image: linear-gradient(to bottom, #000 55%, transparent);
+}
+
+.question-toggle {
+  position: absolute;
+  right: var(--space-xs);
+  bottom: var(--space-2xs);
+  display: grid;
+  place-items: center;
+  width: var(--size-6);
+  height: var(--size-6);
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-text-muted);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.question-bubble:hover .question-toggle {
+  color: var(--color-text);
+}
+
+.question-toggle .icon {
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+
+.question-toggle[aria-expanded='true'] .icon {
+  transform: rotate(180deg);
 }
 
 .reply {

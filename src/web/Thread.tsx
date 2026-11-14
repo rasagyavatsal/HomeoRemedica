@@ -1,9 +1,9 @@
-import { memo, useCallback, useId } from 'react'
+import { memo, useCallback, useId, useLayoutEffect, useRef, useState } from 'react'
 
 import { Answer } from './Answer.tsx'
 import type { AnswerRatings, Citation } from '../server/contracts.ts'
 import { type Message, citedSources } from './conversation.ts'
-import { AlertIcon, RetryIcon } from './icons.tsx'
+import { AlertIcon, ChevronDownIcon, RetryIcon } from './icons.tsx'
 import { AnswerFeedback } from './AnswerFeedback.tsx'
 import { CaseReview } from './CaseReview.tsx'
 import type { NoteHandler, RateHandler } from './useFeedback.ts'
@@ -35,7 +35,7 @@ export function Thread({ messages, openSources, onSources, onRetry, onConfirm, r
       {messages.map((message, index) =>
         message.role === 'user' ? (
           <li key={message.id} className="question">
-            <h2 className="question-text">{message.content}</h2>
+            <Question content={message.content} />
           </li>
         ) : (
           <li key={message.id} className="reply">
@@ -53,6 +53,64 @@ export function Thread({ messages, openSources, onSources, onRetry, onConfirm, r
         ),
       )}
     </ol>
+  )
+}
+
+/** A question; one too long for the fold opens and closes on a click. */
+function Question({ content }: { content: string }) {
+  const text = useRef<HTMLHeadingElement>(null)
+  const [long, setLong] = useState(false)
+  const [open, setOpen] = useState(false)
+  const id = useId()
+
+  // Measured while folded: the question is long when the fold hides some of it.
+  useLayoutEffect(() => {
+    const node = text.current
+    if (!node || open) return
+    const measure = () => setLong(node.scrollHeight > node.clientHeight + 1)
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [content, open])
+
+  const toggle = () => setOpen((value) => !value)
+
+  return (
+    <div
+      className="question-bubble"
+      data-long={long || undefined}
+      data-open={open || undefined}
+      onClick={
+        long
+          ? (event) => {
+              // Selecting text in the question is not a request to fold it.
+              const selection = getSelection()
+              if (selection && !selection.isCollapsed && event.currentTarget.contains(selection.anchorNode)) return
+              toggle()
+            }
+          : undefined
+      }
+    >
+      <h2 id={id} ref={text} className="question-text">
+        {content}
+      </h2>
+      {long && (
+        <button
+          type="button"
+          className="question-toggle"
+          aria-expanded={open}
+          aria-controls={id}
+          aria-label={open ? 'Collapse question' : 'Expand question'}
+          onClick={(event) => {
+            event.stopPropagation()
+            toggle()
+          }}
+        >
+          <ChevronDownIcon />
+        </button>
+      )}
+    </div>
   )
 }
 
